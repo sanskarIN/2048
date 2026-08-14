@@ -111,7 +111,8 @@ class GameState {
     );
 
     final startedAtRaw = normalized['startedAt'] as String?;
-    final startedAt = startedAtRaw == null ? null : DateTime.tryParse(startedAtRaw);
+    final startedAt =
+        startedAtRaw == null ? null : DateTime.tryParse(startedAtRaw);
     if (config.timeLimitSeconds != null && startedAt == null) {
       throw const FormatException('Timed game is missing a valid start time');
     }
@@ -124,8 +125,7 @@ class GameState {
       moves: moves,
       totalMerges: totalMerges,
       status: status,
-      hasAcknowledgedWin:
-          normalized['hasAcknowledgedWin'] as bool? ?? false,
+      hasAcknowledgedWin: normalized['hasAcknowledgedWin'] as bool? ?? false,
       rngState: rngState,
       startedAt: startedAt,
     );
