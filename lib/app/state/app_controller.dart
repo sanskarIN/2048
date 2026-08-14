@@ -96,11 +96,14 @@ class PlayerStats {
   }
 }
 
+enum AchievementMetric { merges, highestTile, score, wins, dailyWins }
+
 class Achievement {
   Achievement(
     this.id,
     this.title,
     this.description,
+    this.metric,
     this.threshold, {
     this.unlockedAt,
   });
@@ -108,6 +111,7 @@ class Achievement {
   final String id;
   final String title;
   final String description;
+  final AchievementMetric metric;
   final int threshold;
   DateTime? unlockedAt;
 
@@ -132,12 +136,100 @@ class AppController extends ChangeNotifier {
       'first_merge',
       'First Merge',
       'Merge your first pair of tiles.',
+      AchievementMetric.merges,
       1,
     ),
-    Achievement('tile_128', 'Nova 128', 'Reach the 128 tile.', 128),
-    Achievement('tile_512', 'Nova 512', 'Reach the 512 tile.', 512),
-    Achievement('tile_2048', 'Nova Master', 'Reach the 2048 tile.', 2048),
-    Achievement('tile_4096', 'Beyond Nova', 'Reach the 4096 tile.', 4096),
+    Achievement(
+      'tile_128',
+      'Nova 128',
+      'Reach the 128 tile.',
+      AchievementMetric.highestTile,
+      128,
+    ),
+    Achievement(
+      'tile_256',
+      'Nova 256',
+      'Reach the 256 tile.',
+      AchievementMetric.highestTile,
+      256,
+    ),
+    Achievement(
+      'tile_512',
+      'Nova 512',
+      'Reach the 512 tile.',
+      AchievementMetric.highestTile,
+      512,
+    ),
+    Achievement(
+      'tile_1024',
+      'Nova 1024',
+      'Reach the 1024 tile.',
+      AchievementMetric.highestTile,
+      1024,
+    ),
+    Achievement(
+      'tile_2048',
+      'Nova Master',
+      'Reach the 2048 tile.',
+      AchievementMetric.highestTile,
+      2048,
+    ),
+    Achievement(
+      'tile_4096',
+      'Beyond Nova',
+      'Reach the 4096 tile.',
+      AchievementMetric.highestTile,
+      4096,
+    ),
+    Achievement(
+      'tile_8192',
+      'Deep Space',
+      'Reach the 8192 tile.',
+      AchievementMetric.highestTile,
+      8192,
+    ),
+    Achievement(
+      'score_10000',
+      'Five Digits',
+      'Score at least 10,000 points in one game.',
+      AchievementMetric.score,
+      10000,
+    ),
+    Achievement(
+      'score_50000',
+      'Score Supernova',
+      'Score at least 50,000 points in one game.',
+      AchievementMetric.score,
+      50000,
+    ),
+    Achievement(
+      'win_1',
+      'First Victory',
+      'Reach a game target for the first time.',
+      AchievementMetric.wins,
+      1,
+    ),
+    Achievement(
+      'win_5',
+      'Nova Streaker',
+      'Win five games.',
+      AchievementMetric.wins,
+      5,
+    ),
+    Achievement(
+      'daily_1',
+      'Daily Explorer',
+      'Win a Daily Challenge.',
+      AchievementMetric.dailyWins,
+      1,
+    ),
+    Achievement(
+      'daily_7',
+      'Daily Voyager',
+      'Win seven Daily Challenges.',
+      AchievementMetric.dailyWins,
+      7,
+    ),
   ];
 
   bool get hasGame => game != null;
@@ -159,6 +251,7 @@ class AppController extends ChangeNotifier {
       _sessionCounted = true;
       _winCounted = game!.hasAcknowledgedWin;
     }
+    _unlockAchievements();
   }
 
   Future<void> newGame(GameConfig config) async {
@@ -193,7 +286,6 @@ class AppController extends ChangeNotifier {
     stats.highestTile = current.highestTile > stats.highestTile
         ? current.highestTile
         : stats.highestTile;
-    _unlockAchievements(current, outcome.merges);
     if (current.status == GameStatus.won && !_winCounted) {
       stats.gamesWon += 1;
       stats.currentStreak += 1;
@@ -207,6 +299,7 @@ class AppController extends ChangeNotifier {
       _sessionCounted = false;
     }
     _updateDailyRecord(current);
+    _unlockAchievements();
     await _persist();
     notifyListeners();
     return outcome;
@@ -233,6 +326,17 @@ class AppController extends ChangeNotifier {
     return null;
   }
 
+  int achievementProgress(Achievement achievement) {
+    return switch (achievement.metric) {
+      AchievementMetric.merges => stats.totalMerges,
+      AchievementMetric.highestTile => stats.highestTile,
+      AchievementMetric.score => stats.bestScore,
+      AchievementMetric.wins => stats.gamesWon,
+      AchievementMetric.dailyWins =>
+        dailyHistory.where((record) => record.won).length,
+    };
+  }
+
   Future<void> refreshChallengeStatus() async {
     final current = game;
     final engine = _engine;
@@ -241,6 +345,7 @@ class AppController extends ChangeNotifier {
     engine.refreshStatus(current);
     if (before != current.status) {
       _updateDailyRecord(current);
+      _unlockAchievements();
       await _persist();
       notifyListeners();
     }
@@ -251,6 +356,7 @@ class AppController extends ChangeNotifier {
     game!.hasAcknowledgedWin = true;
     game!.status = GameStatus.playing;
     _updateDailyRecord(game!);
+    _unlockAchievements();
     await _persist();
     notifyListeners();
   }
@@ -326,14 +432,13 @@ class AppController extends ChangeNotifier {
     }
   }
 
-  void _unlockAchievements(GameState state, int merges) {
+  void _unlockAchievements() {
+    final now = DateTime.now();
     for (final achievement in achievements) {
       if (achievement.unlocked) continue;
-      final shouldUnlock = switch (achievement.id) {
-        'first_merge' => merges > 0,
-        _ => state.highestTile >= achievement.threshold,
-      };
-      if (shouldUnlock) achievement.unlockedAt = DateTime.now();
+      if (achievementProgress(achievement) >= achievement.threshold) {
+        achievement.unlockedAt = now;
+      }
     }
   }
 
