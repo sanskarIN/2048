@@ -288,8 +288,7 @@ class AppController extends ChangeNotifier {
         await store.saveUndoHistory(_undo);
       }
       _sessionCounted = true;
-      _winCounted =
-          game!.hasAcknowledgedWin || game!.status == GameStatus.won;
+      _winCounted = game!.hasAcknowledgedWin || game!.status == GameStatus.won;
     }
     _unlockAchievements();
   }
@@ -438,8 +437,9 @@ class AppController extends ChangeNotifier {
       stats.gamesPlayed = 1;
       stats.bestScore = current.score;
       stats.highestTile = current.highestTile;
-      final alreadyWon =
-          _winCounted || current.status == GameStatus.won || current.hasAcknowledgedWin;
+      final alreadyWon = _winCounted ||
+          current.status == GameStatus.won ||
+          current.hasAcknowledgedWin;
       if (alreadyWon) {
         stats.gamesWon = 1;
         stats.currentStreak = 1;

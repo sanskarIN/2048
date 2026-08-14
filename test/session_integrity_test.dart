@@ -10,7 +10,8 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  test('restored win remains accounted after continue and later loss', () async {
+  test('restored win remains accounted after continue and later loss',
+      () async {
     const config = GameConfig(mode: GameMode.classic, size: 4);
     final store = LocalStore();
     final wonGame = GameState(
@@ -55,7 +56,8 @@ void main() {
     expect(controller.stats.currentStreak, 1);
   });
 
-  test('statistics reset keeps an active game eligible and consistent', () async {
+  test('statistics reset keeps an active game eligible and consistent',
+      () async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
     await controller.newGame(

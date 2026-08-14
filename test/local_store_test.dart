@@ -76,8 +76,8 @@ void main() {
     final store = LocalStore();
 
     final records = await store.loadDailyHistory();
-    final repairedRaw =
-        (await SharedPreferences.getInstance()).getString('nova.daily_history.v1');
+    final repairedRaw = (await SharedPreferences.getInstance())
+        .getString('nova.daily_history.v1');
     final repairedJson = jsonDecode(repairedRaw!) as List<dynamic>;
 
     expect(records, hasLength(2));
@@ -94,8 +94,8 @@ void main() {
     final store = LocalStore();
 
     final restored = await store.loadUndoHistory();
-    final repairedRaw =
-        (await SharedPreferences.getInstance()).getString('nova.undo_history.v1');
+    final repairedRaw = (await SharedPreferences.getInstance())
+        .getString('nova.undo_history.v1');
     final repairedJson = jsonDecode(repairedRaw!) as List<dynamic>;
 
     expect(restored, hasLength(1));

@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nova_2048/features/game/game_board.dart';
 
 void main() {
-  testWidgets('board exposes size and positional tile semantics', (tester) async {
+  testWidgets('board exposes size and positional tile semantics',
+      (tester) async {
     final semantics = tester.ensureSemantics();
     addTearDown(semantics.dispose);
 
