@@ -1,0 +1,65 @@
+name: Diagnose Phase 16 Quality Gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/phase16-diagnose.yml
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Capture exact quality results
+        shell: bash
+        run: |
+          set +e
+          flutter pub get > /tmp/pub.log 2>&1
+          PUB=$?
+          dart format --output=none --set-exit-if-changed lib test > /tmp/format.log 2>&1
+          FORMAT=$?
+          flutter analyze > /tmp/analyze.log 2>&1
+          ANALYZE=$?
+          flutter test test/localization_test.dart -r expanded > /tmp/localization.log 2>&1
+          LOCALIZATION=$?
+          flutter test -r expanded > /tmp/full.log 2>&1
+          FULL=$?
+          {
+            echo "Phase 16 diagnostic"
+            echo "pub=$PUB"
+            echo "format=$FORMAT"
+            echo "analyze=$ANALYZE"
+            echo "localization_test=$LOCALIZATION"
+            echo "full_test=$FULL"
+            echo
+            echo "=== FORMAT ==="
+            tail -n 80 /tmp/format.log
+            echo
+            echo "=== ANALYZE ==="
+            tail -n 120 /tmp/analyze.log
+            echo
+            echo "=== LOCALIZATION TEST ==="
+            tail -n 220 /tmp/localization.log
+            echo
+            echo "=== FULL TEST ==="
+            tail -n 260 /tmp/full.log
+          } > phase16_diagnostic.txt
+          rm .github/workflows/phase16-diagnose.yml
+          git checkout -- analysis_options.yaml 2>/dev/null || true
+          git config user.name Sanskar
+          git config user.email sanskarin@outlook.in
+          git add phase16_diagnostic.txt
+          git add -u .github/workflows/phase16-diagnose.yml
+          git commit -m "test: capture Phase 16 localization failure evidence"
+          git pull --rebase origin main
+          git push origin HEAD:main
