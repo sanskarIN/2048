@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/nova_theme.dart';
 import '../../data/local_store.dart';
 import '../../domain/game_engine.dart';
 import '../../domain/game_state.dart';
@@ -8,6 +9,7 @@ import '../../domain/game_types.dart';
 class AppSettings {
   AppSettings({
     this.themeMode = ThemeMode.system,
+    this.palette = NovaPalette.classic,
     this.highContrast = false,
     this.reducedMotion = false,
     this.soundEnabled = true,
@@ -16,6 +18,7 @@ class AppSettings {
   });
 
   ThemeMode themeMode;
+  NovaPalette palette;
   bool highContrast;
   bool reducedMotion;
   bool soundEnabled;
@@ -24,6 +27,7 @@ class AppSettings {
 
   Map<String, Object?> toJson() => {
         'themeMode': themeMode.name,
+        'palette': palette.name,
         'highContrast': highContrast,
         'reducedMotion': reducedMotion,
         'soundEnabled': soundEnabled,
@@ -37,8 +41,14 @@ class AppSettings {
       (value) => value.name == themeName,
       orElse: () => ThemeMode.system,
     );
+    final paletteName = json['palette'] as String? ?? NovaPalette.classic.name;
+    final palette = NovaPalette.values.firstWhere(
+      (value) => value.name == paletteName,
+      orElse: () => NovaPalette.classic,
+    );
     return AppSettings(
       themeMode: theme,
+      palette: palette,
       highContrast: json['highContrast'] as bool? ?? false,
       reducedMotion: json['reducedMotion'] as bool? ?? false,
       soundEnabled: json['soundEnabled'] as bool? ?? true,
