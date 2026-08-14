@@ -14,42 +14,53 @@
 - `hint_solver.dart` — deterministic, non-mutating heuristic move evaluation.
 - `autoplay_session.dart` — isolated seeded Auto Play Demo session that repeatedly applies heuristic recommendations without app persistence or lifetime-player state.
 - `replay_timeline.dart` — read-only timeline builder that filters current-session Undo snapshots, removes impossible/future frames, orders retained moves, and returns defensive unmodifiable copies plus the authoritative current frame.
+- `game_backup.dart` — versioned portable current-game JSON codec with size, envelope, timestamp, and strict embedded-state validation.
 
-The domain layer does not depend on Flutter widgets, SharedPreferences, or external services. The engine owns authoritative gameplay rules; widgets do not directly mutate board rules.
+The domain layer does not depend on Flutter widgets, SharedPreferences, analytics, network services, or cloud services. The engine owns authoritative gameplay rules; widgets do not directly implement merge/spawn logic.
 
 ## Data
 
 `lib/data/local_store.dart` provides SharedPreferences-backed persistence for:
 
 - current game;
-- bounded undo history;
+- bounded Undo history;
 - settings;
 - statistics;
 - achievement timestamps;
-- bounded Daily Challenge history.
+- bounded Daily Challenge history;
+- current-game unranked marker.
 
-Persistence is treated as untrusted input on read. Current-game state is validated before use. Invalid map values are removed. Undo/Daily collections salvage valid entries, discard malformed entries, apply size bounds, and rewrite repaired storage. Daily records are normalized to one record per date seed so duplicates cannot inflate local achievement counts.
+Persistence is treated as untrusted input on read. Current-game state is validated before use. Invalid map structures are removed. Undo/Daily collections salvage valid entries, discard malformed entries, apply size bounds, and rewrite repaired storage. Daily records are normalized to one record per date seed so duplicate records cannot inflate local Daily achievement counts.
 
-Replay deliberately adds **no new persistence format or key**. It reads the already-validated bounded Undo history and the current saved game, then creates defensive display copies through `ReplayTimeline`.
+If the current game is corrupt, the store also removes its associated Undo history and unranked marker so metadata from a broken session cannot attach to a later unrelated game.
+
+Replay deliberately adds **no new persistence format or key**. It reads already-validated bounded Undo history and the current saved game, then creates defensive display copies through `ReplayTimeline`.
+
+Auto Play Demo deliberately adds **no persistence key**. Its sandbox state is in memory only.
+
+Portable Game Backup itself is clipboard text, not a new local database. After a confirmed import, the restored game uses the normal current-game key and the application writes its own local unranked marker.
 
 ## App state
 
-`AppController` is the session/application coordinator. It owns:
+`AppController` is the player-session/application coordinator. It owns:
 
 - current game + matching `GameEngine`;
 - serialized move requests;
-- undo snapshots and stale-session filtering;
+- Undo snapshots and stale-session filtering;
 - save/resume orchestration;
 - startup challenge-status reconciliation;
 - settings;
 - lifetime statistics and streak accounting;
 - achievement progress/unlock persistence;
 - Daily Challenge history updates;
-- reset/clear behavior.
+- reset/clear behavior;
+- imported-current-game unranked policy.
 
 UI widgets observe the controller through `AppScope`, an `InheritedNotifier`. This keeps screen code small while avoiding an additional state-management dependency.
 
 Statistics and achievements intentionally remain lifetime/application data rather than being rolled back by Undo. Board score and session state can be restored, but lifetime best score and already-earned progress are not downgraded by returning to an earlier board snapshot.
+
+Imported sessions are a special trust boundary: the controller allows their board/session state to progress and persist while suppressing lifetime statistics, achievement, streak, and Daily-history mutation.
 
 ## Features
 
@@ -60,6 +71,7 @@ Each user-facing screen sits under `lib/features`:
 - `modes/`
 - `game/`
 - `daily_challenge/`
+- `backup/`
 - `replay/`
 - `solver_demo/`
 - `statistics/`
@@ -71,11 +83,13 @@ Each user-facing screen sits under `lib/features`:
 
 The Game feature renders controller/domain state, translates touch/keyboard gestures into directions/actions, and shows explicit terminal dialogs. It does not implement merge rules or choose spawned tiles.
 
-The Replay feature snapshots the current controller game, loads the existing persisted Undo history, delegates filtering/copying to `ReplayTimeline`, and renders a spectator-only timeline. It offers scrub, first/previous/next/latest, play/pause, and 1/2/4-frame-per-second controls. It never calls player move, Undo, save, statistics, achievement, or Daily-history mutation methods.
+The Backup feature performs explicit clipboard export/import. It delegates validation to `GameBackup`, previews a valid candidate, requires explicit restore confirmation, and delegates unranked-session installation to `AppController`. It does not write `SharedPreferences` directly.
+
+The Replay feature snapshots the current controller game, loads existing persisted Undo history, delegates filtering/copying to `ReplayTimeline`, and renders a spectator-only timeline. It offers scrub, first/previous/next/latest, play/pause, and 1/2/4-frame-per-second controls. It never calls player move, Undo, statistics, achievement, or Daily-history mutation methods.
 
 The Auto Play Demo feature owns only an in-memory `AutoplaySession`, a periodic UI timer, speed/pause controls, and demo presentation. It does not call player-game mutation methods on `AppController` and therefore cannot increment player statistics, unlock achievements, replace a save, or update Daily history.
 
-## Shared UI/policies
+## Shared UI and policy helpers
 
 `lib/shared` contains cross-feature behavior such as:
 
@@ -84,6 +98,49 @@ The Auto Play Demo feature owns only an in-memory `AutoplaySession`, a periodic 
 - recoverable-game replacement confirmation.
 
 `lib/core` contains project constants and theme generation.
+
+## Player game state flow
+
+A normal ranked/local player move follows this high-level flow:
+
+```text
+GameScreen input
+  -> AppController.move(direction)
+  -> GameEngine.move(GameState, direction)
+  -> deterministic board/score/RNG/status update
+  -> AppController lifetime/Daily/achievement policy
+  -> LocalStore persistence
+  -> controller notification
+  -> UI rebuild
+```
+
+Move requests are serialized in the controller so rapid touch/keyboard input cannot overlap board mutation and persistence operations.
+
+An invalid/no-change engine move never creates an Undo snapshot, increments a move counter, or spawns a tile.
+
+## Backup trust boundary
+
+Portable backup flow is intentionally different from a normal ranked game:
+
+```text
+Clipboard text
+  -> GameBackup.decode()
+  -> strict envelope + GameState validation
+  -> explicit user preview/confirmation
+  -> AppController.importGameBackup()
+  -> current game installed
+  -> old Undo cleared
+  -> local unranked marker = true
+  -> current game persisted
+```
+
+The outer backup JSON does not contain a `ranked` authority field. Ranking policy is local and controlled by `AppController`/`LocalStore`.
+
+Imported play still calls the deterministic engine and is saved normally, but the controller bypasses player-record mutation paths. This permits useful portable resume without treating user-editable JSON as trusted leaderboard/achievement proof.
+
+The external backup's embedded historical `bestScore` is not trusted. The restored game's best display value is normalized against the imported current score and the existing local lifetime best, while lifetime statistics themselves remain unchanged.
+
+See [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md).
 
 ## Replay boundary
 
@@ -103,34 +160,63 @@ It then:
 5. appends/replaces the final frame with an authoritative copy of the current game;
 6. returns an unmodifiable list of copied `GameState` objects.
 
-This means replay playback/scrubbing cannot mutate the live `AppController.game`, the stored Undo objects, RNG state, statistics, achievements, or Daily history.
+This means replay playback/scrubbing cannot mutate the live `AppController.game`, stored Undo objects, RNG state, statistics, achievements, or Daily history.
 
 Because Undo storage is intentionally bounded, replay is also bounded. Very long games may begin at the earliest still-retained Undo snapshot rather than move zero. The UI discloses this instead of implying a complete lifetime replay.
 
 ## Hint and Auto Play Demo boundary
 
-Hints deliberately remain in the domain layer. `HintSolver` simulates legal directions on copied board lists and never consumes the game RNG. `GameEngine.hint()` also refuses suggestions for terminal states. This guarantees requesting a normal hint cannot alter the next tile, undo history, score, or statistics.
+Hints deliberately remain in the domain layer. `HintSolver` simulates legal directions on copied board lists and never consumes the game RNG. `GameEngine.hint()` also refuses suggestions for terminal states. Requesting a normal hint therefore cannot alter the next tile, Undo history, score, or statistics.
 
 `AutoplaySession` is a separate domain sandbox that owns its own `GameEngine`, `GameState`, and deterministic seed. The Auto Play Demo may automatically execute its sandbox recommendation, but that automatic movement is never applied to the player's `AppController.game`. Reset recreates the seeded sandbox rather than touching persisted data.
 
-This architecture satisfies the distinction between a normal Hint (suggestion only) and optional Auto Play / AI Demonstration (automatic moves inside an explicitly isolated demo).
+This architecture preserves the distinction between normal Hint (suggestion only) and optional Auto Play / AI Demonstration (automatic moves inside an explicitly isolated demo).
 
-## Persistence/session boundaries
+## Persistence and session boundaries
 
-A saved game carries its start timestamp, configuration, counters, RNG state, status, and acknowledgement state. Restored undo snapshots must match the current session identity/configuration and cannot represent future score/move/merge progress relative to the current board.
+A saved game carries its start timestamp, configuration, counters, RNG state, status, and acknowledgement state. Restored Undo snapshots must match the current session identity/configuration and cannot represent future score/move/merge progress relative to the current board.
 
 On startup, the controller refreshes terminal rules before presenting the session. This is especially important for timed challenges that may expire while the app is closed.
 
-Move Replay reads saved game/Undo state but never writes it. Leaving the replay screen simply discards the in-memory defensive timeline.
+The imported-game unranked flag is stored outside `GameState`. This is intentional: a portable/edited game payload cannot claim that it is trusted ranked data.
+
+Move Replay reads saved game/Undo state but never writes it. Leaving the replay screen discards the in-memory defensive timeline.
 
 The Auto Play Demo has no persistence key. Leaving or destroying the demo screen discards its sandbox state; reopening it starts from the documented deterministic seed.
 
+## Reset boundaries
+
+- Current-game reset removes game, Undo, and current-game unranked marker.
+- Statistics reset preserves active-session consistency and prevents old Undo `bestScore` data from resurrecting reset historical records.
+- Achievement reset removes unlock dates only.
+- Clear All removes only project-owned keys rather than every SharedPreferences value.
+
+See [`DATA_STORAGE.md`](DATA_STORAGE.md).
+
+## External-link boundary
+
+Explicit browser/email actions are routed through the shared external-link helper. It accepts secure hosted `https` URLs and non-empty `mailto` links and rejects unsupported/insecure schemes. Failed launches offer a copy fallback.
+
+Normal gameplay, backup codec, Replay, Hint, Auto Play, statistics, achievements, and Daily generation do not require an external service.
+
 ## Dependency policy
 
-The project intentionally uses only `shared_preferences` and `url_launcher` beyond Flutter itself. Replay and Auto Play Demo add no package, network service, model download, analytics dependency, or cloud requirement.
+The project intentionally uses only `shared_preferences` and `url_launcher` beyond Flutter itself. Backup uses Flutter clipboard and Dart JSON APIs; Replay and Auto Play add no package, network service, model download, analytics dependency, or cloud requirement.
 
 This keeps the offline game lightweight and avoids coupling the deterministic engine to a state-management framework, database, analytics SDK, account system, AI service, or cloud service.
 
 ## Verification boundary
 
-Automated unit/widget tests and GitHub Actions verify deterministic rules, persistence behavior, analyzer cleanliness, Web builds, replay immutability/filtering, Auto Play isolation, and configured native compilation. Physical-device UX, real screen-reader behavior, platform handlers, signing/provisioning, and store submission remain explicit manual release boundaries.
+Automated unit/widget tests and GitHub Actions verify deterministic rules, persistence behavior, backup validation/isolation, analyzer cleanliness, Web builds, Replay immutability/filtering, Auto Play isolation, and configured native compilation.
+
+Physical-device UX, real screen-reader behavior, platform clipboard/browser/email handlers, signing/provisioning, long-session qualification, and store submission remain explicit manual release boundaries.
+
+For more detail:
+
+- [`GAME_ENGINE.md`](GAME_ENGINE.md)
+- [`GAME_MODES.md`](GAME_MODES.md)
+- [`DATA_STORAGE.md`](DATA_STORAGE.md)
+- [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md)
+- [`HINT_SOLVER.md`](HINT_SOLVER.md)
+- [`TESTING.md`](TESTING.md)
+- [`VERIFICATION.md`](VERIFICATION.md)
