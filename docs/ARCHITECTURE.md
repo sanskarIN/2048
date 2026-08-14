@@ -12,6 +12,7 @@
 - `random_source.dart` — restorable deterministic random-source abstraction.
 - `daily_record.dart` — validated Daily Challenge history records and best-result retention.
 - `hint_solver.dart` — deterministic, non-mutating heuristic move evaluation.
+- `autoplay_session.dart` — isolated seeded Solver Demo session that repeatedly applies heuristic recommendations without app persistence or lifetime-player state.
 
 The domain layer does not depend on Flutter widgets, SharedPreferences, or external services. The engine owns authoritative gameplay rules; widgets do not directly mutate board rules.
 
@@ -56,6 +57,7 @@ Each user-facing screen sits under `lib/features`:
 - `modes/`
 - `game/`
 - `daily_challenge/`
+- `solver_demo/`
 - `statistics/`
 - `achievements/`
 - `settings/`
@@ -64,6 +66,8 @@ Each user-facing screen sits under `lib/features`:
 - `support/`
 
 The Game feature renders controller/domain state, translates touch/keyboard gestures into directions/actions, and shows explicit terminal dialogs. It does not implement merge rules or choose spawned tiles.
+
+The Solver Demo feature owns only an in-memory `AutoplaySession`, a periodic UI timer, speed/pause controls, and demo presentation. It does not call player-game mutation methods on `AppController` and therefore cannot increment player statistics, unlock achievements, replace a save, or update Daily history.
 
 ## Shared UI/policies
 
@@ -75,9 +79,13 @@ The Game feature renders controller/domain state, translates touch/keyboard gest
 
 `lib/core` contains project constants and theme generation.
 
-## Hint boundary
+## Hint and Solver Demo boundary
 
-Hints deliberately remain in the domain layer. `HintSolver` simulates legal directions on copied board lists and never consumes the game RNG. `GameEngine.hint()` also refuses suggestions for terminal states. This guarantees requesting a hint cannot alter the next tile, undo history, score, or statistics.
+Hints deliberately remain in the domain layer. `HintSolver` simulates legal directions on copied board lists and never consumes the game RNG. `GameEngine.hint()` also refuses suggestions for terminal states. This guarantees requesting a normal hint cannot alter the next tile, undo history, score, or statistics.
+
+`AutoplaySession` is a separate domain sandbox that owns its own `GameEngine`, `GameState`, and deterministic seed. The Solver Demo may automatically execute its sandbox recommendation, but that automatic movement is never applied to the player's `AppController.game`. Reset recreates the seeded sandbox rather than touching persisted data.
+
+This architecture satisfies the distinction between a normal Hint (suggestion only) and optional Auto Play / AI Demonstration (automatic moves inside an explicitly isolated demo).
 
 ## Persistence/session boundaries
 
@@ -85,10 +93,14 @@ A saved game carries its start timestamp, configuration, counters, RNG state, st
 
 On startup, the controller refreshes terminal rules before presenting the session. This is especially important for timed challenges that may expire while the app is closed.
 
+The Solver Demo has no persistence key. Leaving or destroying the demo screen discards its sandbox state; reopening it starts from the documented deterministic seed.
+
 ## Dependency policy
 
-The project intentionally uses only `shared_preferences` and `url_launcher` beyond Flutter itself. This keeps the offline game lightweight and avoids coupling the deterministic engine to a state-management framework, database, analytics SDK, account system, or cloud service.
+The project intentionally uses only `shared_preferences` and `url_launcher` beyond Flutter itself. Solver Demo adds no package, network service, model download, analytics dependency, or cloud requirement.
+
+This keeps the offline game lightweight and avoids coupling the deterministic engine to a state-management framework, database, analytics SDK, account system, AI service, or cloud service.
 
 ## Verification boundary
 
-Automated unit/widget tests and GitHub Actions verify deterministic rules, persistence behavior, analyzer cleanliness, Web builds, and configured native compilation. Physical-device UX, real screen-reader behavior, platform handlers, signing/provisioning, and store submission remain explicit manual release boundaries.
+Automated unit/widget tests and GitHub Actions verify deterministic rules, persistence behavior, analyzer cleanliness, Web builds, Solver Demo isolation, and configured native compilation. Physical-device UX, real screen-reader behavior, platform handlers, signing/provisioning, and store submission remain explicit manual release boundaries.
