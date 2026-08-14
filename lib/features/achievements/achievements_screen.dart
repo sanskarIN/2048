@@ -99,7 +99,8 @@ class AchievementsScreen extends StatelessWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.text('Reset achievements?')),
-        content: Text(l10n.text('All local achievement unlocks will be cleared.')),
+        content:
+            Text(l10n.text('All local achievement unlocks will be cleared.')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),

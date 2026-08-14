@@ -345,7 +345,10 @@ class _ConfigPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final entries = <(String, String)>[
-      (l10n.text('Mode'), l10n.text(_ChallengeCodeScreenState._modeLabel(config.mode))),
+      (
+        l10n.text('Mode'),
+        l10n.text(_ChallengeCodeScreenState._modeLabel(config.mode))
+      ),
       (l10n.text('Board'), '${config.size}×${config.size}'),
       (l10n.text('Target'), '${config.target}'),
       if (config.moveLimit != null)
