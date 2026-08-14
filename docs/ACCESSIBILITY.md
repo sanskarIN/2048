@@ -14,6 +14,7 @@ Accessibility is part of the 2048 Nova definition of done.
 - Interactive toolbar controls use tooltips and semantic labels where additional context is useful.
 - Terminal win/loss dialogs require an explicit action and cannot be accidentally dismissed by tapping outside or using route-back.
 - Recoverable-game replacement uses an explicit confirmation dialog rather than silently discarding the saved board.
+- Challenge Codes use standard labeled form controls, selectable generated code text, explicit validation feedback, a decoded configuration preview, and the same recoverable-game replacement confirmation used by normal new-game flows.
 - Game Backup uses visible descriptive buttons and a non-dismissible restore confirmation that explains the unranked policy before replacement.
 - Home distinguishes imported sessions with **Continue Unranked Backup** rather than presenting imported data as ordinary ranked progress.
 - Move Replay reuses the accessible game-board renderer, labels the replay-frame slider, exposes tooltips for first/previous/next/latest controls, and keeps playback read-only.
@@ -61,6 +62,24 @@ Reduced Motion removes nonessential tile transition duration. The game also resp
 
 Sound and haptics are optional and independently disableable. Gameplay state is never communicated only through those feedback channels.
 
+## Challenge Codes accessibility
+
+The Challenge Codes screen uses standard Material controls for:
+
+- mode selection;
+- Target tile selection when relevant;
+- generating a fresh deterministic code;
+- selectable generated code text;
+- copying a generated code;
+- multiline manual input;
+- explicit Paste and Validate actions;
+- decoded mode/board/target/limit/seed preview;
+- starting a validated challenge.
+
+Validation success/failure is visible as text rather than color alone. A valid code does not replace a recoverable game until the normal explicit replacement dialog is confirmed.
+
+Manual qualification still needs to verify long `NOVA1...` text selection/reading behavior, multiline input editing, keyboard focus order, validation announcements, clipboard success/failure behavior, large-text wrapping, and the replacement dialog on TalkBack, VoiceOver, Narrator, and representative browser screen readers.
+
 ## Game Backup accessibility
 
 The Backup screen uses standard Material controls for:
@@ -105,11 +124,13 @@ Because automatic movement can update the board repeatedly, real screen-reader q
 - an empty tile exposes a separate row, column, and empty-state label;
 - the board hierarchy remains discoverable without relying on visual tile text semantics.
 
+Challenge Code widget tests exercise generated-code Copy, clipboard Paste, validation feedback, decoded preview, starting a deterministic code, invalid-input preservation, and replacement cancellation through the actual screen/state boundary.
+
 Replay/widget tests additionally verify that timeline controls can be reached in a constrained test viewport after scrolling and that Replay uses the same semantic board instead of introducing a second inaccessible renderer.
 
 Backup widget tests verify primary export/import controls, explicit restore confirmation, cancellation, and invalid-input flow while exercising the same application routing/state layer used by the UI.
 
-Additional widget tests cover terminal-dialog protection, recoverable-game replacement confirmation, Home state behavior, keyboard shortcuts, Auto Play controls, and primary navigation. Automated semantics tests are useful regression checks but are not equivalent to real assistive-technology testing.
+Additional widget tests cover terminal-dialog protection, recoverable-game replacement confirmation, Home state behavior, keyboard shortcuts, Auto Play controls, Challenge Code navigation, and primary navigation. Automated semantics tests are useful regression checks but are not equivalent to real assistive-technology testing.
 
 ## Manual release checks
 
@@ -122,19 +143,21 @@ Before a stable release, verify:
 5. Inspect board-size, row/column tile, metric, toolbar, support, and dialog semantics with a screen reader.
 6. Confirm each board cell is announced once with its intended positional/value state rather than duplicated visual text.
 7. Confirm terminal win/loss dialogs communicate state and actions clearly.
-8. Open Game Backup and verify Copy, Import, invalid-input messaging, preview information, Cancel, and Restore Unranked Backup focus/announcement behavior.
-9. Verify imported-session labeling remains understandable on Home and does not rely on color alone.
-10. Open Move Replay and verify the read-only explanation, current frame/move metrics, board cells, slider, first/previous/next/latest controls, Play/Pause, and speed selector have understandable focus/announcement behavior.
-11. During Replay playback, confirm frame changes do not create disruptive or uncontrollable repeated announcements; Pause must stop further automatic frame changes.
-12. Open Auto Play Demo and verify demo-state labels, controls, speed selection, board semantics, and demo-only metrics with representative assistive technology.
-13. Test both light and dark modes with high contrast on and off.
-14. Test large system text scaling without clipped primary actions, Backup dialog/actions, Replay controls, demo controls, or unreadable board labels.
-15. Test reduced motion and platform animation reduction across normal play, Replay, and Auto Play Demo.
-16. Verify values remain understandable without distinguishing colors.
-17. Check portrait, landscape, narrow desktop, and wide desktop layouts.
-18. Verify destructive/replacement actions remain clearly labeled and require confirmation where data is recoverable.
-19. Verify timed-challenge countdown changes do not create disruptive repeated announcements in the chosen assistive technology.
-20. Verify clipboard success/failure/error messages are understandable with TalkBack, VoiceOver, and at least one desktop/browser screen reader.
+8. Open Challenge Codes and verify mode/target dropdowns, Generate, selectable code, Copy, multiline code field, Paste, Validate, decoded preview, validation errors, Start, and replacement confirmation with keyboard and representative screen readers.
+9. Verify Challenge Code clipboard actions and long-code reading/editing remain understandable at large text sizes and across representative mobile/desktop/browser clipboard implementations.
+10. Open Game Backup and verify Copy, Import, invalid-input messaging, preview information, Cancel, and Restore Unranked Backup focus/announcement behavior.
+11. Verify imported-session labeling remains understandable on Home and does not rely on color alone.
+12. Open Move Replay and verify the read-only explanation, current frame/move metrics, board cells, slider, first/previous/next/latest controls, Play/Pause, and speed selector have understandable focus/announcement behavior.
+13. During Replay playback, confirm frame changes do not create disruptive or uncontrollable repeated announcements; Pause must stop further automatic frame changes.
+14. Open Auto Play Demo and verify demo-state labels, controls, speed selection, board semantics, and demo-only metrics with representative assistive technology.
+15. Test both light and dark modes with high contrast on and off.
+16. Test large system text scaling without clipped primary actions, Challenge Code controls, Backup dialog/actions, Replay controls, demo controls, or unreadable board labels.
+17. Test reduced motion and platform animation reduction across normal play, Replay, and Auto Play Demo.
+18. Verify values remain understandable without distinguishing colors.
+19. Check portrait, landscape, narrow desktop, and wide desktop layouts.
+20. Verify destructive/replacement actions remain clearly labeled and require confirmation where data is recoverable.
+21. Verify timed-challenge countdown changes do not create disruptive repeated announcements in the chosen assistive technology.
+22. Verify clipboard success/failure/error messages for both Challenge Codes and Game Backup are understandable with TalkBack, VoiceOver, and at least one desktop/browser screen reader.
 
 ## Known scope
 
