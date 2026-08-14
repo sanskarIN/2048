@@ -10,7 +10,7 @@ Yes. The repository is released under the MIT License. You may use, study, modif
 
 ## Does the game need internet access?
 
-Core gameplay does not require a project server. Save/resume, Daily Challenge generation, Hint, Auto Play Demo, Move Replay, statistics, achievements, and Game Backup work locally.
+Core gameplay does not require a project server. Save/resume, Daily Challenge generation, Challenge Codes, Hint, Auto Play Demo, Move Replay, statistics, achievements, and Game Backup work locally.
 
 Network/platform handlers are used only when you explicitly open an external destination such as GitHub, LinkedIn, email, or Buy Me a Coffee.
 
@@ -104,6 +104,42 @@ Because the seed uses UTC, not local midnight. Time zones ahead of or behind UTC
 ## Can a weaker Daily replay overwrite my better result?
 
 No. Local Daily history preserves the stronger score result, maximum highest tile, sticky completion/win state, and newest update timestamp.
+
+## What is a Challenge Code?
+
+A Challenge Code is a short portable `NOVA1...` text value that contains a supported game configuration plus deterministic random seed. It lets another session/device start the same opening without an account or server.
+
+It does not contain board progress, score, statistics, achievements, Daily history, settings, or Undo snapshots.
+
+## Which modes support Challenge Codes?
+
+Classic, Quick, Extended, Challenge, Endless, Target, Time Challenge, Move Limit, and Zen are supported.
+
+Daily Challenge is deliberately excluded because it already uses the UTC date as a shared seed and has dedicated date-based history semantics.
+
+## Do two players with the same code always stay on the same board?
+
+They start from the same deterministic opening. If they make the same valid moves in the same order, the deterministic spawn sequence stays aligned. If they make different moves, their boards naturally diverge.
+
+## Are Challenge Codes encrypted or signed?
+
+No. The code is plain shareable text. Its 32-bit checksum detects accidental corruption; it is not encryption, identity proof, a digital signature, or an anti-cheat mechanism.
+
+## Can a Challenge Code fake my score or achievements?
+
+No progress or record data is encoded. A valid code only starts a fresh game through the normal new-game path. It cannot import a score, board, achievement, Daily result, or lifetime record.
+
+## Do games started from Challenge Codes count in normal statistics?
+
+Yes. They are fresh non-Daily local games, so they participate in the same statistics/achievement policy as a matching game started from the mode picker.
+
+This differs from Game Backup, which restores editable progress and therefore remains unranked.
+
+## What happens if a Challenge Code is malformed or edited?
+
+The app validates the prefix, segment count, input size, hexadecimal checksum, Base64URL payload, JSON envelope, format/version, strict `GameConfig`, seed bounds, and supported-mode allowlist before a game can be started. Invalid codes are rejected without replacing the current game.
+
+See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md).
 
 ## What is Game Backup?
 
