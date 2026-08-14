@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
+import '../core/localization/nova_localizations.dart';
 import '../core/theme/nova_theme.dart';
 import '../features/about/about_screen.dart';
 import '../features/achievements/achievements_screen.dart';
@@ -34,6 +36,24 @@ class NovaApp extends StatelessWidget {
           return MaterialApp(
             title: '2048 Nova',
             debugShowCheckedModeBanner: false,
+            locale: controller.settings.language.locale,
+            supportedLocales: NovaLocalizations.supportedLocales,
+            localizationsDelegates: const [
+              NovaLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            localeResolutionCallback: (locale, supportedLocales) {
+              if (locale != null) {
+                for (final supported in supportedLocales) {
+                  if (supported.languageCode == locale.languageCode) {
+                    return supported;
+                  }
+                }
+              }
+              return const Locale('en');
+            },
             theme: NovaTheme.light(
               controller.settings.highContrast,
               controller.settings.palette,
