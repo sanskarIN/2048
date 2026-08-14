@@ -1,0 +1,93 @@
+import 'package:flutter/material.dart';
+
+import '../../core/theme/nova_theme.dart';
+
+class GameBoard extends StatelessWidget {
+  const GameBoard({required this.board, required this.reducedMotion, super.key});
+
+  final List<List<int>> board;
+  final bool reducedMotion;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = board.length;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final extent = constraints.maxWidth < constraints.maxHeight
+            ? constraints.maxWidth
+            : constraints.maxHeight;
+        final gap = size >= 6 ? 5.0 : 8.0;
+        final cell = (extent - gap * (size + 1)) / size;
+        return SizedBox.square(
+          dimension: extent,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: Stack(
+              children: [
+                for (var row = 0; row < size; row++)
+                  for (var col = 0; col < size; col++)
+                    Positioned(
+                      left: gap + col * (cell + gap),
+                      top: gap + row * (cell + gap),
+                      width: cell,
+                      height: cell,
+                      child: _Tile(
+                        value: board[row][col],
+                        reducedMotion: reducedMotion,
+                      ),
+                    ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _Tile extends StatelessWidget {
+  const _Tile({required this.value, required this.reducedMotion});
+
+  final int value;
+  final bool reducedMotion;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final digits = value == 0 ? 1 : value.toString().length;
+    final fontSize = digits <= 4 ? 28.0 : digits <= 6 ? 22.0 : 16.0;
+    final systemReducedMotion = MediaQuery.disableAnimationsOf(context);
+    return Semantics(
+      label: value == 0 ? 'Empty tile' : 'Tile $value',
+      child: AnimatedContainer(
+        duration: reducedMotion || systemReducedMotion
+            ? Duration.zero
+            : const Duration(milliseconds: 130),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: NovaTheme.tileColor(scheme, value),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: scheme.outlineVariant),
+        ),
+        child: value == 0
+            ? const SizedBox.shrink()
+            : FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Text(
+                    '$value',
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ),
+      ),
+    );
+  }
+}
