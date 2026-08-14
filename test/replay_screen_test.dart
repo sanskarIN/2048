@@ -80,6 +80,11 @@ void main() {
     expect(find.text('Frame: 1 / 3'), findsOneWidget);
     expect(find.text('Move: 0'), findsOneWidget);
 
+    await tester.scrollUntilVisible(
+      find.byTooltip('Next frame'),
+      250,
+      scrollable: find.byType(Scrollable).last,
+    );
     await tester.tap(find.byTooltip('Next frame'));
     await tester.pump();
     expect(find.text('Move: 1'), findsOneWidget);
@@ -102,6 +107,11 @@ void main() {
     await tester.tap(find.text('Move Replay'));
     await tester.pumpAndSettle();
 
+    await tester.scrollUntilVisible(
+      find.text('Play Replay'),
+      250,
+      scrollable: find.byType(Scrollable).last,
+    );
     await tester.tap(find.text('Play Replay'));
     await tester.pump(const Duration(milliseconds: 550));
     expect(find.text('Move: 1'), findsOneWidget);
