@@ -21,20 +21,37 @@ Include enough detail to reproduce the issue:
 - device/platform and OS version;
 - Flutter/Dart version for development/build problems;
 - game mode and board size;
-- whether the game was a normal local game or an imported unranked backup;
+- whether the game was started normally, from a Challenge Code, or from an imported unranked backup;
 - exact steps to reproduce;
 - expected behavior;
 - actual behavior;
 - screenshots or logs when useful;
 - whether the issue persists after starting a fresh game.
 
-For save/Undo/Daily problems, do not publicly post private clipboard data or unrelated device information. If a portable backup reproduces a bug, inspect it before sharing because backup text contains the current game state in plain JSON.
+For Challenge Code problems, say which stage fails:
+
+- Generate;
+- Copy;
+- Paste/manual entry;
+- Validate;
+- decoded preview;
+- replacement confirmation;
+- deterministic opening comparison;
+- later same-move-sequence comparison.
+
+If safe to do so, mention the mode and seed shown by the decoded preview. A complete Challenge Code contains only game configuration/seed, but you should still avoid posting unrelated clipboard content accidentally copied from another app.
+
+For save/Undo/Daily problems, do not publicly post private clipboard data or unrelated device information. If a portable **Game Backup** reproduces a bug, inspect it before sharing because backup text contains the current game state in plain JSON.
+
+Challenge Codes and Game Backup are different formats. `NOVA1...` Challenge Code text should be opened through Home → Challenge Codes, while current-game backup JSON belongs in Home → Game Backup.
 
 ## Security-sensitive reports
 
 Do not open a public issue containing sensitive exploit details. Follow [`SECURITY.md`](SECURITY.md) and contact the support email privately.
 
 Never send passwords, access tokens, API keys, payment credentials, signing keys, provisioning secrets, private keys, or other credentials in a support request.
+
+The Challenge Code checksum is not secret/authentication material. Security reports should focus on an actual violated boundary, such as unsafe parsing/execution or unintended data exposure, rather than merely the fact that a user can construct a different valid configuration code.
 
 ## Business/contact
 
@@ -54,5 +71,7 @@ Financial support is never required to play, build, fork, or contribute to the M
 ## Scope of support
 
 The repository documentation and issue tracker can help with reproducible project behavior and supported build workflows. They cannot guarantee support for every custom Flutter fork, unofficial modified dependency set, third-party store packaging system, rooted/jailbroken device configuration, or unsupported platform toolchain.
+
+Real clipboard behavior can differ across browsers/operating systems, so a code/backup flow that passes automated widget tests may still need platform-specific diagnosis.
 
 For real iOS distribution, Apple signing/provisioning must be configured outside this public repository. For Android store distribution, use normal private release-signing practices and do not commit the signing material.
