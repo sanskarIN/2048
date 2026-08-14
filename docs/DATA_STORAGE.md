@@ -208,3 +208,9 @@ Challenge Code format versioning is independent from `SharedPreferences` key ver
 ## Privacy
 
 All persisted data in this document is local application state. The default app does not transmit it to an analytics, advertising, account, or cloud backend. Challenge Code and Game Backup clipboard access happens only after explicit user actions. External links are launched only after an explicit user action. See [`PRIVACY.md`](PRIVACY.md).
+
+## Language preference
+
+The existing settings object now includes `language` with one of three validated values: `system`, `english`, or `hindi`. It does not require a new top-level SharedPreferences key or a settings schema migration.
+
+Missing, wrongly typed, or unsupported language values are interpreted as `system`. The setting contains only the user's local UI preference; no locale selection is uploaded by the project. Clearing all project data restores the default `system` preference.
