@@ -1,22 +1,23 @@
 # 2048 Nova Documentation
 
-This directory is the user, technical, development, platform, and release documentation set for 2048 Nova. The application is a Flutter/Dart, offline-first 2048 implementation with deterministic game rules, validated local persistence, multiple modes, accessibility controls, read-only Replay, an isolated heuristic Auto Play Demo, and portable current-game backup/restore.
+This directory is the user, technical, development, platform, and release documentation set for 2048 Nova. The application is a Flutter/Dart, offline-first 2048 implementation with deterministic game rules, validated local persistence, multiple modes, accessibility controls, read-only Replay, an isolated heuristic Auto Play Demo, portable current-game backup/restore, and offline shareable seeded challenge codes.
 
 ## Start here
 
 | Document | Purpose |
 | --- | --- |
 | [`../README.md`](../README.md) | Project overview, features, setup, controls, build commands, links, and support. |
-| [`USER_GUIDE.md`](USER_GUIDE.md) | Complete player guide for rules, controls, modes, Undo, Hint, Replay, Auto Play, Backup, settings, and data controls. |
-| [`FAQ.md`](FAQ.md) | Common user/developer questions about rules, modes, saves, Replay, Auto Play, Backup, privacy, accessibility, platforms, and release status. |
+| [`USER_GUIDE.md`](USER_GUIDE.md) | Complete player guide for rules, controls, modes, Undo, Hint, Replay, Auto Play, Backup, Challenge Codes, settings, and data controls. |
+| [`FAQ.md`](FAQ.md) | Common user/developer questions about rules, modes, saves, Replay, Auto Play, Backup, Challenge Codes, privacy, accessibility, platforms, and release status. |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Layer boundaries, state flow, persistence responsibilities, trust boundaries, and feature architecture. |
 | [`GAME_ENGINE.md`](GAME_ENGINE.md) | Exact move/merge/spawn rules, deterministic RNG, terminal-state behavior, and invariants. |
 | [`GAME_MODES.md`](GAME_MODES.md) | All supported game modes, board sizes, targets, timers, move limits, and Daily Challenge behavior. |
+| [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md) | Shareable seeded challenge format, deterministic behavior, validation, checksum, and trust model. |
 | [`DATA_STORAGE.md`](DATA_STORAGE.md) | Local storage keys, save schemas, bounded collections, corruption recovery, and reset behavior. |
 | [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md) | Portable current-game backup format, clipboard workflow, strict validation, and unranked-import policy. |
 | [`HINT_SOLVER.md`](HINT_SOLVER.md) | Deterministic heuristic Hint and Auto Play Demo behavior and limitations. |
 | [`ACCESSIBILITY.md`](ACCESSIBILITY.md) | Implemented accessibility features and remaining manual assistive-technology checks. |
-| [`PRIVACY.md`](PRIVACY.md) | Offline-first data behavior, clipboard, external links, local storage, Replay, Auto Play, and backup privacy. |
+| [`PRIVACY.md`](PRIVACY.md) | Offline-first data behavior, clipboard, external links, local storage, Replay, Auto Play, Backup, and Challenge Code privacy. |
 | [`DEVELOPMENT.md`](DEVELOPMENT.md) | Development environment, repository layout, local workflow, testing, and contribution practices. |
 | [`PLATFORMS.md`](PLATFORMS.md) | Android/iOS/Web/Windows/macOS/Linux setup, build commands, hosted verification, and signing/distribution boundaries. |
 | [`CI_CD.md`](CI_CD.md) | Permanent GitHub Actions workflows, quality gates, native build matrix, and automation boundaries. |
@@ -25,7 +26,7 @@ This directory is the user, technical, development, platform, and release docume
 | [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) | Automated and manual qualification checklist before stable release. |
 | [`BRANDING.md`](BRANDING.md) | Logo/icon/splash sources and generated platform assets. |
 | [`DEPENDENCIES.md`](DEPENDENCIES.md) | Runtime/development dependency rationale and licensing notes. |
-| [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Common setup, build, save, input, backup, and platform troubleshooting. |
+| [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Common setup, build, save, input, backup, challenge-code, and platform troubleshooting. |
 | [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | Contribution architecture, quality, testing, documentation, and PR requirements. |
 | [`../SECURITY.md`](../SECURITY.md) | Security-reporting and current trust boundaries. |
 | [`../SUPPORT.md`](../SUPPORT.md) | User/developer support channels and report information. |
@@ -44,6 +45,7 @@ A feature should not be documented as ranked/trusted when its source policy make
 ## Source-of-truth boundaries
 
 - **Game rules:** `lib/domain/game_engine.dart`, `lib/domain/game_state.dart`, and `lib/domain/game_types.dart`.
+- **Challenge-code codec:** `lib/domain/challenge_code.dart`.
 - **Portable backup codec:** `lib/domain/game_backup.dart`.
 - **Replay timeline:** `lib/domain/replay_timeline.dart`.
 - **Auto Play sandbox:** `lib/domain/autoplay_session.dart`.
