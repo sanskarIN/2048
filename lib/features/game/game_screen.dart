@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../app/state/app_scope.dart';
+import '../../core/localization/nova_localizations.dart';
 import '../../domain/game_types.dart';
 import '../../shared/nova_scaffold.dart';
 import 'game_board.dart';
@@ -44,14 +45,15 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = AppScope.of(context);
+    final l10n = context.l10n;
     final game = controller.game;
     if (game == null) {
       return NovaScaffold(
-        title: 'Game',
+        title: l10n.text('Game'),
         body: Center(
           child: FilledButton(
             onPressed: () => Navigator.pushReplacementNamed(context, '/modes'),
-            child: const Text('Start a game'),
+            child: Text(l10n.text('Start a game')),
           ),
         ),
       );
@@ -69,25 +71,25 @@ class _GameScreenState extends State<GameScreen> {
     });
 
     return NovaScaffold(
-      title: _label(game.config.mode),
+      title: l10n.text(_label(game.config.mode)),
       actions: [
         IconButton(
-          tooltip: 'Hint',
+          tooltip: l10n.text('Hint'),
           onPressed: _showHint,
           icon: const Icon(Icons.lightbulb_outline_rounded),
         ),
         IconButton(
-          tooltip: 'Undo',
+          tooltip: l10n.text('Undo'),
           onPressed: controller.canUndo ? controller.undo : null,
           icon: const Icon(Icons.undo_rounded),
         ),
         IconButton(
-          tooltip: 'Pause',
+          tooltip: l10n.text('Pause'),
           onPressed: _showPauseMenu,
           icon: const Icon(Icons.pause_rounded),
         ),
         IconButton(
-          tooltip: 'New game',
+          tooltip: l10n.text('New game'),
           onPressed: _restart,
           icon: const Icon(Icons.refresh_rounded),
         ),
@@ -114,18 +116,18 @@ class _GameScreenState extends State<GameScreen> {
                   runSpacing: 8,
                   alignment: WrapAlignment.center,
                   children: [
-                    _Metric('Score', game.score),
-                    _Metric('Best', game.bestScore),
-                    _Metric('Moves', game.moves),
-                    _Metric('Highest', game.highestTile),
+                    _Metric(l10n.text('Score'), game.score),
+                    _Metric(l10n.text('Best'), game.bestScore),
+                    _Metric(l10n.text('Moves'), game.moves),
+                    _Metric(l10n.text('Highest'), game.highestTile),
                     if (game.config.moveLimit case final limit?)
                       _Metric(
-                        'Moves left',
+                        l10n.text('Moves left'),
                         (limit - game.moves).clamp(0, limit).toInt(),
                       ),
                     if (game.config.timeLimitSeconds case final limit?)
                       _Metric(
-                        'Seconds left',
+                        l10n.text('Seconds left'),
                         _secondsLeft(game.startedAt, limit),
                       ),
                   ],
@@ -143,8 +145,10 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Move: Swipe / Arrows / W A S D  •  H Hint  •  U Undo  •  P or Esc Pause  •  R Restart',
+                Text(
+                  l10n.text(
+                    'Move: Swipe / Arrows / W A S D  •  H Hint  •  U Undo  •  P or Esc Pause  •  R Restart',
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -205,9 +209,12 @@ class _GameScreenState extends State<GameScreen> {
   void _showHint() {
     if (_dialogVisible) return;
     final hint = AppScope.of(context).hint();
+    final l10n = context.l10n;
     final message = hint == null
-        ? 'No valid move found.'
-        : 'Try ${hint.name.toUpperCase()}.';
+        ? l10n.text('No valid move found.')
+        : l10n.isHindi
+            ? '${l10n.directionName(hint)} की ओर प्रयास करें।'
+            : 'Try ${l10n.directionName(hint).toUpperCase()}.';
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
@@ -239,22 +246,23 @@ class _GameScreenState extends State<GameScreen> {
   Future<void> _showPauseMenu() async {
     if (_dialogVisible) return;
     _dialogVisible = true;
+    final l10n = context.l10n;
     await showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Paused'),
-        content: const Text('Your current game is saved locally.'),
+        title: Text(l10n.text('Paused')),
+        content: Text(l10n.text('Your current game is saved locally.')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Resume'),
+            child: Text(l10n.text('Resume')),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(dialogContext);
               Navigator.pushNamed(context, '/settings');
             },
-            child: const Text('Settings'),
+            child: Text(l10n.text('Settings')),
           ),
           FilledButton(
             onPressed: () {
@@ -265,7 +273,7 @@ class _GameScreenState extends State<GameScreen> {
                 (route) => false,
               );
             },
-            child: const Text('Home'),
+            child: Text(l10n.text('Home')),
           ),
         ],
       ),
@@ -275,21 +283,22 @@ class _GameScreenState extends State<GameScreen> {
 
   Future<void> _restart() async {
     final controller = AppScope.of(context);
+    final l10n = context.l10n;
     final config = controller.game!.config;
     if (controller.settings.confirmRestart) {
       final confirmed = await showDialog<bool>(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Start over?'),
-          content: const Text('Your current board will be replaced.'),
+        builder: (dialogContext) => AlertDialog(
+          title: Text(l10n.text('Start over?')),
+          content: Text(l10n.text('Your current board will be replaced.')),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(l10n.text('Cancel')),
             ),
             FilledButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Restart'),
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(l10n.text('Restart')),
             ),
           ],
         ),
@@ -301,15 +310,18 @@ class _GameScreenState extends State<GameScreen> {
 
   Future<void> _showWinDialog() async {
     final controller = AppScope.of(context);
+    final l10n = context.l10n;
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => PopScope(
         canPop: false,
         child: AlertDialog(
-          title: const Text('Target reached!'),
+          title: Text(l10n.text('Target reached!')),
           content: Text(
-            'You reached ${controller.game?.highestTile}. Continue your Nova run?',
+            l10n.isHindi
+                ? 'आप ${controller.game?.highestTile} तक पहुँच गए। अपना नोवा रन जारी रखें?'
+                : 'You reached ${controller.game?.highestTile}. Continue your Nova run?',
           ),
           actions: [
             TextButton(
@@ -317,14 +329,14 @@ class _GameScreenState extends State<GameScreen> {
                 Navigator.pop(dialogContext);
                 Navigator.pushReplacementNamed(context, '/modes');
               },
-              child: const Text('New game'),
+              child: Text(l10n.text('New game')),
             ),
             FilledButton(
               onPressed: () async {
                 await controller.continueAfterWin();
                 if (dialogContext.mounted) Navigator.pop(dialogContext);
               },
-              child: const Text('Continue'),
+              child: Text(l10n.text('Continue')),
             ),
           ],
         ),
@@ -333,14 +345,15 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Future<void> _showLossDialog() async {
+    final l10n = context.l10n;
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => PopScope(
         canPop: false,
         child: AlertDialog(
-          title: const Text('Game over'),
-          content: Text('Score: ${AppScope.of(context).game?.score ?? 0}'),
+          title: Text(l10n.text('Game over')),
+          content: Text(l10n.score(AppScope.of(context).game?.score ?? 0)),
           actions: [
             TextButton(
               onPressed: () {
@@ -351,14 +364,14 @@ class _GameScreenState extends State<GameScreen> {
                   (route) => false,
                 );
               },
-              child: const Text('Home'),
+              child: Text(l10n.text('Home')),
             ),
             FilledButton(
               onPressed: () {
                 Navigator.pop(dialogContext);
                 unawaited(_restart());
               },
-              child: const Text('Restart'),
+              child: Text(l10n.text('Restart')),
             ),
           ],
         ),
