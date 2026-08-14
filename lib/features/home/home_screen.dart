@@ -12,6 +12,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = AppScope.of(context);
+    final hasGame = controller.game != null;
     final canContinue =
         controller.game != null && controller.game!.status != GameStatus.lost;
     return NovaScaffold(
@@ -43,6 +44,12 @@ class HomeScreen extends StatelessWidget {
                   icon: const Icon(Icons.calendar_today_rounded),
                   label: const Text('Daily Challenge'),
                 ),
+                if (hasGame)
+                  OutlinedButton.icon(
+                    onPressed: () => Navigator.pushNamed(context, '/replay'),
+                    icon: const Icon(Icons.movie_filter_outlined),
+                    label: const Text('Move Replay'),
+                  ),
               ],
             ),
             const SizedBox(height: 24),
