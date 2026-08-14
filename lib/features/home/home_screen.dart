@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/state/app_scope.dart';
 import '../../core/constants/project_info.dart';
+import '../../shared/external_link.dart';
 import '../../shared/nova_scaffold.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -34,6 +35,11 @@ class HomeScreen extends StatelessWidget {
                   icon: const Icon(Icons.add_rounded),
                   label: const Text('New Game'),
                 ),
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.pushNamed(context, '/daily'),
+                  icon: const Icon(Icons.calendar_today_rounded),
+                  label: const Text('Daily Challenge'),
+                ),
               ],
             ),
             const SizedBox(height: 24),
@@ -44,14 +50,30 @@ class HomeScreen extends StatelessWidget {
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
               childAspectRatio: 1.25,
-              children: [
+              children: const [
+                _NavCard('Daily', Icons.today_rounded, '/daily'),
                 _NavCard('Statistics', Icons.insights_rounded, '/statistics'),
-                _NavCard('Achievements', Icons.emoji_events_rounded, '/achievements'),
+                _NavCard(
+                  'Achievements',
+                  Icons.emoji_events_rounded,
+                  '/achievements',
+                ),
                 _NavCard('Guide', Icons.menu_book_rounded, '/guide'),
                 _NavCard('Settings', Icons.tune_rounded, '/settings'),
                 _NavCard('About', Icons.info_outline_rounded, '/about'),
                 _NavCard('Support', Icons.coffee_rounded, '/support'),
               ],
+            ),
+            const SizedBox(height: 20),
+            Semantics(
+              button: true,
+              label: 'Support Sanskar on Buy Me a Coffee',
+              child: OutlinedButton.icon(
+                onPressed: () =>
+                    openExternal(context, ProjectInfo.buyMeACoffee),
+                icon: const Icon(Icons.coffee_rounded),
+                label: const Text('Support on Buy Me a Coffee'),
+              ),
             ),
           ],
         ),
@@ -72,16 +94,24 @@ class _Hero extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(28),
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [scheme.primaryContainer, scheme.tertiaryContainer]),
+          gradient: LinearGradient(
+            colors: [scheme.primaryContainer, scheme.tertiaryContainer],
+          ),
           borderRadius: BorderRadius.circular(32),
         ),
         child: const Column(
           children: [
             Icon(Icons.grid_view_rounded, size: 64),
             SizedBox(height: 10),
-            Text('2048 NOVA', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 34)),
+            Text(
+              '2048 NOVA',
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 34),
+            ),
             SizedBox(height: 8),
-            Text('Classic strategy. Modern polish. Offline-first.', textAlign: TextAlign.center),
+            Text(
+              'Classic strategy. Modern polish. Offline-first.',
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),
@@ -91,6 +121,7 @@ class _Hero extends StatelessWidget {
 
 class _NavCard extends StatelessWidget {
   const _NavCard(this.label, this.icon, this.route);
+
   final String label;
   final IconData icon;
   final String route;
