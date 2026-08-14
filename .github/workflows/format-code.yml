@@ -4,11 +4,17 @@ on:
   push:
     branches: [main]
     paths:
+      - lib/**
+      - test/**
       - .github/workflows/format-code.yml
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: format-dart-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   format:
