@@ -156,7 +156,8 @@ class LocalStore {
             (b.score == a.score && b.updatedAt.isAfter(a.updatedAt))
         ? b
         : a;
-    final updatedAt = a.updatedAt.isAfter(b.updatedAt) ? a.updatedAt : b.updatedAt;
+    final updatedAt =
+        a.updatedAt.isAfter(b.updatedAt) ? a.updatedAt : b.updatedAt;
     return DailyRecord(
       seed: a.seed,
       score: scoreSource.score,
