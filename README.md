@@ -7,7 +7,7 @@
 
 Made by the Sanskar
 
-[Source](https://github.com/sanskarIN/2048) · [Guide](docs/GAME_ENGINE.md) · [Hints](docs/HINT_SOLVER.md) · [Roadmap](ROADMAP.md) · [Support](SUPPORT.md) · [Buy Me a Coffee](https://buymeacoffee.com/sanskarIN)
+[Source](https://github.com/sanskarIN/2048) · [Guide](docs/GAME_ENGINE.md) · [Hints](docs/HINT_SOLVER.md) · [Verification](docs/VERIFICATION.md) · [Roadmap](ROADMAP.md) · [Support](SUPPORT.md) · [Buy Me a Coffee](https://buymeacoffee.com/sanskarIN)
 </div>
 
 ## Overview
@@ -18,7 +18,7 @@ The normal game is offline-first. It does not require an account, subscription, 
 
 ## Features
 
-- Deterministic, UI-independent 2048 engine with correct one-merge-per-source-tile behavior.
+- Deterministic, UI-independent 2048 engine with correct one-merge-per-tile behavior.
 - Classic 4×4, Quick 3×3, Extended 5×5, Challenge 6×6, Endless, Target, Time Challenge, Move Limit, Daily Challenge, and Zen modes.
 - Selectable Target milestones from 128 through 16384.
 - Touch/swipe, Arrow Keys, and W/A/S/D movement plus H for Hint, U for Undo, P/Escape for Pause, and R for Restart on keyboard platforms.
@@ -48,7 +48,7 @@ The repository contains Flutter runners for:
 - macOS
 - Linux
 
-A target is only described as verified after its corresponding CI/build check has completed successfully. See [`what_changed.md`](what_changed.md) for the latest objective build and test evidence.
+A target is only described as verified after its corresponding CI/build check has completed successfully. See [`docs/VERIFICATION.md`](docs/VERIFICATION.md) for the compact current evidence and [`what_changed.md`](what_changed.md) for the chronological verification record.
 
 ## Controls
 
@@ -171,7 +171,7 @@ flutter test
 flutter build web --release
 ```
 
-Additional configured platform builds are exercised by GitHub Actions. See [`docs/TESTING.md`](docs/TESTING.md) and [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md).
+Additional configured platform builds are exercised by GitHub Actions. See [`docs/VERIFICATION.md`](docs/VERIFICATION.md), [`docs/TESTING.md`](docs/TESTING.md), and [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md).
 
 ## Build examples
 
