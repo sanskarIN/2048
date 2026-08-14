@@ -12,46 +12,59 @@ class GameBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = board.length;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final extent = constraints.maxWidth < constraints.maxHeight
-            ? constraints.maxWidth
-            : constraints.maxHeight;
-        final gap = size >= 6 ? 5.0 : 8.0;
-        final cell = (extent - gap * (size + 1)) / size;
-        return SizedBox.square(
-          dimension: extent,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(22),
-            ),
-            child: Stack(
-              children: [
-                for (var row = 0; row < size; row++)
-                  for (var col = 0; col < size; col++)
-                    Positioned(
-                      left: gap + col * (cell + gap),
-                      top: gap + row * (cell + gap),
-                      width: cell,
-                      height: cell,
-                      child: _Tile(
-                        value: board[row][col],
-                        reducedMotion: reducedMotion,
+    return Semantics(
+      container: true,
+      label: '$size by $size game board',
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final extent = constraints.maxWidth < constraints.maxHeight
+              ? constraints.maxWidth
+              : constraints.maxHeight;
+          final gap = size >= 6 ? 5.0 : 8.0;
+          final cell = (extent - gap * (size + 1)) / size;
+          return SizedBox.square(
+            dimension: extent,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(22),
+              ),
+              child: Stack(
+                children: [
+                  for (var row = 0; row < size; row++)
+                    for (var col = 0; col < size; col++)
+                      Positioned(
+                        left: gap + col * (cell + gap),
+                        top: gap + row * (cell + gap),
+                        width: cell,
+                        height: cell,
+                        child: _Tile(
+                          row: row,
+                          col: col,
+                          value: board[row][col],
+                          reducedMotion: reducedMotion,
+                        ),
                       ),
-                    ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
 
 class _Tile extends StatelessWidget {
-  const _Tile({required this.value, required this.reducedMotion});
+  const _Tile({
+    required this.row,
+    required this.col,
+    required this.value,
+    required this.reducedMotion,
+  });
 
+  final int row;
+  final int col;
   final int value;
   final bool reducedMotion;
 
@@ -68,8 +81,9 @@ class _Tile extends StatelessWidget {
     final animationDuration = reducedMotion || systemReducedMotion
         ? Duration.zero
         : const Duration(milliseconds: 140);
+    final position = 'Row ${row + 1}, column ${col + 1}';
     return Semantics(
-      label: value == 0 ? 'Empty tile' : 'Tile $value',
+      label: value == 0 ? '$position, empty' : '$position, tile $value',
       child: AnimatedContainer(
         duration: animationDuration,
         alignment: Alignment.center,
