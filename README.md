@@ -12,7 +12,7 @@ Made by the Sanskar
 
 ## Overview
 
-2048 Nova preserves the familiar 2048 rules while adding a modern cross-platform interface, deterministic game engine, multiple board sizes and challenge modes, save/resume, robust Undo, portable current-game backup/restore, read-only Move Replay, heuristic hints, an isolated Auto Play demonstration, statistics, achievements, theme palettes, accessibility controls, Daily Challenge, and open-source project tooling.
+2048 Nova preserves the familiar 2048 rules while adding a modern cross-platform interface, deterministic game engine, multiple board sizes and challenge modes, save/resume, robust Undo, offline shareable seeded Challenge Codes, portable current-game backup/restore, read-only Move Replay, heuristic hints, an isolated Auto Play demonstration, statistics, achievements, theme palettes, accessibility controls, Daily Challenge, and open-source project tooling.
 
 The normal game is offline-first. It does not require an account, subscription, analytics service, advertising tracker, cloud-sync backend, remote AI model, or permanent internet connection. Internet access is only needed when a player deliberately opens an external destination such as GitHub, LinkedIn, email, or Buy Me a Coffee.
 
@@ -23,6 +23,8 @@ The repository is currently on the **`0.9.0+1` release-candidate line**. Automat
 - Deterministic, UI-independent 2048 engine with correct one-merge-per-source-tile behavior.
 - Classic 4×4, Quick 3×3, Extended 5×5, Challenge 6×6, Endless, Target, Time Challenge, Move Limit, Daily Challenge, and Zen modes.
 - Selectable Target milestones from 128 through 16384.
+- Offline **Challenge Codes** that share a supported deterministic game configuration/seed as checksummed `NOVA1...` text without accounts or cloud synchronization.
+- Challenge Code validation for size, prefix, checksum, Base64URL/JSON envelope, format/version, strict `GameConfig`, deterministic seed, and supported-mode allowlist; Daily mode is intentionally excluded.
 - Touch/swipe, Arrow Keys, and W/A/S/D movement plus H for Hint, U for Undo, P/Escape for Pause, and R for Restart on keyboard platforms.
 - Save/resume with schema-versioned local state, structural validation, startup challenge reconciliation, and corruption-safe self-healing.
 - Persistent Undo history with deterministic RNG restoration, stale-session filtering, lifetime-best-score preservation, and a 50-snapshot bound.
@@ -52,6 +54,7 @@ The complete documentation map is [`docs/README.md`](docs/README.md). Important 
 | Architecture | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
 | Engine rules | [`docs/GAME_ENGINE.md`](docs/GAME_ENGINE.md) |
 | All game modes | [`docs/GAME_MODES.md`](docs/GAME_MODES.md) |
+| Challenge Codes | [`docs/CHALLENGE_CODES.md`](docs/CHALLENGE_CODES.md) |
 | Hint + Auto Play | [`docs/HINT_SOLVER.md`](docs/HINT_SOLVER.md) |
 | Local storage/data | [`docs/DATA_STORAGE.md`](docs/DATA_STORAGE.md) |
 | Backup and restore | [`docs/BACKUP_AND_RESTORE.md`](docs/BACKUP_AND_RESTORE.md) |
@@ -121,6 +124,24 @@ Built-in presets are:
 
 See [`docs/GAME_MODES.md`](docs/GAME_MODES.md) for precise behavior.
 
+## Shareable seeded Challenge Codes
+
+Home exposes **Challenge Codes** for creating or opening the same deterministic supported game setup without accounts or cloud synchronization.
+
+A code has the form:
+
+```text
+NOVA1.<base64url-payload>.<8-hex-checksum>
+```
+
+The payload contains only a versioned `GameConfig` plus deterministic seed. It does not contain a current board, score, lifetime statistics, achievements, Daily history, settings, or Undo snapshots. The checksum detects accidental corruption; it is not encryption, authentication, identity proof, or an anti-cheat mechanism.
+
+Supported modes are Classic, Quick, Extended, Challenge, Endless, Target, Time Challenge, Move Limit, and Zen. Daily Challenge stays separate because it already uses the UTC date as its shared seed and maintains dedicated history semantics.
+
+Starting a valid code creates a fresh game through the normal new-game path. The same configuration/seed produces the same opening board and RNG state, and identical valid move sequences preserve the same deterministic spawn sequence.
+
+See [`docs/CHALLENGE_CODES.md`](docs/CHALLENGE_CODES.md).
+
 ## Save, Undo, and local data
 
 The project stores only project-owned local state through `shared_preferences`. The storage layer validates current game, bounded Undo snapshots, settings, statistics, achievements, Daily history, and the local imported-game unranked marker.
@@ -170,6 +191,7 @@ lib/
     about/
     achievements/
     backup/
+    challenge_codes/
     daily_challenge/
     game/
     guide/
@@ -185,11 +207,11 @@ lib/
   main.dart
 ```
 
-- `domain/` contains deterministic game rules, serializable state, portable backup codec, heuristic hint solver, isolated Auto Play session, and defensive Replay timeline builder.
+- `domain/` contains deterministic game rules, serializable state, Challenge Code codec, portable backup codec, heuristic hint solver, isolated Auto Play session, and defensive Replay timeline builder.
 - `data/` owns validated, bounded, self-healing local persistence.
 - `app/state/` coordinates ranked/unranked player sessions, Undo, settings, statistics, achievements, and Daily records.
-- `features/` contains user-facing screens including Game Backup, Move Replay, and Auto Play Demo.
-- `core/` and `shared/` contain design tokens, project metadata, replacement guards, external-link handling, and reusable UI.
+- `features/` contains user-facing screens including Challenge Codes, Game Backup, Move Replay, and Auto Play Demo.
+- `core/` and `shared/` contain design tokens, project metadata, replacement guards, clipboard abstraction, external-link handling, and reusable UI.
 
 More detail: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
@@ -200,7 +222,7 @@ Runtime dependencies beyond Flutter are intentionally limited to:
 - `shared_preferences` — small local game/settings/statistics storage.
 - `url_launcher` — safe handoff to browser/email handlers for explicit external actions.
 
-Game Backup uses Dart JSON and Flutter clipboard APIs. Move Replay and Auto Play Demo add no network service, model download, or third-party AI dependency.
+Challenge Codes use Dart JSON/Base64URL and the existing Flutter clipboard abstraction. Game Backup uses Dart JSON and Flutter clipboard APIs. Move Replay and Auto Play Demo add no network service, model download, or third-party AI dependency.
 
 Dependency choices and licensing notes are documented in [`docs/DEPENDENCIES.md`](docs/DEPENDENCIES.md).
 
@@ -268,7 +290,7 @@ Only run commands supported by the current host OS and installed toolchain. The 
 
 ## Accessibility
 
-2048 Nova treats accessibility as a core requirement rather than a decorative option. Current implementation includes board-size semantics, row/column-aware tile labels, keyboard controls, visible numeric values in addition to color, high contrast, reduced motion, responsive text/layout behavior, and explicit labels/tooltips for important controls and external support actions. Move Replay reuses the same semantic board renderer and labels its timeline controls.
+2048 Nova treats accessibility as a core requirement rather than a decorative option. Current implementation includes board-size semantics, row/column-aware tile labels, keyboard controls, visible numeric values in addition to color, high contrast, reduced motion, responsive text/layout behavior, and explicit labels/tooltips for important controls and external support actions. Move Replay reuses the same semantic board renderer and labels its timeline controls. Challenge Codes use standard labeled form controls, selectable generated text, explicit validation messages, and a structured decoded preview.
 
 See [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md) for current coverage and release checks.
 
@@ -276,7 +298,7 @@ See [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md) for current coverage and re
 
 The default project has no account system, advertising SDK, analytics tracker, or cloud synchronization. Game state, settings, statistics, achievements, Daily Challenge history, and the local imported-game ranking marker are stored locally.
 
-Malformed project-owned local data is validated and either repaired or removed instead of being trusted blindly. Move Replay creates only defensive in-memory display copies from existing local game/Undo data, Auto Play Demo is in-memory only, and portable Game Backup is copied to the clipboard only after explicit user action. See [`docs/PRIVACY.md`](docs/PRIVACY.md).
+Malformed project-owned local data is validated and either repaired or removed instead of being trusted blindly. Move Replay creates only defensive in-memory display copies from existing local game/Undo data, Auto Play Demo is in-memory only, portable Game Backup is copied to the clipboard only after explicit user action, and Challenge Codes are read/written to the clipboard only after explicit Paste/Copy actions. The app never uploads Challenge Codes automatically. See [`docs/PRIVACY.md`](docs/PRIVACY.md).
 
 ## Branding and assets
 
@@ -304,7 +326,7 @@ Use small, coherent changes, add tests for behavior changes and regressions, kee
 
 ## Troubleshooting
 
-For common setup, analyzer, build, save/Undo, Daily, Replay, Auto Play, backup/import, and external-link issues, see [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md).
+For common setup, analyzer, build, save/Undo, Daily, Challenge Codes, Replay, Auto Play, backup/import, and external-link issues, see [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md).
 
 ## Project links
 
