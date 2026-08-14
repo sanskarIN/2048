@@ -54,4 +54,51 @@ void main() {
     expect(controller.stats.gamesWon, 1);
     expect(controller.stats.currentStreak, 1);
   });
+
+  test('statistics reset keeps an active game eligible and consistent', () async {
+    final controller = AppController(store: LocalStore());
+    await controller.initialize();
+    await controller.newGame(
+      const GameConfig(mode: GameMode.classic, size: 4, target: 4),
+    );
+    controller.game!.board
+      ..[0] = [2, 2, 0, 0]
+      ..[1] = [0, 0, 0, 0]
+      ..[2] = [0, 0, 0, 0]
+      ..[3] = [0, 0, 0, 0];
+
+    await controller.resetStats();
+
+    expect(controller.stats.gamesPlayed, 1);
+    expect(controller.stats.gamesWon, 0);
+    expect(controller.game!.bestScore, controller.game!.score);
+
+    await controller.move(Direction.left);
+
+    expect(controller.game!.status, GameStatus.won);
+    expect(controller.stats.gamesPlayed, 1);
+    expect(controller.stats.gamesWon, 1);
+    expect(controller.stats.winRate, 1);
+  });
+
+  test('statistics reset preserves an already accounted active win', () async {
+    final controller = AppController(store: LocalStore());
+    await controller.initialize();
+    await controller.newGame(
+      const GameConfig(mode: GameMode.classic, size: 4, target: 4),
+    );
+    controller.game!.board
+      ..[0] = [2, 2, 0, 0]
+      ..[1] = [0, 0, 0, 0]
+      ..[2] = [0, 0, 0, 0]
+      ..[3] = [0, 0, 0, 0];
+    await controller.move(Direction.left);
+
+    await controller.resetStats();
+
+    expect(controller.stats.gamesPlayed, 1);
+    expect(controller.stats.gamesWon, 1);
+    expect(controller.stats.currentStreak, 1);
+    expect(controller.stats.bestStreak, 1);
+  });
 }
