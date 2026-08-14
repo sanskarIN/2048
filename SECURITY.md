@@ -1,6 +1,6 @@
 # Security Policy
 
-2048 Nova is an offline-first Flutter puzzle game. Security work focuses on safe local-data parsing, external-link handling, portable-backup validation, dependency hygiene, platform build configuration, and avoiding accidental secret/private-data exposure.
+2048 Nova is an offline-first Flutter puzzle game. Security work focuses on safe local-data parsing, external-link handling, portable-input validation, dependency hygiene, platform build configuration, and avoiding accidental secret/private-data exposure.
 
 ## Supported version
 
@@ -34,7 +34,7 @@ Normal gameplay defects, UI problems, accessibility issues, or crashes without a
 Use the private security contact when a report involves areas such as:
 
 - unsafe external URL/scheme execution;
-- malicious portable backup parsing with security impact;
+- malicious Challenge Code or portable backup parsing with security impact;
 - unintended local-data disclosure;
 - dependency vulnerability with a practical project impact;
 - credential/signing material exposure;
@@ -46,6 +46,30 @@ Use the private security contact when a report involves areas such as:
 ### Local persistence
 
 Persisted JSON is not trusted blindly. Current-game, Undo, settings, statistics, achievements, and Daily history are parsed defensively. Malformed current-game state is removed together with associated Undo/ranking metadata so stale data cannot silently attach to another session.
+
+### Challenge Codes
+
+Challenge Code text is untrusted portable input. The decoder validates:
+
+- maximum 1024-character input length before payload parsing;
+- exact `NOVA1` prefix and three-segment shape;
+- non-empty payload;
+- exactly eight hexadecimal checksum characters;
+- FNV-1a checksum match before payload decode;
+- Base64URL/UTF-8 validity;
+- JSON envelope type;
+- exact `2048-nova-challenge` format identifier;
+- supported schema version;
+- required configuration object;
+- strict `GameConfig.fromJson()` bounds/types;
+- required deterministic seed;
+- supported non-Daily mode allowlist.
+
+A valid code carries only a fresh-game configuration and seed. It cannot import a board position, score, lifetime statistics, achievements, streaks, settings, Daily history, or Undo snapshots.
+
+The checksum is **not cryptographic authentication**. It does not prove who created a code, prevent a technically capable person from constructing another valid code, encrypt the payload, or provide anti-cheat guarantees. It exists to catch accidental corruption/editing. This is acceptable for the current local-only feature because codes cannot assert progress or trusted records.
+
+Starting a code still uses the normal recoverable-game replacement confirmation and then the normal new-game path. Daily mode is rejected so arbitrary code text cannot enter the date-indexed Daily-history contract.
 
 ### Portable Game Backup
 
@@ -62,6 +86,12 @@ Import requires explicit confirmation and always creates an **unranked** current
 
 Portable backup JSON is not encrypted, signed, or authenticated. Users should treat copied backup text as ordinary clipboard data and share it only intentionally.
 
+### Clipboard boundary
+
+Challenge Codes and Game Backup use the shared `TextClipboard` abstraction. Production uses Flutter's system clipboard API; tests can inject an in-memory implementation.
+
+Clipboard content is controlled by the operating system/browser environment. The app reads or writes portable text only after explicit user actions, but it cannot guarantee how the platform itself stores, synchronizes, or exposes clipboard history. Users should not put unrelated secrets into the application's portable-text input fields.
+
 ### External links
 
 External navigation goes through a shared allowlist helper. Supported destinations are secure `https` URLs with a host and non-empty `mailto` links. Unsupported/insecure schemes such as arbitrary JavaScript/file URLs are rejected.
@@ -70,7 +100,7 @@ If platform launching fails, the app provides a copy fallback instead of trying 
 
 ### Network exposure
 
-The default game has no account backend, analytics SDK, advertising tracker, cloud synchronization, or external AI service. Normal gameplay, Daily Challenge generation, Hint, Auto Play Demo, Replay, statistics, achievements, and local save/resume do not require a project server.
+The default game has no account backend, analytics SDK, advertising tracker, cloud synchronization, or external AI service. Normal gameplay, Challenge Codes, Daily Challenge generation, Hint, Auto Play Demo, Replay, statistics, achievements, and local save/resume do not require a project server.
 
 ### Auto Play and Replay
 
@@ -95,7 +125,7 @@ The automated iOS release build is intentionally `--no-codesign`; real distribut
 
 ## Dependencies
 
-Runtime dependencies are intentionally small. Dependabot is configured for ongoing update discovery, while dependency changes still require compatibility, license, privacy, and build review.
+Runtime dependencies are intentionally small. Challenge Codes use only Dart/Flutter primitives and add no third-party runtime package. Dependabot is configured for ongoing update discovery, while dependency changes still require compatibility, license, privacy, and build review.
 
 If a dependency advisory affects this project, include the exact package/version and practical reachable impact in the report when possible.
 
@@ -107,6 +137,6 @@ No fixed response-time guarantee is promised by this open-source project, but re
 
 ## Security-related testing
 
-Relevant automated coverage includes malformed persisted-state recovery, strict configuration/state parsing, external URI allowlisting, stale Undo filtering, backup envelope validation, oversized-backup rejection, imported-session ranking isolation, and scoped project-data reset.
+Relevant automated coverage includes malformed persisted-state recovery, strict configuration/state parsing, external URI allowlisting, stale Undo filtering, Challenge Code size/prefix/checksum/payload/config/mode validation, deterministic Challenge Code opening behavior, replacement cancellation, backup envelope validation, oversized-backup rejection, imported-session ranking isolation, and scoped project-data reset.
 
-Automated tests do not replace platform security review, dependency advisory monitoring, or secure store-signing practices.
+Automated tests do not replace real platform clipboard/security behavior, dependency advisory monitoring, assistive-technology review, or secure store-signing practices.
