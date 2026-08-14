@@ -13,6 +13,10 @@ All notable changes to this project are documented here.
 - Desktop game shortcuts for Hint (`H`), Undo (`U`), Pause (`P`/Escape), and Restart (`R`).
 - Challenge timers, move-limit enforcement, hint, pause, restart, win, and game-over flows.
 - Persistent save/resume and bounded undo history, including deterministic RNG restoration.
+- Offline shareable **Challenge Codes** for Classic, Quick, Extended, Challenge, Endless, Target, Time Challenge, Move Limit, and Zen using a versioned checksummed `NOVA1.<base64url-payload>.<8-hex-checksum>` representation.
+- Challenge Code workspace with mode/Target selection, fresh seed generation, selectable/copyable code text, manual multiline entry, explicit Paste/Validate actions, decoded configuration preview, and normal recoverable-game replacement confirmation before starting.
+- Challenge Code validation for maximum input size, prefix/segment shape, hexadecimal/checksum integrity, Base64URL/UTF-8/JSON payload, exact format/version, strict `GameConfig`, required deterministic seed, and supported-mode allowlist.
+- Challenge Code domain/UI/navigation regression coverage: 10 codec/determinism tests, 4 screen/state-flow tests, and one Home-navigation smoke regression.
 - Read-only **Move Replay** using the validated current game and bounded Undo history, with defensive timeline copies, first/previous/next/latest navigation, slider scrubbing, play/pause, 1/2/4-frame-per-second playback, and bounded-history disclosure.
 - Deterministic local heuristic hint solver using board mobility, merges, corner placement, monotonicity, and smoothness.
 - Optional clearly labeled **Auto Play Demo / AI Demonstration** using an isolated deterministic seeded sandbox, with Auto Play, pause/resume, single-step execution, speed selection, seed reset, demo-only metrics, and strict separation from player saves/statistics/achievements/Daily history.
@@ -23,10 +27,10 @@ All notable changes to this project are documented here.
 - Positional board/tile semantics with row and column information for assistive technologies.
 - Guide, About, Support, GitHub, LinkedIn, business/support email, license, release notes/credits, and optional Buy Me a Coffee integration.
 - Direct in-app GitHub bug-report-template action.
-- Recoverable-game replacement confirmation before starting a different mode or Daily Challenge.
+- Recoverable-game replacement confirmation before starting a different mode, Daily Challenge, or validated Challenge Code.
 - Original 2048 Nova SVG logo, platform launcher icons, PWA icons, native launch branding, and automated branding export workflow.
-- Unit/widget tests for engine rules, persistence, Daily Challenge records, controller state, navigation, themes, mode availability, save migration, external URI policy, accessibility semantics, terminal dialogs, replacement guards, session integrity, hints, Auto Play determinism/isolation/controls, Replay filtering/immutability/playback, portable backup validation/UI/unranked policy, and persistence repair.
-- Complete user/maintainer documentation index plus dedicated User Guide, FAQ, game-mode reference, data-storage reference, Backup/Restore trust model, platform setup/build guide, development guide, CI/CD guide, troubleshooting guide, and expanded architecture/privacy/accessibility/security/contribution/support/release documentation.
+- Unit/widget tests for engine rules, persistence, Daily Challenge records, controller state, navigation, themes, mode availability, Challenge Code encoding/validation/deterministic start/UI flows, save migration, external URI policy, accessibility semantics, terminal dialogs, replacement guards, session integrity, hints, Auto Play determinism/isolation/controls, Replay filtering/immutability/playback, portable backup validation/UI/unranked policy, and persistence repair.
+- Complete user/maintainer documentation index plus dedicated User Guide, FAQ, game-mode reference, Challenge Code specification, data-storage reference, Backup/Restore trust model, platform setup/build guide, development guide, CI/CD guide, troubleshooting guide, and expanded architecture/privacy/accessibility/security/contribution/support/release documentation.
 - GitHub Actions for formatting, static analysis, tests, web release builds, native platform release builds, platform bootstrapping, asset generation, and dependency locking.
 - Dependabot, expanded issue templates, and expanded pull-request engineering checklist.
 - Legacy save-schema migration from schema 0 to the current schema 1 representation.
@@ -42,6 +46,9 @@ All notable changes to this project are documented here.
 - Main-branch Dart changes are automatically formatted by a dedicated workflow before later quality verification.
 - Completed or unavailable Daily Challenge runs require an explicit Replay or Restart confirmation instead of silently creating a fresh board.
 - Daily replay history preserves the strongest score/move pairing, peak tile, completion, and win state instead of allowing a weaker replay to downgrade history.
+- Daily Challenge remains intentionally separate from Challenge Codes: its UTC-date seed/history contract cannot be replaced by arbitrary portable seeded configuration text.
+- A valid Challenge Code starts a fresh normal non-Daily game through `AppController.newGame` rather than using the unranked portable-progress restore path.
+- Challenge Codes add no runtime dependency, account/cloud service, network requirement, persistence key, or record/progress import surface.
 - Local persistence repairs valid portions of partially corrupt undo and Daily Challenge collections and rewrites repaired storage.
 - Statistics reset keeps an active game represented as the current session so win-rate and streak accounting remain internally consistent.
 - Challenge countdown refresh runs only for timed games rather than waking every Game screen once per second.
@@ -49,9 +56,9 @@ All notable changes to this project are documented here.
 - Move Replay reuses the existing validated bounded Undo history instead of introducing a second persistence schema or tracking database.
 - Portable backup restores clear unrelated prior Undo history and use the normal deterministic engine/save path while record/achievement/Daily mutation is suppressed for the imported session.
 - Imported backup `bestScore` history is not trusted as a lifetime record; the local device lifetime best remains authoritative.
-- Home explicitly labels a resumable imported session as **Continue Unranked Backup**.
-- The in-app Guide and About release-candidate text now document Game Backup, Replay, Auto Play, offline/privacy boundaries, and unranked restore behavior.
-- Repository documentation now distinguishes configured/compiled platform support from real-device, assistive-technology, signing/provisioning, and store-release qualification.
+- Home explicitly labels a resumable imported session as **Continue Unranked Backup** and exposes the Challenge Codes workspace as a separate configuration-sharing feature.
+- The in-app Guide and About release-candidate text now document Challenge Codes, Game Backup, Replay, Auto Play, offline/privacy boundaries, and unranked restore behavior.
+- Repository documentation now distinguishes configured/compiled platform support from real-device, assistive-technology, clipboard-handler, signing/provisioning, and store-release qualification.
 
 ### Fixed
 - Prevented directional engine write logic from falling through switch cases.
@@ -75,6 +82,7 @@ All notable changes to this project are documented here.
 - Corrected Game Backup widget tests to scroll the Home backup entry into the constrained test viewport before tapping it.
 - Removed an unused backup test import exposed by strict static analysis.
 - Corrected the oversized-backup test fixture to construct a large Dart string with `List.filled(...).join()` rather than invalid string multiplication syntax.
+- Corrected the initial Challenge Code Base64URL-padding reconstruction to use valid Dart `List.filled(...).join()` rather than unsupported string multiplication.
 - Restricted external actions to validated `https` and non-empty `mailto` URIs; unsupported, insecure, or malformed schemes are rejected.
 - Added persisted configuration bounds and strict type validation for board size, target, move/time limits, game mode, and random seed.
 - Added persisted board validation for dimensions, tile values, score invariants, counters, RNG state, status/acknowledgement consistency, and timed-game start timestamps.
@@ -93,30 +101,28 @@ All notable changes to this project are documented here.
 - Phase 13 Move Replay quality gate: CI run `31779838751` on commit `278ba039d0b7b59ce54c72c5ed0fcd0401ba537a` used Flutter 3.47.0 / Dart 3.13.0; formatting passed with 55 files and 0 changes, analysis reported no issues, **92/92 tests passed**, the Web release build succeeded, and the WASM dry run passed.
 - Phase 13 Replay native matrix: Platform Builds run `31779566057` on production commit `4f3cc6f55ae6b2f50b4758db22569b7ec48ddafd`; Android release APK, Linux release, Windows release, macOS release, and unsigned iOS release all succeeded.
 - Intermediate Replay CI run `31779369661` recorded 90 passing / 2 failing tests because below-the-fold controls were tapped without scrolling in the widget harness; commit `501b2a512c2f185461129f2e294504e43e883d59` fixed the harness and the final 92-test run passed.
-- Phase 14 portable-backup test coverage adds 20 focused tests (7 codec, 5 imported-policy, 4 backup-screen, 4 unranked-marker) to the prior 92-test suite; the final exact permanent CI run/count is recorded in `docs/VERIFICATION.md` and `what_changed.md` after the completed documentation state is verified.
-- Phase 14 native matrix: Platform Builds run `31784286707` on production/in-app-doc commit `741dfd42e51386646aa64be116cf7e913e98d211`; Android release APK, Linux release, Windows release, macOS release, and unsigned iOS release all succeeded.
+- Phase 14 portable-backup coverage added 20 focused tests (7 codec, 5 imported-policy, 4 backup-screen, 4 unranked-marker) to the prior 92-test suite. Final Phase 14 CI run `31787639781` on commit `1371ef9eaa00f1da5a2ce0370a1f22eb1f2f4cd2` passed formatting, static analysis, **112/112 tests**, and the Web release build.
+- Final Phase 14 clipboard-refactor native matrix: Platform Builds run `31787016748` on production commit `dd3c79bec40cf1aa1e4b00190d32393b249902e0`; Android release APK, Linux release, Windows release, macOS release, and unsigned iOS release all succeeded.
 - Phase 14 intermediate CI run `31781326279` exposed an unused backup-test import under static analysis; the import was removed by commit `3446413574582c196a47877fe1bfbe63addbf71d`.
+- Phase 15 Challenge Code coverage adds 15 focused tests to the 112-test Phase 14 suite: 10 codec/determinism/validation cases, 4 screen/state-flow cases, and one Home-navigation regression.
+- Final Phase 15 quality gate: CI run `31796242355` on commit `643b38665738ce314eea81e3dcc8887c77fb2257` used Flutter 3.47.0 / Dart 3.13.0; formatting passed with **66 files / 0 changes**, analysis reported **No issues found**, **127/127 tests passed**, the Web release build succeeded, and the WASM dry run passed.
+- Final Phase 15 native matrix: Platform Builds run `31795329370` on production/in-app-doc commit `7c83d7a14656d9309b54205de1f72e0af131f551`; Android release APK, Linux release, Windows release, macOS release, and unsigned iOS release all succeeded with Challenge Code runtime/in-app documentation included.
+- Earlier Phase 15 CI run `31795076552` passed formatter, analyzer, and tests but its Web step was cancelled by concurrency after newer commits superseded it; it is not treated as a code failure and is superseded by complete successful run `31796242355`.
 - Flutter platform-runner bootstrap and branded asset-generation workflows succeeded.
 - The permanent workflow directory has been cleaned of temporary one-time patch/wiring workflows and contains only maintained bootstrap, CI, formatting, dependency-lock, and platform-build automation.
-- Full chronological evidence, including real intermediate failures that were fixed rather than hidden, is maintained in `what_changed.md`.
+- Full chronological evidence, including real intermediate failures and superseded runs rather than hidden history, is maintained in `what_changed.md`.
 
 ### Security
 - No embedded credentials, analytics SDK, advertising tracker, account system, payment SDK, or cloud synchronization service.
 - External destinations are opened only through explicit user actions and an `https`/`mailto` scheme allowlist.
 - Local structured data is validated; malformed current-game data fails safely; partially corrupt bounded histories are repaired from valid records when possible.
 - Persisted save configuration, state relationships, and board values are type/range-checked before use.
+- Challenge Code input is capped at 1024 characters before payload parsing and validates prefix/shape, hexadecimal FNV-1a checksum, Base64URL/UTF-8/JSON envelope, exact format/version, strict configuration/seed bounds, and supported non-Daily mode before any game can start.
+- Challenge Code checksum is explicitly a corruption detector, not encryption, a digital signature, authentication, identity proof, or an anti-cheat mechanism.
+- Challenge Codes cannot import board progress, score, lifetime statistics, achievements, streaks, settings, Daily history, or Undo snapshots and add no network/account/cloud dependency.
 - Move Replay reads existing local game/Undo data through defensive copies and has no live-game/statistics/achievement/Daily mutation path.
 - Auto Play adds no network service, model download, or player-data persistence path; its sandbox is discarded with the demo screen.
 - Portable Game Backup is an explicit clipboard action and is limited to 128 KiB before JSON parsing; the envelope format/version/timestamp and embedded `GameState` are strictly validated.
 - Portable backup JSON is plain, unsigned, user-editable data and therefore can never choose its own trusted ranking status; every confirmed import is locally marked unranked.
 - Portable import cannot import or mutate lifetime statistics, achievements, streaks, Daily history, settings, or old Undo data, and cannot award a ranked terminal win.
 - No signing credentials, platform private keys, provisioning profiles, or secrets are stored in the public repository.
-
-
-### Final Phase 14 verification addendum
-- Added a narrow `TextClipboard` boundary so production Game Backup still uses Flutter's system clipboard while widget tests use a deterministic in-memory clipboard implementation.
-- Final clipboard-refactor native matrix: Platform Builds run `31787016748` on production commit `dd3c79bec40cf1aa1e4b00190d32393b249902e0`; Android release APK, Linux release, Windows release, macOS release, and unsigned iOS release all succeeded.
-- A post-refactor full suite exposed two remaining Backup widget-harness failures (`110 passed / 2 failed`): export and cancel actions were below Flutter's default 800×600 test viewport/bottom-navigation area.
-- Commit `137180a1c886852e1b2b4dfda4bbcb514c927eb2` (`test: scroll backup page beyond bottom navigation before taps`) corrected those page-action taps.
-- Final maintained CI run `31787639781` on commit `137180a1c886852e1b2b4dfda4bbcb514c927eb2` passed dependency resolution, formatting, static analysis, **112/112 automated tests**, and the Flutter Web release build.
-- Temporary Phase 14 diagnostic workflows were removed after use; the permanent workflow set remains the maintained branding/platform bootstrap, CI, formatting, dependency-lock, and platform-build workflows.
