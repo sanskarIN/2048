@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/state/app_scope.dart';
+import '../../core/localization/nova_localizations.dart';
 import '../../domain/challenge_code.dart';
 import '../../domain/game_types.dart';
 import '../../shared/game_replacement_guard.dart';
@@ -48,16 +49,18 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return NovaScaffold(
-      title: 'Challenge Codes',
+      title: l10n.text('Challenge Codes'),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           _InfoCard(
             icon: Icons.hub_outlined,
-            title: 'Same seed, same opening',
-            body:
-                'Challenge codes share only a validated game configuration and deterministic seed. They do not contain board progress, scores, statistics, achievements, Daily history, or Undo data.',
+            title: l10n.text('Same seed, same opening'),
+            body: l10n.text(
+              'Challenge codes share only a validated game configuration and deterministic seed. They do not contain board progress, scores, statistics, achievements, Daily history, or Undo data.',
+            ),
           ),
           const SizedBox(height: 12),
           Card(
@@ -67,21 +70,21 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Create a challenge',
+                    l10n.text('Create a challenge'),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<GameMode>(
                     initialValue: _mode,
-                    decoration: const InputDecoration(
-                      labelText: 'Game mode',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.text('Game mode'),
+                      border: const OutlineInputBorder(),
                     ),
                     items: [
                       for (final mode in ChallengeCode.supportedModes)
                         DropdownMenuItem(
                           value: mode,
-                          child: Text(_modeLabel(mode)),
+                          child: Text(l10n.text(_modeLabel(mode))),
                         ),
                     ],
                     onChanged: (mode) {
@@ -96,9 +99,9 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
                     const SizedBox(height: 12),
                     DropdownButtonFormField<int>(
                       initialValue: _target,
-                      decoration: const InputDecoration(
-                        labelText: 'Target tile',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.text('Target tile'),
+                        border: const OutlineInputBorder(),
                       ),
                       items: [
                         for (final target in _targetOptions)
@@ -120,7 +123,7 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
                   FilledButton.icon(
                     onPressed: _generateCode,
                     icon: const Icon(Icons.casino_outlined),
-                    label: const Text('Generate new seeded code'),
+                    label: Text(l10n.text('Generate new seeded code')),
                   ),
                   if (_generatedCode != null) ...[
                     const SizedBox(height: 12),
@@ -141,7 +144,7 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
                     OutlinedButton.icon(
                       onPressed: _copyGeneratedCode,
                       icon: const Icon(Icons.copy_rounded),
-                      label: const Text('Copy challenge code'),
+                      label: Text(l10n.text('Copy challenge code')),
                     ),
                   ],
                 ],
@@ -156,12 +159,14 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Open a challenge',
+                    l10n.text('Open a challenge'),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Paste a NOVA1 code or enter it manually. A checksum catches accidental corruption before any game is replaced.',
+                  Text(
+                    l10n.text(
+                      'Paste a NOVA1 code or enter it manually. A checksum catches accidental corruption before any game is replaced.',
+                    ),
                   ),
                   const SizedBox(height: 12),
                   TextField(
@@ -170,10 +175,10 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
                     maxLines: 6,
                     autocorrect: false,
                     enableSuggestions: false,
-                    decoration: const InputDecoration(
-                      labelText: 'Challenge code',
+                    decoration: InputDecoration(
+                      labelText: l10n.text('Challenge code'),
                       alignLabelWithHint: true,
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                     ),
                     onChanged: (_) {
                       setState(() {
@@ -190,12 +195,12 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
                       OutlinedButton.icon(
                         onPressed: _pasteCode,
                         icon: const Icon(Icons.content_paste_rounded),
-                        label: const Text('Paste code'),
+                        label: Text(l10n.text('Paste code')),
                       ),
                       FilledButton.tonalIcon(
                         onPressed: _validateInput,
                         icon: const Icon(Icons.verified_outlined),
-                        label: const Text('Validate code'),
+                        label: Text(l10n.text('Validate code')),
                       ),
                     ],
                   ),
@@ -217,7 +222,7 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
                     FilledButton.icon(
                       onPressed: _startChallenge,
                       icon: const Icon(Icons.play_arrow_rounded),
-                      label: const Text('Start this challenge'),
+                      label: Text(l10n.text('Start this challenge')),
                     ),
                   ],
                 ],
@@ -225,18 +230,20 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          const _InfoCard(
+          _InfoCard(
             icon: Icons.calendar_today_outlined,
-            title: 'Daily Challenge stays separate',
-            body:
-                'Daily Challenge already uses the UTC date as its shared seed and keeps dedicated history. Challenge codes intentionally cannot encode Daily mode.',
+            title: l10n.text('Daily Challenge stays separate'),
+            body: l10n.text(
+              'Daily Challenge already uses the UTC date as its shared seed and keeps dedicated history. Challenge codes intentionally cannot encode Daily mode.',
+            ),
           ),
           const SizedBox(height: 12),
-          const _InfoCard(
+          _InfoCard(
             icon: Icons.shield_outlined,
-            title: 'No account or cloud required',
-            body:
-                'Codes are plain offline text. The checksum is for typo/corruption detection, not identity or authentication. Starting a valid code creates a fresh local game and counts like any other new non-Daily game.',
+            title: l10n.text('No account or cloud required'),
+            body: l10n.text(
+              'Codes are plain offline text. The checksum is for typo/corruption detection, not identity or authentication. Starting a valid code creates a fresh local game and counts like any other new non-Daily game.',
+            ),
           ),
         ],
       ),
@@ -261,7 +268,9 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
     await widget.clipboard.writeText(code);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Challenge code copied to clipboard.')),
+      SnackBar(
+        content: Text(context.l10n.text('Challenge code copied to clipboard.')),
+      ),
     );
   }
 
@@ -271,7 +280,9 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
     if (text == null || text.trim().isEmpty) {
       setState(() {
         _preview = null;
-        _validationMessage = 'Clipboard does not contain a challenge code.';
+        _validationMessage = context.l10n.text(
+          'Clipboard does not contain a challenge code.',
+        );
       });
       return;
     }
@@ -284,12 +295,12 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
       final config = ChallengeCode.decode(_inputController.text);
       setState(() {
         _preview = config;
-        _validationMessage = 'Valid challenge code.';
+        _validationMessage = context.l10n.text('Valid challenge code.');
       });
     } on FormatException catch (error) {
       setState(() {
         _preview = null;
-        _validationMessage = error.message;
+        _validationMessage = context.l10n.text(error.message.toString());
       });
     }
   }
@@ -332,14 +343,21 @@ class _ConfigPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final entries = <(String, String)>[
-      ('Mode', _ChallengeCodeScreenState._modeLabel(config.mode)),
-      ('Board', '${config.size}×${config.size}'),
-      ('Target', '${config.target}'),
-      if (config.moveLimit != null) ('Move limit', '${config.moveLimit}'),
+      (l10n.text('Mode'), l10n.text(_ChallengeCodeScreenState._modeLabel(config.mode))),
+      (l10n.text('Board'), '${config.size}×${config.size}'),
+      (l10n.text('Target'), '${config.target}'),
+      if (config.moveLimit != null)
+        (l10n.text('Move limit'), '${config.moveLimit}'),
       if (config.timeLimitSeconds != null)
-        ('Time limit', '${config.timeLimitSeconds} seconds'),
-      ('Seed', '${config.seed}'),
+        (
+          l10n.text('Time limit'),
+          l10n.isHindi
+              ? '${config.timeLimitSeconds} सेकंड'
+              : '${config.timeLimitSeconds} seconds',
+        ),
+      (l10n.text('Seed'), '${config.seed}'),
     ];
     return Container(
       padding: const EdgeInsets.all(12),
