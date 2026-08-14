@@ -9,7 +9,8 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  test('undo restores board state without lowering lifetime best score', () async {
+  test('undo restores board state without lowering lifetime best score',
+      () async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
     await controller.newGame(
