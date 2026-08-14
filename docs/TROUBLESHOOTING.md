@@ -163,6 +163,62 @@ Daily seed calculation uses **UTC**, not local midnight. The seed is `YYYYMMDD` 
 
 Daily history preserves the stronger score result. A weaker replay is not allowed to downgrade the stored score. Completion and win flags are sticky. Duplicate records are normalized by seed.
 
+## Challenge Code is rejected
+
+A valid current code must:
+
+- be no more than 1024 characters;
+- use the `NOVA1` prefix;
+- contain exactly three dot-separated segments;
+- contain an 8-character hexadecimal checksum;
+- pass checksum verification;
+- contain a valid Base64URL/UTF-8 JSON payload;
+- use format `2048-nova-challenge` and version `1`;
+- contain a strictly valid seeded `GameConfig`;
+- use a supported non-Daily mode.
+
+A code edited by hand will normally fail its checksum unless the checksum is recomputed as well. That checksum is only corruption detection, not authentication.
+
+See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md).
+
+## Challenge Code says the checksum does not match
+
+The copied text changed after it was generated. Re-copy the entire code without adding/removing characters. When sending through another app, confirm that line wrapping did not insert spaces or punctuation.
+
+Do not disable checksum verification to make altered input work; generate or obtain a new valid code instead.
+
+## Challenge Code clipboard is empty
+
+`Paste code` reads clipboard text only after you press the button. If the platform returns no usable text, copy the complete Challenge Code again or paste/type it manually into the input field.
+
+Clipboard behavior differs by platform and browser permission model, so real platform qualification is still required before stable release.
+
+## Same Challenge Code produced a different later board
+
+The same supported configuration/seed produces the same **opening** board/RNG state. The deterministic sequence stays aligned when the same valid move sequence is made.
+
+If players make different moves, the set/order of empty cells changes, so boards and later spawn placement can diverge. That is expected and does not indicate a bad code.
+
+Also verify both players used the same complete code and the same app/code schema version.
+
+## Why can’t I create a Daily Challenge Code?
+
+Daily Challenge already uses the UTC date as its shared seed and maintains dedicated date-based history. Challenge Codes intentionally reject Daily mode so arbitrary text cannot masquerade as a date-derived Daily run.
+
+Use the Daily Challenge screen when you want the shared daily seed.
+
+## Challenge Code game changed my statistics
+
+That is intentional. A Challenge Code contains no imported progress or historical record; it starts a fresh normal non-Daily game through the same new-game path as the mode picker. Normal statistics/achievement behavior applies.
+
+This differs from Game Backup, which restores editable board progress and therefore remains unranked.
+
+## Starting a Challenge Code asks to replace my current game
+
+That is expected when a recoverable current game exists. The decoded code is previewed first, and the normal replacement guard prevents silent loss of the saved board/Undo history.
+
+Choose **Keep current game** to cancel without changing the current session.
+
 ## Hint does not change the board
 
 That is intentional. Hint is suggestion-only and evaluates copied board states. It does not consume RNG, move tiles, update Undo, or change statistics.
@@ -195,6 +251,8 @@ The clipboard text must:
 - contain a valid timestamp;
 - contain a `game` object accepted by strict `GameState` validation.
 
+A Challenge Code is not a Game Backup and cannot be pasted into the Backup importer. Use Home → Challenge Codes for `NOVA1...` text.
+
 See [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md).
 
 ## Imported game does not increase records or achievements
@@ -223,6 +281,8 @@ For an imported unranked game, statistics reset does not convert that game into 
 
 That is intentional. 2048 Nova removes only its project-owned keys. It does not call a blanket `SharedPreferences.clear()`.
 
+Challenge Code clipboard text is controlled by the operating system clipboard and is not a SharedPreferences key, so Clear All does not promise to erase platform clipboard history.
+
 ## A GitHub Actions formatting workflow made a commit
 
 `Format Dart` is allowed to commit formatter changes on `main` using `Sanskar <sanskarin@outlook.in>`. It exits without a commit if no formatter changes are needed and skips bot-triggered recursion.
@@ -245,6 +305,7 @@ Include:
 - expected behavior;
 - actual behavior;
 - relevant logs without secrets;
-- whether the issue occurs after a clean new game or only after restoring local data.
+- whether the issue occurs after a clean new game, Challenge Code start, or restored local/backup data;
+- for Challenge Code issues, whether the failure is generation, copy, paste, validation, preview, deterministic opening, or replacement behavior (do not include private clipboard content you do not intend to share).
 
 For security-sensitive reports, follow [`../SECURITY.md`](../SECURITY.md) rather than posting exploit details publicly.
