@@ -1,12 +1,26 @@
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:nova_2048/app/nova_app.dart';
 import 'package:nova_2048/app/state/app_controller.dart';
+import 'package:nova_2048/app/state/app_scope.dart';
 import 'package:nova_2048/data/local_store.dart';
 import 'package:nova_2048/domain/game_backup.dart';
 import 'package:nova_2048/domain/game_state.dart';
 import 'package:nova_2048/domain/game_types.dart';
+import 'package:nova_2048/features/backup/game_backup_screen.dart';
+import 'package:nova_2048/shared/text_clipboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+class _MemoryClipboard implements TextClipboard {
+  String? text;
+
+  @override
+  Future<String?> readText() async => text;
+
+  @override
+  Future<void> writeText(String text) async {
+    this.text = text;
+  }
+}
 
 void main() {
   setUp(() {
@@ -18,11 +32,23 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
   }
 
-  Future<void> openBackup(WidgetTester tester) async {
-    final backupEntry = find.text('Game Backup');
-    await tester.ensureVisible(backupEntry);
-    await tester.tap(backupEntry);
-    await pumpUi(tester);
+  Future<void> pumpBackupScreen(
+    WidgetTester tester,
+    AppController controller,
+    TextClipboard clipboard,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        routes: {
+          '/game': (_) => const Scaffold(body: Text('Game destination')),
+        },
+        home: AppScope(
+          controller: controller,
+          child: GameBackupScreen(clipboard: clipboard),
+        ),
+      ),
+    );
+    await tester.pump();
   }
 
   GameState backupState() => GameState(
@@ -48,20 +74,18 @@ void main() {
   testWidgets('export copies a decodable current-game-only backup',
       (tester) async {
     final controller = AppController(store: LocalStore());
+    final clipboard = _MemoryClipboard();
     await controller.initialize();
     await controller.newGame(
       const GameConfig(mode: GameMode.classic, size: 4, seed: 41),
     );
 
-    await tester.pumpWidget(NovaApp(controller: controller));
-    await pumpUi(tester);
-    await openBackup(tester);
+    await pumpBackupScreen(tester, controller, clipboard);
     await tester.tap(find.text('Copy game backup'));
-    await tester.pump();
+    await pumpUi(tester);
 
-    final clipboard = await Clipboard.getData(Clipboard.kTextPlain);
-    expect(clipboard?.text, isNotNull);
-    final restored = GameBackup.decode(clipboard!.text!);
+    expect(clipboard.text, isNotNull);
+    final restored = GameBackup.decode(clipboard.text!);
     expect(restored.toJson(), controller.game!.toJson());
     expect(
       find.text('Current game backup copied to clipboard.'),
@@ -72,20 +96,15 @@ void main() {
   testWidgets('valid import requires confirmation and becomes unranked',
       (tester) async {
     final controller = AppController(store: LocalStore());
+    final clipboard = _MemoryClipboard();
     await controller.initialize();
     controller.stats.bestScore = 128;
-    await Clipboard.setData(
-      ClipboardData(
-        text: GameBackup.encode(
-          backupState(),
-          exportedAt: DateTime.utc(2026, 8, 14, 11),
-        ),
-      ),
+    clipboard.text = GameBackup.encode(
+      backupState(),
+      exportedAt: DateTime.utc(2026, 8, 14, 11),
     );
 
-    await tester.pumpWidget(NovaApp(controller: controller));
-    await pumpUi(tester);
-    await openBackup(tester);
+    await pumpBackupScreen(tester, controller, clipboard);
     await tester.tap(find.text('Import from clipboard'));
     await pumpUi(tester);
 
@@ -101,28 +120,24 @@ void main() {
     expect(controller.game!.moves, 6);
     expect(controller.game!.bestScore, 128);
     expect(controller.stats.bestScore, 128);
+    expect(find.text('Game destination'), findsOneWidget);
   });
 
   testWidgets('cancelled import leaves an existing ranked game untouched',
       (tester) async {
     final controller = AppController(store: LocalStore());
+    final clipboard = _MemoryClipboard();
     await controller.initialize();
     await controller.newGame(
       const GameConfig(mode: GameMode.classic, size: 4, seed: 99),
     );
     final before = controller.game!.toJson();
-    await Clipboard.setData(
-      ClipboardData(
-        text: GameBackup.encode(
-          backupState(),
-          exportedAt: DateTime.utc(2026, 8, 14, 11),
-        ),
-      ),
+    clipboard.text = GameBackup.encode(
+      backupState(),
+      exportedAt: DateTime.utc(2026, 8, 14, 11),
     );
 
-    await tester.pumpWidget(NovaApp(controller: controller));
-    await pumpUi(tester);
-    await openBackup(tester);
+    await pumpBackupScreen(tester, controller, clipboard);
     await tester.tap(find.text('Import from clipboard'));
     await pumpUi(tester);
     await tester.tap(find.text('Cancel'));
@@ -135,14 +150,12 @@ void main() {
   testWidgets('invalid clipboard text is rejected without replacing the game',
       (tester) async {
     final controller = AppController(store: LocalStore());
+    final clipboard = _MemoryClipboard()..text = '{invalid';
     await controller.initialize();
-    await Clipboard.setData(const ClipboardData(text: '{invalid'));
 
-    await tester.pumpWidget(NovaApp(controller: controller));
-    await pumpUi(tester);
-    await openBackup(tester);
+    await pumpBackupScreen(tester, controller, clipboard);
     await tester.tap(find.text('Import from clipboard'));
-    await tester.pump();
+    await pumpUi(tester);
 
     expect(controller.game, isNull);
     expect(find.textContaining('Backup rejected:'), findsOneWidget);
