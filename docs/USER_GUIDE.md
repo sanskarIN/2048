@@ -339,3 +339,11 @@ Optional project support:
 https://buymeacoffee.com/sanskarIN
 
 **Made by the Sanskar**
+
+## Language
+
+Open **Settings → Language** and choose **System default**, **English**, or **हिन्दी**. The choice is stored locally and takes effect across the app without an account, cloud sync, or online translation request.
+
+System default follows English or Hindi when the device reports one of those supported locales; unsupported system locales fall back to English. Clearing all 2048 Nova local data also restores the language setting to System default.
+
+Machine-readable Challenge Code/backup data, URLs, email addresses, seeds, and tile numbers are not translated. Hindi mode localizes player-facing controls, status text, error paths, and positional board semantics while preserving game rules and deterministic behavior.
