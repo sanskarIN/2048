@@ -34,7 +34,7 @@ class GuideScreen extends StatelessWidget {
       ),
       (
         'Undo and hints',
-        'Undo restores the previous board snapshot including deterministic random state. Hints choose a valid direction using a lightweight heuristic.',
+        'Undo restores the previous board snapshot including deterministic random state. Hints evaluate legal moves using empty-space, merge, corner, monotonicity, and smoothness heuristics. A hint suggests one move and never moves tiles automatically.',
       ),
       (
         'Daily Challenge',
@@ -42,7 +42,7 @@ class GuideScreen extends StatelessWidget {
       ),
       (
         'Accessibility',
-        'Use system text scaling, keyboard controls, semantic tile labels, high contrast, and reduced motion. Tile values are always shown as text, not color alone.',
+        'Use system text scaling, keyboard controls, positional semantic tile labels, high contrast, and reduced motion. Tile values are always shown as text, not color alone.',
       ),
       (
         'Offline and privacy',
