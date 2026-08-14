@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/state/app_scope.dart';
+import '../../core/localization/nova_localizations.dart';
 import '../../shared/nova_scaffold.dart';
 
 class StatisticsScreen extends StatelessWidget {
@@ -8,6 +9,7 @@ class StatisticsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final stats = AppScope.of(context).stats;
     final averageMoves =
         stats.gamesPlayed == 0 ? 0.0 : stats.totalMoves / stats.gamesPlayed;
@@ -27,7 +29,7 @@ class StatisticsScreen extends StatelessWidget {
       ('Best win streak', '${stats.bestStreak}'),
     ];
     return NovaScaffold(
-      title: 'Statistics',
+      title: l10n.text('Statistics'),
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: values.length + 1,
@@ -37,12 +39,12 @@ class StatisticsScreen extends StatelessWidget {
             return OutlinedButton.icon(
               onPressed: () => _reset(context),
               icon: const Icon(Icons.delete_outline_rounded),
-              label: const Text('Reset statistics'),
+              label: Text(l10n.text('Reset statistics')),
             );
           }
           return Card(
             child: ListTile(
-              title: Text(values[index].$1),
+              title: Text(l10n.text(values[index].$1)),
               trailing: Text(values[index].$2),
             ),
           );
@@ -53,23 +55,26 @@ class StatisticsScreen extends StatelessWidget {
 
   Future<void> _reset(BuildContext context) async {
     final controller = AppScope.of(context);
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Reset statistics?'),
+        title: Text(l10n.text('Reset statistics?')),
         content: Text(
-          controller.hasGame
-              ? 'Historical statistics will be cleared. The active game remains counted as the current session so future win-rate data stays valid.'
-              : 'All locally stored statistics will be cleared. This cannot be undone.',
+          l10n.text(
+            controller.hasGame
+                ? 'Historical statistics will be cleared. The active game remains counted as the current session so future win-rate data stays valid.'
+                : 'All locally stored statistics will be cleared. This cannot be undone.',
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.text('Cancel')),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Reset'),
+            child: Text(l10n.text('Reset')),
           ),
         ],
       ),
