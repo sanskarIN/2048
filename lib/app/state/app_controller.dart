@@ -273,6 +273,7 @@ class AppController extends ChangeNotifier {
       ..clear()
       ..addAll(await store.loadDailyHistory());
     game = await store.loadGame();
+    var repairedSession = false;
     if (game != null) {
       _engine = GameEngine(config: game!.config);
       final restoredUndo = await store.loadUndoHistory();
@@ -288,9 +289,21 @@ class AppController extends ChangeNotifier {
         await store.saveUndoHistory(_undo);
       }
       _sessionCounted = true;
-      _winCounted = game!.hasAcknowledgedWin || game!.status == GameStatus.won;
+      _winCounted = current.hasAcknowledgedWin || current.status == GameStatus.won;
+      final previousStatus = current.status;
+      final previousStreak = stats.currentStreak;
+      _engine!.refreshStatus(current);
+      _applyTerminalStats(current);
+      if (current.status != previousStatus) {
+        _updateDailyRecord(current);
+        repairedSession = true;
+      }
+      if (stats.currentStreak != previousStreak) {
+        repairedSession = true;
+      }
     }
     _unlockAchievements();
+    if (repairedSession) await _persist();
   }
 
   Future<void> newGame(GameConfig config) async {
