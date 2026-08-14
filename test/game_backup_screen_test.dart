@@ -32,6 +32,11 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
   }
 
+  Future<void> tapVisible(WidgetTester tester, Finder finder) async {
+    await tester.ensureVisible(finder);
+    await tester.tap(finder);
+  }
+
   Future<void> pumpBackupScreen(
     WidgetTester tester,
     AppController controller,
@@ -81,7 +86,7 @@ void main() {
     );
 
     await pumpBackupScreen(tester, controller, clipboard);
-    await tester.tap(find.text('Copy game backup'));
+    await tapVisible(tester, find.text('Copy game backup'));
     await pumpUi(tester);
 
     expect(clipboard.text, isNotNull);
@@ -105,14 +110,14 @@ void main() {
     );
 
     await pumpBackupScreen(tester, controller, clipboard);
-    await tester.tap(find.text('Import from clipboard'));
+    await tapVisible(tester, find.text('Import from clipboard'));
     await pumpUi(tester);
 
     expect(find.text('Restore unranked backup?'), findsOneWidget);
     expect(find.text('Restore unranked backup'), findsOneWidget);
     expect(controller.game, isNull);
 
-    await tester.tap(find.text('Restore unranked backup'));
+    await tapVisible(tester, find.text('Restore unranked backup'));
     await pumpUi(tester);
 
     expect(controller.currentGameIsUnranked, isTrue);
@@ -138,9 +143,9 @@ void main() {
     );
 
     await pumpBackupScreen(tester, controller, clipboard);
-    await tester.tap(find.text('Import from clipboard'));
+    await tapVisible(tester, find.text('Import from clipboard'));
     await pumpUi(tester);
-    await tester.tap(find.text('Cancel'));
+    await tapVisible(tester, find.text('Cancel'));
     await pumpUi(tester);
 
     expect(controller.currentGameIsUnranked, isFalse);
@@ -154,7 +159,7 @@ void main() {
     await controller.initialize();
 
     await pumpBackupScreen(tester, controller, clipboard);
-    await tester.tap(find.text('Import from clipboard'));
+    await tapVisible(tester, find.text('Import from clipboard'));
     await pumpUi(tester);
 
     expect(controller.game, isNull);
