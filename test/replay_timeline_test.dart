@@ -57,7 +57,8 @@ void main() {
     expect(frames.last.score, 12);
   });
 
-  test('duplicate move snapshots collapse and current frame is authoritative', () {
+  test('duplicate move snapshots collapse and current frame is authoritative',
+      () {
     final current = state(
       moves: 2,
       score: 8,
