@@ -13,7 +13,7 @@ Flutter provides:
 - animation;
 - accessibility/semantics;
 - keyboard and gesture input;
-- clipboard API used by Game Backup;
+- clipboard API used by Game Backup and Challenge Codes;
 - system sound/haptic platform APIs;
 - platform integration;
 - testing foundations.
@@ -41,6 +41,8 @@ Why it is used:
 
 The application does not treat stored strings as trusted. JSON/state/configuration is validated on read, corrupt current-game data fails safely, bounded collections can salvage valid neighboring records, and project reset removes only owned keys.
 
+Challenge Codes deliberately add no SharedPreferences key; only the resulting started game uses the existing persistence model.
+
 ### url_launcher
 
 Used only when a player explicitly opens GitHub, LinkedIn, Buy Me a Coffee, or an email action.
@@ -54,12 +56,23 @@ Why it is used:
 
 ## Features that add no runtime package
 
+### Challenge Codes
+
+Offline shareable seeded Challenge Codes use:
+
+- `dart:convert` for JSON, UTF-8, and Base64URL;
+- project-owned FNV-1a checksum logic;
+- Flutter clipboard APIs through the existing `TextClipboard` abstraction;
+- the existing `GameConfig` strict parser and deterministic game engine.
+
+No QR package, networking package, account SDK, cloud service, cryptography package, database, file picker, or sharing SDK is required. The checksum is intentionally a corruption detector, not a cryptographic signature.
+
 ### Game Backup
 
 Portable current-game backup uses:
 
 - `dart:convert` for JSON;
-- Flutter `Clipboard` / `ClipboardData` for explicit copy/paste.
+- Flutter `Clipboard` / `ClipboardData` through `TextClipboard` for explicit copy/paste.
 
 No file picker, cloud-storage SDK, encryption library, account service, or network package is required for the current clipboard-based feature.
 
@@ -79,7 +92,7 @@ Daily Challenge uses a local UTC date-derived seed and existing deterministic en
 
 ### flutter_test
 
-Provides unit, widget, semantics, and integration-like widget-flow testing foundations used by the repository's automated suite.
+Provides unit, widget, semantics, and integration-like widget-flow testing foundations used by the repository's automated suite, including Challenge Code codec/UI regression tests.
 
 ### flutter_lints
 
@@ -106,6 +119,8 @@ Before adding a new package:
 9. Add tests around the integration boundary.
 10. Run formatter, analyzer, full automated tests, Web build, and relevant native builds.
 11. Update this document, privacy documentation, and release notes when appropriate.
+
+Challenge Codes are an example of preferring existing language/framework capabilities when they are sufficient and auditable.
 
 ## Dependency-removal policy
 
