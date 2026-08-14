@@ -205,8 +205,9 @@ class _GameScreenState extends State<GameScreen> {
   void _showHint() {
     if (_dialogVisible) return;
     final hint = AppScope.of(context).hint();
-    final message =
-        hint == null ? 'No valid move found.' : 'Try ${hint.name.toUpperCase()}.';
+    final message = hint == null
+        ? 'No valid move found.'
+        : 'Try ${hint.name.toUpperCase()}.';
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
