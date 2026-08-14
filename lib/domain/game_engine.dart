@@ -42,7 +42,7 @@ class GameEngine {
 
   MoveOutcome move(GameState state, Direction direction) {
     refreshStatus(state);
-    if (state.status == GameStatus.lost) {
+    if (state.status != GameStatus.playing) {
       return const MoveOutcome(changed: false, scoreGain: 0, merges: 0);
     }
 
