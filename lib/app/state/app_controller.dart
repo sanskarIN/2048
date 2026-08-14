@@ -91,9 +91,8 @@ class PlayerStats {
     final stats = PlayerStats();
     stats.gamesPlayed = _nonNegativeInt(json['gamesPlayed']);
     final parsedWins = _nonNegativeInt(json['gamesWon']);
-    stats.gamesWon = parsedWins > stats.gamesPlayed
-        ? stats.gamesPlayed
-        : parsedWins;
+    stats.gamesWon =
+        parsedWins > stats.gamesPlayed ? stats.gamesPlayed : parsedWins;
     stats.bestScore = _nonNegativeInt(json['bestScore']);
     stats.highestTile = _validTileOrZero(json['highestTile']);
     stats.totalMoves = _nonNegativeInt(json['totalMoves']);
@@ -107,7 +106,10 @@ class PlayerStats {
   }
 
   static int _nonNegativeInt(Object? value) {
-    if (value is! num || !value.isFinite || value < 0 || value.toInt() != value) {
+    if (value is! num ||
+        !value.isFinite ||
+        value < 0 ||
+        value.toInt() != value) {
       return 0;
     }
     return value.toInt();
@@ -486,7 +488,8 @@ class AppController extends ChangeNotifier {
   void _restoreAchievements(Map<String, Object?> raw) {
     for (final achievement in achievements) {
       final value = raw[achievement.id];
-      achievement.unlockedAt = value is String ? DateTime.tryParse(value) : null;
+      achievement.unlockedAt =
+          value is String ? DateTime.tryParse(value) : null;
     }
   }
 

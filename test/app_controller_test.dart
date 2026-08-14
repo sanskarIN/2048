@@ -70,7 +70,8 @@ void main() {
     expect(stats.bestStreak, 4);
   });
 
-  test('malformed achievement timestamps do not break initialization', () async {
+  test('malformed achievement timestamps do not break initialization',
+      () async {
     SharedPreferences.setMockInitialValues({
       'nova.achievements.v1':
           '{"first_merge":42,"tile_128":"not-a-date","tile_256":true}',
