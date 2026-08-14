@@ -304,27 +304,30 @@ class _GameScreenState extends State<GameScreen> {
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Target reached!'),
-        content: Text(
-          'You reached ${controller.game?.highestTile}. Continue your Nova run?',
+      builder: (dialogContext) => PopScope(
+        canPop: false,
+        child: AlertDialog(
+          title: const Text('Target reached!'),
+          content: Text(
+            'You reached ${controller.game?.highestTile}. Continue your Nova run?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                Navigator.pushReplacementNamed(context, '/modes');
+              },
+              child: const Text('New game'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                await controller.continueAfterWin();
+                if (dialogContext.mounted) Navigator.pop(dialogContext);
+              },
+              child: const Text('Continue'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              Navigator.pushReplacementNamed(context, '/modes');
-            },
-            child: const Text('New game'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              await controller.continueAfterWin();
-              if (dialogContext.mounted) Navigator.pop(dialogContext);
-            },
-            child: const Text('Continue'),
-          ),
-        ],
       ),
     );
   }
@@ -332,29 +335,33 @@ class _GameScreenState extends State<GameScreen> {
   Future<void> _showLossDialog() async {
     await showDialog<void>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Game over'),
-        content: Text('Score: ${AppScope.of(context).game?.score ?? 0}'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/home',
-                (route) => false,
-              );
-            },
-            child: const Text('Home'),
-          ),
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              unawaited(_restart());
-            },
-            child: const Text('Restart'),
-          ),
-        ],
+      barrierDismissible: false,
+      builder: (dialogContext) => PopScope(
+        canPop: false,
+        child: AlertDialog(
+          title: const Text('Game over'),
+          content: Text('Score: ${AppScope.of(context).game?.score ?? 0}'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/home',
+                  (route) => false,
+                );
+              },
+              child: const Text('Home'),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                unawaited(_restart());
+              },
+              child: const Text('Restart'),
+            ),
+          ],
+        ),
       ),
     );
   }
