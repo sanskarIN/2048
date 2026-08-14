@@ -14,6 +14,7 @@ All notable changes to this project are documented here.
 - Challenge timers, move-limit enforcement, hint, pause, restart, win, and game-over flows.
 - Persistent save/resume and bounded undo history, including deterministic RNG restoration.
 - Deterministic local heuristic hint solver using board mobility, merges, corner placement, monotonicity, and smoothness.
+- Optional clearly labeled **Auto Play Demo / AI Demonstration** using an isolated deterministic seeded sandbox, with Auto Play, pause/resume, single-step execution, speed selection, seed reset, demo-only metrics, and strict separation from player saves/statistics/achievements/Daily history.
 - Local statistics, average moves/merges per game, achievement progress/unlock dates, and offline Daily Challenge history.
 - Seven visual palettes plus light/dark/system brightness, high contrast, reduced motion, optional sound, and optional haptics.
 - Positional board/tile semantics with row and column information for assistive technologies.
@@ -21,8 +22,8 @@ All notable changes to this project are documented here.
 - Direct in-app GitHub bug-report-template action.
 - Recoverable-game replacement confirmation before starting a different mode or Daily Challenge.
 - Original 2048 Nova SVG logo, platform launcher icons, PWA icons, native launch branding, and automated branding export workflow.
-- Unit/widget tests for engine rules, persistence, Daily Challenge records, controller state, navigation, themes, mode availability, save migration, external URI policy, accessibility semantics, terminal dialogs, replacement guards, session integrity, hints, and persistence repair.
-- Open-source governance, contribution, security, privacy, architecture, testing, dependency, accessibility, branding, hint-solver, and release documentation.
+- Unit/widget tests for engine rules, persistence, Daily Challenge records, controller state, navigation, themes, mode availability, save migration, external URI policy, accessibility semantics, terminal dialogs, replacement guards, session integrity, hints, Auto Play determinism/isolation/controls, and persistence repair.
+- Open-source governance, contribution, security, privacy, architecture, testing, dependency, accessibility, branding, hint-solver, verification, and release documentation.
 - GitHub Actions for formatting, static analysis, tests, web release builds, native platform release builds, platform bootstrapping, asset generation, and dependency locking.
 - Dependabot, issue templates, and pull-request template.
 - Legacy save-schema migration from schema 0 to the current schema 1 representation.
@@ -41,6 +42,7 @@ All notable changes to this project are documented here.
 - Local persistence repairs valid portions of partially corrupt undo and Daily Challenge collections and rewrites repaired storage.
 - Statistics reset keeps an active game represented as the current session so win-rate and streak accounting remain internally consistent.
 - Challenge countdown refresh runs only for timed games rather than waking every Game screen once per second.
+- The existing Hint heuristic is reused by Auto Play only through an isolated `AutoplaySession`; the player-facing Hint remains suggestion-only and read-only.
 
 ### Fixed
 - Prevented directional engine write logic from falling through switch cases.
@@ -72,7 +74,8 @@ All notable changes to this project are documented here.
 - Earlier release-candidate quality gate on commit `f3e7aaec6404139951425144cb1fb4d2fda66e27`: formatter clean, analyzer reported no issues, all 29 automated tests passed, and Web release build succeeded.
 - A later post-hardening gate expanded this to 37 passing automated tests before the Phase 11 work above.
 - Final Phase 11 quality gate: CI run `31777374553` on commit `1ecbf0881f723af1829fda523752562660a86a98` used Flutter 3.47.0 / Dart 3.13.0; formatting passed with 47 files and 0 changes, analysis reported no issues, **81/81 tests passed**, and the Web release build succeeded.
-- Final production-code native matrix: Platform Builds run `31777275982` on commit `b95d0a630521f896016dff733c8c4f9dc1e082e3`; Android release APK, Linux release, Windows release, macOS release, and unsigned iOS release all succeeded.
+- Phase 12 Auto Play quality gate: CI run `31778558429` on commit `1d98042558ab7ffe40c9da4ad42dbbf8263dcaf6` used Flutter 3.47.0 / Dart 3.13.0; formatting passed with 51 files and 0 changes, analysis reported no issues, **86/86 tests passed**, and the Web release build succeeded.
+- Phase 12 native matrix: Platform Builds run `31778424208` on commit `a1cc17836834750c542c69ffdf3c5e582d4e43ab`; Android release APK, Linux release, Windows release, macOS release, and unsigned iOS release all succeeded with the Auto Play production code included.
 - Flutter platform-runner bootstrap and branded asset-generation workflows succeeded.
 - Full chronological evidence, including real intermediate failures that were fixed rather than hidden, is maintained in `what_changed.md`.
 
@@ -81,3 +84,4 @@ All notable changes to this project are documented here.
 - External destinations are opened only through explicit user actions and an `https`/`mailto` scheme allowlist.
 - Local structured data is validated; malformed current-game data fails safely; partially corrupt bounded histories are repaired from valid records when possible.
 - Persisted save configuration, state relationships, and board values are type/range-checked before use.
+- Auto Play adds no network service, model download, or player-data persistence path; its sandbox is discarded with the demo screen.
