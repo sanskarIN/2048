@@ -86,7 +86,13 @@ class PlayerStats {
 }
 
 class Achievement {
-  Achievement(this.id, this.title, this.description, this.threshold, {this.unlockedAt});
+  Achievement(
+    this.id,
+    this.title,
+    this.description,
+    this.threshold, {
+    this.unlockedAt,
+  });
 
   final String id;
   final String title;
@@ -110,7 +116,12 @@ class AppController extends ChangeNotifier {
   bool _winCounted = false;
 
   final List<Achievement> achievements = [
-    Achievement('first_merge', 'First Merge', 'Merge your first pair of tiles.', 1),
+    Achievement(
+      'first_merge',
+      'First Merge',
+      'Merge your first pair of tiles.',
+      1,
+    ),
     Achievement('tile_128', 'Nova 128', 'Reach the 128 tile.', 128),
     Achievement('tile_512', 'Nova 512', 'Reach the 512 tile.', 512),
     Achievement('tile_2048', 'Nova Master', 'Reach the 2048 tile.', 2048),
@@ -127,6 +138,9 @@ class AppController extends ChangeNotifier {
     game = await store.loadGame();
     if (game != null) {
       _engine = GameEngine(config: game!.config);
+      _undo
+        ..clear()
+        ..addAll(await store.loadUndoHistory());
       _sessionCounted = true;
       _winCounted = game!.hasAcknowledgedWin;
     }
@@ -143,27 +157,33 @@ class AppController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> move(Direction direction) async {
+  Future<MoveOutcome?> move(Direction direction) async {
     final current = game;
     final engine = _engine;
-    if (current == null || engine == null) return;
+    if (current == null || engine == null) return null;
     final snapshot = current.copy();
     final outcome = engine.move(current, direction);
     if (!outcome.changed) {
       notifyListeners();
-      return;
+      return outcome;
     }
     _undo.add(snapshot);
     if (_undo.length > 50) _undo.removeAt(0);
     stats.totalMoves += 1;
     stats.totalMerges += outcome.merges;
-    stats.bestScore = current.bestScore > stats.bestScore ? current.bestScore : stats.bestScore;
-    stats.highestTile = current.highestTile > stats.highestTile ? current.highestTile : stats.highestTile;
+    stats.bestScore = current.bestScore > stats.bestScore
+        ? current.bestScore
+        : stats.bestScore;
+    stats.highestTile = current.highestTile > stats.highestTile
+        ? current.highestTile
+        : stats.highestTile;
     _unlockAchievements(current, outcome.merges);
     if (current.status == GameStatus.won && !_winCounted) {
       stats.gamesWon += 1;
       stats.currentStreak += 1;
-      if (stats.currentStreak > stats.bestStreak) stats.bestStreak = stats.currentStreak;
+      if (stats.currentStreak > stats.bestStreak) {
+        stats.bestStreak = stats.currentStreak;
+      }
       _winCounted = true;
     }
     if (current.status == GameStatus.lost && _sessionCounted) {
@@ -172,6 +192,7 @@ class AppController extends ChangeNotifier {
     }
     await _persist();
     notifyListeners();
+    return outcome;
   }
 
   Future<void> undo() async {
@@ -179,10 +200,12 @@ class AppController extends ChangeNotifier {
     game = _undo.removeLast();
     _engine = GameEngine(config: game!.config);
     await store.saveGame(game!);
+    await store.saveUndoHistory(_undo);
     notifyListeners();
   }
 
-  Direction? hint() => game == null || _engine == null ? null : _engine!.hint(game!);
+  Direction? hint() =>
+      game == null || _engine == null ? null : _engine!.hint(game!);
 
   Future<void> refreshChallengeStatus() async {
     final current = game;
@@ -234,6 +257,7 @@ class AppController extends ChangeNotifier {
 
   Future<void> _persist() async {
     if (game != null) await store.saveGame(game!);
+    await store.saveUndoHistory(_undo);
     await store.saveStats(stats.toJson());
     await _saveAchievements();
   }
@@ -258,7 +282,8 @@ class AppController extends ChangeNotifier {
 
   Future<void> _saveAchievements() {
     return store.saveAchievements({
-      for (final item in achievements) item.id: item.unlockedAt?.toIso8601String(),
+      for (final item in achievements)
+        item.id: item.unlockedAt?.toIso8601String(),
     });
   }
 }
