@@ -125,7 +125,8 @@ class GameBackupScreen extends StatelessWidget {
     final raw = clipboard?.text;
     if (raw == null || raw.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Clipboard does not contain a game backup.')),
+        const SnackBar(
+            content: Text('Clipboard does not contain a game backup.')),
       );
       return;
     }
