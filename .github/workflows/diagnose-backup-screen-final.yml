@@ -1,0 +1,37 @@
+name: Diagnose Backup Screen Final
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/diagnose-backup-screen-final.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cases:
+    name: ${{ matrix.group }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - group: export
+            test_name: export copies a decodable current-game-only backup
+          - group: import-confirm
+            test_name: valid import requires confirmation and becomes unranked
+          - group: import-cancel
+            test_name: cancelled import leaves an existing ranked game untouched
+          - group: invalid-input
+            test_name: invalid clipboard text is rejected without replacing the game
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter test test/game_backup_screen_test.dart --plain-name "${{ matrix.test_name }}"
