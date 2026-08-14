@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../domain/daily_record.dart';
 import '../domain/game_state.dart';
 
 class LocalStore {
@@ -10,6 +11,7 @@ class LocalStore {
   static const _settingsKey = 'nova.settings.v1';
   static const _statsKey = 'nova.stats.v1';
   static const _achievementsKey = 'nova.achievements.v1';
+  static const _dailyHistoryKey = 'nova.daily_history.v1';
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
@@ -60,6 +62,40 @@ class LocalStore {
       await prefs.remove(_undoKey);
       return [];
     }
+  }
+
+  Future<List<DailyRecord>> loadDailyHistory() async {
+    final prefs = await _prefs;
+    final raw = prefs.getString(_dailyHistoryKey);
+    if (raw == null) return [];
+    try {
+      final json = jsonDecode(raw);
+      if (json is! List) return [];
+      final records = <DailyRecord>[];
+      for (final item in json) {
+        if (item is! Map<String, dynamic>) continue;
+        try {
+          records.add(
+            DailyRecord.fromJson(Map<String, Object?>.from(item)),
+          );
+        } on FormatException {
+          continue;
+        }
+      }
+      records.sort((a, b) => b.seed.compareTo(a.seed));
+      return records.length <= 60 ? records : records.sublist(0, 60);
+    } on Object {
+      await prefs.remove(_dailyHistoryKey);
+      return [];
+    }
+  }
+
+  Future<void> saveDailyHistory(List<DailyRecord> records) async {
+    final limited = records.length <= 60 ? records : records.sublist(0, 60);
+    await (await _prefs).setString(
+      _dailyHistoryKey,
+      jsonEncode(limited.map((record) => record.toJson()).toList()),
+    );
   }
 
   Future<void> clearGame() async {
