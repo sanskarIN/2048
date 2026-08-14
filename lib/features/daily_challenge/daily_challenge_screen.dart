@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/state/app_scope.dart';
 import '../../domain/daily_record.dart';
 import '../../domain/game_types.dart';
+import '../../shared/game_replacement_guard.dart';
 import '../../shared/nova_scaffold.dart';
 
 class DailyChallengeScreen extends StatelessWidget {
@@ -15,7 +16,8 @@ class DailyChallengeScreen extends StatelessWidget {
     final seed = config.seed!;
     final record = controller.dailyRecordFor(seed);
     final currentIsToday = controller.game?.config.mode == GameMode.daily &&
-        controller.game?.config.seed == seed;
+        controller.game?.config.seed == seed &&
+        controller.game?.status != GameStatus.lost;
 
     return NovaScaffold(
       title: 'Daily Challenge',
@@ -133,10 +135,13 @@ class DailyChallengeScreen extends StatelessWidget {
       return;
     }
 
+    if (!await confirmGameReplacement(context) || !context.mounted) return;
+
     if (record != null) {
       final isReplay = record.completed;
       final confirmed = await showDialog<bool>(
         context: context,
+        barrierDismissible: false,
         builder: (dialogContext) => AlertDialog(
           title: Text(
             isReplay
