@@ -38,13 +38,15 @@
 
 `test/undo_best_score_test.dart` verifies undo restores a board snapshot without lowering the lifetime best score.
 
+`test/statistics_reset_undo_test.dart` verifies that resetting statistics also normalizes retained current-session undo snapshots, so a later Undo and future move cannot resurrect a pre-reset lifetime best score.
+
 `test/external_link_test.dart` covers the approved external URI policy.
 
 ## Widget and interaction coverage
 
 `test/widget_smoke_test.dart` validates app startup/navigation, theme selection, and availability of the primary game modes.
 
-`test/game_board_accessibility_test.dart` validates board-size semantics plus positional row/column tile labels.
+`test/game_board_accessibility_test.dart` validates board-size semantics plus positional row/column tile labels as distinct semantic nodes, including empty-cell state.
 
 `test/home_screen_state_test.dart` verifies completed lost games do not expose a misleading Continue action.
 
