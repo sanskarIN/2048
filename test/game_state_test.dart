@@ -20,9 +20,21 @@ void main() {
     final restored = GameState.fromJson(original.toJson());
     expect(restored.board, original.board);
     expect(restored.score, 42);
+    expect(restored.bestScore, 42);
     expect(restored.moves, 7);
     expect(restored.totalMerges, 3);
     expect(restored.rngState, 123456);
+  });
+
+  test('constructor keeps best score at least as high as current score', () {
+    final game = GameState(
+      board: List.generate(4, (_) => List.filled(4, 0)),
+      config: const GameConfig(mode: GameMode.classic, size: 4),
+      score: 128,
+      bestScore: 64,
+    );
+
+    expect(game.bestScore, 128);
   });
 
   test('rejects invalid dimensions', () {
@@ -54,6 +66,29 @@ void main() {
     );
   });
 
+  test('rejects wrongly typed schema and configuration structures', () {
+    expect(
+      () => GameState.fromJson({
+        'schema': '1',
+        'config': const GameConfig(
+          mode: GameMode.classic,
+          size: 4,
+        ).toJson(),
+        'board': List.generate(4, (_) => List.filled(4, 0)),
+      }),
+      throwsFormatException,
+    );
+
+    expect(
+      () => GameState.fromJson({
+        'schema': GameState.schemaVersion,
+        'config': 'classic',
+        'board': List.generate(4, (_) => List.filled(4, 0)),
+      }),
+      throwsFormatException,
+    );
+  });
+
   test('migrates legacy schema zero top-level configuration', () {
     final restored = GameState.fromJson({
       'schema': 0,
@@ -73,6 +108,7 @@ void main() {
     expect(restored.config.mode, GameMode.classic);
     expect(restored.config.size, 4);
     expect(restored.score, 20);
+    expect(restored.bestScore, 20);
     expect(restored.moves, 3);
   });
 
@@ -104,6 +140,54 @@ void main() {
         },
         'board': const [],
       }),
+      throwsFormatException,
+    );
+  });
+
+  test('rejects best score below current score', () {
+    final game = GameState(
+      board: List.generate(4, (_) => List.filled(4, 0)),
+      config: const GameConfig(mode: GameMode.classic, size: 4),
+      score: 100,
+    ).toJson();
+    game['bestScore'] = 99;
+
+    expect(() => GameState.fromJson(game), throwsFormatException);
+  });
+
+  test('rejects malformed status and acknowledgement values', () {
+    final base = GameState(
+      board: List.generate(4, (_) => List.filled(4, 0)),
+      config: const GameConfig(mode: GameMode.classic, size: 4),
+    ).toJson();
+
+    expect(
+      () => GameState.fromJson({...base, 'status': 'future'}),
+      throwsFormatException,
+    );
+    expect(
+      () => GameState.fromJson({...base, 'hasAcknowledgedWin': 'yes'}),
+      throwsFormatException,
+    );
+  });
+
+  test('rejects inconsistent won and acknowledged states', () {
+    final notReached = GameState(
+      board: [
+        [1024, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+      ],
+      config: const GameConfig(mode: GameMode.classic, size: 4),
+    ).toJson();
+
+    expect(
+      () => GameState.fromJson({...notReached, 'status': 'won'}),
+      throwsFormatException,
+    );
+    expect(
+      () => GameState.fromJson({...notReached, 'hasAcknowledgedWin': true}),
       throwsFormatException,
     );
   });
