@@ -83,6 +83,58 @@ void main() {
     expect(controller.achievements.every((item) => !item.unlocked), isTrue);
   });
 
+  test('stale undo snapshots from another session are discarded', () async {
+    const config = GameConfig(mode: GameMode.classic, size: 4);
+    final startedAt = DateTime.utc(2026, 8, 14, 5);
+    final store = LocalStore();
+    final current = GameState(
+      board: [
+        [4, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+      ],
+      config: config,
+      score: 4,
+      moves: 2,
+      totalMerges: 1,
+      startedAt: startedAt,
+    );
+    final matching = GameState(
+      board: [
+        [2, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+      ],
+      config: config,
+      moves: 1,
+      startedAt: startedAt,
+    );
+    final stale = GameState(
+      board: [
+        [8, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+      ],
+      config: config,
+      score: 8,
+      moves: 1,
+      startedAt: startedAt.subtract(const Duration(minutes: 1)),
+    );
+    await store.saveGame(current);
+    await store.saveUndoHistory([stale, matching]);
+
+    final controller = AppController(store: store);
+    await controller.initialize();
+
+    expect(controller.canUndo, isTrue);
+    expect(await store.loadUndoHistory(), hasLength(1));
+    await controller.undo();
+    expect(controller.game!.board[0][0], 2);
+  });
+
   test('concurrent move requests are serialized', () async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
