@@ -1,6 +1,6 @@
 # Testing Strategy
 
-2048 Nova uses automated tests for deterministic rules, persistence integrity, controller behavior, accessibility semantics, terminal-state safety, Auto Play isolation, read-only replay integrity, and important UI flows. GitHub Actions is the objective source of truth for repository-wide formatter, analyzer, test, and build status.
+2048 Nova uses automated tests for deterministic rules, persistence integrity, controller behavior, accessibility semantics, terminal-state safety, Auto Play isolation, read-only replay integrity, portable backup trust boundaries, and important UI flows. GitHub Actions is the objective source of truth for repository-wide formatter, analyzer, test, and build status.
 
 ## Unit and controller coverage
 
@@ -39,11 +39,33 @@
 - defensive copies of board/state data;
 - an unmodifiable returned timeline.
 
+`test/game_backup_test.dart` covers the portable current-game backup codec:
+- exact encode/decode round trip;
+- exclusion of settings, lifetime statistics, achievements, Daily history, and Undo data;
+- empty/malformed JSON rejection;
+- unsupported format/version rejection;
+- invalid export timestamp and missing-game rejection;
+- strict embedded `GameState` validation;
+- 128 KiB pre-parse input-size rejection.
+
+`test/imported_game_policy_test.dart` covers the imported-game trust boundary:
+- restoring the current board while refusing to trust an imported historical lifetime best;
+- imported moves remaining unranked and unable to mutate lifetime statistics, achievements, streaks, or Daily history;
+- the unranked policy surviving app/controller restart;
+- a normal new local game exiting the imported unranked policy;
+- terminal imported games never awarding a local ranked win.
+
+`test/unranked_marker_test.dart` covers the local ranking marker:
+- boolean round trip;
+- malformed marker removal with safe ranked fallback;
+- marker removal when the current game is cleared;
+- marker removal when corrupt current-game recovery removes the associated save.
+
 `test/daily_record_test.dart` covers Daily Challenge progress, completion, retained wins, serialization, date validation, counter/tile validation, completion flags, and timestamps.
 
 `test/daily_replay_history_test.dart` verifies weaker replays cannot downgrade a previous Daily best result and stronger replays update score-associated metrics while preserving the peak tile.
 
-`test/local_store_test.dart` covers save/resume, undo history, Daily Challenge persistence, duplicate-date normalization, bounded/self-healing history repair, invalid map recovery, scoped data clearing, and malformed-save recovery.
+`test/local_store_test.dart` covers save/resume, undo history, Daily Challenge persistence, duplicate-date normalization, bounded/self-healing history repair, invalid map recovery, scoped data clearing, malformed-save recovery, and project-owned persistence behavior.
 
 `test/app_controller_test.dart` covers persisted appearance/accessibility settings, malformed preference recovery, malformed statistics, malformed achievement timestamps, stale undo filtering, serialized move requests, timed terminal statistics, continued-win streak behavior, and complete local reset behavior.
 
@@ -87,9 +109,58 @@
 - a safe empty state when the replay route is opened without a current game;
 - controls are explicitly scrolled into the constrained widget-test viewport before taps, matching the production screen's scrollable layout instead of assuming every control is initially visible.
 
-## Current Phase 13 quality evidence
+`test/game_backup_screen_test.dart` verifies the portable backup UI flow:
+- Home navigation into Game Backup after scrolling the card into the constrained widget-test viewport;
+- clipboard export producing a decodable current-game-only backup;
+- a valid clipboard import showing the required unranked preview/confirmation before replacing state;
+- confirmed restore producing an unranked current game while preserving the device lifetime best policy;
+- Cancel preserving an existing ranked game unchanged;
+- malformed clipboard text being rejected without replacing the current game.
 
-The final Replay quality gate is:
+## Phase 14 portable-backup evidence
+
+Phase 14 adds **20 focused automated tests** to the Phase 13 total of 92:
+
+- 7 backup-codec tests;
+- 5 imported-game policy tests;
+- 4 backup-screen tests;
+- 4 unranked-marker tests.
+
+The resulting full-suite target is **112 tests**. The exact final quality-gate run is recorded in [`VERIFICATION.md`](VERIFICATION.md) and [`../what_changed.md`](../what_changed.md) after the final documentation state is verified.
+
+The final Phase 14 production/native state is already covered by:
+
+```text
+Workflow: Platform Builds
+Run: 31784286707
+Production-code commit: 741dfd42e51386646aa64be116cf7e913e98d211
+Overall: SUCCESS
+```
+
+Results:
+
+- Android release APK: **PASS**
+- Linux release: **PASS**
+- Windows release: **PASS**
+- macOS release: **PASS**
+- iOS release with `--no-codesign`: **PASS**
+
+That commit contains the backup codec/controller/store/UI/navigation policy and the final in-app Guide/About documentation compiled into the application.
+
+### Transparent Phase 14 defects and tooling failures
+
+Phase 14 deliberately records real intermediate issues rather than rewriting history as if the feature was correct on the first attempt.
+
+- CI run `31781326279` failed after backup screen tests were introduced because static analysis found an unused test import. Commit `3446413574582c196a47877fe1bfbe63addbf71d` (`fix: remove unused backup test import`) removed it.
+- The oversized-backup fixture initially used non-Dart string multiplication. Commit `a4a2de5bfb9e32fb9f02cf13b5019f69141ff567` (`fix: build oversized backup fixture with valid Dart`) replaced it with `List.filled(...).join()`.
+- The backup Home-card widget tests initially assumed the card was visible in Flutter's default 800×600 test viewport. Commit `24b2063f365b63a86009c9acbebf2c4bafe73bed` (`test: scroll game backup entry into widget viewport`) made the harness scroll before tapping, matching the production Home screen's scrollable layout.
+- Several temporary one-time patch/wiring workflows failed for development-tooling reasons such as source-anchor mismatch, an invalid handwritten patch, or a plain Ubuntu patch job not installing Dart. The actual source changes were then applied through normal repository file commits, and every temporary workflow file was removed. The permanent workflow directory contains only maintained CI/build/bootstrap/format/dependency workflows.
+
+These failures are not presented as successful release evidence. The final source is judged by the later permanent CI/native gates.
+
+## Historical Phase 13 quality evidence
+
+The final Replay quality gate was:
 
 ```text
 Workflow: CI
@@ -107,7 +178,7 @@ Overall CI job: SUCCESS
 
 The Web build emitted the existing informational CupertinoIcons font lookup warning while still producing the release Web output. The project does not directly reference `CupertinoIcons`.
 
-The Phase 13 native matrix is:
+The Phase 13 native matrix was:
 
 ```text
 Workflow: Platform Builds
@@ -182,7 +253,11 @@ Automated tests do not replace manual interaction checks. Stable releases should
 - long-session save/resume, Daily, and challenge timing behavior;
 - Auto Play start/pause/resume, single-step, speed changes, reset, navigation-away timer cleanup, and readability on representative real platforms;
 - Move Replay first/previous/next/latest navigation, slider scrubbing, play/pause, all speed choices, bounded-history disclosure, navigation-away timer cleanup, and readability on representative real platforms;
-- confirmation that replay does not mutate the actual saved game while it is being viewed;
+- confirmation that Replay does not mutate the actual saved game while it is being viewed;
+- Game Backup copy/import/cancel/confirm flows with real Android, iOS, desktop, and browser clipboard handlers;
+- imported-game unranked labeling and persistence after real app termination/relaunch;
+- imported Undo behavior and multiple imported modes, including Daily, Target, Time Challenge, and Move Limit;
+- backup validation/error/confirmation behavior with representative screen readers and large text;
 - real browser/email external-link handlers;
 - native splash/icon presentation;
 - haptic/sound capability behavior;
