@@ -96,6 +96,10 @@ All notable changes to this project are documented here.
 - Duplicate Daily Challenge records for the same date are merged into one strongest consistent record, preventing duplicate-history inflation.
 
 ### Verification
+
+- Phase 16 English/Hindi localization final gate: CI run `31806785165` on commit `9dea87e73803d83c3aa0614d35f7860773dbca04` used Flutter 3.47.0 / Dart 3.13.0; formatting passed with 70 files and 0 changes, analysis reported no issues, **134/134 tests passed**, the Web release build succeeded, and the WASM dry run passed.
+- Phase 16 localization native matrix: Platform Builds run `31804713200` on production commit `5048486775b0c9702583f348bfc5be71219e83ae`; Android release APK, Linux, Windows, macOS, and unsigned iOS all succeeded.
+- Transparent Phase 16 failures remained visible: analyzer run `31804557648` found an unused Auto Play import; lock helper run `31804740412` hit an unrelated Flutter-generated working-tree change; full-suite runs `31805260580` and `31806175302` exposed stale direct-widget harnesses missing localization delegates. Those issues were corrected and the final 134-test gate passed.
 - Earlier release-candidate quality gate on commit `f3e7aaec6404139951425144cb1fb4d2fda66e27`: formatter clean, analyzer reported no issues, all 29 automated tests passed, and Web release build succeeded.
 - A later post-hardening gate expanded this to 37 passing automated tests before the Phase 11 work above.
 - Final Phase 11 quality gate: CI run `31777374553` on commit `1ecbf0881f723af1829fda523752562660a86a98` used Flutter 3.47.0 / Dart 3.13.0; formatting passed with 47 files and 0 changes, analysis reported no issues, **81/81 tests passed**, and the Web release build succeeded.
