@@ -141,7 +141,8 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                     _Metric(label: 'Highest', value: '${game.highestTile}'),
                     _Metric(
                       label: 'Last move',
-                      value: direction == null ? '—' : _directionName(direction),
+                      value:
+                          direction == null ? '—' : _directionName(direction),
                     ),
                   ],
                 ),

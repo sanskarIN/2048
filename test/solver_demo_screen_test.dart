@@ -23,7 +23,8 @@ void main() {
     await tester.tap(find.text('Auto Play Demo'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Deterministic heuristic AI demonstration'), findsOneWidget);
+    expect(
+        find.text('Deterministic heuristic AI demonstration'), findsOneWidget);
     expect(find.text('Demo moves: 0'), findsOneWidget);
 
     await tester.scrollUntilVisible(
@@ -49,8 +50,7 @@ void main() {
     expect(controller.stats.bestScore, initialBest);
   });
 
-  testWidgets(
-      'auto play demo can be paused without continuing in background',
+  testWidgets('auto play demo can be paused without continuing in background',
       (tester) async {
     SharedPreferences.setMockInitialValues({});
     final controller = AppController(store: LocalStore());
