@@ -262,6 +262,62 @@ Phase 14 deliberately records real intermediate issues rather than rewriting his
 
 These failures are not presented as successful release evidence. The final source is judged by the maintained CI/native gates above.
 
+## Phase 16 — English/Hindi localization evidence
+
+Phase 16 adds **7 focused localization tests** to the Phase 15 total of 127, producing a final suite of **134 tests**:
+
+- supported/malformed `AppLanguage` parsing;
+- critical Hindi catalog translations;
+- English identity plus safe unknown-key fallback;
+- localized mode/direction/achievement helpers;
+- persisted language preference plus malformed-value recovery;
+- Hindi Home and Settings rendering;
+- Hindi board-size/row/column/tile/empty-cell semantics.
+
+A reusable `test/support/localized_test_app.dart` harness now mirrors production localization delegates for widget tests that mount localized feature widgets directly.
+
+Final maintained gate:
+
+```text
+Workflow: CI
+Run: 31806785165
+Verified commit: 9dea87e73803d83c3aa0614d35f7860773dbca04
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+Formatting: PASS — 70 files, 0 changed
+Analysis: PASS — No issues found
+Tests: PASS — 134/134
+Web release build: PASS — build/web
+WASM dry run: PASS
+Overall: SUCCESS
+```
+
+Final runtime localization native evidence:
+
+```text
+Workflow: Platform Builds
+Run: 31804713200
+Verified production commit: 5048486775b0c9702583f348bfc5be71219e83ae
+Overall: SUCCESS
+```
+
+Jobs:
+
+- Windows release `94780817747` — **PASS**;
+- Linux release `94780817828` — **PASS**;
+- Android release APK `94780817929` — **PASS**;
+- macOS + unsigned iOS `94780818361` — **PASS**.
+
+### Transparent Phase 16 regressions/tooling failures
+
+- CI run `31804557648` stopped at static analysis because `solver_demo_screen.dart` retained one unused import after localization refactoring. Commit `5048486775b0c9702583f348bfc5be71219e83ae` removed it.
+- Localization lock helper run `31804740412` resolved dependencies but failed before rebase because Flutter 3.47 rewrote `analysis_options.yaml` in the runner and left an unrelated unstaged change. Commit `f91ee2d423af2142d4d660b3a1d1402bf942f13f` scoped the helper to the lockfile; corrected run `31804909137` succeeded and produced lock commit `abf4c95c411658abae27c44f76d39f2f6a9a8bdd`.
+- CI run `31805260580` exposed a stale bare `MaterialApp` harness in `game_screen_interaction_test.dart`; localized `GameScreen` correctly required `NovaLocalizations`. Diagnostic run `31805881265` confirmed formatting, analysis, and focused localization tests were clean while the full suite failed. Commit `8990a904f6ecfb487c722b3705f7061237ca270f` added production localization delegates to that harness.
+- CI run `31806175302` then reached **123 passed / 11 failed**. Machine-readable diagnostic run `31806445596` showed all eleven failures were old direct-widget harnesses without localization delegates: Challenge Codes (4), Game Backup (4), replacement guard (1), board semantics (1), and Home lost-game state (1). A shared localized test app plus focused harness commits corrected all eleven; the final CI passed 134/134.
+- Temporary Phase 16 diagnostics and generated failure reports were removed after use and are not part of the permanent workflow/file surface.
+
+Manual English/Hindi qualification still includes representative real-device font rendering, large-text/narrow-layout wrapping, System-default locale behavior, language persistence after real process termination, keyboard/focus, clipboard flows, and TalkBack/VoiceOver/desktop-browser screen-reader behavior. Automated success does not replace those checks.
+
 ## Historical Phase 13 quality evidence
 
 The final Replay quality gate was:
