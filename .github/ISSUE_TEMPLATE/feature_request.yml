@@ -1,0 +1,45 @@
+name: Feature request
+description: Suggest an improvement for 2048 Nova
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or opportunity
+      description: What user need would this feature address?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the behavior and user experience you would like.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Game engine
+        - Game modes
+        - UI / UX
+        - Accessibility
+        - Statistics / achievements
+        - Persistence
+        - Performance
+        - Documentation
+        - Build / CI
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: accessibility
+    attributes:
+      label: Accessibility considerations
+      description: Note keyboard, screen-reader, contrast, motion, or other accessibility implications.
