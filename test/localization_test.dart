@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nova_2048/app/nova_app.dart';
 import 'package:nova_2048/app/state/app_controller.dart';
@@ -108,7 +109,12 @@ void main() {
         MaterialApp(
           locale: const Locale('hi'),
           supportedLocales: NovaLocalizations.supportedLocales,
-          localizationsDelegates: const [NovaLocalizations.delegate],
+          localizationsDelegates: const [
+            NovaLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
           home: const Scaffold(
             body: Center(
               child: SizedBox.square(
