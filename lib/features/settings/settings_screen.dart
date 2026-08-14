@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/state/app_scope.dart';
+import '../../core/localization/nova_localizations.dart';
 import '../../core/theme/nova_theme.dart';
 import '../../shared/nova_scaffold.dart';
 
@@ -11,21 +12,54 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = AppScope.of(context);
     final settings = controller.settings;
+    final l10n = context.l10n;
     return NovaScaffold(
-      title: 'Settings',
+      title: l10n.text('Settings'),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text('Appearance', style: Theme.of(context).textTheme.titleMedium),
+          Text(l10n.text('Appearance'), style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 12),
+          DropdownButtonFormField<AppLanguage>(
+            initialValue: settings.language,
+            decoration: InputDecoration(labelText: l10n.text('Language')),
+            items: AppLanguage.values
+                .map(
+                  (language) => DropdownMenuItem(
+                    value: language,
+                    child: Text(
+                      language == AppLanguage.hindi
+                          ? language.label
+                          : l10n.text(language.label),
+                    ),
+                  ),
+                )
+                .toList(),
+            onChanged: (value) {
+              if (value != null) {
+                controller.updateSettings(
+                  (settings) => settings.language = value,
+                );
+              }
+            },
+          ),
           const SizedBox(height: 12),
           DropdownButtonFormField<ThemeMode>(
             initialValue: settings.themeMode,
-            decoration: const InputDecoration(labelText: 'Brightness'),
+            decoration: InputDecoration(labelText: l10n.text('Brightness')),
             items: ThemeMode.values
                 .map(
                   (mode) => DropdownMenuItem(
                     value: mode,
-                    child: Text(mode.name),
+                    child: Text(
+                      l10n.text(
+                        switch (mode) {
+                          ThemeMode.system => 'System',
+                          ThemeMode.light => 'Light',
+                          ThemeMode.dark => 'Dark',
+                        },
+                      ),
+                    ),
                   ),
                 )
                 .toList(),
@@ -40,12 +74,12 @@ class SettingsScreen extends StatelessWidget {
           const SizedBox(height: 12),
           DropdownButtonFormField<NovaPalette>(
             initialValue: settings.palette,
-            decoration: const InputDecoration(labelText: 'Color theme'),
+            decoration: InputDecoration(labelText: l10n.text('Color theme')),
             items: NovaPalette.values
                 .map(
                   (palette) => DropdownMenuItem(
                     value: palette,
-                    child: Text(palette.label),
+                    child: Text(l10n.text(palette.label)),
                   ),
                 )
                 .toList(),
@@ -59,14 +93,14 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           SwitchListTile(
-            title: const Text('High contrast'),
+            title: Text(l10n.text('High contrast')),
             value: settings.highContrast,
             onChanged: (value) => controller.updateSettings(
               (settings) => settings.highContrast = value,
             ),
           ),
           SwitchListTile(
-            title: const Text('Reduced motion'),
+            title: Text(l10n.text('Reduced motion')),
             value: settings.reducedMotion,
             onChanged: (value) => controller.updateSettings(
               (settings) => settings.reducedMotion = value,
@@ -74,75 +108,84 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(height: 32),
           Text(
-            'Audio & haptics',
+            l10n.text('Audio & haptics'),
             style: Theme.of(context).textTheme.titleMedium,
           ),
           SwitchListTile(
-            title: const Text('Sound'),
-            subtitle: const Text('Enable lightweight game and UI feedback.'),
+            title: Text(l10n.text('Sound')),
+            subtitle: Text(
+              l10n.text('Enable lightweight game and UI feedback.'),
+            ),
             value: settings.soundEnabled,
             onChanged: (value) => controller.updateSettings(
               (settings) => settings.soundEnabled = value,
             ),
           ),
           SwitchListTile(
-            title: const Text('Haptics'),
-            subtitle: const Text('Used only on supported platforms.'),
+            title: Text(l10n.text('Haptics')),
+            subtitle: Text(l10n.text('Used only on supported platforms.')),
             value: settings.hapticsEnabled,
             onChanged: (value) => controller.updateSettings(
               (settings) => settings.hapticsEnabled = value,
             ),
           ),
           const Divider(height: 32),
-          Text('Gameplay', style: Theme.of(context).textTheme.titleMedium),
+          Text(l10n.text('Gameplay'), style: Theme.of(context).textTheme.titleMedium),
           SwitchListTile(
-            title: const Text('Confirm restart'),
+            title: Text(l10n.text('Confirm restart')),
             value: settings.confirmRestart,
             onChanged: (value) => controller.updateSettings(
               (settings) => settings.confirmRestart = value,
             ),
           ),
           const Divider(height: 32),
-          Text('Data', style: Theme.of(context).textTheme.titleMedium),
+          Text(l10n.text('Data'), style: Theme.of(context).textTheme.titleMedium),
           ListTile(
             leading: const Icon(Icons.restart_alt_rounded),
-            title: const Text('Reset current game'),
-            subtitle: const Text('Remove the saved board and undo history.'),
+            title: Text(l10n.text('Reset current game')),
+            subtitle: Text(l10n.text('Remove the saved board and undo history.')),
             enabled: controller.hasGame,
             onTap: controller.hasGame
                 ? () => _confirmAction(
                       context,
-                      title: 'Reset current game?',
-                      message:
-                          'Your saved board and undo history will be removed.',
+                      title: l10n.text('Reset current game?'),
+                      message: l10n.text(
+                        'Your saved board and undo history will be removed.',
+                      ),
                       action: controller.clearCurrentGame,
                     )
                 : null,
           ),
           ListTile(
             leading: const Icon(Icons.insights_rounded),
-            title: const Text('Reset statistics'),
+            title: Text(l10n.text('Reset statistics')),
             subtitle: Text(
-              controller.hasGame
-                  ? 'Clear historical statistics while keeping the active game as the current session.'
-                  : 'Clear all locally stored statistics.',
+              l10n.text(
+                controller.hasGame
+                    ? 'Clear historical statistics while keeping the active game as the current session.'
+                    : 'Clear all locally stored statistics.',
+              ),
             ),
             onTap: () => _confirmAction(
               context,
-              title: 'Reset statistics?',
-              message: controller.hasGame
-                  ? 'Historical statistics will be cleared. The active game remains counted as the current session so future win-rate data stays valid.'
-                  : 'All locally stored statistics will be cleared.',
+              title: l10n.text('Reset statistics?'),
+              message: l10n.text(
+                controller.hasGame
+                    ? 'Historical statistics will be cleared. The active game remains counted as the current session so future win-rate data stays valid.'
+                    : 'All locally stored statistics will be cleared.',
+              ),
               action: controller.resetStats,
             ),
           ),
           ListTile(
             leading: const Icon(Icons.emoji_events_outlined),
-            title: const Text('Reset achievements'),
+            title: Text(l10n.text('Reset achievements')),
             onTap: () => _confirmAction(
               context,
-              title: 'Reset achievements?',
-              message: 'All local achievement unlock dates will be cleared.',
+              title: l10n.text('Reset achievements?'),
+              message: l10n.text(
+                'All local achievement unlock dates will be cleared.',
+              ),
               action: controller.resetAchievements,
             ),
           ),
@@ -152,17 +195,20 @@ class SettingsScreen extends StatelessWidget {
               color: Theme.of(context).colorScheme.error,
             ),
             title: Text(
-              'Clear all local data',
+              l10n.text('Clear all local data'),
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
-            subtitle: const Text(
-              'Reset game, settings, statistics, achievements, and daily history.',
+            subtitle: Text(
+              l10n.text(
+                'Reset game, settings, statistics, achievements, and daily history.',
+              ),
             ),
             onTap: () => _confirmAction(
               context,
-              title: 'Clear all local data?',
-              message:
-                  'This removes all 2048 Nova data stored on this device and cannot be undone.',
+              title: l10n.text('Clear all local data?'),
+              message: l10n.text(
+                'This removes all 2048 Nova data stored on this device and cannot be undone.',
+              ),
               action: controller.clearAllData,
               destructive: true,
             ),
@@ -179,6 +225,7 @@ class SettingsScreen extends StatelessWidget {
     required Future<void> Function() action,
     bool destructive = false,
   }) async {
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -187,7 +234,7 @@ class SettingsScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.text('Cancel')),
           ),
           FilledButton(
             style: destructive
@@ -198,7 +245,9 @@ class SettingsScreen extends StatelessWidget {
                   )
                 : null,
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(destructive ? 'Clear all' : 'Reset'),
+            child: Text(
+              l10n.text(destructive ? 'Clear all' : 'Reset'),
+            ),
           ),
         ],
       ),
@@ -207,7 +256,7 @@ class SettingsScreen extends StatelessWidget {
     await action();
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Local data updated.')),
+      SnackBar(content: Text(context.l10n.text('Local data updated.'))),
     );
   }
 }
