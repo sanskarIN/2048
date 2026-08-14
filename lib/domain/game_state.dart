@@ -60,17 +60,20 @@ class GameState {
       };
 
   factory GameState.fromJson(Map<String, Object?> json) {
-    final schema = (json['schema'] as num?)?.toInt() ?? 0;
+    final schema = _optionalInt(json['schema'], 'save schema') ?? 0;
     if (schema < 0 || schema > schemaVersion) {
       throw const FormatException('Unsupported save schema');
     }
 
     final normalized = schema == 0 ? _migrateLegacyV0(json) : json;
-    final config = GameConfig.fromJson(
-      Map<String, Object?>.from(normalized['config'] as Map? ?? {}),
-    );
-    final rawBoard = normalized['board'] as List?;
-    if (rawBoard == null || rawBoard.length != config.size) {
+    final rawConfig = normalized['config'];
+    if (rawConfig is! Map) {
+      throw const FormatException('Invalid game configuration');
+    }
+    final config = GameConfig.fromJson(Map<String, Object?>.from(rawConfig));
+
+    final rawBoard = normalized['board'];
+    if (rawBoard is! List || rawBoard.length != config.size) {
       throw const FormatException('Invalid board data');
     }
 
@@ -81,7 +84,9 @@ class GameState {
       }
       final row = <int>[];
       for (final rawCell in rawRow) {
-        if (rawCell is! num || rawCell.toInt() != rawCell) {
+        if (rawCell is! num ||
+            !rawCell.isFinite ||
+            rawCell.toInt() != rawCell) {
           throw const FormatException('Invalid tile value');
         }
         final cell = rawCell.toInt();
@@ -95,6 +100,9 @@ class GameState {
 
     final score = _nonNegativeInt(normalized['score'], 'score');
     final bestScore = _nonNegativeInt(normalized['bestScore'], 'best score');
+    if (bestScore < score) {
+      throw const FormatException('Best score cannot be below current score');
+    }
     final moves = _nonNegativeInt(normalized['moves'], 'moves');
     final totalMerges =
         _nonNegativeInt(normalized['totalMerges'], 'total merges');
@@ -103,18 +111,59 @@ class GameState {
       throw const FormatException('Invalid RNG state');
     }
 
-    final statusName =
-        normalized['status'] as String? ?? GameStatus.playing.name;
-    final status = GameStatus.values.firstWhere(
-      (value) => value.name == statusName,
-      orElse: () => GameStatus.playing,
-    );
+    final rawStatus = normalized['status'];
+    if (rawStatus != null && rawStatus is! String) {
+      throw const FormatException('Invalid game status');
+    }
+    final statusName = rawStatus as String? ?? GameStatus.playing.name;
+    GameStatus? status;
+    for (final value in GameStatus.values) {
+      if (value.name == statusName) {
+        status = value;
+        break;
+      }
+    }
+    if (status == null) {
+      throw const FormatException('Unsupported game status');
+    }
 
-    final startedAtRaw = normalized['startedAt'] as String?;
-    final startedAt =
-        startedAtRaw == null ? null : DateTime.tryParse(startedAtRaw);
+    final rawAcknowledged = normalized['hasAcknowledgedWin'];
+    if (rawAcknowledged != null && rawAcknowledged is! bool) {
+      throw const FormatException('Invalid win acknowledgement');
+    }
+    final hasAcknowledgedWin = rawAcknowledged as bool? ?? false;
+
+    final startedAtRaw = normalized['startedAt'];
+    if (startedAtRaw != null && startedAtRaw is! String) {
+      throw const FormatException('Invalid game start time');
+    }
+    final startedAt = startedAtRaw is String ? DateTime.tryParse(startedAtRaw) : null;
+    if (startedAtRaw != null && startedAt == null) {
+      throw const FormatException('Invalid game start time');
+    }
     if (config.timeLimitSeconds != null && startedAt == null) {
       throw const FormatException('Timed game is missing a valid start time');
+    }
+
+    final highestTile = board
+        .expand((row) => row)
+        .fold(0, (highest, value) => value > highest ? value : highest);
+    final reachedTarget = highestTile >= config.target;
+    final endless = config.mode == GameMode.endless || config.mode == GameMode.zen;
+    if (status == GameStatus.won && (endless || !reachedTarget)) {
+      throw const FormatException('Inconsistent won game state');
+    }
+    if (hasAcknowledgedWin && !reachedTarget) {
+      throw const FormatException('Invalid win acknowledgement');
+    }
+    if (status == GameStatus.won && hasAcknowledgedWin) {
+      throw const FormatException('Acknowledged win must be playing or lost');
+    }
+    if (!endless &&
+        reachedTarget &&
+        !hasAcknowledgedWin &&
+        status == GameStatus.playing) {
+      throw const FormatException('Unacknowledged target must be won');
     }
 
     return GameState(
@@ -125,7 +174,7 @@ class GameState {
       moves: moves,
       totalMerges: totalMerges,
       status: status,
-      hasAcknowledgedWin: normalized['hasAcknowledgedWin'] as bool? ?? false,
+      hasAcknowledgedWin: hasAcknowledgedWin,
       rngState: rngState,
       startedAt: startedAt,
     );
@@ -147,13 +196,14 @@ class GameState {
             'timeLimitSeconds': legacy['timeLimitSeconds'],
             'seed': legacy['seed'],
           };
+    final score = legacy['score'] ?? 0;
 
     return <String, Object?>{
       'schema': schemaVersion,
       'board': rawBoard,
       'config': config,
-      'score': legacy['score'] ?? 0,
-      'bestScore': legacy['bestScore'] ?? 0,
+      'score': score,
+      'bestScore': legacy['bestScore'] ?? score,
       'moves': legacy['moves'] ?? 0,
       'totalMerges': legacy['totalMerges'] ?? 0,
       'status': legacy['status'] ?? GameStatus.playing.name,
@@ -163,12 +213,21 @@ class GameState {
     };
   }
 
-  static int _nonNegativeInt(Object? value, String label) {
-    if (value == null) return 0;
-    if (value is! num || value.toInt() != value || value < 0) {
+  static int? _optionalInt(Object? value, String label) {
+    if (value == null) return null;
+    if (value is! num || !value.isFinite || value.toInt() != value) {
       throw FormatException('Invalid $label');
     }
     return value.toInt();
+  }
+
+  static int _nonNegativeInt(Object? value, String label) {
+    if (value == null) return 0;
+    final parsed = _optionalInt(value, label)!;
+    if (parsed < 0) {
+      throw FormatException('Invalid $label');
+    }
+    return parsed;
   }
 
   static bool _isValidTile(int value) {
