@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../app/state/app_scope.dart';
+import '../../core/localization/nova_localizations.dart';
 import '../../domain/autoplay_session.dart';
 import '../../domain/game_types.dart';
 import '../../shared/nova_scaffold.dart';
@@ -93,13 +94,14 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context);
+    final l10n = context.l10n;
     final game = _session.state;
     final direction = _session.lastDirection;
     final width = MediaQuery.sizeOf(context).width;
     final boardExtent = width.clamp(280.0, 520.0).toDouble();
 
     return NovaScaffold(
-      title: 'Auto Play Demo',
+      title: l10n.text('Auto Play Demo'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Center(
@@ -115,17 +117,14 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Deterministic heuristic AI demonstration',
+                          l10n.text('Deterministic heuristic AI demonstration'),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 8),
-                        const Text(
-                          'This local Auto Play demonstration uses the same '
-                          'read-only heuristic as Hint. It is not machine '
-                          'learning and does not claim optimal play. It runs in '
-                          'an isolated sandbox and never changes your saved '
-                          'game, lifetime statistics, achievements, or Daily '
-                          'Challenge history.',
+                        Text(
+                          l10n.text(
+                            'This local Auto Play demonstration uses the same read-only heuristic as Hint. It is not machine learning and does not claim optimal play. It runs in an isolated sandbox and never changes your saved game, lifetime statistics, achievements, or Daily Challenge history.',
+                          ),
                         ),
                       ],
                     ),
@@ -136,13 +135,12 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                   spacing: 10,
                   runSpacing: 10,
                   children: [
-                    _Metric(label: 'Demo score', value: '${game.score}'),
-                    _Metric(label: 'Demo moves', value: '${game.moves}'),
-                    _Metric(label: 'Highest', value: '${game.highestTile}'),
+                    _Metric(label: l10n.text('Demo score'), value: '${game.score}'),
+                    _Metric(label: l10n.text('Demo moves'), value: '${game.moves}'),
+                    _Metric(label: l10n.text('Highest'), value: '${game.highestTile}'),
                     _Metric(
-                      label: 'Last move',
-                      value:
-                          direction == null ? '—' : _directionName(direction),
+                      label: l10n.text('Last move'),
+                      value: direction == null ? '—' : l10n.directionName(direction),
                     ),
                   ],
                 ),
@@ -159,11 +157,13 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                 const SizedBox(height: 18),
                 Semantics(
                   container: true,
-                  label: _session.isComplete
-                      ? 'Auto Play demo complete'
-                      : _running
-                          ? 'Auto Play demo running'
-                          : 'Auto Play demo paused',
+                  label: l10n.text(
+                    _session.isComplete
+                        ? 'Auto Play demo complete'
+                        : _running
+                            ? 'Auto Play demo running'
+                            : 'Auto Play demo paused',
+                  ),
                   child: Wrap(
                     spacing: 10,
                     runSpacing: 10,
@@ -177,19 +177,19 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                               ? Icons.pause_rounded
                               : Icons.play_arrow_rounded,
                         ),
-                        label: Text(_running ? 'Pause' : 'Auto Play'),
+                        label: Text(l10n.text(_running ? 'Pause' : 'Auto Play')),
                       ),
                       FilledButton.tonalIcon(
                         onPressed: _running || _session.isComplete
                             ? null
                             : _performStep,
                         icon: const Icon(Icons.skip_next_rounded),
-                        label: const Text('Step'),
+                        label: Text(l10n.text('Step')),
                       ),
                       OutlinedButton.icon(
                         onPressed: _reset,
                         icon: const Icon(Icons.restart_alt_rounded),
-                        label: const Text('Reset seed'),
+                        label: Text(l10n.text('Reset seed')),
                       ),
                       DropdownButton<Duration>(
                         value: _interval,
@@ -198,7 +198,7 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                           for (final speed in _speeds)
                             DropdownMenuItem(
                               value: speed,
-                              child: Text(_speedLabel(speed)),
+                              child: Text(_speedLabel(speed, l10n)),
                             ),
                         ],
                       ),
@@ -208,10 +208,12 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                 const SizedBox(height: 14),
                 Text(
                   _session.isComplete
-                      ? 'The sandbox has no legal move remaining. Reset the '
-                          'seed to replay the same deterministic demonstration.'
-                      : 'Seed: ${_session.seed} · Endless 4×4 sandbox · '
-                          'recommendations do not consume the game RNG.',
+                      ? l10n.text(
+                          'The sandbox has no legal move remaining. Reset the seed to replay the same deterministic demonstration.',
+                        )
+                      : l10n.isHindi
+                          ? 'सीड: ${_session.seed} · एंडलेस 4×4 सैंडबॉक्स · सुझाव गेम RNG का उपयोग नहीं करते।'
+                          : 'Seed: ${_session.seed} · Endless 4×4 sandbox · recommendations do not consume the game RNG.',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
@@ -223,14 +225,13 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
     );
   }
 
-  static String _directionName(Direction direction) {
-    final value = direction.name;
-    return '${value[0].toUpperCase()}${value.substring(1)}';
-  }
-
-  static String _speedLabel(Duration duration) {
-    if (duration.inMilliseconds == 1000) return '1 move / sec';
-    return '${1000 ~/ duration.inMilliseconds} moves / sec';
+  static String _speedLabel(Duration duration, NovaLocalizations l10n) {
+    final count = duration.inMilliseconds == 1000
+        ? 1
+        : 1000 ~/ duration.inMilliseconds;
+    return l10n.isHindi
+        ? '$count चाल / सेकंड'
+        : '$count move${count == 1 ? '' : 's'} / sec';
   }
 }
 
