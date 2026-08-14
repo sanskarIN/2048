@@ -69,16 +69,29 @@ class GameConfig {
       };
 
   factory GameConfig.fromJson(Map<String, Object?> json) {
-    final modeName = json['mode'] as String? ?? GameMode.classic.name;
-    final mode = GameMode.values.firstWhere(
-      (value) => value.name == modeName,
-      orElse: () => GameMode.classic,
-    );
-    final size = (json['size'] as num?)?.toInt() ?? 4;
-    final target = (json['target'] as num?)?.toInt() ?? 2048;
-    final moveLimit = (json['moveLimit'] as num?)?.toInt();
-    final timeLimitSeconds = (json['timeLimitSeconds'] as num?)?.toInt();
-    final seed = (json['seed'] as num?)?.toInt();
+    final rawMode = json['mode'];
+    if (rawMode != null && rawMode is! String) {
+      throw const FormatException('Invalid game mode');
+    }
+    final modeName = rawMode as String? ?? GameMode.classic.name;
+    GameMode? mode;
+    for (final value in GameMode.values) {
+      if (value.name == modeName) {
+        mode = value;
+        break;
+      }
+    }
+    if (mode == null) {
+      throw const FormatException('Unsupported game mode');
+    }
+
+    final size = _requiredInt(json['size'], fallback: 4, label: 'board size');
+    final target =
+        _requiredInt(json['target'], fallback: 2048, label: 'target tile');
+    final moveLimit = _optionalInt(json['moveLimit'], 'move limit');
+    final timeLimitSeconds =
+        _optionalInt(json['timeLimitSeconds'], 'time limit');
+    final seed = _optionalInt(json['seed'], 'random seed');
 
     if (size < 3 || size > 8) {
       throw const FormatException('Unsupported board size');
@@ -93,7 +106,7 @@ class GameConfig {
         (timeLimitSeconds < 1 || timeLimitSeconds > 86400)) {
       throw const FormatException('Invalid time limit');
     }
-    if (seed != null && seed < 0) {
+    if (seed != null && (seed < 0 || seed > 0x7fffffff)) {
       throw const FormatException('Invalid random seed');
     }
 
@@ -105,6 +118,27 @@ class GameConfig {
       timeLimitSeconds: timeLimitSeconds,
       seed: seed,
     );
+  }
+
+  static int _requiredInt(
+    Object? value, {
+    required int fallback,
+    required String label,
+  }) {
+    if (value == null) return fallback;
+    return _checkedInt(value, label);
+  }
+
+  static int? _optionalInt(Object? value, String label) {
+    if (value == null) return null;
+    return _checkedInt(value, label);
+  }
+
+  static int _checkedInt(Object value, String label) {
+    if (value is! num || !value.isFinite || value.toInt() != value) {
+      throw FormatException('Invalid $label');
+    }
+    return value.toInt();
   }
 
   static bool _isPowerOfTwo(int value) =>
