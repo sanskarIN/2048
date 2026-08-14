@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/localization/nova_localizations.dart';
 import '../../shared/nova_scaffold.dart';
 
 class GuideScreen extends StatelessWidget {
@@ -7,6 +8,7 @@ class GuideScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     const sections = [
       (
         'Objective',
@@ -61,16 +63,20 @@ class GuideScreen extends StatelessWidget {
         'Use system text scaling, keyboard controls, positional semantic tile labels, high contrast, and reduced motion. Tile values are always shown as text, not color alone. Challenge Codes use labeled form controls, selectable generated text, explicit validation feedback, and a decoded configuration preview.',
       ),
       (
+        'Language',
+        'Settings can follow the system language or explicitly use English or Hindi. Language choice is stored locally, works offline, and never sends text to a translation service.',
+      ),
+      (
         'Offline and privacy',
-        'Core gameplay, Challenge Codes, Game Backup validation, Move Replay, and Auto Play Demo work without a project server. No account, analytics, advertising tracker, remote AI service, or cloud synchronization is required. Clipboard text is read or written only after you choose the corresponding Challenge Code or Game Backup action.',
+        'Core gameplay, Challenge Codes, Game Backup validation, Move Replay, Auto Play Demo, and language switching work without a project server. No account, analytics, advertising tracker, remote AI service, cloud synchronization, or online translation service is required. Clipboard text is read or written only after you choose the corresponding Challenge Code or Game Backup action.',
       ),
       (
         'FAQ',
-        'You can continue after reaching the target, disable optional feedback in Settings, reset project-owned local data, and report bugs through GitHub or the support email.',
+        'You can continue after reaching the target, disable optional feedback in Settings, change language, reset project-owned local data, and report bugs through GitHub or the support email.',
       ),
     ];
     return NovaScaffold(
-      title: 'How to Play',
+      title: l10n.text('How to Play'),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -82,11 +88,11 @@ class GuideScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      section.$1,
+                      l10n.text(section.$1),
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8),
-                    Text(section.$2),
+                    Text(l10n.text(section.$2)),
                   ],
                 ),
               ),
