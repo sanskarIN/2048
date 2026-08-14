@@ -2,7 +2,102 @@
 
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
-## Phase 14 — Portable Game Backup + complete documentation
+## Phase 15 — Offline Shareable Seeded Challenge Codes
+
+### Final maintained quality gate
+
+The completed Phase 15 source/test/documentation state before evidence-only commits was verified by the permanent `CI` workflow:
+
+```text
+Workflow: CI
+Run: 31796242355
+Verified commit: 643b38665738ce314eea81e3dcc8887c77fb2257
+Commit message: docs: explain challenge code deterministic engine relationship
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+Conclusion: SUCCESS
+```
+
+All maintained quality steps passed:
+
+- dependency resolution — **PASS**
+- Dart formatting — **PASS: 66 files, 0 changed**
+- Flutter static analysis — **PASS: No issues found**
+- complete automated suite — **PASS: 127/127 tests**
+- Flutter Web release build — **PASS: `build/web`**
+- Flutter WASM dry run — **PASS**
+- overall CI job — **SUCCESS**
+
+Phase 14 ended at 112 tests. Phase 15 adds exactly 15 automated cases:
+
+- `test/challenge_code_test.dart` — 10 pure codec/determinism/validation tests;
+- `test/challenge_code_screen_test.dart` — 4 widget/state-flow tests;
+- `test/widget_smoke_test.dart` — 1 Home-to-Challenge-Codes navigation regression.
+
+The Challenge Code tests verify supported preset round trip, stable encoding, same-seed opening-board/RNG equivalence, required seed, Daily-mode rejection, unsupported/empty input rejection, checksum tampering, malformed shape/checksum, pre-parse oversize rejection, seed bounds, deterministic generation/copy, paste/validate/preview/start, invalid-input preservation, and replacement-cancellation preservation.
+
+### Native production gate
+
+The final Phase 15 application source requiring native compilation includes the Challenge Code codec, screen, route, Home navigation, clipboard boundary use, in-app Guide text, and About release highlights. It was verified by the permanent native matrix:
+
+```text
+Workflow: Platform Builds
+Run: 31795329370
+Verified production/in-app-doc commit: 7c83d7a14656d9309b54205de1f72e0af131f551
+Commit message: docs: include challenge codes in app release highlights
+Conclusion: SUCCESS
+```
+
+Jobs:
+
+- Android release APK — **PASS**
+- Linux release — **PASS**
+- Windows release — **PASS**
+- macOS release — **PASS**
+- iOS release with `--no-codesign` — **PASS**
+
+The Apple CI target remains intentionally unsigned for iOS. Real device/App Store signing/provisioning remains a manual release boundary.
+
+### Phase 15 trust-boundary evidence
+
+Automated/source review now supports these implementation claims:
+
+- Challenge Code format is `NOVA1.<base64url-payload>.<8-hex-checksum>`;
+- payload format identifier is `2048-nova-challenge`, version `1`;
+- input is capped at 1024 characters before payload parsing;
+- checksum is checked before Base64URL/JSON configuration parsing;
+- strict existing `GameConfig.fromJson()` validation is reused;
+- a deterministic seed is mandatory and limited to the existing safe seed range;
+- supported modes are Classic, Quick, Extended, Challenge, Endless, Target, Time Challenge, Move Limit, and Zen;
+- Daily Challenge is rejected from this portable format;
+- codes carry configuration/seed only and cannot import board progress, score, statistics, achievements, settings, Daily history, or Undo snapshots;
+- starting a valid code uses the normal recoverable-game replacement guard and `AppController.newGame()` fresh-game path;
+- Challenge Codes introduce no new runtime dependency, persistence key, account, cloud service, or network requirement;
+- checksum is documented as accidental corruption detection, not cryptographic authentication or anti-cheat proof.
+
+### Transparent Phase 15 intermediate history
+
+The first codec implementation used an unsupported Dart string-multiplication expression while rebuilding Base64URL padding. It was corrected immediately by:
+
+```text
+88c2954f9703a72626ddf47d93b4d6e9e8e8dfeb
+fix: decode challenge code padding with valid Dart
+```
+
+The corrected implementation uses `List.filled(paddingCount, '=').join()`.
+
+An earlier CI source-state run `31795076552` had already passed formatting, static analysis, and tests, but its Web build was cancelled by the repository's concurrency policy after newer commits arrived. It is therefore not promoted as final Phase 15 evidence. Run `31796242355` supersedes it with a complete formatter/analyzer/127-test/Web success.
+
+No temporary diagnostic/patch workflow was required for Phase 15. The maintained workflow directory remains:
+
+- `bootstrap-branding.yml`
+- `bootstrap-platforms.yml`
+- `ci.yml`
+- `format-code.yml`
+- `lock-dependencies.yml`
+- `platform-builds.yml`
+
+## Historical Phase 14 — Portable Game Backup + complete documentation
 
 ### Final permanent quality gate
 
@@ -11,7 +106,7 @@ The final Phase 14 source/test state was verified by the maintained `CI` workflo
 ```text
 Workflow: CI
 Run: 31787639781
-Verified source/test commit: 137180a1c886852e1b2b4dfda4bbcb514c927eb2
+Verified source/test commit: 1371ef9eaa00f1da5a2ce0370a1f22eb1f2f4cd2
 Conclusion: SUCCESS
 ```
 
@@ -64,19 +159,12 @@ These are not counted as final verification:
 - CI run `31781326279` failed because strict analysis exposed an unused backup-test import. Commit `3446413574582c196a47877fe1bfbe63addbf71d` fixed it.
 - The oversized-backup fixture initially used unsupported Dart string multiplication; commit `a4a2de5bfb9e32fb9f02cf13b5019f69141ff567` replaced it with a valid `List.filled(...).join()` fixture.
 - Backup widget tests initially assumed the below-the-fold Home card was visible in Flutter's default 800×600 test viewport; commit `24b2063f365b63a86009c9acbebf2c4bafe73bed` added explicit scrolling.
-- A later full suite completed with **110 passed / 2 failed** after the clipboard abstraction. Focused diagnostics showed only the Backup **export** and **cancel** widget cases failed because their page actions were still below the bottom navigation/test viewport. Commit `137180a1c886852e1b2b4dfda4bbcb514c927eb2` (`test: scroll backup page beyond bottom navigation before taps`) corrected those page-action taps. The maintained CI then passed **112/112** in run `31787639781`.
+- A later full suite completed with **110 passed / 2 failed** after the clipboard abstraction. Focused diagnostics showed only the Backup **export** and **cancel** widget cases failed because their page actions were still below the bottom navigation/test viewport. Commit `1371ef9eaa00f1da5a2ce0370a1f22eb1f2f4cd2` (`test: scroll backup page beyond bottom navigation before taps`) corrected those page-action taps. The maintained CI then passed **112/112** in run `31787639781`.
 - Temporary one-time patch/wiring helpers had development-tooling failures (`31780514759`, `31780577741`, `31780703213`, `31780791461`, `31781232021`) and were removed after source changes were committed normally.
 - Phase-14-log helper attempts `31785071035` and `31785159285` failed at workflow parsing; `31785331045` appended successfully in its temporary checkout but failed before commit because staging named an already-removed helper path. Final helper run `31785495844` completed successfully, appended Phase 14 to `what_changed.md`, committed it, and removed itself.
 - Temporary Phase 14 diagnostic workflows were removed after they isolated the widget failures; they are not part of the permanent automation surface.
 
-The maintained workflow directory is limited to:
-
-- `bootstrap-branding.yml`
-- `bootstrap-platforms.yml`
-- `ci.yml`
-- `format-code.yml`
-- `lock-dependencies.yml`
-- `platform-builds.yml`
+The maintained workflow directory is limited to the six workflows listed above.
 
 ## Historical Phase 13 — Move Replay
 
@@ -130,11 +218,11 @@ Web release build: PASS
 
 ## What automated verification proves
 
-A successful current quality gate provides evidence that the tested repository state is Dart-format clean, passes configured Flutter static analysis, passes the complete automated unit/widget regression suite, produces a Flutter Web release build, and preserves the tested deterministic/persistence/accessibility/Replay/Auto Play/Backup trust boundaries. A successful native matrix provides evidence that the relevant production code compiles as configured on GitHub-hosted Android/Linux/Windows/macOS/iOS runners.
+A successful current quality gate provides evidence that the tested repository state is Dart-format clean, passes configured Flutter static analysis, passes the complete automated unit/widget regression suite, produces a Flutter Web release build, and preserves the tested deterministic/persistence/accessibility/Challenge Code/Replay/Auto Play/Backup boundaries. A successful native matrix provides evidence that the relevant production code compiles as configured on GitHub-hosted Android/Linux/Windows/macOS/iOS runners.
 
 ## What automated verification does not prove
 
-It does not prove universal absence of defects; every physical device or OS version; real touch/orientation behavior on all devices; final TalkBack/VoiceOver/Narrator/browser-screen-reader quality; every real clipboard/browser/email handler; long-duration lifecycle behavior; Android production keystore/store signing; Apple signing/provisioning/notarization; or store acceptance/final privacy-data-safety listing accuracy.
+It does not prove universal absence of defects; every physical device or OS version; real touch/orientation behavior on all devices; final TalkBack/VoiceOver/Narrator/browser-screen-reader quality; every real Challenge Code/Game Backup clipboard/browser/email handler; platform clipboard history/permission behavior; long-duration lifecycle behavior; Android production keystore/store signing; Apple signing/provisioning/notarization; or store acceptance/final privacy-data-safety listing accuracy.
 
 Those remain explicit tasks in [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
 
@@ -146,4 +234,4 @@ Version: 0.9.0+1
 Stable 1.0.0 claim: NOT YET
 ```
 
-Use this document with [`TESTING.md`](TESTING.md), [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md), [`../CHANGELOG.md`](../CHANGELOG.md), and [`../what_changed.md`](../what_changed.md).
+Use this document with [`TESTING.md`](TESTING.md), [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md), [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md), [`../CHANGELOG.md`](../CHANGELOG.md), and [`../what_changed.md`](../what_changed.md).
