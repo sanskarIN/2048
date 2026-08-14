@@ -126,6 +126,30 @@ void main() {
       expect(game.status, GameStatus.won);
     });
 
+    test('does not mutate a won board until continuation is acknowledged', () {
+      final engine = GameEngine(
+        config: config,
+        random: SequenceRandomSource([15, 0]),
+      );
+      final game = state([
+        [2048, 2, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+      ]);
+      engine.refreshStatus(game);
+      final before = game.copy();
+
+      final result = engine.move(game, Direction.right);
+
+      expect(game.status, GameStatus.won);
+      expect(result.changed, isFalse);
+      expect(game.board, before.board);
+      expect(game.score, before.score);
+      expect(game.moves, before.moves);
+      expect(game.rngState, before.rngState);
+    });
+
     test('supports vertical movement', () {
       final engine = GameEngine(
         config: config,
