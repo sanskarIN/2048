@@ -18,7 +18,27 @@ Saved structures are validated before use. Malformed current-game data fails saf
 
 A complete project reset removes only 2048 Nova's project-owned keys. It does not intentionally wipe unrelated preference keys.
 
+Challenge Code text is **not** stored as an additional app history/database. Once a code is started, only the resulting normal game/session data follows the standard local persistence path.
+
 See [`DATA_STORAGE.md`](DATA_STORAGE.md) for the exact current key set and repair behavior.
+
+## Shareable Challenge Codes and clipboard data
+
+Challenge Codes are explicit user actions and work without a server.
+
+A generated code contains only:
+
+- format/version metadata;
+- supported game mode/configuration;
+- deterministic random seed.
+
+It does not contain current board progress, score, lifetime statistics, achievements, Daily history, settings, Undo snapshots, or an account identifier.
+
+Selecting **Copy challenge code** writes the generated text to the system clipboard. Selecting **Paste code** reads clipboard text. The app does not read or write Challenge Code clipboard text in the background and does not upload codes automatically.
+
+Challenge Code text is plain and not encrypted. Its checksum is only for accidental corruption detection. Share a code only through channels you choose and remember that the operating system/platform controls clipboard history and cross-device clipboard behavior.
+
+See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md).
 
 ## Portable Game Backup and clipboard data
 
@@ -59,6 +79,8 @@ The current demonstration uses local game logic only; it does not contact an AI 
 
 Daily Challenge is generated locally from a UTC date-derived seed. The app does not need to contact a server to obtain the day's seed or submit a result. Recent Daily records are local-only in the default build.
 
+Daily mode is intentionally excluded from Challenge Codes, so arbitrary shared-code text cannot masquerade as a date-derived Daily entry.
+
 ## Hint solver
 
 Hints are evaluated locally using copied board values and a deterministic heuristic. No board state is sent to an external AI/model endpoint.
@@ -83,6 +105,8 @@ Runtime package use beyond Flutter is intentionally limited to:
 
 - `shared_preferences` for small local project state;
 - `url_launcher` for explicit external browser/email handoff.
+
+Challenge Codes use Dart JSON/Base64URL and Flutter's clipboard APIs through the local `TextClipboard` abstraction, so they add no third-party runtime package or network dependency.
 
 The project does not currently include an analytics, advertising, crash-reporting, account, cloud-storage, or remote-AI runtime SDK.
 
