@@ -14,6 +14,8 @@ class GameState {
     DateTime? startedAt,
   }) : startedAt = startedAt ?? DateTime.now();
 
+  static const schemaVersion = 1;
+
   final List<List<int>> board;
   final GameConfig config;
   int score;
@@ -44,7 +46,7 @@ class GameState {
       );
 
   Map<String, Object?> toJson() => {
-        'schema': 1,
+        'schema': schemaVersion,
         'board': board,
         'config': config.toJson(),
         'score': score,
@@ -58,37 +60,120 @@ class GameState {
       };
 
   factory GameState.fromJson(Map<String, Object?> json) {
+    final schema = (json['schema'] as num?)?.toInt() ?? 0;
+    if (schema < 0 || schema > schemaVersion) {
+      throw const FormatException('Unsupported save schema');
+    }
+
+    final normalized = schema == 0 ? _migrateLegacyV0(json) : json;
     final config = GameConfig.fromJson(
-      Map<String, Object?>.from(json['config'] as Map? ?? {}),
+      Map<String, Object?>.from(normalized['config'] as Map? ?? {}),
     );
-    final rawBoard = json['board'] as List?;
+    final rawBoard = normalized['board'] as List?;
     if (rawBoard == null || rawBoard.length != config.size) {
       throw const FormatException('Invalid board data');
     }
-    final board = rawBoard
-        .map(
-          (row) => (row as List).map((cell) => (cell as num).toInt()).toList(),
-        )
-        .toList();
-    if (board.any((row) => row.length != config.size)) {
-      throw const FormatException('Invalid board dimensions');
+
+    final board = <List<int>>[];
+    for (final rawRow in rawBoard) {
+      if (rawRow is! List || rawRow.length != config.size) {
+        throw const FormatException('Invalid board dimensions');
+      }
+      final row = <int>[];
+      for (final rawCell in rawRow) {
+        if (rawCell is! num || rawCell.toInt() != rawCell) {
+          throw const FormatException('Invalid tile value');
+        }
+        final cell = rawCell.toInt();
+        if (!_isValidTile(cell)) {
+          throw const FormatException('Invalid tile value');
+        }
+        row.add(cell);
+      }
+      board.add(row);
     }
-    final statusName = json['status'] as String? ?? GameStatus.playing.name;
+
+    final score = _nonNegativeInt(normalized['score'], 'score');
+    final bestScore = _nonNegativeInt(normalized['bestScore'], 'best score');
+    final moves = _nonNegativeInt(normalized['moves'], 'moves');
+    final totalMerges =
+        _nonNegativeInt(normalized['totalMerges'], 'total merges');
+    final rngState = _nonNegativeInt(normalized['rngState'], 'RNG state');
+    if (rngState > 0x7fffffff) {
+      throw const FormatException('Invalid RNG state');
+    }
+
+    final statusName =
+        normalized['status'] as String? ?? GameStatus.playing.name;
     final status = GameStatus.values.firstWhere(
       (value) => value.name == statusName,
       orElse: () => GameStatus.playing,
     );
+
+    final startedAtRaw = normalized['startedAt'] as String?;
+    final startedAt = startedAtRaw == null ? null : DateTime.tryParse(startedAtRaw);
+    if (config.timeLimitSeconds != null && startedAt == null) {
+      throw const FormatException('Timed game is missing a valid start time');
+    }
+
     return GameState(
       board: board,
       config: config,
-      score: (json['score'] as num?)?.toInt() ?? 0,
-      bestScore: (json['bestScore'] as num?)?.toInt() ?? 0,
-      moves: (json['moves'] as num?)?.toInt() ?? 0,
-      totalMerges: (json['totalMerges'] as num?)?.toInt() ?? 0,
+      score: score,
+      bestScore: bestScore,
+      moves: moves,
+      totalMerges: totalMerges,
       status: status,
-      hasAcknowledgedWin: json['hasAcknowledgedWin'] as bool? ?? false,
-      rngState: (json['rngState'] as num?)?.toInt() ?? 0,
-      startedAt: DateTime.tryParse(json['startedAt'] as String? ?? ''),
+      hasAcknowledgedWin:
+          normalized['hasAcknowledgedWin'] as bool? ?? false,
+      rngState: rngState,
+      startedAt: startedAt,
     );
+  }
+
+  static Map<String, Object?> _migrateLegacyV0(
+    Map<String, Object?> legacy,
+  ) {
+    final rawBoard = legacy['board'];
+    final inferredSize = rawBoard is List ? rawBoard.length : 4;
+    final legacyConfig = legacy['config'];
+    final config = legacyConfig is Map
+        ? Map<String, Object?>.from(legacyConfig)
+        : <String, Object?>{
+            'mode': legacy['mode'] ?? GameMode.classic.name,
+            'size': legacy['size'] ?? inferredSize,
+            'target': legacy['target'] ?? 2048,
+            'moveLimit': legacy['moveLimit'],
+            'timeLimitSeconds': legacy['timeLimitSeconds'],
+            'seed': legacy['seed'],
+          };
+
+    return <String, Object?>{
+      'schema': schemaVersion,
+      'board': rawBoard,
+      'config': config,
+      'score': legacy['score'] ?? 0,
+      'bestScore': legacy['bestScore'] ?? 0,
+      'moves': legacy['moves'] ?? 0,
+      'totalMerges': legacy['totalMerges'] ?? 0,
+      'status': legacy['status'] ?? GameStatus.playing.name,
+      'hasAcknowledgedWin': legacy['hasAcknowledgedWin'] ?? false,
+      'rngState': legacy['rngState'] ?? 0,
+      'startedAt': legacy['startedAt'],
+    };
+  }
+
+  static int _nonNegativeInt(Object? value, String label) {
+    if (value == null) return 0;
+    if (value is! num || value.toInt() != value || value < 0) {
+      throw FormatException('Invalid $label');
+    }
+    return value.toInt();
+  }
+
+  static bool _isValidTile(int value) {
+    if (value == 0) return true;
+    if (value < 2 || value > 1 << 30) return false;
+    return (value & (value - 1)) == 0;
   }
 }
