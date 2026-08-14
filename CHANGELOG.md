@@ -111,3 +111,12 @@ All notable changes to this project are documented here.
 - Portable backup JSON is plain, unsigned, user-editable data and therefore can never choose its own trusted ranking status; every confirmed import is locally marked unranked.
 - Portable import cannot import or mutate lifetime statistics, achievements, streaks, Daily history, settings, or old Undo data, and cannot award a ranked terminal win.
 - No signing credentials, platform private keys, provisioning profiles, or secrets are stored in the public repository.
+
+
+### Final Phase 14 verification addendum
+- Added a narrow `TextClipboard` boundary so production Game Backup still uses Flutter's system clipboard while widget tests use a deterministic in-memory clipboard implementation.
+- Final clipboard-refactor native matrix: Platform Builds run `31787016748` on production commit `dd3c79bec40cf1aa1e4b00190d32393b249902e0`; Android release APK, Linux release, Windows release, macOS release, and unsigned iOS release all succeeded.
+- A post-refactor full suite exposed two remaining Backup widget-harness failures (`110 passed / 2 failed`): export and cancel actions were below Flutter's default 800×600 test viewport/bottom-navigation area.
+- Commit `137180a1c886852e1b2b4dfda4bbcb514c927eb2` (`test: scroll backup page beyond bottom navigation before taps`) corrected those page-action taps.
+- Final maintained CI run `31787639781` on commit `137180a1c886852e1b2b4dfda4bbcb514c927eb2` passed dependency resolution, formatting, static analysis, **112/112 automated tests**, and the Flutter Web release build.
+- Temporary Phase 14 diagnostic workflows were removed after use; the permanent workflow set remains the maintained branding/platform bootstrap, CI, formatting, dependency-lock, and platform-build workflows.

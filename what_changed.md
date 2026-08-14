@@ -1529,3 +1529,93 @@ Native configured release builds: PASS
 Still required: representative physical mobile gameplay/lifecycle/save-resume, real touch/orientation/responsive/keyboard/focus checks, TalkBack/VoiceOver/desktop-browser screen readers, long-session Undo/Daily/timed/move-limit/Replay/Auto Play checks, real Game Backup clipboard flows and imported marker persistence/Undo/multiple-mode checks, real browser/email handlers, native icon/splash visual review, Android distribution signing, Apple signing/provisioning, and final store/privacy/listing/package review.
 
 Portable backups remain plain JSON and intentionally unranked. Replay remains bounded by retained Undo history. Auto Play remains a deterministic heuristic demonstration rather than guaranteed optimal play.
+
+
+## Phase 14 Final Verification Addendum
+
+After the initial Phase 14 development record was committed, the Backup widget boundary received one final testability/refinement pass and the permanent verification gates were completed.
+
+### Clipboard boundary refinement
+
+Production clipboard access is now isolated behind:
+
+```text
+lib/shared/text_clipboard.dart
+```
+
+`SystemTextClipboard` remains the default production implementation and delegates to Flutter's `Clipboard` APIs. `GameBackupScreen` accepts a `TextClipboard` dependency, which lets widget tests use a deterministic in-memory implementation without changing production behavior.
+
+This refinement removed platform-channel timing from Backup widget tests while preserving the explicit real clipboard behavior that still requires manual platform qualification before stable release.
+
+Final production clipboard-boundary native matrix:
+
+```text
+Workflow: Platform Builds
+Run: 31787016748
+Production commit: dd3c79bec40cf1aa1e4b00190d32393b249902e0
+Commit: refactor: inject clipboard service into game backup screen
+Overall: SUCCESS
+```
+
+Results:
+
+- Android release APK: **PASS**
+- Linux release: **PASS**
+- Windows release: **PASS**
+- macOS release: **PASS**
+- iOS release with `--no-codesign`: **PASS**
+
+### Final Backup widget-test defect
+
+After the in-memory clipboard refinement, the full suite completed with **110 passed / 2 failed**. Focused diagnostic jobs showed the remaining failures were only the Backup **export** and **cancel** UI cases.
+
+The issue was not Backup state logic. Those page-level actions were still below Flutter's default 800×600 widget-test viewport and behind the bottom-navigation area when tapped.
+
+Final fix:
+
+```text
+137180a1c886852e1b2b4dfda4bbcb514c927eb2
+test: scroll backup page beyond bottom navigation before taps
+```
+
+The Backup widget harness now scrolls the page before tapping page-level Copy/Import actions, while dialog actions remain direct taps.
+
+Temporary diagnostic workflow files were removed after isolating the issue.
+
+### Final Phase 14 maintained quality gate
+
+```text
+Workflow: CI
+Run: 31787639781
+Verified source/test commit: 137180a1c886852e1b2b4dfda4bbcb514c927eb2
+Overall: SUCCESS
+```
+
+Maintained CI results:
+
+- dependency resolution: **PASS**
+- Dart formatting gate: **PASS**
+- Flutter static analysis: **PASS**
+- automated tests: **PASS — 112/112**
+- Flutter Web release build: **PASS**
+
+This supersedes the earlier Phase 14 intermediate 110/2 run and closes the automated source/test/Web verification loop for the implemented Backup feature.
+
+### Permanent workflow cleanup
+
+After diagnostics and development-log helpers were removed, the intended permanent workflow set is:
+
+```text
+bootstrap-branding.yml
+bootstrap-platforms.yml
+ci.yml
+format-code.yml
+lock-dependencies.yml
+platform-builds.yml
+```
+
+Temporary patch, log, and diagnostic workflows are not part of the maintained project automation surface.
+
+### Final Phase 14 release-candidate boundary
+
+The project remains **0.9.0+1**, not stable 1.0.0. Automated source/test/Web and configured native compilation are green, but the manual release boundaries already listed above still apply, especially real platform clipboard behavior, physical-device lifecycle/touch testing, assistive-technology checks, external handlers, signing/provisioning, and store/package review.
