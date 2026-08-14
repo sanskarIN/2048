@@ -8,6 +8,7 @@ import '../features/guide/guide_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/modes/mode_selection_screen.dart';
 import '../features/settings/settings_screen.dart';
+import '../features/splash/splash_screen.dart';
 import '../features/statistics/statistics_screen.dart';
 import '../features/support/support_screen.dart';
 import 'state/app_controller.dart';
@@ -33,7 +34,8 @@ class NovaApp extends StatelessWidget {
             themeMode: controller.settings.themeMode,
             initialRoute: '/',
             routes: {
-              '/': (_) => const HomeScreen(),
+              '/': (_) => const SplashScreen(),
+              '/home': (_) => const HomeScreen(),
               '/modes': (_) => const ModeSelectionScreen(),
               '/game': (_) => const GameScreen(),
               '/statistics': (_) => const StatisticsScreen(),
