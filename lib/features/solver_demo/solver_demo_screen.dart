@@ -99,7 +99,7 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
     final boardExtent = width.clamp(280.0, 520.0).toDouble();
 
     return NovaScaffold(
-      title: 'Solver Demo',
+      title: 'Auto Play Demo',
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Center(
@@ -115,15 +115,17 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Deterministic heuristic autoplay',
+                          'Deterministic heuristic AI demonstration',
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 8),
                         const Text(
-                          'This local demonstration uses the same read-only '
-                          'heuristic as Hint. It runs in an isolated sandbox '
-                          'and never changes your saved game, lifetime '
-                          'statistics, achievements, or Daily Challenge history.',
+                          'This local Auto Play demonstration uses the same '
+                          'read-only heuristic as Hint. It is not machine '
+                          'learning and does not claim optimal play. It runs in '
+                          'an isolated sandbox and never changes your saved '
+                          'game, lifetime statistics, achievements, or Daily '
+                          'Challenge history.',
                         ),
                       ],
                     ),
@@ -134,13 +136,12 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                   spacing: 10,
                   runSpacing: 10,
                   children: [
-                    _Metric(label: 'Score', value: '${game.score}'),
-                    _Metric(label: 'Moves', value: '${game.moves}'),
+                    _Metric(label: 'Demo score', value: '${game.score}'),
+                    _Metric(label: 'Demo moves', value: '${game.moves}'),
                     _Metric(label: 'Highest', value: '${game.highestTile}'),
                     _Metric(
                       label: 'Last move',
-                      value:
-                          direction == null ? '—' : _directionName(direction),
+                      value: direction == null ? '—' : _directionName(direction),
                     ),
                   ],
                 ),
@@ -158,10 +159,10 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                 Semantics(
                   container: true,
                   label: _session.isComplete
-                      ? 'Solver demo complete'
+                      ? 'Auto Play demo complete'
                       : _running
-                          ? 'Solver demo running'
-                          : 'Solver demo paused',
+                          ? 'Auto Play demo running'
+                          : 'Auto Play demo paused',
                   child: Wrap(
                     spacing: 10,
                     runSpacing: 10,
@@ -175,7 +176,7 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                               ? Icons.pause_rounded
                               : Icons.play_arrow_rounded,
                         ),
-                        label: Text(_running ? 'Pause' : 'Autoplay'),
+                        label: Text(_running ? 'Pause' : 'Auto Play'),
                       ),
                       FilledButton.tonalIcon(
                         onPressed: _running || _session.isComplete
