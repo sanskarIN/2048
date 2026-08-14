@@ -13,6 +13,13 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
+  Future<void> openBackup(WidgetTester tester) async {
+    final backupEntry = find.text('Game Backup');
+    await tester.ensureVisible(backupEntry);
+    await tester.tap(backupEntry);
+    await tester.pumpAndSettle();
+  }
+
   GameState backupState() => GameState(
         config: const GameConfig(
           mode: GameMode.classic,
@@ -43,8 +50,7 @@ void main() {
 
     await tester.pumpWidget(NovaApp(controller: controller));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Game Backup'));
-    await tester.pumpAndSettle();
+    await openBackup(tester);
     await tester.tap(find.text('Copy game backup'));
     await tester.pump();
 
@@ -74,8 +80,7 @@ void main() {
 
     await tester.pumpWidget(NovaApp(controller: controller));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Game Backup'));
-    await tester.pumpAndSettle();
+    await openBackup(tester);
     await tester.tap(find.text('Import from clipboard'));
     await tester.pumpAndSettle();
 
@@ -112,8 +117,7 @@ void main() {
 
     await tester.pumpWidget(NovaApp(controller: controller));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Game Backup'));
-    await tester.pumpAndSettle();
+    await openBackup(tester);
     await tester.tap(find.text('Import from clipboard'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));
@@ -131,8 +135,7 @@ void main() {
 
     await tester.pumpWidget(NovaApp(controller: controller));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Game Backup'));
-    await tester.pumpAndSettle();
+    await openBackup(tester);
     await tester.tap(find.text('Import from clipboard'));
     await tester.pump();
 
