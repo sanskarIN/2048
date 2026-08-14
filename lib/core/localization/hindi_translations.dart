@@ -19,9 +19,12 @@ const hindiTranslations = <String, String>{
   'More room for long strategies.': 'लंबी रणनीतियों के लिए अधिक जगह।',
   'A larger 4096 objective.': '4096 का बड़ा लक्ष्य।',
   'Continue beyond 2048.': '2048 के बाद भी खेलते रहें।',
-  'Choose the tile you want to reach.': 'वह टाइल चुनें जिस तक आप पहुँचना चाहते हैं।',
-  'Reach the target within three minutes.': 'तीन मिनट के भीतर लक्ष्य तक पहुँचें।',
-  'Reach the target within 250 valid moves.': '250 वैध चालों के भीतर लक्ष्य तक पहुँचें।',
+  'Choose the tile you want to reach.':
+      'वह टाइल चुनें जिस तक आप पहुँचना चाहते हैं।',
+  'Reach the target within three minutes.':
+      'तीन मिनट के भीतर लक्ष्य तक पहुँचें।',
+  'Reach the target within 250 valid moves.':
+      '250 वैध चालों के भीतर लक्ष्य तक पहुँचें।',
   'A deterministic date-based challenge.': 'तारीख पर आधारित निर्धारक चैलेंज।',
   'Low-pressure endless play.': 'बिना दबाव के एंडलेस खेल।',
   'Choose target tile': 'लक्ष्य टाइल चुनें',
@@ -34,7 +37,8 @@ const hindiTranslations = <String, String>{
       'चाल: स्वाइप / एरो / W A S D  •  H संकेत  •  U अनडू  •  P या Esc रोकें  •  R रीस्टार्ट',
   'No valid move found.': 'कोई वैध चाल नहीं मिली।',
   'Paused': 'रुका हुआ',
-  'Your current game is saved locally.': 'आपका वर्तमान गेम स्थानीय रूप से सेव है।',
+  'Your current game is saved locally.':
+      'आपका वर्तमान गेम स्थानीय रूप से सेव है।',
   'Start over?': 'फिर से शुरू करें?',
   'Your current board will be replaced.': 'आपका वर्तमान बोर्ड बदल दिया जाएगा।',
   'Target reached!': 'लक्ष्य पूरा हुआ!',
@@ -72,7 +76,8 @@ const hindiTranslations = <String, String>{
   'Best win streak': 'सर्वश्रेष्ठ जीत स्ट्रीक',
   'All locally stored statistics will be cleared. This cannot be undone.':
       'सभी स्थानीय आँकड़े साफ कर दिए जाएँगे। इसे वापस नहीं किया जा सकता।',
-  'All local achievement unlocks will be cleared.': 'सभी स्थानीय उपलब्धि अनलॉक साफ कर दिए जाएँगे।',
+  'All local achievement unlocks will be cleared.':
+      'सभी स्थानीय उपलब्धि अनलॉक साफ कर दिए जाएँगे।',
   'Same seed, same opening': 'एक ही सीड, एक ही शुरुआत',
   'Challenge codes share only a validated game configuration and deterministic seed. They do not contain board progress, scores, statistics, achievements, Daily history, or Undo data.':
       'चैलेंज कोड केवल सत्यापित गेम कॉन्फ़िगरेशन और निर्धारक सीड साझा करते हैं। इनमें बोर्ड प्रगति, स्कोर, आँकड़े, उपलब्धियाँ, डेली हिस्ट्री या अनडू डेटा नहीं होता।',
@@ -87,8 +92,10 @@ const hindiTranslations = <String, String>{
   'Challenge code': 'चैलेंज कोड',
   'Paste code': 'कोड पेस्ट करें',
   'Validate code': 'कोड जाँचें',
-  'Challenge code copied to clipboard.': 'चैलेंज कोड क्लिपबोर्ड पर कॉपी हो गया।',
-  'Clipboard does not contain a challenge code.': 'क्लिपबोर्ड में चैलेंज कोड नहीं है।',
+  'Challenge code copied to clipboard.':
+      'चैलेंज कोड क्लिपबोर्ड पर कॉपी हो गया।',
+  'Clipboard does not contain a challenge code.':
+      'क्लिपबोर्ड में चैलेंज कोड नहीं है।',
   'Valid challenge code.': 'चैलेंज कोड वैध है।',
   'Daily Challenge stays separate': 'डेली चैलेंज अलग रहता है',
   'Daily Challenge already uses the UTC date as its shared seed and keeps dedicated history. Challenge codes intentionally cannot encode Daily mode.':
@@ -109,9 +116,12 @@ const hindiTranslations = <String, String>{
   'Challenge code checksum does not match': 'चैलेंज कोड चेकसम मेल नहीं खाता',
   'Challenge code payload is invalid': 'चैलेंज कोड पेलोड अमान्य है',
   'Unsupported challenge code version': 'असमर्थित चैलेंज कोड वर्ज़न',
-  'Challenge code configuration is missing': 'चैलेंज कोड कॉन्फ़िगरेशन मौजूद नहीं है',
-  'This game mode cannot use challenge codes': 'यह गेम मोड चैलेंज कोड उपयोग नहीं कर सकता',
-  'Challenge code requires a deterministic seed': 'चैलेंज कोड के लिए निर्धारक सीड आवश्यक है',
+  'Challenge code configuration is missing':
+      'चैलेंज कोड कॉन्फ़िगरेशन मौजूद नहीं है',
+  'This game mode cannot use challenge codes':
+      'यह गेम मोड चैलेंज कोड उपयोग नहीं कर सकता',
+  'Challenge code requires a deterministic seed':
+      'चैलेंज कोड के लिए निर्धारक सीड आवश्यक है',
   'Portable current-game backup': 'पोर्टेबल वर्तमान-गेम बैकअप',
   'Export copies one validated JSON backup to the clipboard. It contains the current game only — never settings, lifetime statistics, achievements, Daily history, or Undo history.':
       'एक्सपोर्ट एक सत्यापित JSON बैकअप क्लिपबोर्ड पर कॉपी करता है। इसमें केवल वर्तमान गेम होता है—सेटिंग्स, लाइफटाइम आँकड़े, उपलब्धियाँ, डेली हिस्ट्री या अनडू हिस्ट्री नहीं।',
@@ -122,14 +132,22 @@ const hindiTranslations = <String, String>{
   'Copy game backup': 'गेम बैकअप कॉपी करें',
   'Import from clipboard': 'क्लिपबोर्ड से इम्पोर्ट करें',
   'Import safety': 'इम्पोर्ट सुरक्षा',
-  '• Backup format and version must match 2048 Nova.': '• बैकअप फ़ॉर्मेट और वर्ज़न 2048 नोवा से मेल खाने चाहिए।',
-  '• Embedded game state is strictly validated.': '• एम्बेडेड गेम स्टेट की सख्ती से जाँच होती है।',
-  '• Oversized or malformed text is rejected.': '• बहुत बड़ा या खराब टेक्स्ट अस्वीकार किया जाता है।',
-  '• Import always requires an explicit confirmation.': '• इम्पोर्ट के लिए हमेशा स्पष्ट पुष्टि आवश्यक है।',
-  '• The current game is replaced and Undo is cleared.': '• वर्तमान गेम बदल दिया जाता है और अनडू साफ हो जाता है।',
-  '• Imported sessions stay unranked after app restart.': '• ऐप रीस्टार्ट के बाद भी इम्पोर्टेड सत्र अनरैंक्ड रहता है।',
-  'Current game backup copied to clipboard.': 'वर्तमान गेम बैकअप क्लिपबोर्ड पर कॉपी हो गया।',
-  'Clipboard does not contain a game backup.': 'क्लिपबोर्ड में गेम बैकअप नहीं है।',
+  '• Backup format and version must match 2048 Nova.':
+      '• बैकअप फ़ॉर्मेट और वर्ज़न 2048 नोवा से मेल खाने चाहिए।',
+  '• Embedded game state is strictly validated.':
+      '• एम्बेडेड गेम स्टेट की सख्ती से जाँच होती है।',
+  '• Oversized or malformed text is rejected.':
+      '• बहुत बड़ा या खराब टेक्स्ट अस्वीकार किया जाता है।',
+  '• Import always requires an explicit confirmation.':
+      '• इम्पोर्ट के लिए हमेशा स्पष्ट पुष्टि आवश्यक है।',
+  '• The current game is replaced and Undo is cleared.':
+      '• वर्तमान गेम बदल दिया जाता है और अनडू साफ हो जाता है।',
+  '• Imported sessions stay unranked after app restart.':
+      '• ऐप रीस्टार्ट के बाद भी इम्पोर्टेड सत्र अनरैंक्ड रहता है।',
+  'Current game backup copied to clipboard.':
+      'वर्तमान गेम बैकअप क्लिपबोर्ड पर कॉपी हो गया।',
+  'Clipboard does not contain a game backup.':
+      'क्लिपबोर्ड में गेम बैकअप नहीं है।',
   'Backup rejected as invalid.': 'बैकअप अमान्य होने के कारण अस्वीकार किया गया।',
   'Status': 'स्थिति',
   'Ranking': 'रैंकिंग',
@@ -148,11 +166,13 @@ const hindiTranslations = <String, String>{
   'Unsupported game backup format.': 'असमर्थित गेम बैकअप फ़ॉर्मेट।',
   'Unsupported game backup version.': 'असमर्थित गेम बैकअप वर्ज़न।',
   'Game backup timestamp is invalid.': 'गेम बैकअप टाइमस्टैम्प अमान्य है।',
-  'Game backup does not contain a valid game.': 'गेम बैकअप में वैध गेम नहीं है।',
+  'Game backup does not contain a valid game.':
+      'गेम बैकअप में वैध गेम नहीं है।',
   'Your current game can still be continued. Starting another game will replace its saved board and undo history.':
       'आपका वर्तमान गेम अभी जारी रखा जा सकता है। दूसरा गेम शुरू करने पर उसका सेव बोर्ड और अनडू हिस्ट्री बदल जाएगी।',
   'Start new game': 'नया गेम शुरू करें',
-  'Replay includes the retained start of this game.': 'रिप्ले में इस गेम की सुरक्षित शुरुआत शामिल है।',
+  'Replay includes the retained start of this game.':
+      'रिप्ले में इस गेम की सुरक्षित शुरुआत शामिल है।',
   'Read-only spectator replay': 'रीड-ओनली दर्शक रिप्ले',
   'Replay is built from the same persisted Undo snapshots used by the current game. Viewing, scrubbing, or playing the timeline never changes the live board, score, RNG, statistics, achievements, or Daily history.':
       'रिप्ले वर्तमान गेम के सुरक्षित अनडू स्नैपशॉट से बनता है। टाइमलाइन देखना, स्क्रब करना या चलाना लाइव बोर्ड, स्कोर, RNG, आँकड़े, उपलब्धियाँ या डेली हिस्ट्री नहीं बदलता।',
@@ -165,7 +185,8 @@ const hindiTranslations = <String, String>{
   'Next frame': 'अगला फ्रेम',
   'Latest frame': 'नवीनतम फ्रेम',
   'No game replay is available yet.': 'अभी कोई गेम रिप्ले उपलब्ध नहीं है।',
-  'Replay history could not be loaded safely.': 'रिप्ले हिस्ट्री सुरक्षित रूप से लोड नहीं हो सकी।',
+  'Replay history could not be loaded safely.':
+      'रिप्ले हिस्ट्री सुरक्षित रूप से लोड नहीं हो सकी।',
   'Retry': 'फिर प्रयास करें',
   'playing': 'खेल जारी',
   'won': 'जीता',
@@ -247,8 +268,12 @@ const hindiTranslations = <String, String>{
   'Email support': 'ईमेल सहायता',
   'Business contact': 'बिज़नेस संपर्क',
   'Report a bug on GitHub': 'GitHub पर बग रिपोर्ट करें',
-  'Open the repository bug report template': 'रिपॉज़िटरी बग रिपोर्ट टेम्पलेट खोलें',
-  '2048 Nova splash screen. Made by the Sanskar.': '2048 नोवा स्प्लैश स्क्रीन। Made by the Sanskar.',
-  'This link cannot be opened safely.': 'यह लिंक सुरक्षित रूप से नहीं खोला जा सकता।',
-  'Could not open this link on your device.': 'यह लिंक आपके डिवाइस पर नहीं खोला जा सका।',
+  'Open the repository bug report template':
+      'रिपॉज़िटरी बग रिपोर्ट टेम्पलेट खोलें',
+  '2048 Nova splash screen. Made by the Sanskar.':
+      '2048 नोवा स्प्लैश स्क्रीन। Made by the Sanskar.',
+  'This link cannot be opened safely.':
+      'यह लिंक सुरक्षित रूप से नहीं खोला जा सकता।',
+  'Could not open this link on your device.':
+      'यह लिंक आपके डिवाइस पर नहीं खोला जा सका।',
 };
