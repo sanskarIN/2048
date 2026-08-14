@@ -1,0 +1,144 @@
+name: Fix Reset Undo Integrity
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/fix-reset-undo-integrity.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch reset and undo integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/app/state/app_controller.dart')
+          text = path.read_text(encoding='utf-8')
+          marker = 'for (final snapshot in _undo) {'
+          if marker not in text:
+              old = '''    if (current != null) {
+                current.bestScore = current.score;
+                stats.gamesPlayed = 1;'''
+              new = '''    if (current != null) {
+                current.bestScore = current.score;
+                for (final snapshot in _undo) {
+                  snapshot.bestScore = snapshot.score > current.score
+                      ? snapshot.score
+                      : current.score;
+                }
+                stats.gamesPlayed = 1;'''
+              if old not in text:
+                  raise SystemExit('resetStats insertion point not found')
+              text = text.replace(old, new, 1)
+
+          save_marker = '      await store.saveGame(current);\n'
+          save_replacement = (
+              '      await store.saveGame(current);\n'
+              '      await store.saveUndoHistory(_undo);\n'
+          )
+          if 'await store.saveUndoHistory(_undo);' not in text.split('Future<void> resetStats()', 1)[1].split('Future<void> resetAchievements()', 1)[0]:
+              reset_section = text.split('Future<void> resetStats()', 1)[1].split('Future<void> resetAchievements()', 1)[0]
+              if save_marker not in reset_section:
+                  raise SystemExit('resetStats save point not found')
+              prefix, remainder = text.split('Future<void> resetStats()', 1)
+              reset_section, suffix = remainder.split('Future<void> resetAchievements()', 1)
+              reset_section = reset_section.replace(save_marker, save_replacement, 1)
+              text = prefix + 'Future<void> resetStats()' + reset_section + 'Future<void> resetAchievements()' + suffix
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Ensure reset undo regression test
+        shell: bash
+        run: |
+          cat > test/statistics_reset_undo_test.dart <<'EOF'
+          import 'package:flutter_test/flutter_test.dart';
+          import 'package:nova_2048/app/state/app_controller.dart';
+          import 'package:nova_2048/data/local_store.dart';
+          import 'package:nova_2048/domain/game_types.dart';
+          import 'package:shared_preferences/shared_preferences.dart';
+
+          void main() {
+            setUp(() {
+              SharedPreferences.setMockInitialValues({});
+            });
+
+            test('undo after statistics reset cannot restore a historical best score',
+                () async {
+              final store = LocalStore();
+              final controller = AppController(store: store);
+              await controller.initialize();
+              await controller.newGame(
+                const GameConfig(mode: GameMode.classic, size: 4),
+              );
+
+              controller.stats.bestScore = 9999;
+              controller.game!.bestScore = 9999;
+              controller.game!.board
+                ..[0] = [2, 2, 0, 0]
+                ..[1] = [0, 0, 0, 0]
+                ..[2] = [0, 0, 0, 0]
+                ..[3] = [0, 0, 0, 0];
+
+              await controller.move(Direction.left);
+              expect(controller.canUndo, isTrue);
+              expect(controller.game!.bestScore, 9999);
+
+              await controller.resetStats();
+              final resetBaseline = controller.game!.score;
+              expect(controller.stats.bestScore, resetBaseline);
+              expect(controller.game!.bestScore, resetBaseline);
+
+              await controller.undo();
+
+              expect(controller.game!.score, 0);
+              expect(controller.game!.bestScore, resetBaseline);
+              expect(controller.stats.bestScore, resetBaseline);
+
+              controller.game!.board
+                ..[0] = [2, 2, 0, 0]
+                ..[1] = [0, 0, 0, 0]
+                ..[2] = [0, 0, 0, 0]
+                ..[3] = [0, 0, 0, 0];
+              await controller.move(Direction.left);
+
+              expect(controller.stats.bestScore, lessThan(9999));
+              expect(controller.game!.bestScore, lessThan(9999));
+            });
+          }
+          EOF
+
+      - name: Remove one-time repair workflow
+        run: git rm .github/workflows/fix-reset-undo-integrity.yml
+
+      - name: Commit repair
+        run: |
+          set -euo pipefail
+          git add lib/app/state/app_controller.dart test/statistics_reset_undo_test.dart .github/workflows/fix-reset-undo-integrity.yml
+          if git diff --cached --quiet; then
+            echo 'No repair changes were required.'
+            exit 0
+          fi
+          git config user.name 'Sanskar'
+          git config user.email 'sanskarin@outlook.in'
+          git commit -m 'fix: keep statistics reset isolated from undo history'
+          git reset --hard HEAD
+          git clean -fd
+          git pull --rebase origin main
+          git push origin HEAD:main
