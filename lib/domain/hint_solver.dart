@@ -107,7 +107,7 @@ class HintSolver {
         increasing += b - a;
       }
     }
-    return math.max(increasing, decreasing);
+    return -math.min(increasing, decreasing);
   }
 
   double _directionBias(Direction direction) => switch (direction) {
