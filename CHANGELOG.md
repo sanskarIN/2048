@@ -5,6 +5,8 @@ All notable changes to this project are documented here.
 ## [Unreleased]
 
 ### Added
+- Offline English/Hindi localization framework with System default, English, and हिन्दी language selection, persisted settings, English fallback, localized critical error paths, and Hindi board accessibility semantics.
+- Flutter SDK Material/Widgets/Cupertino localization delegates and a repository-owned Hindi translation catalog; no online translation service is required.
 - Initial 2048 Nova Flutter codebase with Android, iOS, Web, Windows, macOS, and Linux runners.
 - Deterministic core move engine with persisted RNG state and corruption-safe serialization.
 - Classic, Quick, Extended, Challenge, Endless, Target, Time Challenge, Move Limit, Daily, and Zen configurations.
@@ -37,6 +39,7 @@ All notable changes to this project are documented here.
 - Friendly copy fallback when an approved external destination cannot be opened by the platform.
 
 ### Changed
+- Home, modes, gameplay controls/dialogs, Daily Challenge, statistics, achievements, Challenge Codes, Game Backup, Move Replay, Auto Play Demo, Guide, About, Support, splash semantics, and external-link fallbacks now use the shared localization layer.
 - Serialized game-move processing to prevent rapid swipe/keyboard requests from racing state persistence.
 - Scoped complete-data reset to project-owned preference keys only.
 - Replaced non-restorable runtime randomness with a persisted deterministic random source.
