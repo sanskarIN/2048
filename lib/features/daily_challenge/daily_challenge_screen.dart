@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/state/app_scope.dart';
+import '../../domain/daily_record.dart';
 import '../../domain/game_types.dart';
 import '../../shared/nova_scaffold.dart';
 
@@ -50,17 +51,29 @@ class DailyChallengeScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                   ],
                   FilledButton.icon(
-                    onPressed: () =>
-                        _openToday(context, currentIsToday, config),
+                    onPressed: () => _openToday(
+                      context,
+                      currentIsToday: currentIsToday,
+                      config: config,
+                      record: record,
+                    ),
                     icon: Icon(
                       currentIsToday
                           ? Icons.play_arrow_rounded
-                          : Icons.calendar_today_rounded,
+                          : record?.completed == true
+                              ? Icons.replay_rounded
+                              : record == null
+                                  ? Icons.calendar_today_rounded
+                                  : Icons.restart_alt_rounded,
                     ),
                     label: Text(
                       currentIsToday
                           ? 'Continue today’s challenge'
-                          : 'Start today’s challenge',
+                          : record?.completed == true
+                              ? 'Replay today’s challenge'
+                              : record == null
+                                  ? 'Start today’s challenge'
+                                  : 'Restart today’s challenge',
                     ),
                   ),
                 ],
@@ -95,11 +108,13 @@ class DailyChallengeScreen extends StatelessWidget {
                   subtitle: Text(
                     'Score ${item.score} • Highest ${item.highestTile} • ${item.moves} moves',
                   ),
-                  trailing: Text(item.won
-                      ? 'Won'
-                      : item.completed
-                          ? 'Done'
-                          : 'Open'),
+                  trailing: Text(
+                    item.won
+                        ? 'Won'
+                        : item.completed
+                            ? 'Done'
+                            : 'Open',
+                  ),
                 ),
               ),
         ],
@@ -108,14 +123,48 @@ class DailyChallengeScreen extends StatelessWidget {
   }
 
   Future<void> _openToday(
-    BuildContext context,
-    bool currentIsToday,
-    GameConfig config,
-  ) async {
-    if (!currentIsToday) {
-      await AppScope.of(context).newGame(config);
-      if (!context.mounted) return;
+    BuildContext context, {
+    required bool currentIsToday,
+    required GameConfig config,
+    required DailyRecord? record,
+  }) async {
+    if (currentIsToday) {
+      Navigator.pushNamed(context, '/game');
+      return;
     }
+
+    if (record != null) {
+      final isReplay = record.completed;
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(
+            isReplay
+                ? 'Replay today’s challenge?'
+                : 'Restart today’s challenge?',
+          ),
+          content: Text(
+            isReplay
+                ? 'A fresh run will use the same daily seed. Your completed history remains recorded.'
+                : 'Your current Daily Challenge board is not available. Starting again will reset today’s in-progress run.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(isReplay ? 'Replay' : 'Restart'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !context.mounted) return;
+    }
+
+    await AppScope.of(context).newGame(config);
+    if (!context.mounted) return;
     Navigator.pushNamed(context, '/game');
   }
 
