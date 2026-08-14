@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../core/theme/nova_theme.dart';
 
 class GameBoard extends StatelessWidget {
-  const GameBoard({required this.board, required this.reducedMotion, super.key});
+  const GameBoard(
+      {required this.board, required this.reducedMotion, super.key});
 
   final List<List<int>> board;
   final bool reducedMotion;
@@ -58,7 +59,11 @@ class _Tile extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final digits = value == 0 ? 1 : value.toString().length;
-    final fontSize = digits <= 4 ? 28.0 : digits <= 6 ? 22.0 : 16.0;
+    final fontSize = digits <= 4
+        ? 28.0
+        : digits <= 6
+            ? 22.0
+            : 16.0;
     final systemReducedMotion = MediaQuery.disableAnimationsOf(context);
     final animationDuration = reducedMotion || systemReducedMotion
         ? Duration.zero

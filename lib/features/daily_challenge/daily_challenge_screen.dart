@@ -50,7 +50,8 @@ class DailyChallengeScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                   ],
                   FilledButton.icon(
-                    onPressed: () => _openToday(context, currentIsToday, config),
+                    onPressed: () =>
+                        _openToday(context, currentIsToday, config),
                     icon: Icon(
                       currentIsToday
                           ? Icons.play_arrow_rounded
@@ -94,7 +95,11 @@ class DailyChallengeScreen extends StatelessWidget {
                   subtitle: Text(
                     'Score ${item.score} • Highest ${item.highestTile} • ${item.moves} moves',
                   ),
-                  trailing: Text(item.won ? 'Won' : item.completed ? 'Done' : 'Open'),
+                  trailing: Text(item.won
+                      ? 'Won'
+                      : item.completed
+                          ? 'Done'
+                          : 'Open'),
                 ),
               ),
         ],

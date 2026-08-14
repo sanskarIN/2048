@@ -55,9 +55,7 @@ class LocalStore {
         if (item is! Map<String, dynamic>) continue;
         states.add(GameState.fromJson(Map<String, Object?>.from(item)));
       }
-      return states.length <= 50
-          ? states
-          : states.sublist(states.length - 50);
+      return states.length <= 50 ? states : states.sublist(states.length - 50);
     } on Object {
       await prefs.remove(_undoKey);
       return [];
@@ -120,8 +118,7 @@ class LocalStore {
 
   Future<Map<String, Object?>> loadSettings() => _loadMap(_settingsKey);
   Future<Map<String, Object?>> loadStats() => _loadMap(_statsKey);
-  Future<Map<String, Object?>> loadAchievements() =>
-      _loadMap(_achievementsKey);
+  Future<Map<String, Object?>> loadAchievements() => _loadMap(_achievementsKey);
 
   Future<void> saveSettings(Map<String, Object?> value) =>
       _saveMap(_settingsKey, value);

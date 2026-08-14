@@ -146,7 +146,8 @@ class GameEngine {
 
     final timeLimit = config.timeLimitSeconds;
     if (timeLimit != null) {
-      final elapsed = (now ?? DateTime.now()).difference(state.startedAt).inSeconds;
+      final elapsed =
+          (now ?? DateTime.now()).difference(state.startedAt).inSeconds;
       if (elapsed >= timeLimit && !reachedTarget) {
         state.status = GameStatus.lost;
         return;

@@ -34,14 +34,21 @@ class GameConfig {
 
   static GameConfig preset(GameMode mode, {int? target}) {
     return switch (mode) {
-      GameMode.quick => const GameConfig(mode: GameMode.quick, size: 3, target: 512),
+      GameMode.quick =>
+        const GameConfig(mode: GameMode.quick, size: 3, target: 512),
       GameMode.extended => const GameConfig(mode: GameMode.extended, size: 5),
-      GameMode.challenge => const GameConfig(mode: GameMode.challenge, size: 6, target: 4096),
-      GameMode.endless => const GameConfig(mode: GameMode.endless, size: 4, target: 2048),
-      GameMode.target => GameConfig(mode: GameMode.target, size: 4, target: target ?? 4096),
-      GameMode.timeChallenge => const GameConfig(mode: GameMode.timeChallenge, size: 4, timeLimitSeconds: 180),
-      GameMode.moveLimit => const GameConfig(mode: GameMode.moveLimit, size: 4, moveLimit: 250),
-      GameMode.daily => GameConfig(mode: GameMode.daily, size: 4, seed: _dailySeed()),
+      GameMode.challenge =>
+        const GameConfig(mode: GameMode.challenge, size: 6, target: 4096),
+      GameMode.endless =>
+        const GameConfig(mode: GameMode.endless, size: 4, target: 2048),
+      GameMode.target =>
+        GameConfig(mode: GameMode.target, size: 4, target: target ?? 4096),
+      GameMode.timeChallenge => const GameConfig(
+          mode: GameMode.timeChallenge, size: 4, timeLimitSeconds: 180),
+      GameMode.moveLimit =>
+        const GameConfig(mode: GameMode.moveLimit, size: 4, moveLimit: 250),
+      GameMode.daily =>
+        GameConfig(mode: GameMode.daily, size: 4, seed: _dailySeed()),
       GameMode.zen => const GameConfig(mode: GameMode.zen, size: 4),
       GameMode.classic => const GameConfig(mode: GameMode.classic, size: 4),
     };

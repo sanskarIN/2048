@@ -171,7 +171,8 @@ void main() {
         timeLimitSeconds: 60,
       );
       final started = DateTime.utc(2026, 8, 14, 10);
-      final engine = GameEngine(config: timed, random: SequenceRandomSource([0]));
+      final engine =
+          GameEngine(config: timed, random: SequenceRandomSource([0]));
       final game = GameState(
         board: [
           [2, 0, 0, 0],

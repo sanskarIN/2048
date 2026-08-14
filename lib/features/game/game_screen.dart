@@ -167,12 +167,10 @@ class _GameScreenState extends State<GameScreen> {
     if (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.keyW) {
       return Direction.up;
     }
-    if (key == LogicalKeyboardKey.arrowDown ||
-        key == LogicalKeyboardKey.keyS) {
+    if (key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.keyS) {
       return Direction.down;
     }
-    if (key == LogicalKeyboardKey.arrowLeft ||
-        key == LogicalKeyboardKey.keyA) {
+    if (key == LogicalKeyboardKey.arrowLeft || key == LogicalKeyboardKey.keyA) {
       return Direction.left;
     }
     if (key == LogicalKeyboardKey.arrowRight ||

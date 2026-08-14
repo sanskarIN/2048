@@ -29,7 +29,9 @@ class GameState {
       board.expand((row) => row).fold(0, (a, b) => a > b ? a : b);
 
   GameState copy() => GameState(
-        board: [for (final row in board) [...row]],
+        board: [
+          for (final row in board) [...row]
+        ],
         config: config,
         score: score,
         bestScore: bestScore,
@@ -65,8 +67,7 @@ class GameState {
     }
     final board = rawBoard
         .map(
-          (row) =>
-              (row as List).map((cell) => (cell as num).toInt()).toList(),
+          (row) => (row as List).map((cell) => (cell as num).toInt()).toList(),
         )
         .toList();
     if (board.any((row) => row.length != config.size)) {
