@@ -40,6 +40,95 @@ void main() {
     );
   });
 
+  test('rejects unsupported future save schemas', () {
+    expect(
+      () => GameState.fromJson({
+        'schema': GameState.schemaVersion + 1,
+        'config': const GameConfig(
+          mode: GameMode.classic,
+          size: 4,
+        ).toJson(),
+        'board': List.generate(4, (_) => List.filled(4, 0)),
+      }),
+      throwsFormatException,
+    );
+  });
+
+  test('migrates legacy schema zero top-level configuration', () {
+    final restored = GameState.fromJson({
+      'schema': 0,
+      'mode': GameMode.classic.name,
+      'size': 4,
+      'target': 2048,
+      'board': [
+        [2, 4, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+      ],
+      'score': 20,
+      'moves': 3,
+    });
+
+    expect(restored.config.mode, GameMode.classic);
+    expect(restored.config.size, 4);
+    expect(restored.score, 20);
+    expect(restored.moves, 3);
+  });
+
+  test('rejects invalid tile values and unsafe configuration bounds', () {
+    expect(
+      () => GameState.fromJson({
+        'schema': GameState.schemaVersion,
+        'config': const GameConfig(
+          mode: GameMode.classic,
+          size: 4,
+        ).toJson(),
+        'board': [
+          [3, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+        ],
+      }),
+      throwsFormatException,
+    );
+
+    expect(
+      () => GameState.fromJson({
+        'schema': GameState.schemaVersion,
+        'config': {
+          'mode': GameMode.classic.name,
+          'size': 1000,
+          'target': 2048,
+        },
+        'board': const [],
+      }),
+      throwsFormatException,
+    );
+  });
+
+  test('requires a valid start time for persisted timed challenges', () {
+    expect(
+      () => GameState.fromJson({
+        'schema': GameState.schemaVersion,
+        'config': const GameConfig(
+          mode: GameMode.timeChallenge,
+          size: 4,
+          timeLimitSeconds: 180,
+        ).toJson(),
+        'board': [
+          [2, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+        ],
+        'startedAt': 'not-a-date',
+      }),
+      throwsFormatException,
+    );
+  });
+
   test('highest tile is derived from board state', () {
     final game = GameState(
       board: [
