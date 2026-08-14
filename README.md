@@ -7,33 +7,34 @@
 
 Made by the Sanskar
 
-[Source](https://github.com/sanskarIN/2048) · [Guide](docs/GAME_ENGINE.md) · [Roadmap](ROADMAP.md) · [Support](SUPPORT.md) · [Buy Me a Coffee](https://buymeacoffee.com/sanskarIN)
+[Source](https://github.com/sanskarIN/2048) · [Guide](docs/GAME_ENGINE.md) · [Hints](docs/HINT_SOLVER.md) · [Roadmap](ROADMAP.md) · [Support](SUPPORT.md) · [Buy Me a Coffee](https://buymeacoffee.com/sanskarIN)
 </div>
 
 ## Overview
 
-2048 Nova preserves the familiar 2048 rules while adding a modern cross-platform interface, deterministic game engine, multiple board sizes and challenge modes, save/resume, undo, hints, statistics, achievements, theme palettes, accessibility controls, daily challenges, and open-source project tooling.
+2048 Nova preserves the familiar 2048 rules while adding a modern cross-platform interface, deterministic game engine, multiple board sizes and challenge modes, save/resume, robust undo, heuristic hints, statistics, achievements, theme palettes, accessibility controls, daily challenges, and open-source project tooling.
 
 The normal game is offline-first. It does not require an account, subscription, analytics service, advertising tracker, or permanent internet connection. Internet access is only needed when a player deliberately opens an external destination such as GitHub, LinkedIn, email, or Buy Me a Coffee.
 
 ## Features
 
-- Deterministic, UI-independent 2048 engine with correct one-merge-per-tile behavior.
+- Deterministic, UI-independent 2048 engine with correct one-merge-per-source-tile behavior.
 - Classic 4×4, Quick 3×3, Extended 5×5, Challenge 6×6, Endless, Target, Time Challenge, Move Limit, Daily Challenge, and Zen modes.
 - Selectable Target milestones from 128 through 16384.
-- Touch/swipe, Arrow Keys, and W/A/S/D controls.
-- Save/resume with schema-versioned local state and corruption-safe recovery.
-- Persistent undo history with deterministic RNG restoration.
-- Lightweight non-automatic hint system.
-- Statistics including games, wins, win rate, best score, highest tile, moves, merges, and streaks.
+- Touch/swipe, Arrow Keys, and W/A/S/D movement plus H for Hint, U for Undo, P/Escape for Pause, and R for Restart on keyboard platforms.
+- Save/resume with schema-versioned local state, structural validation, startup challenge reconciliation, and corruption-safe self-healing.
+- Persistent undo history with deterministic RNG restoration, stale-session filtering, and lifetime-best-score preservation.
+- Deterministic non-automatic heuristic hints that evaluate empty cells, merges, corner strategy, monotonicity, and board smoothness without consuming game RNG.
+- Statistics including games, wins, win rate, best score, highest tile, total moves/merges, averages, and streaks.
 - Local achievements with progress and unlock dates.
-- Date-seeded offline Daily Challenge with recent local history.
+- Date-seeded offline Daily Challenge with deduplicated local history, sticky completion/win state, and best-result preservation across replays.
 - Light, dark, and system brightness with Classic Nova, Midnight, Neon, Ocean, Forest, Sunset, and Monochrome palettes.
-- High-contrast mode, reduced motion, semantic tile labels, keyboard access, visible numeric values, and system text scaling support.
+- High-contrast mode, reduced motion, positional semantic tile labels, keyboard access, visible numeric values, and system text scaling support.
+- Confirmation before replacing a recoverable saved game and explicit terminal-game choices.
 - Optional lightweight system sound and haptic feedback where supported.
 - Responsive board layouts for multiple window and screen sizes.
 - Branded splash screen, application icons, and tasteful **Made by the Sanskar** identity.
-- Prominent but optional Buy Me a Coffee support entry points.
+- Prominent but optional Buy Me a Coffee support entry points plus a direct GitHub bug-report action.
 - GitHub Actions quality checks, platform-build workflows, Dependabot, issue templates, and contribution/security documentation.
 
 ## Configured targets
@@ -56,8 +57,12 @@ A target is only described as verified after its corresponding CI/build check ha
 | Swipe | Move in swipe direction |
 | Arrow Keys | Move tiles |
 | W / A / S / D | Move tiles |
+| H | Show the current heuristic hint |
+| U | Undo when an undo snapshot is available |
+| P or Escape | Open the pause menu |
+| R | Restart the current mode, respecting restart confirmation settings |
 | Undo button | Restore the previous persisted snapshot |
-| Hint button | Suggest a valid direction |
+| Hint button | Suggest a legal direction without changing the board or RNG |
 | Pause button | Open the pause menu |
 | Restart button | Start the current mode again, with confirmation when enabled |
 
@@ -65,7 +70,15 @@ A target is only described as verified after its corresponding CI/build check ha
 
 Each move compresses tiles toward the requested direction, merges adjacent equal values exactly once per source tile, compresses the result, calculates score gain, and only then spawns a new tile if the board actually changed. New tiles are 2 with 90% probability and 4 otherwise.
 
+A non-Endless/Zen target win blocks further moves until the player explicitly chooses Continue or starts another game. Game-over states also block further moves. This keeps board, undo, statistics, and persisted state aligned with the visible terminal dialogs.
+
 The engine stores deterministic RNG state inside the game snapshot. That makes seeded challenges, undo, and save/resume behavior reproducible rather than visually pretending to restore a previous state. See [`docs/GAME_ENGINE.md`](docs/GAME_ENGINE.md).
+
+## Hint solver
+
+Hints are computed locally from copied board data. Every legal direction is simulated without spawning a tile. The solver ranks candidates using mobility/empty cells, immediate merge value, highest-tile corner placement, monotonicity, smoothness, and deterministic tie-breaking.
+
+Requesting a hint does not change score, moves, board state, undo history, statistics, achievements, or the next deterministic spawn. See [`docs/HINT_SOLVER.md`](docs/HINT_SOLVER.md).
 
 ## Architecture
 
@@ -96,11 +109,11 @@ lib/
   main.dart
 ```
 
-- `domain/` contains deterministic game rules and serializable state.
-- `data/` owns local persistence.
-- `app/state/` coordinates sessions, undo, settings, stats, achievements, and daily records.
+- `domain/` contains deterministic game rules, serializable state, and the heuristic hint solver.
+- `data/` owns validated, bounded, self-healing local persistence.
+- `app/state/` coordinates sessions, undo, settings, statistics, achievements, and daily records.
 - `features/` contains user-facing screens.
-- `core/` and `shared/` contain design tokens, project metadata, and reusable UI.
+- `core/` and `shared/` contain design tokens, project metadata, replacement guards, external-link handling, and reusable UI.
 
 More detail: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
@@ -175,13 +188,13 @@ Only run commands supported by the current host OS and installed toolchain.
 
 ## Accessibility
 
-2048 Nova treats accessibility as a core requirement rather than a decorative option. Current implementation includes semantic tile labels, keyboard controls, visible numeric values in addition to color, high contrast, reduced motion, responsive text/layout behavior, and explicit labels/tooltips for important controls and external support actions.
+2048 Nova treats accessibility as a core requirement rather than a decorative option. Current implementation includes board-size semantics, row/column-aware tile labels, keyboard controls, visible numeric values in addition to color, high contrast, reduced motion, responsive text/layout behavior, and explicit labels/tooltips for important controls and external support actions.
 
 See [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md) for current coverage and release checks.
 
 ## Privacy
 
-The default project has no account system, advertising SDK, analytics tracker, or cloud synchronization. Game state, settings, statistics, achievements, and Daily Challenge history are stored locally. See [`docs/PRIVACY.md`](docs/PRIVACY.md).
+The default project has no account system, advertising SDK, analytics tracker, or cloud synchronization. Game state, settings, statistics, achievements, and Daily Challenge history are stored locally. Malformed project-owned local data is validated and either repaired or removed instead of being trusted blindly. See [`docs/PRIVACY.md`](docs/PRIVACY.md).
 
 ## Branding and assets
 
@@ -209,6 +222,7 @@ Use small, coherent changes, add tests for behavior changes and regressions, kee
 ## Project links
 
 - Repository: https://github.com/sanskarIN/2048
+- Bug report: https://github.com/sanskarIN/2048/issues/new?template=bug_report.yml
 - GitHub profile: https://www.github.com/sanskarIN
 - LinkedIn: https://www.linkedin.com/in/sanskarIN
 - Business: sanskarin@outlook.in
