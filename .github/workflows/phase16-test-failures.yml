@@ -1,0 +1,73 @@
+name: Capture Phase 16 Failing Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/phase16-test-failures.yml
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Capture failed test identities
+        shell: bash
+        run: |
+          flutter pub get >/dev/null
+          set +e
+          flutter test -r json > /tmp/tests.jsonl 2>&1
+          STATUS=$?
+          set -e
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          tests = {}
+          errors = {}
+          failed = set()
+          for raw in Path('/tmp/tests.jsonl').read_text(errors='replace').splitlines():
+              try:
+                  event = json.loads(raw)
+              except Exception:
+                  continue
+              kind = event.get('type')
+              if kind == 'testStart':
+                  test = event.get('test', {})
+                  tests[test.get('id')] = (test.get('name', ''), test.get('url', ''))
+              elif kind == 'error':
+                  test_id = event.get('testID')
+                  errors.setdefault(test_id, []).append(event.get('error', ''))
+              elif kind == 'testDone' and event.get('result') in {'failure', 'error'}:
+                  failed.add(event.get('testID'))
+
+          lines = ['Phase 16 failing tests', '']
+          for test_id in sorted(failed, key=lambda value: (tests.get(value, ('', ''))[1], tests.get(value, ('', ''))[0])):
+              name, url = tests.get(test_id, ('<unknown>', '<unknown>'))
+              lines.append(f'- {url} :: {name}')
+              for error in errors.get(test_id, []):
+                  first = error.strip().splitlines()[0] if error.strip() else '<no error text>'
+                  lines.append(f'  error: {first[:500]}')
+          lines.append('')
+          lines.append(f'failed_count={len(failed)}')
+          Path('phase16_test_failures.txt').write_text('\n'.join(lines) + '\n')
+          PY
+          rm .github/workflows/phase16-test-failures.yml
+          git checkout -- analysis_options.yaml 2>/dev/null || true
+          git config user.name Sanskar
+          git config user.email sanskarin@outlook.in
+          git add phase16_test_failures.txt
+          git add -u .github/workflows/phase16-test-failures.yml
+          git commit -m "test: capture remaining Phase 16 failing tests"
+          git pull --rebase origin main
+          git push origin HEAD:main
+          exit $STATUS
