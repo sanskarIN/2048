@@ -258,3 +258,11 @@ For more detail:
 - [`HINT_SOLVER.md`](HINT_SOLVER.md)
 - [`TESTING.md`](TESTING.md)
 - [`VERIFICATION.md`](VERIFICATION.md)
+
+## Localization architecture
+
+Localization is kept under `lib/core/localization/` rather than inside game rules or persistence code. `NovaLocalizations` declares supported locales, exposes `BuildContext.l10n`, owns typed dynamic helpers, and uses English source text as the defensive fallback. `hindi_translations.dart` contains the main Hindi fixed-string catalog.
+
+`NovaApp` registers the project delegate plus Flutter's Material, Widgets, and Cupertino localization delegates. `AppSettings.language` stores `system`, `english`, or `hindi`; malformed persisted values fall back to System default. Switching language does not recreate or reinterpret `GameState`, RNG, Undo, ranking policy, Daily history, Challenge Codes, Replay, Auto Play, or portable backup data.
+
+The architecture deliberately has no remote translation service. See [`LOCALIZATION.md`](LOCALIZATION.md).
