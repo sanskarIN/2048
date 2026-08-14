@@ -72,8 +72,8 @@ class SupportScreen extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.bug_report_outlined),
               title: const Text('Report a bug on GitHub'),
-              subtitle: const Text(ProjectInfo.repository),
-              onTap: () => openExternal(context, ProjectInfo.repository),
+              subtitle: const Text('Open the repository bug report template'),
+              onTap: () => openExternal(context, ProjectInfo.bugReport),
             ),
           ),
         ],
