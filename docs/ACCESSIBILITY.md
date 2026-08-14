@@ -164,3 +164,9 @@ Before a stable release, verify:
 Automated tests can cover semantics and interaction regressions, but they do not replace VoiceOver, TalkBack, Narrator, browser screen-reader, switch-control, keyboard-only, or other assistive-technology testing on representative real target platforms.
 
 Stable release notes must distinguish automated verification from manual screen-reader/device verification. Current remaining manual qualification is tracked in [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
+
+## Localized accessibility semantics
+
+English and Hindi use the same accessibility structure. In Hindi mode the game-board container and positional tile/empty-cell semantics are localized, including row, column, and tile value. Standard Material controls receive the selected locale through Flutter's official localization delegates.
+
+Automated widget/semantics tests verify representative Hindi Home/Settings text and board labels. They do **not** prove final real assistive-technology quality. Stable release still requires Hindi checks with TalkBack, VoiceOver, representative desktop/browser screen readers, large text, narrow layouts, focus traversal, and language switching on real platforms.
