@@ -33,7 +33,7 @@ jobs:
           --project-name=nova_2048
           --org=com.sanskarin
 
-      - name: Keep only generated platform files
+      - name: Commit generated platform files
         run: |
           git add android ios linux macos windows .metadata .gitignore
           if git diff --cached --quiet; then
@@ -43,4 +43,7 @@ jobs:
           git config user.name "Sanskar"
           git config user.email "sanskarin@outlook.in"
           git commit -m "build: generate Flutter platform runners"
+          git reset --hard HEAD
+          git clean -fd
+          git pull --rebase origin main
           git push origin HEAD:main
