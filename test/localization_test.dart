@@ -13,7 +13,8 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  test('language parser accepts supported values and rejects malformed input', () {
+  test('language parser accepts supported values and rejects malformed input',
+      () {
     expect(AppLanguageX.parse('system'), AppLanguage.system);
     expect(AppLanguageX.parse('english'), AppLanguage.english);
     expect(AppLanguageX.parse('hindi'), AppLanguage.hindi);
@@ -39,7 +40,8 @@ void main() {
     const hindi = NovaLocalizations(Locale('hi'));
 
     expect(english.text('New Game'), 'New Game');
-    expect(hindi.text('Untranslated future string'), 'Untranslated future string');
+    expect(
+        hindi.text('Untranslated future string'), 'Untranslated future string');
   });
 
   test('localized mode direction and achievement helpers use stable IDs', () {
