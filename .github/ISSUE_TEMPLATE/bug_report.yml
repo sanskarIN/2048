@@ -5,12 +5,12 @@ labels: ["bug"]
 body:
   - type: markdown
     attributes:
-      value: Thanks for helping improve 2048 Nova. Do not include passwords, tokens, or other private information.
+      value: Thanks for helping improve 2048 Nova. Do not include passwords, tokens, signing material, or unrelated private information. Portable Game Backup text is plain JSON containing the current game state, so inspect it before sharing.
   - type: input
     id: version
     attributes:
-      label: App version
-      placeholder: 0.9.0
+      label: App version or commit
+      placeholder: 0.9.0+1 or a Git commit SHA
     validations:
       required: true
   - type: dropdown
@@ -25,6 +25,46 @@ body:
         - macOS
         - Linux
         - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Gameplay / engine
+        - Save / resume / Undo
+        - Game Backup / import
+        - Move Replay
+        - Auto Play Demo / Hint
+        - Daily Challenge
+        - Statistics / achievements
+        - Accessibility / keyboard / focus
+        - Themes / layout / animation
+        - External links / support
+        - Build / packaging
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: mode
+    attributes:
+      label: Game mode
+      description: If the bug involves a game, name the mode and board size.
+      placeholder: Classic 4×4
+  - type: dropdown
+    id: session_origin
+    attributes:
+      label: Current-game origin
+      description: Select the closest match when the issue involves a current game.
+      options:
+        - Not applicable
+        - Normal local ranked game
+        - Imported unranked Game Backup
+        - Daily Challenge
+        - Auto Play Demo sandbox
+        - Unsure
     validations:
       required: true
   - type: textarea
@@ -50,10 +90,19 @@ body:
     id: media
     attributes:
       label: Screenshots or video
-      description: Add visual evidence when useful.
+      description: Add visual evidence when useful. Remove unrelated private information first.
   - type: textarea
     id: logs
     attributes:
       label: Logs
-      description: Paste only non-sensitive logs.
+      description: Paste only non-sensitive logs. Never paste credentials, tokens, private keys, keystore passwords, or provisioning secrets.
       render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I checked the troubleshooting guide and existing issues for the same problem.
+          required: true
+        - label: I removed credentials and unrelated private information from anything I am sharing.
+          required: true
