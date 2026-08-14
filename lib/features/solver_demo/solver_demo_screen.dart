@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../../app/state/app_scope.dart';
 import '../../core/localization/nova_localizations.dart';
 import '../../domain/autoplay_session.dart';
-import '../../domain/game_types.dart';
 import '../../shared/nova_scaffold.dart';
 import '../game/game_board.dart';
 
@@ -136,12 +135,17 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                   runSpacing: 10,
                   children: [
                     _Metric(
-                        label: l10n.text('Demo score'), value: '${game.score}'),
+                      label: l10n.text('Demo score'),
+                      value: '${game.score}',
+                    ),
                     _Metric(
-                        label: l10n.text('Demo moves'), value: '${game.moves}'),
+                      label: l10n.text('Demo moves'),
+                      value: '${game.moves}',
+                    ),
                     _Metric(
-                        label: l10n.text('Highest'),
-                        value: '${game.highestTile}'),
+                      label: l10n.text('Highest'),
+                      value: '${game.highestTile}',
+                    ),
                     _Metric(
                       label: l10n.text('Last move'),
                       value: direction == null
@@ -183,8 +187,9 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                               ? Icons.pause_rounded
                               : Icons.play_arrow_rounded,
                         ),
-                        label:
-                            Text(l10n.text(_running ? 'Pause' : 'Auto Play')),
+                        label: Text(
+                          l10n.text(_running ? 'Pause' : 'Auto Play'),
+                        ),
                       ),
                       FilledButton.tonalIcon(
                         onPressed: _running || _session.isComplete
