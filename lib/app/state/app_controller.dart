@@ -300,7 +300,9 @@ class AppController extends ChangeNotifier {
         }
         _winCounted = true;
       }
-      if (current.status == GameStatus.lost && _sessionCounted) {
+      if (current.status == GameStatus.lost &&
+          _sessionCounted &&
+          !_winCounted) {
         stats.currentStreak = 0;
         _sessionCounted = false;
       }
