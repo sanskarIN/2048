@@ -18,6 +18,8 @@
 
 The `v1` suffix versions the storage key namespace separately from the inner game-state schema.
 
+**Challenge Codes add no additional project-owned storage key.** Generated and decoded code text exists only in screen memory and, after explicit Copy/Paste actions, the platform clipboard. Starting a validated code creates an ordinary fresh game that then uses the normal current-game/Undo/statistics storage path.
+
 ## Current game
 
 The current game is serialized with `GameState.toJson()` and deserialized with `GameState.fromJson()`.
@@ -100,6 +102,8 @@ Persisted numeric values are sanitized to legal non-negative integers. Wins cann
 
 Portable imported sessions are deliberately excluded from lifetime-statistics mutation. See [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md).
 
+A Challenge Code is configuration-only and starts a fresh game through `AppController.newGame`, so its resulting play follows the same normal non-Daily statistics policy as a matching mode started locally from the mode picker. See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md).
+
 ## Achievements
 
 Achievement persistence is a map from achievement ID to an ISO-8601 unlock timestamp or null. Invalid timestamp text is treated as not unlocked rather than causing startup failure.
@@ -128,6 +132,8 @@ Duplicate merge policy preserves:
 
 An imported unranked Daily-configured game cannot mutate this history.
 
+Daily mode is also excluded from Challenge Codes. Therefore code text cannot choose an arbitrary seed and then enter the date-indexed Daily-history pipeline.
+
 ## Unranked current-game marker
 
 Portable restore sets:
@@ -138,7 +144,7 @@ nova.current_game_unranked.v1 = true
 
 This marker is persisted separately from the portable game payload so external backup data cannot choose whether it is ranked. The local application is authoritative about ranking policy.
 
-The marker is removed with current-game reset, corrupt-current-game recovery, or complete project data reset. Starting a new local game persists the marker as false.
+The marker is removed with current-game reset, corrupt-current-game recovery, or complete project data reset. Starting a new local game—including one created from a validated Challenge Code—persists the marker as false.
 
 ## Reset behavior
 
@@ -166,18 +172,25 @@ Only achievement unlock timestamps are cleared.
 
 `clearAll()` removes only the seven project-owned keys listed above. It does not call a blanket preferences wipe and therefore does not remove unrelated keys that another component might own.
 
+Generated Challenge Code text is not one of those keys. Any clipboard copy is controlled by the operating system/platform clipboard and is outside `SharedPreferences` reset semantics.
+
 ## Deterministic state integrity
 
 RNG state is part of `GameState`. This is important because a board-only save would not be a faithful deterministic resume: the next spawn could differ after restore. Saving the RNG state ensures normal save/resume and Undo continue from the expected pseudo-random sequence.
 
-## Replay and Auto Play storage
+Challenge Codes use the same deterministic boundary at game creation: the decoded `GameConfig.seed` initializes `SeededRandomSource`, so the same supported configuration/seed yields the same opening board/RNG state and remains aligned while the same valid move sequence is played.
 
+## Replay, Auto Play, and Challenge Code storage
+
+- **Challenge Codes** add no persistence key. Code text is transient screen/clipboard data; a started code becomes a normal fresh game.
 - **Move Replay** adds no persistence key. It builds defensive display frames from the current game and validated Undo history.
 - **Auto Play Demo** adds no persistence key. Its `AutoplaySession` exists only in memory and is discarded when the demo screen is closed.
 
 ## Backup storage boundary
 
 Portable Game Backup is clipboard text, not a new `SharedPreferences` collection. Import writes the restored game to the normal current-game key and writes the local unranked marker. It never imports the user's settings, lifetime statistics, achievements, Daily history, or old Undo list.
+
+Challenge Codes deliberately stay separate from Backup: Challenge Codes encode only a fresh-game configuration/seed and therefore require no unranked marker; Backup encodes progress and therefore always enters the local unranked policy.
 
 ## Data migration guidance
 
@@ -190,6 +203,8 @@ When changing persisted data in a future version:
 5. do not attach stale Undo or ranking metadata to a new session;
 6. update this document, `CHANGELOG.md`, `docs/TESTING.md`, and `what_changed.md` in the same change.
 
+Challenge Code format versioning is independent from `SharedPreferences` key versions because the code is a portable protocol rather than persisted app storage. See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md).
+
 ## Privacy
 
-All data in this document is local application state. The default app does not transmit it to an analytics, advertising, account, or cloud backend. External links are launched only after an explicit user action. See [`PRIVACY.md`](PRIVACY.md).
+All persisted data in this document is local application state. The default app does not transmit it to an analytics, advertising, account, or cloud backend. Challenge Code and Game Backup clipboard access happens only after explicit user actions. External links are launched only after an explicit user action. See [`PRIVACY.md`](PRIVACY.md).
