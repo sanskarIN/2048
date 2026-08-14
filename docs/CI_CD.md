@@ -41,6 +41,8 @@ The order is deliberate. Formatting and analysis fail fast before spending time 
 
 The workflow has read-only repository contents permission and uses concurrency cancellation so an older in-progress run for the same ref can be replaced by newer work.
 
+Phase 15 Challenge Code coverage is part of this same permanent gate rather than a feature-specific permanent workflow. `challenge_code_test.dart`, `challenge_code_screen_test.dart`, and the app-level navigation regression execute with the rest of the suite.
+
 ## Native platform build matrix
 
 Workflow name: **Platform Builds**
@@ -91,6 +93,8 @@ flutter build ios --release --no-codesign
 
 The iOS command deliberately verifies an **unsigned** release. The repository does not contain Apple signing certificates or provisioning credentials.
 
+Challenge Codes use only Dart/Flutter code plus the already-existing platform clipboard boundary, so they require no new native plugin/package setup. Native verification still matters because their Home route, screen, form controls, clipboard calls, in-app Guide/About text, and normal game-start path are compiled into every target.
+
 ## Automatic Dart formatting
 
 Workflow name: **Format Dart**
@@ -123,6 +127,8 @@ Workflow name: **Lock Flutter Dependencies**
 This workflow is intentionally narrow. It runs when its own workflow file changes or when manually dispatched, executes `flutter pub get`, and commits `pubspec.lock` only if resolution changes the lockfile.
 
 The application lockfile is committed because 2048 Nova is an application, not a reusable Dart library.
+
+Challenge Codes added no dependency and therefore require no lockfile change.
 
 ## Platform bootstrap
 
@@ -169,7 +175,7 @@ A later successful run does not erase an earlier failure. If a failure reveals a
 - correcting commit;
 - later successful verification.
 
-This makes the verification trail auditable rather than presenting only the final green badge.
+Superseded runs cancelled by the concurrency policy are explicitly distinguished from actual code/test failures. For example, a run whose formatter/analyzer/tests passed but whose Web build was cancelled because a newer commit arrived is not promoted as final evidence and is not mislabeled as a code failure.
 
 ## What CI proves
 
@@ -177,7 +183,7 @@ Successful automated workflows provide evidence that the tested repository state
 
 - is formatter-clean;
 - passes Flutter static analysis;
-- passes the automated test suite;
+- passes the automated test suite, including current Challenge Code codec/UI determinism/validation flows;
 - produces a Web release build;
 - when the native matrix is run, compiles configured native release targets on GitHub-hosted runners.
 
@@ -188,6 +194,7 @@ CI alone does not establish:
 - universal absence of defects;
 - physical-device touch behavior across every device;
 - real screen-reader quality;
+- real Challenge Code/Game Backup clipboard permission/history behavior on every OS/browser;
 - store acceptance;
 - Android release-key management;
 - Apple signing/provisioning;
