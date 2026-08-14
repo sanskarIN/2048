@@ -292,20 +292,7 @@ class AppController extends ChangeNotifier {
       stats.highestTile = current.highestTile > stats.highestTile
           ? current.highestTile
           : stats.highestTile;
-      if (current.status == GameStatus.won && !_winCounted) {
-        stats.gamesWon += 1;
-        stats.currentStreak += 1;
-        if (stats.currentStreak > stats.bestStreak) {
-          stats.bestStreak = stats.currentStreak;
-        }
-        _winCounted = true;
-      }
-      if (current.status == GameStatus.lost &&
-          _sessionCounted &&
-          !_winCounted) {
-        stats.currentStreak = 0;
-        _sessionCounted = false;
-      }
+      _applyTerminalStats(current);
       _updateDailyRecord(current);
       _unlockAchievements();
       await _persist();
@@ -355,6 +342,7 @@ class AppController extends ChangeNotifier {
     final before = current.status;
     engine.refreshStatus(current);
     if (before != current.status) {
+      _applyTerminalStats(current);
       _updateDailyRecord(current);
       _unlockAchievements();
       await _persist();
@@ -424,6 +412,21 @@ class AppController extends ChangeNotifier {
     await store.saveStats(stats.toJson());
     await store.saveDailyHistory(dailyHistory);
     await _saveAchievements();
+  }
+
+  void _applyTerminalStats(GameState state) {
+    if (state.status == GameStatus.won && !_winCounted) {
+      stats.gamesWon += 1;
+      stats.currentStreak += 1;
+      if (stats.currentStreak > stats.bestStreak) {
+        stats.bestStreak = stats.currentStreak;
+      }
+      _winCounted = true;
+    }
+    if (state.status == GameStatus.lost && _sessionCounted && !_winCounted) {
+      stats.currentStreak = 0;
+      _sessionCounted = false;
+    }
   }
 
   void _updateDailyRecord(GameState state) {
