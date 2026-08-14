@@ -122,3 +122,9 @@ Complete these before promoting to `1.0.0`:
 - [ ] Review dependency/update state deliberately; do not upgrade blindly immediately before release
 - [ ] Document any remaining known limitations, including non-cryptographic Challenge Code checksums, same-code divergence after different move sequences, bounded Replay history, plain-JSON clipboard backup, imported-game unranked policy, and the heuristic rather than guaranteed-optimal Auto Play solver
 - [ ] Promote version/tag to `1.0.0` only after the stable-release criteria are satisfied
+
+## English/Hindi localization qualification
+
+Before stable release, manually verify System default, explicit English, and explicit हिन्दी on representative mobile, desktop, and Web targets. Check Home, Settings, modes, gameplay dialogs/metrics, Daily, statistics, achievements, Challenge Codes, Backup, Replay, Auto Play, Guide, About, Support, and external-link fallback text.
+
+Also verify Hindi large-text/narrow-layout wrapping, no clipped critical actions, game-board positional semantics, focus traversal, TalkBack/VoiceOver/representative desktop-browser screen readers, and persistence of the language choice across a real app termination/relaunch. Automated localization tests are evidence, not a substitute for these checks.
