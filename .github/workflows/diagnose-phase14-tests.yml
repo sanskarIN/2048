@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  phase14-groups:
+  backup-screen-cases:
     name: ${{ matrix.group }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -19,16 +19,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - group: backup-codec
-            command: flutter test test/game_backup_test.dart
-          - group: imported-policy
-            command: flutter test test/imported_game_policy_test.dart
-          - group: backup-screen
-            command: flutter test test/game_backup_screen_test.dart
-          - group: unranked-marker
-            command: flutter test test/unranked_marker_test.dart
-          - group: pre-phase14-baseline
-            command: "flutter test $(find test -maxdepth 1 -name '*.dart' ! -name 'game_backup_test.dart' ! -name 'imported_game_policy_test.dart' ! -name 'game_backup_screen_test.dart' ! -name 'unranked_marker_test.dart' -print | sort)"
+          - group: backup-export
+            test_name: export copies a decodable current-game-only backup
+          - group: backup-import-confirm
+            test_name: valid import requires confirmation and becomes unranked
+          - group: backup-import-cancel
+            test_name: cancelled import leaves an existing ranked game untouched
+          - group: backup-invalid-input
+            test_name: invalid clipboard text is rejected without replacing the game
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -36,6 +34,6 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - name: Run group
+      - name: Run focused backup screen test
         shell: bash
-        run: ${{ matrix.command }}
+        run: flutter test test/game_backup_screen_test.dart --plain-name "${{ matrix.test_name }}"
