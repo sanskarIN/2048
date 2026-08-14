@@ -4,23 +4,44 @@ This document records objective automated evidence for the current 2048 Nova rel
 
 ## Phase 14 — Portable Game Backup + complete documentation
 
-### Production/native state
+### Final permanent quality gate
 
-The final Phase 14 application source requiring native compilation is:
+The final Phase 14 source/test state was verified by the maintained `CI` workflow:
 
 ```text
-741dfd42e51386646aa64be116cf7e913e98d211
-docs: refresh in-app release candidate highlights
+Workflow: CI
+Run: 31787639781
+Verified source/test commit: 137180a1c886852e1b2b4dfda4bbcb514c927eb2
+Conclusion: SUCCESS
 ```
 
-That source state includes all preceding Phase 14 production changes: the `GameBackup` codec and strict 128 KiB envelope validation; persistent `nova.current_game_unranked.v1` policy marker; controller-level imported-session isolation from trusted lifetime records; backup route/screen/Home entry; explicit clipboard export/import confirmation; `Continue Unranked Backup` labeling; imported historical-best isolation; and in-app Guide/About documentation for Backup, Replay, Auto Play, offline/privacy, and release-candidate boundaries.
+All maintained quality steps passed:
 
-Native build evidence:
+- dependency resolution — **PASS**
+- Dart formatting check — **PASS**
+- Flutter static analysis — **PASS**
+- complete automated test suite — **PASS: 112/112**
+- Flutter Web release build — **PASS**
+- overall CI job — **SUCCESS**
+
+Phase 13 completed at 92 tests. Phase 14 added exactly 20 focused tests:
+
+- `test/game_backup_test.dart` — 7;
+- `test/imported_game_policy_test.dart` — 5;
+- `test/game_backup_screen_test.dart` — 4;
+- `test/unranked_marker_test.dart` — 4.
+
+Automated Phase 14 coverage verifies that backup round trip preserves the current game; unrelated lifetime/settings/achievement/Daily/Undo data is excluded; malformed/unsupported/invalid/oversized backup text is rejected; strict embedded `GameState` validation remains authoritative; clipboard export is decodable; import requires explicit confirmation; Cancel/invalid input preserve existing state; imported sessions remain unranked across restart; imported moves cannot mutate lifetime records, achievements, streaks, or Daily history; imported historical best cannot replace the device lifetime record; terminal imported state cannot award a ranked win; a normal new game exits imported policy; and malformed/cleared/corrupt current-game state cleans the associated unranked marker.
+
+### Final native production gate
+
+The clipboard production boundary was refactored behind `TextClipboard` so normal builds still use Flutter's system clipboard while widget tests use an in-memory implementation. The production state containing that abstraction and the injectable Game Backup screen was verified by the maintained native matrix:
 
 ```text
 Workflow: Platform Builds
-Run: 31784286707
-Verified production commit: 741dfd42e51386646aa64be116cf7e913e98d211
+Run: 31787016748
+Verified production commit: dd3c79bec40cf1aa1e4b00190d32393b249902e0
+Commit message: refactor: inject clipboard service into game backup screen
 Conclusion: SUCCESS
 ```
 
@@ -34,18 +55,7 @@ Jobs:
 
 The iOS job is intentionally unsigned. Real signing/provisioning remains a manual distribution boundary.
 
-### Phase 14 automated-test expansion
-
-Phase 13 completed at **92 tests**. Phase 14 adds exactly 20 focused test cases across four new files:
-
-- `test/game_backup_test.dart` — 7;
-- `test/imported_game_policy_test.dart` — 5;
-- `test/game_backup_screen_test.dart` — 4;
-- `test/unranked_marker_test.dart` — 4.
-
-The complete Phase 14 suite therefore contains **112 automated tests**. The permanent CI run triggered by this verification-document commit confirms the repository-wide formatter, analyzer, coverage test execution, and Web release build. Its exact run ID/result is recorded in the follow-up verification-only commit after GitHub Actions completes.
-
-Automated trust-boundary coverage verifies that backup round trip preserves the current game; unrelated lifetime/settings/achievement/Daily/Undo data is excluded; malformed/unsupported/invalid/oversized backup text is rejected; strict embedded `GameState` validation remains authoritative; clipboard export is decodable; import requires explicit confirmation; Cancel/invalid input preserve existing state; imported sessions remain unranked across restart; imported moves cannot mutate lifetime records, achievements, streaks, or Daily history; imported historical best cannot replace the device lifetime record; terminal imported state cannot award a ranked win; a normal new game exits imported policy; and malformed/cleared/corrupt current-game state cleans the associated unranked marker.
+An earlier Phase 14 native matrix (`31784286707` on `741dfd42e51386646aa64be116cf7e913e98d211`) had already passed all five configured targets before the clipboard abstraction. Run `31787016748` supersedes it for current Phase 14 production-code evidence.
 
 ### Transparent Phase 14 intermediate failures
 
@@ -53,11 +63,13 @@ These are not counted as final verification:
 
 - CI run `31781326279` failed because strict analysis exposed an unused backup-test import. Commit `3446413574582c196a47877fe1bfbe63addbf71d` fixed it.
 - The oversized-backup fixture initially used unsupported Dart string multiplication; commit `a4a2de5bfb9e32fb9f02cf13b5019f69141ff567` replaced it with a valid `List.filled(...).join()` fixture.
-- Backup widget tests initially assumed the below-the-fold Home card was visible in the default 800×600 test viewport; commit `24b2063f365b63a86009c9acbebf2c4bafe73bed` scrolls it into view before tapping.
+- Backup widget tests initially assumed the below-the-fold Home card was visible in Flutter's default 800×600 test viewport; commit `24b2063f365b63a86009c9acbebf2c4bafe73bed` added explicit scrolling.
+- A later full suite completed with **110 passed / 2 failed** after the clipboard abstraction. Focused diagnostics showed only the Backup **export** and **cancel** widget cases failed because their page actions were still below the bottom navigation/test viewport. Commit `137180a1c886852e1b2b4dfda4bbcb514c927eb2` (`test: scroll backup page beyond bottom navigation before taps`) corrected those page-action taps. The maintained CI then passed **112/112** in run `31787639781`.
 - Temporary one-time patch/wiring helpers had development-tooling failures (`31780514759`, `31780577741`, `31780703213`, `31780791461`, `31781232021`) and were removed after source changes were committed normally.
-- Phase-14-log helper attempts `31785071035` and `31785159285` failed at workflow parsing, while `31785331045` appended successfully in its temporary checkout but failed before commit because staging named an already-removed helper path. Final helper run `31785495844` completed successfully, appended Phase 14 to `what_changed.md`, committed it, and removed itself.
+- Phase-14-log helper attempts `31785071035` and `31785159285` failed at workflow parsing; `31785331045` appended successfully in its temporary checkout but failed before commit because staging named an already-removed helper path. Final helper run `31785495844` completed successfully, appended Phase 14 to `what_changed.md`, committed it, and removed itself.
+- Temporary Phase 14 diagnostic workflows were removed after they isolated the widget failures; they are not part of the permanent automation surface.
 
-The permanent workflow directory after cleanup contains only:
+The maintained workflow directory is limited to:
 
 - `bootstrap-branding.yml`
 - `bootstrap-platforms.yml`
