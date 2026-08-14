@@ -263,6 +263,22 @@ class AppController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> clearAllData() async {
+    game = null;
+    _engine = null;
+    _undo.clear();
+    dailyHistory.clear();
+    settings = AppSettings();
+    stats = PlayerStats();
+    _sessionCounted = false;
+    _winCounted = false;
+    for (final achievement in achievements) {
+      achievement.unlockedAt = null;
+    }
+    await store.clearAll();
+    notifyListeners();
+  }
+
   Future<void> updateSettings(void Function(AppSettings value) update) async {
     update(settings);
     await store.saveSettings(settings.toJson());
