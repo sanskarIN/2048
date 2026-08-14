@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/state/app_scope.dart';
+import '../../core/localization/nova_localizations.dart';
 import '../../domain/game_types.dart';
 import '../../shared/game_replacement_guard.dart';
 import '../../shared/nova_scaffold.dart';
@@ -21,6 +22,7 @@ class ModeSelectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     const modes = [
       (GameMode.classic, 'Classic 4×4', 'The familiar 2048 experience.'),
       (GameMode.quick, 'Quick 3×3', 'Compact and fast.'),
@@ -46,7 +48,7 @@ class ModeSelectionScreen extends StatelessWidget {
       (GameMode.zen, 'Zen', 'Low-pressure endless play.'),
     ];
     return NovaScaffold(
-      title: 'Choose a Mode',
+      title: l10n.text('Choose a Mode'),
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: modes.length,
@@ -55,8 +57,8 @@ class ModeSelectionScreen extends StatelessWidget {
           final mode = modes[index];
           return Card(
             child: ListTile(
-              title: Text(mode.$2),
-              subtitle: Text(mode.$3),
+              title: Text(l10n.text(mode.$2)),
+              subtitle: Text(l10n.text(mode.$3)),
               trailing: const Icon(Icons.arrow_forward_rounded),
               onTap: () => _startMode(context, mode.$1),
             ),
@@ -74,7 +76,7 @@ class ModeSelectionScreen extends StatelessWidget {
       target = await showDialog<int>(
         context: context,
         builder: (dialogContext) => SimpleDialog(
-          title: const Text('Choose target tile'),
+          title: Text(context.l10n.text('Choose target tile')),
           children: [
             for (final value in _targetOptions)
               SimpleDialogOption(
