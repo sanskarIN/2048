@@ -452,6 +452,10 @@ class AppController extends ChangeNotifier {
     final current = game;
     if (current != null) {
       current.bestScore = current.score;
+      for (final snapshot in _undo) {
+        snapshot.bestScore =
+            snapshot.score > current.score ? snapshot.score : current.score;
+      }
       stats.gamesPlayed = 1;
       stats.bestScore = current.score;
       stats.highestTile = current.highestTile;
@@ -468,6 +472,7 @@ class AppController extends ChangeNotifier {
       }
       _sessionCounted = current.status != GameStatus.lost;
       await store.saveGame(current);
+      await store.saveUndoHistory(_undo);
     } else {
       _sessionCounted = false;
       _winCounted = false;
