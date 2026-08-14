@@ -160,6 +160,7 @@ class AppController extends ChangeNotifier {
   bool _sessionCounted = false;
   bool _winCounted = false;
   bool _moveInProgress = false;
+  bool _currentGameUnranked = false;
 
   final List<Achievement> achievements = [
     Achievement(
@@ -264,6 +265,7 @@ class AppController extends ChangeNotifier {
 
   bool get hasGame => game != null;
   bool get canUndo => !_moveInProgress && _undo.isNotEmpty;
+  bool get currentGameIsUnranked => game != null && _currentGameUnranked;
 
   Future<void> initialize() async {
     settings = AppSettings.fromJson(await store.loadSettings());
@@ -273,6 +275,8 @@ class AppController extends ChangeNotifier {
       ..clear()
       ..addAll(await store.loadDailyHistory());
     game = await store.loadGame();
+    _currentGameUnranked =
+        game != null && await store.loadCurrentGameUnranked();
     var repairedSession = false;
     if (game != null) {
       _engine = GameEngine(config: game!.config);
@@ -288,18 +292,23 @@ class AppController extends ChangeNotifier {
       if (_undo.length != restoredUndo.length) {
         await store.saveUndoHistory(_undo);
       }
-      _sessionCounted = true;
-      _winCounted =
-          current.hasAcknowledgedWin || current.status == GameStatus.won;
+      _sessionCounted = !_currentGameUnranked;
+      _winCounted = _currentGameUnranked ||
+          current.hasAcknowledgedWin ||
+          current.status == GameStatus.won;
       final previousStatus = current.status;
       final previousStreak = stats.currentStreak;
       _engine!.refreshStatus(current);
-      _applyTerminalStats(current);
+      if (!_currentGameUnranked) {
+        _applyTerminalStats(current);
+      }
       if (current.status != previousStatus) {
-        _updateDailyRecord(current);
+        if (!_currentGameUnranked) {
+          _updateDailyRecord(current);
+        }
         repairedSession = true;
       }
-      if (stats.currentStreak != previousStreak) {
+      if (!_currentGameUnranked && stats.currentStreak != previousStreak) {
         repairedSession = true;
       }
     }
@@ -312,6 +321,7 @@ class AppController extends ChangeNotifier {
     _engine = GameEngine(config: config);
     game = _engine!.createGame(bestScore: stats.bestScore);
     _undo.clear();
+    _currentGameUnranked = false;
     _sessionCounted = true;
     _winCounted = false;
     stats.gamesPlayed += 1;
@@ -334,17 +344,19 @@ class AppController extends ChangeNotifier {
       }
       _undo.add(snapshot);
       if (_undo.length > 50) _undo.removeAt(0);
-      stats.totalMoves += 1;
-      stats.totalMerges += outcome.merges;
-      stats.bestScore = current.bestScore > stats.bestScore
-          ? current.bestScore
-          : stats.bestScore;
-      stats.highestTile = current.highestTile > stats.highestTile
-          ? current.highestTile
-          : stats.highestTile;
-      _applyTerminalStats(current);
-      _updateDailyRecord(current);
-      _unlockAchievements();
+      if (!_currentGameUnranked) {
+        stats.totalMoves += 1;
+        stats.totalMerges += outcome.merges;
+        stats.bestScore = current.bestScore > stats.bestScore
+            ? current.bestScore
+            : stats.bestScore;
+        stats.highestTile = current.highestTile > stats.highestTile
+            ? current.highestTile
+            : stats.highestTile;
+        _applyTerminalStats(current);
+        _updateDailyRecord(current);
+        _unlockAchievements();
+      }
       await _persist();
       notifyListeners();
       return outcome;
@@ -361,10 +373,12 @@ class AppController extends ChangeNotifier {
     }
     game = restored;
     _engine = GameEngine(config: game!.config);
-    _updateDailyRecord(game!);
+    if (!_currentGameUnranked) _updateDailyRecord(game!);
     await store.saveGame(game!);
     await store.saveUndoHistory(_undo);
-    await store.saveDailyHistory(dailyHistory);
+    if (!_currentGameUnranked) {
+      await store.saveDailyHistory(dailyHistory);
+    }
     notifyListeners();
   }
 
@@ -396,9 +410,11 @@ class AppController extends ChangeNotifier {
     final before = current.status;
     engine.refreshStatus(current);
     if (before != current.status) {
-      _applyTerminalStats(current);
-      _updateDailyRecord(current);
-      _unlockAchievements();
+      if (!_currentGameUnranked) {
+        _applyTerminalStats(current);
+        _updateDailyRecord(current);
+        _unlockAchievements();
+      }
       await _persist();
       notifyListeners();
     }
@@ -409,9 +425,29 @@ class AppController extends ChangeNotifier {
     game!.hasAcknowledgedWin = true;
     game!.status = GameStatus.playing;
     _winCounted = true;
-    _updateDailyRecord(game!);
-    _unlockAchievements();
+    if (!_currentGameUnranked) {
+      _updateDailyRecord(game!);
+      _unlockAchievements();
+    }
     await _persist();
+    notifyListeners();
+  }
+
+  Future<void> importGameBackup(GameState imported) async {
+    if (_moveInProgress) return;
+    final restored = imported.copy();
+    restored.bestScore =
+        restored.score > stats.bestScore ? restored.score : stats.bestScore;
+    _engine = GameEngine(config: restored.config);
+    _engine!.refreshStatus(restored);
+    game = restored;
+    _undo.clear();
+    _currentGameUnranked = true;
+    _sessionCounted = false;
+    _winCounted = true;
+    await store.saveGame(restored);
+    await store.saveUndoHistory(_undo);
+    await store.saveCurrentGameUnranked(true);
     notifyListeners();
   }
 
@@ -420,6 +456,7 @@ class AppController extends ChangeNotifier {
     game = null;
     _engine = null;
     _undo.clear();
+    _currentGameUnranked = false;
     await store.clearGame();
     notifyListeners();
   }
@@ -432,6 +469,7 @@ class AppController extends ChangeNotifier {
     dailyHistory.clear();
     settings = AppSettings();
     stats = PlayerStats();
+    _currentGameUnranked = false;
     _sessionCounted = false;
     _winCounted = false;
     for (final achievement in achievements) {
@@ -450,6 +488,20 @@ class AppController extends ChangeNotifier {
   Future<void> resetStats() async {
     stats = PlayerStats();
     final current = game;
+    if (current != null && _currentGameUnranked) {
+      current.bestScore = current.score;
+      for (final snapshot in _undo) {
+        snapshot.bestScore =
+            snapshot.score > current.score ? snapshot.score : current.score;
+      }
+      _sessionCounted = false;
+      _winCounted = true;
+      await store.saveGame(current);
+      await store.saveUndoHistory(_undo);
+      await store.saveStats(stats.toJson());
+      notifyListeners();
+      return;
+    }
     if (current != null) {
       current.bestScore = current.score;
       for (final snapshot in _undo) {
@@ -490,7 +542,10 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> _persist() async {
-    if (game != null) await store.saveGame(game!);
+    if (game != null) {
+      await store.saveGame(game!);
+      await store.saveCurrentGameUnranked(_currentGameUnranked);
+    }
     await store.saveUndoHistory(_undo);
     await store.saveStats(stats.toJson());
     await store.saveDailyHistory(dailyHistory);
