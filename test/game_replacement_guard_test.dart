@@ -8,10 +8,30 @@ import 'package:nova_2048/domain/game_types.dart';
 import 'package:nova_2048/shared/game_replacement_guard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'support/localized_test_app.dart';
+
 void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
   });
+
+  Widget harness(AppController controller, ValueChanged<bool?> onResult) {
+    return localizedTestApp(
+      home: AppScope(
+        controller: controller,
+        child: Builder(
+          builder: (context) => Scaffold(
+            body: FilledButton(
+              onPressed: () async {
+                onResult(await confirmGameReplacement(context));
+              },
+              child: const Text('Replace'),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   testWidgets('active recoverable game asks before replacement',
       (tester) async {
@@ -22,23 +42,7 @@ void main() {
     );
     bool? result;
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: AppScope(
-          controller: controller,
-          child: Builder(
-            builder: (context) => Scaffold(
-              body: FilledButton(
-                onPressed: () async {
-                  result = await confirmGameReplacement(context);
-                },
-                child: const Text('Replace'),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpWidget(harness(controller, (value) => result = value));
 
     await tester.tap(find.text('Replace'));
     await tester.pumpAndSettle();
@@ -65,23 +69,7 @@ void main() {
     );
     bool? result;
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: AppScope(
-          controller: controller,
-          child: Builder(
-            builder: (context) => Scaffold(
-              body: FilledButton(
-                onPressed: () async {
-                  result = await confirmGameReplacement(context);
-                },
-                child: const Text('Replace'),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+    await tester.pumpWidget(harness(controller, (value) => result = value));
 
     await tester.tap(find.text('Replace'));
     await tester.pump();
