@@ -24,7 +24,7 @@ jobs:
       - name: Install image tooling
         run: python3 -m pip install --disable-pip-version-check cairosvg pillow
 
-      - name: Generate platform icon exports
+      - name: Generate platform branding exports
         shell: bash
         run: |
           python3 <<'PY'
@@ -47,21 +47,19 @@ jobs:
                   output_height=height or width,
               )
 
-          # Android launcher icons: preserve every template density dimension.
-          for path in glob.glob('android/app/src/main/res/mipmap-*/ic_launcher.png'):
-              with Image.open(path) as current:
-                  width, height = current.size
-              render_png(path, width, height)
-
-          # iOS and macOS icon sets: preserve dimensions defined by Flutter templates.
-          for pattern in [
-              'ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png',
-              'macos/Runner/Assets.xcassets/AppIcon.appiconset/*.png',
-          ]:
+          def replace_template_pngs(pattern: str) -> None:
               for path in glob.glob(pattern):
                   with Image.open(path) as current:
                       width, height = current.size
                   render_png(path, width, height)
+
+          # Android launcher icons: preserve each density's template size.
+          replace_template_pngs('android/app/src/main/res/mipmap-*/ic_launcher.png')
+
+          # Apple launcher icons and the native iOS launch image.
+          replace_template_pngs('ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png')
+          replace_template_pngs('ios/Runner/Assets.xcassets/LaunchImage.imageset/*.png')
+          replace_template_pngs('macos/Runner/Assets.xcassets/AppIcon.appiconset/*.png')
 
           # Windows multi-resolution ICO.
           buffer = BytesIO()
@@ -93,6 +91,7 @@ jobs:
         run: |
           git add android/app/src/main/res/mipmap-* \
                   ios/Runner/Assets.xcassets/AppIcon.appiconset \
+                  ios/Runner/Assets.xcassets/LaunchImage.imageset \
                   macos/Runner/Assets.xcassets/AppIcon.appiconset \
                   windows/runner/resources/app_icon.ico \
                   web/icons web/favicon.png \
@@ -103,7 +102,7 @@ jobs:
           fi
           git config user.name "Sanskar"
           git config user.email "sanskarin@outlook.in"
-          git commit -m "feat: export branded platform icons"
+          git commit -m "feat: export branded platform icons and splash assets"
           git reset --hard HEAD
           git clean -fd
           git pull --rebase origin main
