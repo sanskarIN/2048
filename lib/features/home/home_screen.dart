@@ -67,6 +67,11 @@ class HomeScreen extends StatelessWidget {
               children: const [
                 _NavCard('Daily', Icons.today_rounded, '/daily'),
                 _NavCard(
+                  'Challenge Codes',
+                  Icons.hub_outlined,
+                  '/challenge-codes',
+                ),
+                _NavCard(
                   'Auto Play Demo',
                   Icons.auto_awesome_rounded,
                   '/solver-demo',
