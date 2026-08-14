@@ -12,7 +12,7 @@ Made by the Sanskar
 
 ## Overview
 
-2048 Nova preserves the familiar 2048 rules while adding a modern cross-platform interface, deterministic game engine, multiple board sizes and challenge modes, save/resume, robust undo, heuristic hints, statistics, achievements, theme palettes, accessibility controls, daily challenges, and open-source project tooling.
+2048 Nova preserves the familiar 2048 rules while adding a modern cross-platform interface, deterministic game engine, multiple board sizes and challenge modes, save/resume, robust undo, heuristic hints, an isolated Auto Play demonstration, statistics, achievements, theme palettes, accessibility controls, daily challenges, and open-source project tooling.
 
 The normal game is offline-first. It does not require an account, subscription, analytics service, advertising tracker, or permanent internet connection. Internet access is only needed when a player deliberately opens an external destination such as GitHub, LinkedIn, email, or Buy Me a Coffee.
 
@@ -25,6 +25,7 @@ The normal game is offline-first. It does not require an account, subscription, 
 - Save/resume with schema-versioned local state, structural validation, startup challenge reconciliation, and corruption-safe self-healing.
 - Persistent undo history with deterministic RNG restoration, stale-session filtering, and lifetime-best-score preservation.
 - Deterministic non-automatic heuristic hints that evaluate empty cells, merges, corner strategy, monotonicity, and board smoothness without consuming game RNG.
+- Optional **Auto Play Demo** with pause/resume, single-step control, speed selection, deterministic seed reset, and demo-only metrics. It uses an isolated heuristic sandbox and never writes player saves, lifetime statistics, achievements, or Daily history.
 - Statistics including games, wins, win rate, best score, highest tile, total moves/merges, averages, and streaks.
 - Local achievements with progress and unlock dates.
 - Date-seeded offline Daily Challenge with deduplicated local history, sticky completion/win state, and best-result preservation across replays.
@@ -74,11 +75,13 @@ A non-Endless/Zen target win blocks further moves until the player explicitly ch
 
 The engine stores deterministic RNG state inside the game snapshot. That makes seeded challenges, undo, and save/resume behavior reproducible rather than visually pretending to restore a previous state. See [`docs/GAME_ENGINE.md`](docs/GAME_ENGINE.md).
 
-## Hint solver
+## Hint solver and Auto Play Demo
 
 Hints are computed locally from copied board data. Every legal direction is simulated without spawning a tile. The solver ranks candidates using mobility/empty cells, immediate merge value, highest-tile corner placement, monotonicity, smoothness, and deterministic tie-breaking.
 
-Requesting a hint does not change score, moves, board state, undo history, statistics, achievements, or the next deterministic spawn. See [`docs/HINT_SOLVER.md`](docs/HINT_SOLVER.md).
+Requesting a normal hint does not change score, moves, board state, undo history, statistics, achievements, or the next deterministic spawn. The optional Auto Play Demo reuses this heuristic inside its own seeded in-memory Endless sandbox, where automatic demo moves remain separate from the player's game and records.
+
+See [`docs/HINT_SOLVER.md`](docs/HINT_SOLVER.md).
 
 ## Architecture
 
@@ -102,6 +105,7 @@ lib/
     home/
     modes/
     settings/
+    solver_demo/
     splash/
     statistics/
     support/
@@ -109,10 +113,10 @@ lib/
   main.dart
 ```
 
-- `domain/` contains deterministic game rules, serializable state, and the heuristic hint solver.
+- `domain/` contains deterministic game rules, serializable state, the heuristic hint solver, and the isolated autoplay session.
 - `data/` owns validated, bounded, self-healing local persistence.
-- `app/state/` coordinates sessions, undo, settings, statistics, achievements, and daily records.
-- `features/` contains user-facing screens.
+- `app/state/` coordinates player sessions, undo, settings, statistics, achievements, and daily records.
+- `features/` contains user-facing screens, including the persistence-free Auto Play Demo.
 - `core/` and `shared/` contain design tokens, project metadata, replacement guards, external-link handling, and reusable UI.
 
 More detail: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
@@ -123,6 +127,8 @@ Runtime dependencies beyond Flutter are intentionally limited to:
 
 - `shared_preferences` — small local game/settings/statistics storage.
 - `url_launcher` — safe handoff to browser/email handlers for explicit external actions.
+
+Auto Play Demo adds no network service, model download, or third-party AI dependency.
 
 Dependency choices and licensing notes are documented in [`docs/DEPENDENCIES.md`](docs/DEPENDENCIES.md).
 
@@ -194,7 +200,7 @@ See [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md) for current coverage and re
 
 ## Privacy
 
-The default project has no account system, advertising SDK, analytics tracker, or cloud synchronization. Game state, settings, statistics, achievements, and Daily Challenge history are stored locally. Malformed project-owned local data is validated and either repaired or removed instead of being trusted blindly. See [`docs/PRIVACY.md`](docs/PRIVACY.md).
+The default project has no account system, advertising SDK, analytics tracker, or cloud synchronization. Game state, settings, statistics, achievements, and Daily Challenge history are stored locally. Malformed project-owned local data is validated and either repaired or removed instead of being trusted blindly. Auto Play Demo is in-memory only and is discarded when its screen is closed. See [`docs/PRIVACY.md`](docs/PRIVACY.md).
 
 ## Branding and assets
 
