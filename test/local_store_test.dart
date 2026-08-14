@@ -122,7 +122,8 @@ void main() {
     expect(records.single.highestTile, 2048);
     expect(records.single.won, isTrue);
     expect(records.single.completed, isTrue);
-    expect(records.single.updatedAt, DateTime.parse('2026-08-14T02:00:00.000Z'));
+    expect(
+        records.single.updatedAt, DateTime.parse('2026-08-14T02:00:00.000Z'));
     expect(repairedJson, hasLength(1));
   });
 
