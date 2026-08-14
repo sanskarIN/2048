@@ -55,7 +55,7 @@ Run:
 flutter run -d <android-device-id>
 ```
 
-Build an unsigned/debug-development-compatible artifact as appropriate, or the repository's release APK command:
+Build:
 
 ```bash
 flutter build apk --release
@@ -124,7 +124,8 @@ Manual release checks should cover:
 
 - keyboard focus/navigation;
 - responsive widths;
-- clipboard export/import behavior;
+- Challenge Code Copy/Paste/manual-entry behavior under browser clipboard policy;
+- Game Backup clipboard export/import behavior;
 - browser external-link/mail handler behavior;
 - large text/reduced motion/high contrast;
 - representative screen-reader behavior.
@@ -243,13 +244,35 @@ Primary touch/swipe gameplay is most relevant to Android/iOS and touch-capable e
 
 Arrow/WASD/H/U/P/Escape/R shortcuts are important on Web/Windows/macOS/Linux and should be manually qualified with real focus behavior.
 
+Challenge Codes also rely on normal keyboard focus/editing behavior for dropdowns, multiline code entry, selectable generated text, and replacement dialogs.
+
 ### Sound/haptics
 
 These are optional and depend on platform support. The state of the game does not rely solely on them.
 
 ### Clipboard
 
-Game Backup uses Flutter's clipboard APIs. Actual clipboard access, browser policy, and platform messages can differ by environment, so real-platform export/import must be manually checked.
+Both **Challenge Codes** and **Game Backup** use Flutter's clipboard APIs through the shared `TextClipboard` boundary.
+
+Challenge Codes:
+
+- Copy writes a generated `NOVA1...` code only after explicit action;
+- Paste reads text only after explicit action;
+- manual text entry remains available when clipboard access is unavailable/restricted.
+
+Game Backup similarly uses explicit copy/import actions for current-game JSON.
+
+Actual clipboard access, browser permission policy, OS clipboard history, cross-device clipboard behavior, and platform messages can differ by environment. Real-platform testing is required even when widget tests and native compilation are green.
+
+### Deterministic Challenge Code comparison
+
+To qualify a platform implementation manually, use the same Challenge Code on at least two independent runs/devices and verify:
+
+1. decoded configuration/seed match;
+2. opening board and RNG-derived behavior match;
+3. identical valid move sequences remain deterministic;
+4. different moves are allowed to diverge naturally;
+5. Daily mode cannot be opened through arbitrary Challenge Code text.
 
 ### External links
 
@@ -272,6 +295,7 @@ Before calling a target stable/release-ready, complete the applicable items in [
 
 - physical-device/lifecycle testing;
 - screen-reader/focus testing;
+- Challenge Code clipboard/manual-entry/determinism testing;
 - Game Backup clipboard testing;
 - Move Replay/Auto Play timer cleanup;
 - real external handlers;
