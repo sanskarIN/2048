@@ -75,3 +75,7 @@ The repository documentation and issue tracker can help with reproducible projec
 Real clipboard behavior can differ across browsers/operating systems, so a code/backup flow that passes automated widget tests may still need platform-specific diagnosis.
 
 For real iOS distribution, Apple signing/provisioning must be configured outside this public repository. For Android store distribution, use normal private release-signing practices and do not commit the signing material.
+
+## Language-related reports
+
+For a localization issue, include the selected language (**System default**, **English**, or **हिन्दी**), device/platform, the exact screen/label, and the expected wording or layout behavior. For System default problems, also include the device language/region. Do not include unrelated private device data.
