@@ -1350,3 +1350,182 @@ Phase 13 does not remove the existing manual stable-release qualification. Remai
 ### Next safe optional expansion
 
 The remaining source-listed optional expansion areas include validated save export/import, shareable seeded challenge codes, localization readiness, advanced solver benchmarking behind the existing isolated Auto Play boundary, golden/visual-regression matrices, and additional PWA/desktop convenience work. Any next phase must remain isolated, tested, and truthful about manual/device boundaries.
+
+
+## Phase 14 — Portable Current-Game Backup/Restore + Complete Documentation
+
+Phase 14 completes the next optional data-portability feature and expands the repository into a complete user, maintainer, platform, testing, security, privacy, and release documentation set. The project remains `0.9.0+1` release candidate; this phase does not claim universal zero-bug or physical-device/store readiness.
+
+### Trust model
+
+Portable/editable JSON is not trusted proof of lifetime progress. The feature restores one current game only and deliberately excludes lifetime statistics, achievements, streaks, Daily history, settings, and old Undo history.
+
+Every confirmed portable import becomes a locally controlled **unranked session**. The restored board remains playable, saveable, and can create new Undo snapshots, but imported progress cannot inflate trusted local records.
+
+### Portable backup codec
+
+Added `lib/domain/game_backup.dart` with envelope version 1:
+
+```json
+{
+  "format": "2048-nova-game-backup",
+  "version": 1,
+  "exportedAt": "<ISO-8601 timestamp>",
+  "game": { "...": "GameState JSON" }
+}
+```
+
+Current policy:
+
+```text
+format: 2048-nova-game-backup
+version: 1
+maximum encoded input: 128 KiB
+```
+
+Import rejects empty/oversized text before parsing, malformed/non-map JSON, wrong format, unsupported version, invalid export timestamp, missing game data, and any embedded state rejected by strict `GameState.fromJson()` validation.
+
+### Persistent unranked marker
+
+`LocalStore` now owns `nova.current_game_unranked.v1`. The marker is intentionally outside portable `GameState`, so edited backup text cannot choose trusted ranking status.
+
+It persists a confirmed import across restart and is removed/reset when the current game is cleared, corrupt-current-game recovery removes the save, all project data is cleared, or a normal new local game replaces the imported session. Malformed non-boolean marker data fails safely and is removed.
+
+### AppController imported-session policy
+
+Added `_currentGameUnranked` and `currentGameIsUnranked`.
+
+`importGameBackup()` copies the validated state, reconstructs the engine, refreshes terminal status under current rules, installs the game, clears unrelated prior Undo, marks it unranked, persists it, and does not increment games played.
+
+An imported historical `bestScore` is not trusted as a lifetime record. The restored game's display best is normalized against the imported current score and the device's existing lifetime best, while lifetime statistics remain authoritative.
+
+While unranked, imported play cannot update games played/won, total moves/merges, lifetime best score/highest tile, streaks, achievements, or Daily history. A terminal imported game cannot award a ranked win. Reset Statistics does not convert the session into ranked progress.
+
+### Game Backup UI
+
+Added `lib/features/backup/game_backup_screen.dart`, route `/backup`, and a Home **Game Backup** card.
+
+Export copies current-game-only JSON to the clipboard after explicit user action and does not mutate player state.
+
+Import reads clipboard text only after explicit action, validates it, previews mode/board/score/moves/highest/source timestamp, explains unranked policy, requires non-dismissible confirmation, preserves the existing game on Cancel, and installs the unranked game on Restore.
+
+Home identifies imported resume state as **Continue Unranked Backup**.
+
+### Phase 14 automated tests
+
+Added four focused files:
+
+- `test/game_backup_test.dart` — 7 tests for codec round trip, excluded data, malformed/unsupported/timestamp/missing-game/invalid-state/oversized rejection.
+- `test/imported_game_policy_test.dart` — 5 tests for lifetime-best isolation, stats/achievement/Daily isolation, restart persistence, normal-new-game exit, and terminal imported no-win policy.
+- `test/game_backup_screen_test.dart` — 4 tests for clipboard export, explicit confirmed unranked import, Cancel preservation, and invalid-input preservation.
+- `test/unranked_marker_test.dart` — 4 tests for marker round trip, malformed repair, clear-game cleanup, and corrupt-save cleanup.
+
+Phase 14 adds **20 focused tests** to the Phase 13 total of 92, producing a 112-test suite target. Exact final permanent-CI evidence is recorded in `docs/VERIFICATION.md` after the completed repository state is verified.
+
+### Transparent defects and tooling failures
+
+Real intermediate problems remain documented rather than hidden.
+
+CI run `31781326279` exposed an unused backup-test import under strict analysis. Fix:
+
+```text
+3446413574582c196a47877fe1bfbe63addbf71d
+fix: remove unused backup test import
+```
+
+The oversized-backup fixture initially used unsupported Dart string multiplication. Fix:
+
+```text
+a4a2de5bfb9e32fb9f02cf13b5019f69141ff567
+fix: build oversized backup fixture with valid Dart
+```
+
+The backup widget harness initially assumed the below-the-fold Home card was visible in Flutter's default 800×600 test viewport. Fix:
+
+```text
+24b2063f365b63a86009c9acbebf2c4bafe73bed
+test: scroll game backup entry into widget viewport
+```
+
+Several temporary one-time patch/wiring workflows failed for development-tooling reasons such as source-anchor mismatch, an invalid handwritten patch, or a plain Ubuntu patch job lacking Dart. Runs included `31780514759`, `31780577741`, `31780703213`, `31780791461`, and `31781232021`. They are not release evidence. Actual source changes were committed normally and temporary helper files were removed.
+
+The first two attempts to append this Phase 14 log (`31785071035` and `31785159285`) failed at workflow parsing because multiline helper content was not YAML-indented. They ran no job and changed no project source. A third helper run (`31785331045`) successfully decoded/appended the log in its temporary checkout and removed its helper file, but failed before commit because its staging command named an already-removed path. No repository content from that run was pushed. The final corrected helper uses the same single-line base64 payload, stages deletions with `git add -A`, commits the log, and self-removes.
+
+### Final Phase 14 native production verification
+
+Final production/in-app documentation state requiring native compilation:
+
+```text
+741dfd42e51386646aa64be116cf7e913e98d211
+docs: refresh in-app release candidate highlights
+```
+
+Native matrix:
+
+```text
+Workflow: Platform Builds
+Run: 31784286707
+Verified production commit: 741dfd42e51386646aa64be116cf7e913e98d211
+Overall: SUCCESS
+```
+
+Android release APK, Linux release, Windows release, macOS release, and iOS release with `--no-codesign` all succeeded. iOS remains deliberately unsigned; distribution signing/provisioning credentials are not stored in the repository.
+
+### Complete documentation expansion
+
+New dedicated documents include:
+
+- `docs/README.md`
+- `docs/USER_GUIDE.md`
+- `docs/FAQ.md`
+- `docs/GAME_MODES.md`
+- `docs/DATA_STORAGE.md`
+- `docs/BACKUP_AND_RESTORE.md`
+- `docs/DEVELOPMENT.md`
+- `docs/PLATFORMS.md`
+- `docs/CI_CD.md`
+- `docs/TROUBLESHOOTING.md`
+
+Expanded existing documents include root `README.md`, `ARCHITECTURE`, `GAME_ENGINE`, `ACCESSIBILITY`, `PRIVACY`, `DEPENDENCIES`, `TESTING`, `VERIFICATION`, `RELEASE_CHECKLIST`, `CONTRIBUTING`, `CODE_OF_CONDUCT`, `SECURITY`, `SUPPORT`, `AUTHORS`, `ROADMAP`, `CHANGELOG`, issue/PR templates, and the in-app Guide/About text.
+
+Documentation now clearly separates implemented behavior from roadmap ideas, configured platforms from store-ready qualification, automated evidence from real-device checks, ranked local progress from editable imported state, normal Hint from automatic demo behavior, and bounded read-only Replay from full exported replay history.
+
+### Representative meaningful Phase 14 commits
+
+```text
+3446413574582c196a47877fe1bfbe63addbf71d  fix: remove unused backup test import
+67d5453752c97afd5eb97946ad26f58bc1ba5838  feat: register game backup route
+1b86e707476a6cd142e6b6c47ee52e7385c02337  feat: expose game backup from home
+a4a2de5bfb9e32fb9f02cf13b5019f69141ff567  fix: build oversized backup fixture with valid Dart
+2bfaedeb3819f4f3e6a6bf73c39d0f14800c78cf  fix: clarify unranked backup continuation
+24b2063f365b63a86009c9acbebf2c4bafe73bed  test: scroll game backup entry into widget viewport
+741dfd42e51386646aa64be116cf7e913e98d211  docs: refresh in-app release candidate highlights
+```
+
+Direct repository and automation commits use `Sanskar <sanskarin@outlook.in>`. No no-op commits were created merely to inflate commit count.
+
+### Phase 14 release-candidate state
+
+```text
+Project: 2048 Nova
+Version: 0.9.0+1
+Phase: 14 — Portable Current-Game Backup/Restore + Complete Documentation
+
+Core engine: implemented/hardened
+Save + deterministic Undo: implemented/hardened
+Daily Challenge: implemented/hardened
+Statistics/achievements: implemented
+Accessibility foundations: implemented/expanded
+Heuristic Hint: implemented/deterministic
+Auto Play Demo: implemented/isolated/verified
+Move Replay: implemented/read-only/bounded/verified
+Game Backup: implemented/validated/clipboard-based/persistent-unranked/native-build verified
+Documentation: complete user/technical/development/platform/release set
+Native configured release builds: PASS
+```
+
+### Remaining manual boundaries before stable 1.0.0
+
+Still required: representative physical mobile gameplay/lifecycle/save-resume, real touch/orientation/responsive/keyboard/focus checks, TalkBack/VoiceOver/desktop-browser screen readers, long-session Undo/Daily/timed/move-limit/Replay/Auto Play checks, real Game Backup clipboard flows and imported marker persistence/Undo/multiple-mode checks, real browser/email handlers, native icon/splash visual review, Android distribution signing, Apple signing/provisioning, and final store/privacy/listing/package review.
+
+Portable backups remain plain JSON and intentionally unranked. Replay remains bounded by retained Undo history. Auto Play remains a deterministic heuristic demonstration rather than guaranteed optimal play.
