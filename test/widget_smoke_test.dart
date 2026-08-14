@@ -48,7 +48,19 @@ void main() {
     expect(find.text('Quick 3×3'), findsOneWidget);
     expect(find.text('Extended 5×5'), findsOneWidget);
     expect(find.text('Challenge 6×6'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('Daily Challenge'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('Daily Challenge'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('Zen'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('Zen'), findsOneWidget);
   });
 }
