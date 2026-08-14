@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/nova_theme.dart';
 import '../../data/local_store.dart';
+import '../../domain/daily_record.dart';
 import '../../domain/game_engine.dart';
 import '../../domain/game_state.dart';
 import '../../domain/game_types.dart';
@@ -122,6 +123,7 @@ class AppController extends ChangeNotifier {
   GameState? game;
   GameEngine? _engine;
   final List<GameState> _undo = [];
+  final List<DailyRecord> dailyHistory = [];
   bool _sessionCounted = false;
   bool _winCounted = false;
 
@@ -145,6 +147,9 @@ class AppController extends ChangeNotifier {
     settings = AppSettings.fromJson(await store.loadSettings());
     stats = PlayerStats.fromJson(await store.loadStats());
     _restoreAchievements(await store.loadAchievements());
+    dailyHistory
+      ..clear()
+      ..addAll(await store.loadDailyHistory());
     game = await store.loadGame();
     if (game != null) {
       _engine = GameEngine(config: game!.config);
@@ -163,6 +168,7 @@ class AppController extends ChangeNotifier {
     _sessionCounted = true;
     _winCounted = false;
     stats.gamesPlayed += 1;
+    _updateDailyRecord(game!);
     await _persist();
     notifyListeners();
   }
@@ -200,6 +206,7 @@ class AppController extends ChangeNotifier {
       stats.currentStreak = 0;
       _sessionCounted = false;
     }
+    _updateDailyRecord(current);
     await _persist();
     notifyListeners();
     return outcome;
@@ -209,13 +216,22 @@ class AppController extends ChangeNotifier {
     if (_undo.isEmpty || game == null) return;
     game = _undo.removeLast();
     _engine = GameEngine(config: game!.config);
+    _updateDailyRecord(game!);
     await store.saveGame(game!);
     await store.saveUndoHistory(_undo);
+    await store.saveDailyHistory(dailyHistory);
     notifyListeners();
   }
 
   Direction? hint() =>
       game == null || _engine == null ? null : _engine!.hint(game!);
+
+  DailyRecord? dailyRecordFor(int seed) {
+    for (final record in dailyHistory) {
+      if (record.seed == seed) return record;
+    }
+    return null;
+  }
 
   Future<void> refreshChallengeStatus() async {
     final current = game;
@@ -224,6 +240,7 @@ class AppController extends ChangeNotifier {
     final before = current.status;
     engine.refreshStatus(current);
     if (before != current.status) {
+      _updateDailyRecord(current);
       await _persist();
       notifyListeners();
     }
@@ -233,7 +250,8 @@ class AppController extends ChangeNotifier {
     if (game == null) return;
     game!.hasAcknowledgedWin = true;
     game!.status = GameStatus.playing;
-    await store.saveGame(game!);
+    _updateDailyRecord(game!);
+    await _persist();
     notifyListeners();
   }
 
@@ -269,7 +287,27 @@ class AppController extends ChangeNotifier {
     if (game != null) await store.saveGame(game!);
     await store.saveUndoHistory(_undo);
     await store.saveStats(stats.toJson());
+    await store.saveDailyHistory(dailyHistory);
     await _saveAchievements();
+  }
+
+  void _updateDailyRecord(GameState state) {
+    if (state.config.mode != GameMode.daily || state.config.seed == null) {
+      return;
+    }
+    final seed = state.config.seed!;
+    final index = dailyHistory.indexWhere((record) => record.seed == seed);
+    final previous = index >= 0 ? dailyHistory[index] : null;
+    final updated = DailyRecord.fromState(state, previous: previous);
+    if (index >= 0) {
+      dailyHistory[index] = updated;
+    } else {
+      dailyHistory.add(updated);
+    }
+    dailyHistory.sort((a, b) => b.seed.compareTo(a.seed));
+    if (dailyHistory.length > 60) {
+      dailyHistory.removeRange(60, dailyHistory.length);
+    }
   }
 
   void _unlockAchievements(GameState state, int merges) {
