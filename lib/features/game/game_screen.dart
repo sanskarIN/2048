@@ -73,15 +73,7 @@ class _GameScreenState extends State<GameScreen> {
       actions: [
         IconButton(
           tooltip: 'Hint',
-          onPressed: () {
-            final hint = controller.hint();
-            final message = hint == null
-                ? 'No valid move found.'
-                : 'Try ${hint.name.toUpperCase()}.';
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(message)),
-            );
-          },
+          onPressed: _showHint,
           icon: const Icon(Icons.lightbulb_outline_rounded),
         ),
         IconButton(
@@ -102,13 +94,7 @@ class _GameScreenState extends State<GameScreen> {
       ],
       body: Focus(
         autofocus: true,
-        onKeyEvent: (_, event) {
-          if (event is! KeyDownEvent) return KeyEventResult.ignored;
-          final direction = _directionForKey(event.logicalKey);
-          if (direction == null) return KeyEventResult.ignored;
-          unawaited(_performMove(direction));
-          return KeyEventResult.handled;
-        },
+        onKeyEvent: (_, event) => _handleKeyEvent(event),
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onPanEnd: (details) {
@@ -158,7 +144,7 @@ class _GameScreenState extends State<GameScreen> {
                 ),
                 const SizedBox(height: 12),
                 const Text(
-                  'Swipe, Arrow Keys, or W/A/S/D',
+                  'Move: Swipe / Arrows / W A S D  •  H Hint  •  U Undo  •  P or Esc Pause  •  R Restart',
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -167,6 +153,36 @@ class _GameScreenState extends State<GameScreen> {
         ),
       ),
     );
+  }
+
+  KeyEventResult _handleKeyEvent(KeyEvent event) {
+    if (event is! KeyDownEvent || _dialogVisible) {
+      return KeyEventResult.ignored;
+    }
+    final key = event.logicalKey;
+    final direction = _directionForKey(key);
+    if (direction != null) {
+      unawaited(_performMove(direction));
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.keyH) {
+      _showHint();
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.keyU) {
+      final controller = AppScope.of(context);
+      if (controller.canUndo) unawaited(controller.undo());
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.keyP || key == LogicalKeyboardKey.escape) {
+      unawaited(_showPauseMenu());
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.keyR) {
+      unawaited(_restart());
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
   }
 
   Direction? _directionForKey(LogicalKeyboardKey key) {
@@ -184,6 +200,16 @@ class _GameScreenState extends State<GameScreen> {
       return Direction.right;
     }
     return null;
+  }
+
+  void _showHint() {
+    if (_dialogVisible) return;
+    final hint = AppScope.of(context).hint();
+    final message =
+        hint == null ? 'No valid move found.' : 'Try ${hint.name.toUpperCase()}.';
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   Future<void> _performMove(Direction direction) async {
