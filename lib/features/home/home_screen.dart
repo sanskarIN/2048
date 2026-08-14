@@ -91,14 +91,17 @@ class HomeScreen extends StatelessWidget {
                   '/achievements',
                 ),
                 _NavCard(l10n.text('Guide'), Icons.menu_book_rounded, '/guide'),
-                _NavCard(l10n.text('Settings'), Icons.tune_rounded, '/settings'),
+                _NavCard(
+                    l10n.text('Settings'), Icons.tune_rounded, '/settings'),
                 _NavCard(
                   l10n.text('Game Backup'),
                   Icons.backup_rounded,
                   '/backup',
                 ),
-                _NavCard(l10n.text('About'), Icons.info_outline_rounded, '/about'),
-                _NavCard(l10n.text('Support'), Icons.coffee_rounded, '/support'),
+                _NavCard(
+                    l10n.text('About'), Icons.info_outline_rounded, '/about'),
+                _NavCard(
+                    l10n.text('Support'), Icons.coffee_rounded, '/support'),
               ],
             ),
             const SizedBox(height: 20),
