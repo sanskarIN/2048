@@ -302,3 +302,9 @@ Before calling a target stable/release-ready, complete the applicable items in [
 - performance/responsive layout;
 - signing/provisioning/notarization/store packaging;
 - final privacy/listing metadata.
+
+## Locale behavior across platforms
+
+The application registers English (`en`) and Hindi (`hi`) for Android, iOS, Web, Windows, macOS, and Linux Flutter builds. **System default** follows a supported platform locale; unsupported locales fall back to English. Explicit English/Hindi selection overrides the system locale through `MaterialApp.locale`.
+
+Hosted compilation verifies the code path can build for configured targets, but real platform font rendering, large-text wrapping, IME/input behavior, clipboard dialogs, and screen-reader pronunciation in Hindi remain manual release checks.
