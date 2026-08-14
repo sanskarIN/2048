@@ -113,9 +113,10 @@ class ChallengeCode {
       base64Url.encode(utf8.encode(json)).replaceAll('=', '');
 
   static String _decodePayload(String payload) {
-    final padding = (4 - payload.length % 4) % 4;
+    final paddingCount = (4 - payload.length % 4) % 4;
+    final padding = List.filled(paddingCount, '=').join();
     try {
-      return utf8.decode(base64Url.decode('$payload${'=' * padding}'));
+      return utf8.decode(base64Url.decode('$payload$padding'));
     } catch (_) {
       throw const FormatException('Challenge code payload is invalid');
     }
