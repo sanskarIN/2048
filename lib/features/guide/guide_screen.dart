@@ -37,6 +37,10 @@ class GuideScreen extends StatelessWidget {
         'Undo restores the previous board snapshot including deterministic random state. Hints evaluate legal moves using empty-space, merge, corner, monotonicity, and smoothness heuristics. A normal hint suggests one move and never moves tiles automatically.',
       ),
       (
+        'Game Backup',
+        'Home can open Game Backup to copy one validated current-game JSON backup to the clipboard or restore a valid backup after an explicit confirmation. Portable backup excludes settings, lifetime statistics, achievements, Daily history, and old Undo history. Every imported game is deliberately marked unranked, stays unranked after restart, and cannot change lifetime records, achievements, streaks, or Daily results. Imported play can still save and create new Undo snapshots for that restored session.',
+      ),
+      (
         'Move Replay',
         'When a saved game exists, Home can open Move Replay. It is a read-only spectator view built from the current game and its retained Undo snapshots. You can scrub between frames, jump to the first or latest retained frame, step backward or forward, play/pause the timeline, and choose 1, 2, or 4 frames per second. Undo history is bounded, so very long games may replay only the most recent retained moves. Replay uses defensive copies and never changes the live board, score, RNG, statistics, achievements, or Daily history.',
       ),
@@ -54,11 +58,11 @@ class GuideScreen extends StatelessWidget {
       ),
       (
         'Offline and privacy',
-        'Core gameplay, Move Replay, and Auto Play Demo work offline. No account, analytics, advertising tracker, or cloud synchronization is required.',
+        'Core gameplay, Game Backup validation, Move Replay, and Auto Play Demo work without a project server. No account, analytics, advertising tracker, remote AI service, or cloud synchronization is required. Clipboard backup is read or written only after you choose the corresponding backup action.',
       ),
       (
         'FAQ',
-        'You can continue after reaching the target, disable optional feedback in Settings, and report bugs through GitHub or the support email.',
+        'You can continue after reaching the target, disable optional feedback in Settings, reset project-owned local data, and report bugs through GitHub or the support email.',
       ),
     ];
     return NovaScaffold(
