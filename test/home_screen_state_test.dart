@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nova_2048/app/state/app_controller.dart';
 import 'package:nova_2048/app/state/app_scope.dart';
@@ -7,6 +6,8 @@ import 'package:nova_2048/domain/game_state.dart';
 import 'package:nova_2048/domain/game_types.dart';
 import 'package:nova_2048/features/home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'support/localized_test_app.dart';
 
 void main() {
   setUp(() {
@@ -28,7 +29,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MaterialApp(
+      localizedTestApp(
         home: AppScope(
           controller: controller,
           child: const HomeScreen(),
