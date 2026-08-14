@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nova_2048/app/state/app_controller.dart';
 import 'package:nova_2048/app/state/app_scope.dart';
+import 'package:nova_2048/core/localization/nova_localizations.dart';
 import 'package:nova_2048/data/local_store.dart';
 import 'package:nova_2048/domain/game_state.dart';
 import 'package:nova_2048/domain/game_types.dart';
@@ -14,6 +16,25 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
+  Widget localizedHarness({
+    required AppController controller,
+    required Widget child,
+  }) {
+    return MaterialApp(
+      supportedLocales: NovaLocalizations.supportedLocales,
+      localizationsDelegates: const [
+        NovaLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      home: AppScope(
+        controller: controller,
+        child: child,
+      ),
+    );
+  }
+
   Future<AppController> pumpGame(WidgetTester tester) async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
@@ -21,11 +42,9 @@ void main() {
       const GameConfig(mode: GameMode.classic, size: 4),
     );
     await tester.pumpWidget(
-      MaterialApp(
-        home: AppScope(
-          controller: controller,
-          child: const GameScreen(),
-        ),
+      localizedHarness(
+        controller: controller,
+        child: const GameScreen(),
       ),
     );
     await tester.pump();
@@ -69,11 +88,9 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MaterialApp(
-        home: AppScope(
-          controller: controller,
-          child: const GameScreen(),
-        ),
+      localizedHarness(
+        controller: controller,
+        child: const GameScreen(),
       ),
     );
     await tester.pumpAndSettle();
