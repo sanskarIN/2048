@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/state/app_scope.dart';
 import '../../core/constants/project_info.dart';
+import '../../core/localization/nova_localizations.dart';
 import '../../domain/game_types.dart';
 import '../../shared/external_link.dart';
 import '../../shared/nova_scaffold.dart';
@@ -12,11 +13,12 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = AppScope.of(context);
+    final l10n = context.l10n;
     final hasGame = controller.game != null;
     final canContinue =
         controller.game != null && controller.game!.status != GameStatus.lost;
     return NovaScaffold(
-      title: ProjectInfo.name,
+      title: l10n.text(ProjectInfo.name),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -33,26 +35,28 @@ class HomeScreen extends StatelessWidget {
                     onPressed: () => Navigator.pushNamed(context, '/game'),
                     icon: const Icon(Icons.play_arrow_rounded),
                     label: Text(
-                      controller.currentGameIsUnranked
-                          ? 'Continue Unranked Backup'
-                          : 'Continue Game',
+                      l10n.text(
+                        controller.currentGameIsUnranked
+                            ? 'Continue Unranked Backup'
+                            : 'Continue Game',
+                      ),
                     ),
                   ),
                 FilledButton.tonalIcon(
                   onPressed: () => Navigator.pushNamed(context, '/modes'),
                   icon: const Icon(Icons.add_rounded),
-                  label: const Text('New Game'),
+                  label: Text(l10n.text('New Game')),
                 ),
                 OutlinedButton.icon(
                   onPressed: () => Navigator.pushNamed(context, '/daily'),
                   icon: const Icon(Icons.calendar_today_rounded),
-                  label: const Text('Daily Challenge'),
+                  label: Text(l10n.text('Daily Challenge')),
                 ),
                 if (hasGame)
                   OutlinedButton.icon(
                     onPressed: () => Navigator.pushNamed(context, '/replay'),
                     icon: const Icon(Icons.movie_filter_outlined),
-                    label: const Text('Move Replay'),
+                    label: Text(l10n.text('Move Replay')),
                   ),
               ],
             ),
@@ -64,40 +68,48 @@ class HomeScreen extends StatelessWidget {
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
               childAspectRatio: 1.25,
-              children: const [
-                _NavCard('Daily', Icons.today_rounded, '/daily'),
+              children: [
+                _NavCard(l10n.text('Daily'), Icons.today_rounded, '/daily'),
                 _NavCard(
-                  'Challenge Codes',
+                  l10n.text('Challenge Codes'),
                   Icons.hub_outlined,
                   '/challenge-codes',
                 ),
                 _NavCard(
-                  'Auto Play Demo',
+                  l10n.text('Auto Play Demo'),
                   Icons.auto_awesome_rounded,
                   '/solver-demo',
                 ),
-                _NavCard('Statistics', Icons.insights_rounded, '/statistics'),
                 _NavCard(
-                  'Achievements',
+                  l10n.text('Statistics'),
+                  Icons.insights_rounded,
+                  '/statistics',
+                ),
+                _NavCard(
+                  l10n.text('Achievements'),
                   Icons.emoji_events_rounded,
                   '/achievements',
                 ),
-                _NavCard('Guide', Icons.menu_book_rounded, '/guide'),
-                _NavCard('Settings', Icons.tune_rounded, '/settings'),
-                _NavCard('Game Backup', Icons.backup_rounded, '/backup'),
-                _NavCard('About', Icons.info_outline_rounded, '/about'),
-                _NavCard('Support', Icons.coffee_rounded, '/support'),
+                _NavCard(l10n.text('Guide'), Icons.menu_book_rounded, '/guide'),
+                _NavCard(l10n.text('Settings'), Icons.tune_rounded, '/settings'),
+                _NavCard(
+                  l10n.text('Game Backup'),
+                  Icons.backup_rounded,
+                  '/backup',
+                ),
+                _NavCard(l10n.text('About'), Icons.info_outline_rounded, '/about'),
+                _NavCard(l10n.text('Support'), Icons.coffee_rounded, '/support'),
               ],
             ),
             const SizedBox(height: 20),
             Semantics(
               button: true,
-              label: 'Support Sanskar on Buy Me a Coffee',
+              label: l10n.text('Support Sanskar on Buy Me a Coffee'),
               child: OutlinedButton.icon(
                 onPressed: () =>
                     openExternal(context, ProjectInfo.buyMeACoffee),
                 icon: const Icon(Icons.coffee_rounded),
-                label: const Text('Support on Buy Me a Coffee'),
+                label: Text(l10n.text('Support on Buy Me a Coffee')),
               ),
             ),
           ],
@@ -113,8 +125,9 @@ class _Hero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = context.l10n;
     return Semantics(
-      label: '2048 Nova, modern puzzle game',
+      label: l10n.text('2048 Nova, modern puzzle game'),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(28),
@@ -124,17 +137,17 @@ class _Hero extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(32),
         ),
-        child: const Column(
+        child: Column(
           children: [
-            Icon(Icons.grid_view_rounded, size: 64),
-            SizedBox(height: 10),
-            Text(
+            const Icon(Icons.grid_view_rounded, size: 64),
+            const SizedBox(height: 10),
+            const Text(
               '2048 NOVA',
               style: TextStyle(fontWeight: FontWeight.w900, fontSize: 34),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
-              'Classic strategy. Modern polish. Offline-first.',
+              l10n.text('Classic strategy. Modern polish. Offline-first.'),
               textAlign: TextAlign.center,
             ),
           ],
