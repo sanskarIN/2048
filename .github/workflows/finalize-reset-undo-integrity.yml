@@ -1,0 +1,380 @@
+name: Finalize Reset Undo Integrity
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/finalize-reset-undo-integrity.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Wait for earlier one-time writers
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for _ in $(seq 1 120); do
+            active="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" --jq '[.workflow_runs[] | select((.name == "Fix Reset Undo Integrity" or .name == "Finalize Phase 11 Log") and (.status == "queued" or .status == "in_progress"))] | length')"
+            if [[ "$active" == "0" ]]; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo 'Earlier one-time repository writer did not settle.'
+          exit 1
+
+      - name: Sync latest main
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git reset --hard origin/main
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Enforce reset and undo integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          controller = Path('lib/app/state/app_controller.dart')
+          text = controller.read_text(encoding='utf-8')
+          start = text.index('  Future<void> resetStats() async {')
+          end = text.index('  Future<void> resetAchievements() async {', start)
+          section = text[start:end]
+
+          if 'for (final snapshot in _undo)' not in section:
+              needle = '      current.bestScore = current.score;\n'
+              replacement = '''      current.bestScore = current.score;
+                for (final snapshot in _undo) {
+                  snapshot.bestScore = snapshot.score > current.score
+                      ? snapshot.score
+                      : current.score;
+                }
+          '''
+              if needle not in section:
+                  raise SystemExit('Could not locate active-game best-score reset line')
+              section = section.replace(needle, replacement, 1)
+
+          if 'await store.saveUndoHistory(_undo);' not in section:
+              needle = '      await store.saveGame(current);\n'
+              replacement = '''      await store.saveGame(current);
+                await store.saveUndoHistory(_undo);
+          '''
+              if needle not in section:
+                  raise SystemExit('Could not locate active-game persistence line')
+              section = section.replace(needle, replacement, 1)
+
+          text = text[:start] + section + text[end:]
+          controller.write_text(text, encoding='utf-8')
+
+          test = Path('test/statistics_reset_undo_test.dart')
+          test.write_text('''import 'package:flutter_test/flutter_test.dart';
+          import 'package:nova_2048/app/state/app_controller.dart';
+          import 'package:nova_2048/data/local_store.dart';
+          import 'package:nova_2048/domain/game_types.dart';
+          import 'package:shared_preferences/shared_preferences.dart';
+
+          void main() {
+            setUp(() {
+              SharedPreferences.setMockInitialValues({});
+            });
+
+            test('undo after statistics reset cannot restore a historical best score',
+                () async {
+              final store = LocalStore();
+              final controller = AppController(store: store);
+              await controller.initialize();
+              await controller.newGame(
+                const GameConfig(mode: GameMode.classic, size: 4),
+              );
+
+              controller.stats.bestScore = 9999;
+              controller.game!.bestScore = 9999;
+              controller.game!.board
+                ..[0] = [2, 2, 0, 0]
+                ..[1] = [0, 0, 0, 0]
+                ..[2] = [0, 0, 0, 0]
+                ..[3] = [0, 0, 0, 0];
+
+              await controller.move(Direction.left);
+              expect(controller.canUndo, isTrue);
+              expect(controller.game!.bestScore, 9999);
+
+              await controller.resetStats();
+              final resetBaseline = controller.game!.score;
+              expect(controller.stats.bestScore, resetBaseline);
+              expect(controller.game!.bestScore, resetBaseline);
+
+              await controller.undo();
+
+              expect(controller.game!.score, 0);
+              expect(controller.game!.bestScore, resetBaseline);
+              expect(controller.stats.bestScore, resetBaseline);
+
+              controller.game!.board
+                ..[0] = [2, 2, 0, 0]
+                ..[1] = [0, 0, 0, 0]
+                ..[2] = [0, 0, 0, 0]
+                ..[3] = [0, 0, 0, 0];
+              await controller.move(Direction.left);
+
+              expect(controller.stats.bestScore, lessThan(9999));
+              expect(controller.game!.bestScore, lessThan(9999));
+            });
+          }
+          ''', encoding='utf-8')
+          PY
+          dart format lib test
+
+      - name: Remove stale one-time workflow files
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in \
+            .github/workflows/fix-reset-undo-integrity.yml \
+            .github/workflows/finalize-phase11-log.yml; do
+            if [[ -f "$file" ]]; then
+              git rm "$file"
+            fi
+          done
+
+      - name: Commit any integrity correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add lib/app/state/app_controller.dart test/statistics_reset_undo_test.dart .github/workflows
+          if git diff --cached --quiet; then
+            echo 'Integrity correction already present on main.'
+          else
+            git config user.name 'Sanskar'
+            git config user.email 'sanskarin@outlook.in'
+            git commit -m 'fix: keep statistics reset isolated from undo history'
+            git reset --hard HEAD
+            git clean -fd
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo "CODE_SHA=$(git log -1 --format=%H -- lib/)" >> "$GITHUB_ENV"
+          echo "QUALITY_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Verify final code state locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          dart format --output=none --set-exit-if-changed lib test
+          flutter analyze
+          flutter test --coverage
+          flutter build web --release
+
+      - name: Wait for final CI and native builds
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          CI_RUN_ID=''
+          PLATFORM_RUN_ID=''
+
+          for _ in $(seq 1 180); do
+            data="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?head_sha=${QUALITY_SHA}&per_page=5")"
+            CI_RUN_ID="$(printf '%s' "$data" | jq -r '.workflow_runs[0].id // empty')"
+            status="$(printf '%s' "$data" | jq -r '.workflow_runs[0].status // empty')"
+            conclusion="$(printf '%s' "$data" | jq -r '.workflow_runs[0].conclusion // empty')"
+            if [[ "$status" == 'completed' ]]; then
+              [[ "$conclusion" == 'success' ]] || { echo "CI concluded $conclusion"; exit 1; }
+              break
+            fi
+            sleep 5
+          done
+          [[ -n "$CI_RUN_ID" ]] || { echo "No CI run found for ${QUALITY_SHA}"; exit 1; }
+          ci_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${CI_RUN_ID}" --jq '.status + ":" + (.conclusion // "")')"
+          [[ "$ci_state" == 'completed:success' ]] || { echo "CI state $ci_state"; exit 1; }
+
+          for _ in $(seq 1 240); do
+            data="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/platform-builds.yml/runs?head_sha=${CODE_SHA}&per_page=5")"
+            PLATFORM_RUN_ID="$(printf '%s' "$data" | jq -r '.workflow_runs[0].id // empty')"
+            status="$(printf '%s' "$data" | jq -r '.workflow_runs[0].status // empty')"
+            conclusion="$(printf '%s' "$data" | jq -r '.workflow_runs[0].conclusion // empty')"
+            if [[ "$status" == 'completed' ]]; then
+              [[ "$conclusion" == 'success' ]] || { echo "Platform builds concluded $conclusion"; exit 1; }
+              break
+            fi
+            sleep 5
+          done
+          [[ -n "$PLATFORM_RUN_ID" ]] || { echo "No platform run found for ${CODE_SHA}"; exit 1; }
+          platform_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${PLATFORM_RUN_ID}" --jq '.status + ":" + (.conclusion // "")')"
+          [[ "$platform_state" == 'completed:success' ]] || { echo "Platform state $platform_state"; exit 1; }
+
+          echo "CI_RUN_ID=$CI_RUN_ID" >> "$GITHUB_ENV"
+          echo "PLATFORM_RUN_ID=$PLATFORM_RUN_ID" >> "$GITHUB_ENV"
+
+      - name: Update final documentation and progress log
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          repo = os.environ['GITHUB_REPOSITORY']
+          ci_run = os.environ['CI_RUN_ID']
+          platform_run = os.environ['PLATFORM_RUN_ID']
+          code_sha = os.environ['CODE_SHA']
+          quality_sha = os.environ['QUALITY_SHA']
+
+          def gh_json(path):
+              return json.loads(subprocess.check_output(['gh', 'api', path], text=True))
+
+          ci_jobs = gh_json(f'repos/{repo}/actions/runs/{ci_run}/jobs?per_page=100')['jobs']
+          ci_job = next(job for job in ci_jobs if job['name'] == 'Format, analyze, test, web build')
+          ci_steps = {step['name']: step.get('conclusion') for step in ci_job['steps']}
+
+          platform_jobs = gh_json(f'repos/{repo}/actions/runs/{platform_run}/jobs?per_page=100')['jobs']
+          platform_lines = []
+          for job in platform_jobs:
+              platform_lines.append(f"- {job['name']}: **{str(job.get('conclusion')).upper()}**")
+
+          changelog = pathlib.Path('CHANGELOG.md')
+          changelog_text = changelog.read_text(encoding='utf-8')
+          changelog_line = '- Prevented statistics reset followed by Undo from restoring a pre-reset lifetime best score through retained undo snapshots.\n'
+          if changelog_line not in changelog_text:
+              anchor = '### Verification\n'
+              if anchor not in changelog_text:
+                  raise SystemExit('CHANGELOG verification anchor missing')
+              changelog_text = changelog_text.replace(anchor, changelog_line + '\n' + anchor, 1)
+              changelog.write_text(changelog_text, encoding='utf-8')
+
+          testing = pathlib.Path('docs/TESTING.md')
+          testing_text = testing.read_text(encoding='utf-8')
+          testing_line = '`test/statistics_reset_undo_test.dart` verifies a statistics reset also normalizes retained undo snapshots so a later Undo cannot resurrect pre-reset lifetime best-score history.\n\n'
+          if testing_line not in testing_text:
+              anchor = '`test/undo_best_score_test.dart` verifies undo restores a board snapshot without lowering the lifetime best score.\n\n'
+              if anchor not in testing_text:
+                  raise SystemExit('Testing documentation anchor missing')
+              testing_text = testing_text.replace(anchor, anchor + testing_line, 1)
+              testing.write_text(testing_text, encoding='utf-8')
+
+          repair_commit = subprocess.check_output(
+              ['git', 'log', '-1', '--format=%H', '--grep=fix: keep statistics reset isolated from undo history'],
+              text=True,
+          ).strip()
+          if not repair_commit:
+              repair_commit = 'already present before the final verifier commit'
+
+          addendum = f'''
+
+---
+
+## 2026-08-14 — Final statistics-reset / undo integrity correction
+
+A final cross-feature review found one remaining state-integrity edge case after the broader Phase 11 pass: resetting statistics while an active game still had undo snapshots could leave the old lifetime `bestScore` inside those snapshots. A later Undo could therefore restore the pre-reset historical best into the current `GameState`, allowing a future move to repopulate the statistics value that the player had explicitly reset.
+
+### Correction
+
+- `resetStats()` now normalizes every retained current-session undo snapshot to the new active-session best-score baseline.
+- The normalized undo history is persisted immediately with the reset game/statistics state.
+- Normal Undo still preserves legitimate lifetime best-score behavior during ordinary play; the special reset operation now deliberately clears pre-reset historical best-score data from both the active game and its retained snapshots.
+- Focused regression coverage verifies Reset Statistics → Undo → future move cannot resurrect the old lifetime best.
+- `CHANGELOG.md` and `docs/TESTING.md` were updated with this interaction-specific correction and regression boundary.
+
+Repair commit: `{repair_commit}`
+
+### Final quality verification after the correction
+
+```text
+Verified code/quality SHA: {quality_sha}
+Production-code SHA: {code_sha}
+CI workflow run: {ci_run}
+Formatting: {ci_steps.get('Verify formatting')}
+Static analysis: {ci_steps.get('Static analysis')}
+Automated tests: {ci_steps.get('Run tests')}
+Web release build: {ci_steps.get('Build web release')}
+Overall CI job: {ci_job.get('conclusion')}
+```
+
+### Final native build verification after the correction
+
+```text
+Platform Builds workflow run: {platform_run}
+Production-code SHA: {code_sha}
+```
+
+{chr(10).join(platform_lines)}
+
+All configured native build jobs in that run completed successfully before this log entry was committed. The iOS verification remains intentionally unsigned; real signing/provisioning is a manual distribution boundary and no signing secret is committed to the repository.
+
+### Final automated release-candidate boundary
+
+After this correction, no known automated formatter, analyzer, regression-test, Web-release-build, or configured native-build blocker remains in the verified `0.9.0+1` code state. This remains a release candidate rather than an absolute zero-bug claim: physical-device usability, real assistive-technology behavior, signing/provisioning, store packaging, and final distribution metadata remain manual checks before `1.0.0`.
+'''
+
+          progress = pathlib.Path('what_changed.md')
+          current = progress.read_text(encoding='utf-8')
+          heading = '## 2026-08-14 — Final statistics-reset / undo integrity correction'
+          if heading not in current:
+              progress.write_text(current + addendum, encoding='utf-8')
+          PY
+
+      - name: Remove final verifier workflow
+        run: git rm .github/workflows/finalize-reset-undo-integrity.yml
+
+      - name: Commit final evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add CHANGELOG.md docs/TESTING.md what_changed.md .github/workflows/finalize-reset-undo-integrity.yml
+          git config user.name 'Sanskar'
+          git config user.email 'sanskarin@outlook.in'
+          git commit -m 'docs: finalize reset undo integrity verification'
+          git reset --hard HEAD
+          git clean -fd
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo "FINAL_DOC_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Verify final documentation commit CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for _ in $(seq 1 180); do
+            data="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?head_sha=${FINAL_DOC_SHA}&per_page=5")"
+            status="$(printf '%s' "$data" | jq -r '.workflow_runs[0].status // empty')"
+            conclusion="$(printf '%s' "$data" | jq -r '.workflow_runs[0].conclusion // empty')"
+            if [[ "$status" == 'completed' ]]; then
+              [[ "$conclusion" == 'success' ]] || { echo "Final documentation CI concluded $conclusion"; exit 1; }
+              exit 0
+            fi
+            sleep 5
+          done
+          echo 'Final documentation CI did not complete in the verifier window.'
+          exit 1
