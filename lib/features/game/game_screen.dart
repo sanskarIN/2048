@@ -22,8 +22,7 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final timed =
-        AppScope.of(context).game?.config.timeLimitSeconds != null;
+    final timed = AppScope.of(context).game?.config.timeLimitSeconds != null;
     if (timed && _challengeTimer == null) {
       _challengeTimer = Timer.periodic(const Duration(seconds: 1), (_) {
         if (!mounted) return;
