@@ -1,6 +1,6 @@
 # Testing Strategy
 
-2048 Nova uses automated tests for deterministic rules, persistence integrity, controller behavior, accessibility semantics, terminal-state safety, and important UI flows. GitHub Actions is the objective source of truth for repository-wide formatter, analyzer, test, and build status.
+2048 Nova uses automated tests for deterministic rules, persistence integrity, controller behavior, accessibility semantics, terminal-state safety, Auto Play isolation, and important UI flows. GitHub Actions is the objective source of truth for repository-wide formatter, analyzer, test, and build status.
 
 ## Unit and controller coverage
 
@@ -23,6 +23,12 @@
 `test/hint_solver_test.dart` covers heuristic hint availability, representative corner/merge preference, board immutability, and larger board sizes.
 
 `test/hint_state_test.dart` verifies terminal games do not expose gameplay hints.
+
+`test/autoplay_session_test.dart` covers the isolated Auto Play domain session:
+- deterministic reset to the original seeded starting board and RNG state;
+- matching seeded sessions producing matching recommendation/board/score/move/RNG sequences;
+- stepping on an alternate board size;
+- independence from application persistence and player-statistics orchestration.
 
 `test/daily_record_test.dart` covers Daily Challenge progress, completion, retained wins, serialization, date validation, counter/tile validation, completion flags, and timestamps.
 
@@ -53,6 +59,33 @@
 `test/game_replacement_guard_test.dart` verifies recoverable games require confirmation before replacement while terminal lost games can be replaced directly.
 
 `test/game_screen_interaction_test.dart` covers keyboard shortcuts and protection against accidentally dismissing terminal dialogs with route-back behavior.
+
+`test/solver_demo_screen_test.dart` verifies the optional Auto Play / AI Demonstration boundary:
+- navigation from Home into the clearly labeled Auto Play Demo;
+- single-step execution and deterministic seed reset;
+- demo moves never create or replace `AppController.game`;
+- player games-played, total-moves, and lifetime-best statistics remain unchanged;
+- speed selection can be changed;
+- Auto Play starts and exposes Pause;
+- pausing stops later timer ticks from advancing the sandbox in the background.
+
+## Current Phase 12 quality evidence
+
+The latest completed quality gate for the Auto Play implementation is:
+
+```text
+Workflow: CI
+Run: 31778558429
+Commit: 1d98042558ab7ffe40c9da4ad42dbbf8263dcaf6
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+Formatting: PASS — 51 files, 0 changed
+Analysis: PASS — No issues found
+Tests: PASS — 86/86
+Web release build: PASS
+```
+
+The Web build also completed Flutter's WASM dry run successfully. The existing informational CupertinoIcons font lookup warning remained non-fatal and the release Web output was produced.
 
 ## CI quality gate
 
@@ -93,6 +126,7 @@ Automated tests do not replace manual interaction checks. Stable releases should
 - keyboard focus and shortcuts on representative desktop/browser environments;
 - screen-reader behavior on real supported platforms;
 - long-session save/resume, Daily, and challenge timing behavior;
+- Auto Play start/pause/resume, single-step, speed changes, reset, navigation-away timer cleanup, and readability on representative real platforms;
 - real browser/email external-link handlers;
 - native splash/icon presentation;
 - haptic/sound capability behavior;
