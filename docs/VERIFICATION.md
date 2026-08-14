@@ -2,6 +2,57 @@
 
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
+## Phase 16 — Offline English/Hindi localization
+
+### Final permanent quality gate
+
+```text
+Workflow: CI
+Run: 31806785165
+Verified commit: 9dea87e73803d83c3aa0614d35f7860773dbca04
+Conclusion: SUCCESS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+Formatting: PASS — 70 files, 0 changed
+Static analysis: PASS — No issues found
+Automated tests: PASS — 134/134
+Web release build: PASS — build/web
+WASM dry run: PASS
+```
+
+Phase 16 adds seven focused localization tests to the Phase 15 total of 127. The tests cover language parsing/recovery, Hindi catalog behavior, English fallback, dynamic helpers, persistence, Hindi Home/Settings UI, and Hindi board semantics. The final suite also verifies that every pre-existing feature harness continues to pass with production-like localization delegates.
+
+### Final runtime native matrix
+
+```text
+Workflow: Platform Builds
+Run: 31804713200
+Verified production localization commit: 5048486775b0c9702583f348bfc5be71219e83ae
+Conclusion: SUCCESS
+```
+
+- Windows release job `94780817747` — **PASS**
+- Linux release job `94780817828` — **PASS**
+- Android release APK job `94780817929` — **PASS**
+- macOS + unsigned iOS job `94780818361` — **PASS**
+
+The Apple job deliberately uses unsigned iOS verification. Signing/provisioning remains outside public CI.
+
+### Localization verification boundary
+
+Automated evidence establishes that the tested repository state supports persisted System/English/Hindi selection, uses Flutter's official framework delegates, safely falls back from malformed/unsupported stored language values, renders representative Hindi UI/semantics, retains all previous deterministic/trust boundaries, builds Web, and compiles the runtime localization state on every configured native runner.
+
+It does **not** establish complete real-device Hindi font/layout quality, every text-scale/device-size combination, Hindi pronunciation on real screen readers, store metadata localization, or physical-device lifecycle/clipboard/focus behavior. Those remain manual release checks.
+
+### Transparent intermediate failures
+
+- `31804557648`: analyzer caught one unused Auto Play import; fixed by `5048486775b0c9702583f348bfc5be71219e83ae`.
+- `31804740412`: one-time lock helper hit an unrelated Flutter-generated `analysis_options.yaml` working-tree change before rebase; fixed by `f91ee2d423af2142d4d660b3a1d1402bf942f13f`; `31804909137` then succeeded and produced `abf4c95c411658abae27c44f76d39f2f6a9a8bdd`.
+- `31805260580`: localized Game screen exposed an outdated direct-widget harness without localization delegates; diagnostic `31805881265` isolated it; fixed by `8990a904f6ecfb487c722b3705f7061237ca270f`.
+- `31806175302`: 123 tests passed and 11 failed because five other legacy harness areas also mounted localized widgets without delegates. Diagnostic `31806445596` identified all eleven. The shared production-like localized test harness and focused follow-up commits fixed them; final run `31806785165` passed 134/134.
+
+Temporary helper/diagnostic workflows and reports were removed after use. The permanent workflow directory remains the maintained six-workflow set.
+
 ## Phase 15 — Offline Shareable Seeded Challenge Codes
 
 ### Final maintained quality gate
