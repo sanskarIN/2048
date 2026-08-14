@@ -1,8 +1,8 @@
 # Testing Strategy
 
-2048 Nova uses automated tests for deterministic rules, persistence integrity, controller behavior, and important UI flows. GitHub Actions is the objective source of truth for repository-wide formatter, analyzer, test, and build status.
+2048 Nova uses automated tests for deterministic rules, persistence integrity, controller behavior, accessibility semantics, terminal-state safety, and important UI flows. GitHub Actions is the objective source of truth for repository-wide formatter, analyzer, test, and build status.
 
-## Unit coverage
+## Unit and controller coverage
 
 `test/game_engine_test.dart` covers:
 - Starting tile creation.
@@ -14,18 +14,43 @@
 - Game-over and target-win detection.
 - Move-limit and time-limit rules.
 - Deterministic persisted RNG behavior.
+- Blocking movement before a target win is acknowledged.
 
-`test/game_state_test.dart` covers serialization, validation, and highest-tile derivation.
+`test/game_types_test.dart` covers strict persisted `GameConfig` type/range parsing, unsupported modes, fractional numeric fields, and seed bounds.
 
-`test/daily_record_test.dart` covers Daily Challenge progress, completion, retained wins, and serialization.
+`test/game_state_test.dart` covers serialization, schema migration, structure/type/range validation, status and acknowledgement invariants, best-score invariants, timed-state timestamps, and highest-tile derivation.
 
-`test/local_store_test.dart` covers save/resume, undo history, Daily Challenge persistence, scoped data clearing, and malformed-save recovery.
+`test/hint_solver_test.dart` covers heuristic hint availability, representative corner/merge preference, board immutability, and larger board sizes.
 
-`test/app_controller_test.dart` covers persisted appearance/accessibility settings, serialized move requests, and complete local reset behavior.
+`test/hint_state_test.dart` verifies terminal games do not expose gameplay hints.
 
-## Widget coverage
+`test/daily_record_test.dart` covers Daily Challenge progress, completion, retained wins, serialization, date validation, counter/tile validation, completion flags, and timestamps.
+
+`test/daily_replay_history_test.dart` verifies weaker replays cannot downgrade a previous Daily best result and stronger replays update score-associated metrics while preserving the peak tile.
+
+`test/local_store_test.dart` covers save/resume, undo history, Daily Challenge persistence, duplicate-date normalization, bounded/self-healing history repair, invalid map recovery, scoped data clearing, and malformed-save recovery.
+
+`test/app_controller_test.dart` covers persisted appearance/accessibility settings, malformed preference recovery, malformed statistics, malformed achievement timestamps, stale undo filtering, serialized move requests, timed terminal statistics, continued-win streak behavior, and complete local reset behavior.
+
+`test/session_integrity_test.dart` covers counted-win restoration across restart and statistics reset behavior while a game is active.
+
+`test/restored_challenge_status_test.dart` verifies expired timed games are reconciled during startup before the UI can resume them.
+
+`test/undo_best_score_test.dart` verifies undo restores a board snapshot without lowering the lifetime best score.
+
+`test/external_link_test.dart` covers the approved external URI policy.
+
+## Widget and interaction coverage
 
 `test/widget_smoke_test.dart` validates app startup/navigation, theme selection, and availability of the primary game modes.
+
+`test/game_board_accessibility_test.dart` validates board-size semantics plus positional row/column tile labels.
+
+`test/home_screen_state_test.dart` verifies completed lost games do not expose a misleading Continue action.
+
+`test/game_replacement_guard_test.dart` verifies recoverable games require confirmation before replacement while terminal lost games can be replaced directly.
+
+`test/game_screen_interaction_test.dart` covers keyboard shortcuts and protection against accidentally dismissing terminal dialogs with route-back behavior.
 
 ## CI quality gate
 
@@ -39,19 +64,36 @@ flutter test --coverage
 flutter build web --release
 ```
 
-Separate platform-build jobs compile configured native targets where the GitHub runner supports the required toolchain.
+A separate format workflow automatically formats changed Dart source/test files on `main`; the CI gate still verifies formatting independently. Separate platform-build jobs compile configured native targets where the GitHub runner supports the required toolchain.
+
+Because multiple atomic commits can be pushed rapidly, workflow concurrency may cancel an older in-progress run in favor of a newer commit. A canceled superseded run is not considered a code failure. Release evidence is taken from the latest completed run for the final technical state.
 
 ## Regression rule
 
 When a defect is found:
 
-1. Reproduce it.
-2. Add or update a test when practical.
-3. Fix the underlying cause.
-4. Run the focused tests.
-5. Run the broader CI quality gate.
-6. Record meaningful project-level changes in `what_changed.md`.
+1. Reproduce it from the repository state or CI evidence.
+2. Add or update a focused regression test when practical.
+3. Fix the underlying cause rather than masking the symptom.
+4. Run/observe focused verification when available.
+5. Run the broader formatter/analyzer/test/Web quality gate.
+6. Run relevant native release builds when production code changed.
+7. Record the defect, fix, and objective verification in `what_changed.md`.
+
+Real failures are recorded even when immediately fixed. Superseded/canceled workflows are distinguished from actual failures.
 
 ## Manual QA
 
-Automated tests do not replace manual interaction checks. Stable releases should additionally verify touch/swipe behavior, keyboard focus, screen readers, responsive layouts, platform external-link handlers, native splash/icon presentation, haptic/sound capability behavior, and release packaging on actual supported devices where available.
+Automated tests do not replace manual interaction checks. Stable releases should additionally verify:
+
+- touch/swipe behavior on representative physical mobile devices;
+- responsive layouts and orientation changes;
+- keyboard focus and shortcuts on representative desktop/browser environments;
+- screen-reader behavior on real supported platforms;
+- long-session save/resume, Daily, and challenge timing behavior;
+- real browser/email external-link handlers;
+- native splash/icon presentation;
+- haptic/sound capability behavior;
+- signing, provisioning, packaging, and store metadata.
+
+These manual/device/store checks are release boundaries, not hidden automated claims.
