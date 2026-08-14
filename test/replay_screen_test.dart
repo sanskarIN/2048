@@ -122,7 +122,7 @@ void main() {
 
     await tester.pumpWidget(NovaApp(controller: controller));
     await tester.pumpAndSettle();
-    Navigator.of(tester.element(find.byType(MaterialApp))).pushNamed('/replay');
+    tester.state<NavigatorState>(find.byType(Navigator)).pushNamed('/replay');
     await tester.pumpAndSettle();
 
     expect(find.text('No game replay is available yet.'), findsOneWidget);
