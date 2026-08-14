@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../app/state/app_scope.dart';
 import '../../domain/game_backup.dart';
 import '../../domain/game_state.dart';
 import '../../shared/nova_scaffold.dart';
+import '../../shared/text_clipboard.dart';
 
 class GameBackupScreen extends StatelessWidget {
-  const GameBackupScreen({super.key});
+  const GameBackupScreen({
+    this.clipboard = const SystemTextClipboard(),
+    super.key,
+  });
+
+  final TextClipboard clipboard;
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +117,7 @@ class GameBackupScreen extends StatelessWidget {
     GameState current,
   ) async {
     final text = GameBackup.encode(current);
-    await Clipboard.setData(ClipboardData(text: text));
+    await clipboard.writeText(text);
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Current game backup copied to clipboard.')),
@@ -120,13 +125,13 @@ class GameBackupScreen extends StatelessWidget {
   }
 
   Future<void> _importFromClipboard(BuildContext context) async {
-    final clipboard = await Clipboard.getData(Clipboard.kTextPlain);
+    final raw = await clipboard.readText();
     if (!context.mounted) return;
-    final raw = clipboard?.text;
     if (raw == null || raw.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Clipboard does not contain a game backup.')),
+          content: Text('Clipboard does not contain a game backup.'),
+        ),
       );
       return;
     }
