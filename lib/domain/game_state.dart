@@ -138,7 +138,8 @@ class GameState {
     if (startedAtRaw != null && startedAtRaw is! String) {
       throw const FormatException('Invalid game start time');
     }
-    final startedAt = startedAtRaw is String ? DateTime.tryParse(startedAtRaw) : null;
+    final startedAt =
+        startedAtRaw is String ? DateTime.tryParse(startedAtRaw) : null;
     if (startedAtRaw != null && startedAt == null) {
       throw const FormatException('Invalid game start time');
     }
@@ -150,7 +151,8 @@ class GameState {
         .expand((row) => row)
         .fold(0, (highest, value) => value > highest ? value : highest);
     final reachedTarget = highestTile >= config.target;
-    final endless = config.mode == GameMode.endless || config.mode == GameMode.zen;
+    final endless =
+        config.mode == GameMode.endless || config.mode == GameMode.zen;
     if (status == GameStatus.won && (endless || !reachedTarget)) {
       throw const FormatException('Inconsistent won game state');
     }
