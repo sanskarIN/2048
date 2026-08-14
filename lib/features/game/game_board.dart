@@ -60,33 +60,46 @@ class _Tile extends StatelessWidget {
     final digits = value == 0 ? 1 : value.toString().length;
     final fontSize = digits <= 4 ? 28.0 : digits <= 6 ? 22.0 : 16.0;
     final systemReducedMotion = MediaQuery.disableAnimationsOf(context);
+    final animationDuration = reducedMotion || systemReducedMotion
+        ? Duration.zero
+        : const Duration(milliseconds: 140);
     return Semantics(
       label: value == 0 ? 'Empty tile' : 'Tile $value',
       child: AnimatedContainer(
-        duration: reducedMotion || systemReducedMotion
-            ? Duration.zero
-            : const Duration(milliseconds: 130),
+        duration: animationDuration,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: NovaTheme.tileColor(scheme, value),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: scheme.outlineVariant),
         ),
-        child: value == 0
-            ? const SizedBox.shrink()
-            : FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Text(
-                    '$value',
-                    style: TextStyle(
-                      fontSize: fontSize,
-                      fontWeight: FontWeight.w900,
+        child: AnimatedSwitcher(
+          duration: animationDuration,
+          switchInCurve: Curves.easeOutBack,
+          switchOutCurve: Curves.easeIn,
+          transitionBuilder: (child, animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: ScaleTransition(scale: animation, child: child),
+            );
+          },
+          child: value == 0
+              ? const SizedBox.shrink(key: ValueKey(0))
+              : FittedBox(
+                  key: ValueKey(value),
+                  fit: BoxFit.scaleDown,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Text(
+                      '$value',
+                      style: TextStyle(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
                   ),
                 ),
-              ),
+        ),
       ),
     );
   }
