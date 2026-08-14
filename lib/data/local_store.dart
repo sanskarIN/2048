@@ -104,6 +104,20 @@ class LocalStore {
     await prefs.remove(_undoKey);
   }
 
+  Future<void> clearAll() async {
+    final prefs = await _prefs;
+    for (final key in [
+      _gameKey,
+      _undoKey,
+      _settingsKey,
+      _statsKey,
+      _achievementsKey,
+      _dailyHistoryKey,
+    ]) {
+      await prefs.remove(key);
+    }
+  }
+
   Future<Map<String, Object?>> loadSettings() => _loadMap(_settingsKey);
   Future<Map<String, Object?>> loadStats() => _loadMap(_statsKey);
   Future<Map<String, Object?>> loadAchievements() =>
