@@ -110,6 +110,7 @@ class GameEngine {
   }
 
   Direction? hint(GameState state) {
+    if (state.status != GameStatus.playing) return null;
     const preference = [
       Direction.left,
       Direction.down,
