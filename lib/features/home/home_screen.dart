@@ -32,7 +32,11 @@ class HomeScreen extends StatelessWidget {
                   FilledButton.icon(
                     onPressed: () => Navigator.pushNamed(context, '/game'),
                     icon: const Icon(Icons.play_arrow_rounded),
-                    label: const Text('Continue Game'),
+                    label: Text(
+                      controller.currentGameIsUnranked
+                          ? 'Continue Unranked Backup'
+                          : 'Continue Game',
+                    ),
                   ),
                 FilledButton.tonalIcon(
                   onPressed: () => Navigator.pushNamed(context, '/modes'),
