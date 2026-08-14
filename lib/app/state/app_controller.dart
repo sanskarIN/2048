@@ -184,6 +184,18 @@ class AppController extends ChangeNotifier {
 
   Direction? hint() => game == null || _engine == null ? null : _engine!.hint(game!);
 
+  Future<void> refreshChallengeStatus() async {
+    final current = game;
+    final engine = _engine;
+    if (current == null || engine == null) return;
+    final before = current.status;
+    engine.refreshStatus(current);
+    if (before != current.status) {
+      await _persist();
+      notifyListeners();
+    }
+  }
+
   Future<void> continueAfterWin() async {
     if (game == null) return;
     game!.hasAcknowledgedWin = true;
