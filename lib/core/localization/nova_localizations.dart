@@ -83,7 +83,8 @@ class NovaLocalizations {
         },
       );
 
-  String boardSize(int size) => isHindi ? '$size × $size बोर्ड' : '$size × $size board';
+  String boardSize(int size) =>
+      isHindi ? '$size × $size बोर्ड' : '$size × $size board';
 
   String targetTile(int target) =>
       isHindi ? 'लक्ष्य टाइल: $target' : 'Target tile: $target';
@@ -182,12 +183,14 @@ class NovaLocalizations {
     'Enable lightweight game and UI feedback.':
         'हल्का गेम और UI फीडबैक सक्षम करें।',
     'Haptics': 'हैप्टिक्स',
-    'Used only on supported platforms.': 'केवल समर्थित प्लेटफ़ॉर्म पर उपयोग होता है।',
+    'Used only on supported platforms.':
+        'केवल समर्थित प्लेटफ़ॉर्म पर उपयोग होता है।',
     'Gameplay': 'गेमप्ले',
     'Confirm restart': 'रीस्टार्ट की पुष्टि करें',
     'Data': 'डेटा',
     'Reset current game': 'वर्तमान गेम रीसेट करें',
-    'Remove the saved board and undo history.': 'सेव बोर्ड और अनडू हिस्ट्री हटाएँ।',
+    'Remove the saved board and undo history.':
+        'सेव बोर्ड और अनडू हिस्ट्री हटाएँ।',
     'Reset current game?': 'वर्तमान गेम रीसेट करें?',
     'Your saved board and undo history will be removed.':
         'आपका सेव बोर्ड और अनडू हिस्ट्री हटा दी जाएगी।',
