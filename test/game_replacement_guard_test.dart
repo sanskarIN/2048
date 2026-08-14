@@ -13,7 +13,8 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('active recoverable game asks before replacement', (tester) async {
+  testWidgets('active recoverable game asks before replacement',
+      (tester) async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
     await controller.newGame(
