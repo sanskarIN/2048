@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/state/app_scope.dart';
+import '../../core/localization/nova_localizations.dart';
 import '../../shared/nova_scaffold.dart';
 
 class AchievementsScreen extends StatelessWidget {
@@ -9,8 +10,9 @@ class AchievementsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = AppScope.of(context);
+    final l10n = context.l10n;
     return NovaScaffold(
-      title: 'Achievements',
+      title: l10n.text('Achievements'),
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: controller.achievements.length + 1,
@@ -19,7 +21,7 @@ class AchievementsScreen extends StatelessWidget {
           if (index == controller.achievements.length) {
             return OutlinedButton(
               onPressed: () => _reset(context),
-              child: const Text('Reset achievements'),
+              child: Text(l10n.text('Reset achievements')),
             );
           }
           final item = controller.achievements[index];
@@ -46,7 +48,7 @@ class AchievementsScreen extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                item.title,
+                                l10n.achievementTitle(item.id, item.title),
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
                             ),
@@ -55,13 +57,20 @@ class AchievementsScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 4),
-                        Text(item.description),
+                        Text(
+                          l10n.achievementDescription(
+                            item.id,
+                            item.description,
+                          ),
+                        ),
                         const SizedBox(height: 10),
                         LinearProgressIndicator(value: fraction),
                         const SizedBox(height: 5),
                         Text(
                           item.unlocked
-                              ? 'Unlocked ${_date(item.unlockedAt!)}'
+                              ? l10n.isHindi
+                                  ? '${l10n.text('Unlocked')} ${_date(item.unlockedAt!)}'
+                                  : 'Unlocked ${_date(item.unlockedAt!)}'
                               : '$progress / ${item.threshold}',
                           style: Theme.of(context).textTheme.labelMedium,
                         ),
@@ -85,19 +94,20 @@ class AchievementsScreen extends StatelessWidget {
   }
 
   Future<void> _reset(BuildContext context) async {
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Reset achievements?'),
-        content: const Text('All local achievement unlocks will be cleared.'),
+        title: Text(l10n.text('Reset achievements?')),
+        content: Text(l10n.text('All local achievement unlocks will be cleared.')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.text('Cancel')),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Reset'),
+            child: Text(l10n.text('Reset')),
           ),
         ],
       ),
