@@ -4,6 +4,8 @@ abstract final class ProjectInfo {
   static const creator = 'Sanskar';
   static const watermark = 'Made by the Sanskar';
   static const repository = 'https://github.com/sanskarIN/2048';
+  static const bugReport =
+      'https://github.com/sanskarIN/2048/issues/new?template=bug_report.yml';
   static const githubProfile = 'https://www.github.com/sanskarIN';
   static const linkedIn = 'https://www.linkedin.com/in/sanskarIN';
   static const buyMeACoffee = 'https://buymeacoffee.com/sanskarIN';
