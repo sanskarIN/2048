@@ -4,6 +4,7 @@ import '../../app/state/app_scope.dart';
 import '../../core/localization/nova_localizations.dart';
 import '../../domain/game_backup.dart';
 import '../../domain/game_state.dart';
+import '../../domain/game_types.dart';
 import '../../shared/nova_scaffold.dart';
 import '../../shared/text_clipboard.dart';
 
