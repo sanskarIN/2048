@@ -11,7 +11,8 @@ void main() {
     seed: 20260814,
   );
 
-  GameState state({required int score, required int highest, required int moves}) {
+  GameState state(
+      {required int score, required int highest, required int moves}) {
     return GameState(
       board: [
         [highest, 0, 0, 0],
