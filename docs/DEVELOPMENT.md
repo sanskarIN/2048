@@ -1,10 +1,10 @@
 # Development Guide
 
-This document describes the repository workflow for developing 2048 Nova without bypassing its deterministic engine, persistence, accessibility, or release safeguards.
+This document describes the repository workflow for developing 2048 Nova without bypassing its deterministic engine, persistence, portability, accessibility, or release safeguards.
 
 ## Requirements
 
-Install a stable Flutter SDK and the native toolchain required by the platform you intend to run. GitHub Actions currently verifies with the stable Flutter channel; the latest recorded Phase 13 quality gate used Flutter 3.47.0 and Dart 3.13.0.
+Install a stable Flutter SDK and the native toolchain required by the platform you intend to run. GitHub Actions currently verifies with the stable Flutter channel; current release evidence is recorded in [`VERIFICATION.md`](VERIFICATION.md).
 
 Check your environment:
 
@@ -39,6 +39,7 @@ flutter pub get
 │  │  ├─ about/
 │  │  ├─ achievements/
 │  │  ├─ backup/
+│  │  ├─ challenge_codes/
 │  │  ├─ daily_challenge/
 │  │  ├─ game/
 │  │  ├─ guide/
@@ -68,7 +69,7 @@ flutter pub get
 
 Use the narrowest layer that can own a behavior:
 
-- pure game rules and serializable structures belong in `domain/`;
+- pure game rules, portable codecs, and serializable structures belong in `domain/`;
 - local persistence belongs in `data/`;
 - player-session coordination belongs in `app/state/`;
 - reusable UI/platform helpers belong in `shared/`;
@@ -142,6 +143,28 @@ When changing movement, spawning, win/loss logic, RNG, or hints:
 
 Do not use widget tests as the only proof for game-rule changes.
 
+## Challenge Code changes
+
+Challenge Codes are an untrusted portable **configuration** boundary. Changes must preserve:
+
+- explicit format/versioning;
+- maximum input length before payload parsing;
+- exact prefix/segment validation;
+- checksum verification before decoding JSON;
+- Base64URL/UTF-8/JSON failure handling;
+- strict `GameConfig.fromJson()` reuse;
+- required deterministic seed and legal seed bounds;
+- explicit supported-mode allowlist;
+- Daily Challenge exclusion unless its dedicated history contract is deliberately redesigned;
+- no imported board progress, score, statistics, achievements, settings, Daily history, or Undo data;
+- normal recoverable-game replacement confirmation before a decoded code is started;
+- no extra persistence key or silent network requirement;
+- checksum documentation that does not overstate it as cryptographic authentication.
+
+Codec changes belong in `lib/domain/challenge_code.dart`. UI changes belong in `lib/features/challenge_codes/`. Clipboard access should continue through `TextClipboard` so production uses Flutter Clipboard while tests can stay deterministic.
+
+Add or update `test/challenge_code_test.dart` for pure validation/determinism and `test/challenge_code_screen_test.dart` for copy/paste/preview/replacement flows. See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md).
+
 ## Persistence changes
 
 When adding or changing local state:
@@ -158,6 +181,8 @@ When adding or changing local state:
 
 Never use `SharedPreferences.clear()` for project reset because it can erase unrelated keys.
 
+Challenge Codes currently require no persistence key; do not add one unless there is a concrete product requirement and corresponding migration/privacy/reset design.
+
 ## Portable backup changes
 
 Backup import is an untrusted-input boundary. Changes must preserve:
@@ -171,7 +196,7 @@ Backup import is an untrusted-input boundary. Changes must preserve:
 - no imported lifetime stats, achievements, settings, or Daily history;
 - no ranked record mutation from imported play.
 
-See [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md).
+Do not merge Backup and Challenge Code trust semantics: Backup restores progress and remains unranked; Challenge Codes start a fresh config-only game. See [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md).
 
 ## Replay changes
 
@@ -197,6 +222,8 @@ For new interactive UI:
 - ensure important controls remain reachable when content scrolls;
 - add widget/semantics regression tests for critical flows.
 
+For portable text screens such as Challenge Codes/Backup, also test long input/output, validation feedback, clipboard success/failure, focus order, and replacement confirmation.
+
 Real screen-reader testing remains a release qualification step in addition to automated semantics tests.
 
 ## External links
@@ -210,10 +237,10 @@ Do not add insecure `http` destinations, JavaScript/file schemes, or hidden exte
 Use small meaningful Conventional Commits, for example:
 
 ```text
-feat: add validated game backup codec
-fix: keep statistics reset isolated from undo history
-test: cover imported game ranking isolation
-docs: document local storage schema
+feat: add versioned seeded challenge code codec
+fix: validate challenge code checksum before parsing
+test: cover challenge code replacement cancellation
+docs: document challenge code trust model
 chore: remove completed temporary workflow
 ```
 
@@ -237,6 +264,7 @@ A pull request should explain:
 - tests added or changed;
 - accessibility impact;
 - persistence/schema impact;
+- portable-input/trust impact when relevant;
 - platform impact;
 - documentation changed;
 - manual checks still required.
@@ -251,4 +279,4 @@ Behavior changes should update the matching technical document in the same devel
 
 ## Release discipline
 
-Automated green CI is necessary but does not prove universal production readiness. Before promoting the `0.9.0+1` release candidate to stable, follow [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md), including physical-device, screen-reader, long-session, external-handler, signing, and store-review checks.
+Automated green CI is necessary but does not prove universal production readiness. Before promoting the `0.9.0+1` release candidate to stable, follow [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md), including physical-device, screen-reader, long-session, real Challenge Code/Game Backup clipboard, external-handler, signing, and store-review checks.
