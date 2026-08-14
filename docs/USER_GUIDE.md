@@ -32,6 +32,7 @@ From Home:
 
 - choose **New Game** to select a mode;
 - choose **Daily Challenge** for the current date-derived challenge;
+- choose **Challenge Codes** to create or open an offline shared deterministic challenge;
 - choose **Continue Game** when a recoverable local game exists;
 - choose **Continue Unranked Backup** when the current recoverable game came from portable restore.
 
@@ -152,6 +153,37 @@ Daily Challenge is generated locally from the UTC date. It works without a game 
 
 Recent local Daily history keeps score/move information, highest tile, completion, and win status. A weaker replay does not erase a stronger saved result, and completion/win flags are sticky.
 
+## Challenge Codes
+
+Home includes **Challenge Codes** for starting the same deterministic configuration on another device or in another session without accounts or cloud synchronization.
+
+### Create a code
+
+1. Open **Challenge Codes**.
+2. Choose Classic, Quick, Extended, Challenge, Endless, Target, Time Challenge, Move Limit, or Zen.
+3. If you choose Target, choose the target tile.
+4. Select **Generate new seeded code**.
+5. Select **Copy challenge code**.
+6. Share the copied `NOVA1...` text through any method you choose.
+
+A challenge code contains only a versioned configuration and deterministic seed. It does not contain your current board, score, lifetime statistics, achievements, Daily history, or Undo history.
+
+### Open a code
+
+1. Paste or type the received code.
+2. Select **Validate code**, or select **Paste code** to read the clipboard and validate immediately.
+3. Review the decoded mode, board size, target, limits, and seed.
+4. Select **Start this challenge**.
+5. If another recoverable game exists, explicitly confirm replacement.
+
+The same code starts the same opening board/RNG state. Players who then make different moves will naturally diverge.
+
+Challenge Codes are not Game Backup. They start a fresh normal non-Daily game and therefore use normal local statistics. Game Backup restores progress and remains unranked.
+
+Daily Challenge is intentionally excluded from challenge codes because it already has a shared date-derived seed and dedicated history semantics.
+
+See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md).
+
 ## Move Replay
 
 When a current game exists, Home can show **Move Replay**.
@@ -219,7 +251,7 @@ The Statistics screen tracks local ranked-player information such as:
 - current streak;
 - best streak.
 
-Imported backup play and Auto Play Demo do not inflate these records.
+Imported backup play and Auto Play Demo do not inflate these records. A Challenge Code starts a fresh local game, so it participates in normal non-Daily statistics like a game started from the mode picker.
 
 ## Achievements
 
@@ -277,6 +309,8 @@ The game board exposes board-size semantics plus row/column/value-or-empty label
 
 Keyboard controls, high contrast, reduced motion, system text scaling, and responsive layout are also part of the accessibility foundation.
 
+Challenge Codes use visible labels, standard form controls, selectable text, explicit validation feedback, and a structured decoded preview. Real assistive-technology and clipboard behavior still needs representative platform qualification before stable 1.0.0.
+
 See [`ACCESSIBILITY.md`](ACCESSIBILITY.md) for implementation details and manual release checks.
 
 ## Privacy
@@ -285,7 +319,7 @@ Normal gameplay is offline-first. There is no default analytics, advertising, ac
 
 External network/platform handlers are used only after you explicitly open GitHub, LinkedIn, email, or Buy Me a Coffee.
 
-Game Backup writes/reads clipboard text only after explicit backup actions.
+Game Backup writes/reads clipboard text only after explicit backup actions. Challenge Codes similarly write/read clipboard text only after explicit Copy/Paste actions and are never sent to a server by the app.
 
 See [`PRIVACY.md`](PRIVACY.md).
 
