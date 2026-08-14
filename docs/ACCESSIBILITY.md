@@ -9,15 +9,17 @@ Accessibility is part of the 2048 Nova definition of done.
 - Visual tile text is excluded from duplicate semantics so assistive technology receives one intentional positional/value announcement per cell rather than a merged or repeated label.
 - Tile values are rendered as text, so gameplay never relies on color alone.
 - Arrow Keys and W/A/S/D provide keyboard gameplay controls.
-- H opens a hint, U performs Undo when available, P/Escape opens Pause, and R starts the restart flow on keyboard platforms.
+- H opens a Hint, U performs Undo when available, P/Escape opens Pause, and R starts the restart flow on keyboard platforms.
 - The Game screen visibly lists its keyboard shortcuts.
 - Interactive toolbar controls use tooltips and semantic labels where additional context is useful.
 - Terminal win/loss dialogs require an explicit action and cannot be accidentally dismissed by tapping outside or using route-back.
 - Recoverable-game replacement uses an explicit confirmation dialog rather than silently discarding the saved board.
+- Game Backup uses visible descriptive buttons and a non-dismissible restore confirmation that explains the unranked policy before replacement.
+- Home distinguishes imported sessions with **Continue Unranked Backup** rather than presenting imported data as ordinary ranked progress.
 - Move Replay reuses the accessible game-board renderer, labels the replay-frame slider, exposes tooltips for first/previous/next/latest controls, and keeps playback read-only.
 - Auto Play Demo reuses the accessible game-board renderer and exposes running/paused/completed semantic state.
 - Buy Me a Coffee is explicitly labeled as optional support.
-- Material 3 controls provide keyboard/focus behavior on supported desktop and web targets.
+- Material 3 controls provide keyboard/focus behavior on supported desktop and Web targets.
 - High-contrast mode increases generated color-scheme contrast.
 - Reduced-motion disables tile transition durations.
 - The implementation also respects the platform `disableAnimations` preference.
@@ -25,6 +27,74 @@ Accessibility is part of the 2048 Nova definition of done.
 - Text remains under Flutter's normal system text-scaling behavior.
 - Large tile values use fitted/responsive text rather than silent truncation.
 - Sound and haptic feedback can be disabled independently.
+
+## Board semantics
+
+The board renderer communicates structure separately from visual decoration:
+
+- one semantic node identifies the board size;
+- each cell has a row/column position;
+- non-empty cells include the exact tile value;
+- empty cells are explicitly identified as empty;
+- visual tile-number text is excluded from producing a second duplicate semantics announcement.
+
+This supports users who cannot rely on the visual grid or tile colors alone.
+
+## Keyboard accessibility
+
+The primary game can be played without a pointer:
+
+| Key | Action |
+| --- | --- |
+| Arrow keys | Move tiles |
+| W/A/S/D | Move tiles |
+| H | Hint |
+| U | Undo |
+| P / Escape | Pause |
+| R | Restart flow |
+
+Keyboard behavior still requires real-platform focus qualification because automated widget tests cannot reproduce every browser/window-manager/screen-reader focus interaction.
+
+## Motion and feedback
+
+Reduced Motion removes nonessential tile transition duration. The game also respects the platform's disabled-animation signal where implemented.
+
+Sound and haptics are optional and independently disableable. Gameplay state is never communicated only through those feedback channels.
+
+## Game Backup accessibility
+
+The Backup screen uses standard Material controls for:
+
+- Copy game backup;
+- Import from clipboard;
+- cancel restore;
+- confirm **Restore unranked backup**.
+
+A valid import is previewed before replacement. The dialog is intentionally not dismissible by tapping outside, reducing accidental data replacement and making the required decision explicit.
+
+The text explains that imported games are unranked and do not update lifetime records. The Home continuation label also preserves that distinction after navigation/restart.
+
+Manual qualification still needs to verify clipboard action announcements, long validation-error text, confirmation focus order, and large-text layout with real assistive technology.
+
+## Move Replay accessibility
+
+Move Replay:
+
+- identifies itself as read-only;
+- reuses the semantic game board;
+- exposes frame/move/score/highest metrics;
+- labels first/previous/next/latest controls;
+- labels the frame slider;
+- provides Play/Pause;
+- exposes playback speed choices.
+
+Automatic replay changes must remain immediately pausable and should not cause disruptive repeated screen-reader announcements on real platforms.
+
+## Auto Play Demo accessibility
+
+Auto Play Demo explicitly identifies itself as a deterministic heuristic demonstration and as separate from player records. It reuses the semantic board and provides visible/semantic control state for Auto Play/Pause, Step, Reset, and speed selection.
+
+Because automatic movement can update the board repeatedly, real screen-reader qualification must check that users retain control and can stop automatic changes quickly.
 
 ## Automated accessibility regression coverage
 
@@ -35,7 +105,9 @@ Accessibility is part of the 2048 Nova definition of done.
 - an empty tile exposes a separate row, column, and empty-state label;
 - the board hierarchy remains discoverable without relying on visual tile text semantics.
 
-Replay/widget tests additionally verify that timeline controls can be reached in a constrained test viewport after scrolling and that replay uses the same semantic board instead of introducing a second inaccessible renderer.
+Replay/widget tests additionally verify that timeline controls can be reached in a constrained test viewport after scrolling and that Replay uses the same semantic board instead of introducing a second inaccessible renderer.
+
+Backup widget tests verify primary export/import controls, explicit restore confirmation, cancellation, and invalid-input flow while exercising the same application routing/state layer used by the UI.
 
 Additional widget tests cover terminal-dialog protection, recoverable-game replacement confirmation, Home state behavior, keyboard shortcuts, Auto Play controls, and primary navigation. Automated semantics tests are useful regression checks but are not equivalent to real assistive-technology testing.
 
@@ -50,17 +122,22 @@ Before a stable release, verify:
 5. Inspect board-size, row/column tile, metric, toolbar, support, and dialog semantics with a screen reader.
 6. Confirm each board cell is announced once with its intended positional/value state rather than duplicated visual text.
 7. Confirm terminal win/loss dialogs communicate state and actions clearly.
-8. Open Move Replay and verify the read-only explanation, current frame/move metrics, board cells, slider, first/previous/next/latest controls, Play/Pause, and speed selector have understandable focus/announcement behavior.
-9. During Replay playback, confirm frame changes do not create disruptive or uncontrollable repeated announcements; Pause must stop further automatic frame changes.
-10. Open Auto Play Demo and verify demo-state labels, controls, speed selection, board semantics, and demo-only metrics with representative assistive technology.
-11. Test both light and dark modes with high contrast on and off.
-12. Test large system text scaling without clipped primary actions, replay controls, demo controls, or unreadable board labels.
-13. Test reduced motion and platform animation reduction across normal play, Replay, and Auto Play Demo.
-14. Verify values remain understandable without distinguishing colors.
-15. Check portrait, landscape, narrow desktop, and wide desktop layouts.
-16. Verify destructive/replacement actions remain clearly labeled and require confirmation where data is recoverable.
-17. Verify timed-challenge countdown changes do not create disruptive repeated announcements in the chosen assistive technology.
+8. Open Game Backup and verify Copy, Import, invalid-input messaging, preview information, Cancel, and Restore Unranked Backup focus/announcement behavior.
+9. Verify imported-session labeling remains understandable on Home and does not rely on color alone.
+10. Open Move Replay and verify the read-only explanation, current frame/move metrics, board cells, slider, first/previous/next/latest controls, Play/Pause, and speed selector have understandable focus/announcement behavior.
+11. During Replay playback, confirm frame changes do not create disruptive or uncontrollable repeated announcements; Pause must stop further automatic frame changes.
+12. Open Auto Play Demo and verify demo-state labels, controls, speed selection, board semantics, and demo-only metrics with representative assistive technology.
+13. Test both light and dark modes with high contrast on and off.
+14. Test large system text scaling without clipped primary actions, Backup dialog/actions, Replay controls, demo controls, or unreadable board labels.
+15. Test reduced motion and platform animation reduction across normal play, Replay, and Auto Play Demo.
+16. Verify values remain understandable without distinguishing colors.
+17. Check portrait, landscape, narrow desktop, and wide desktop layouts.
+18. Verify destructive/replacement actions remain clearly labeled and require confirmation where data is recoverable.
+19. Verify timed-challenge countdown changes do not create disruptive repeated announcements in the chosen assistive technology.
+20. Verify clipboard success/failure/error messages are understandable with TalkBack, VoiceOver, and at least one desktop/browser screen reader.
 
 ## Known scope
 
-Automated tests can cover semantics and interaction regressions, but they do not replace VoiceOver, TalkBack, Narrator, browser screen-reader, switch-control, or other assistive-technology testing on representative real target platforms. Stable release notes must distinguish automated verification from manual screen-reader/device verification.
+Automated tests can cover semantics and interaction regressions, but they do not replace VoiceOver, TalkBack, Narrator, browser screen-reader, switch-control, keyboard-only, or other assistive-technology testing on representative real target platforms.
+
+Stable release notes must distinguish automated verification from manual screen-reader/device verification. Current remaining manual qualification is tracked in [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
