@@ -1,6 +1,6 @@
 # Testing Strategy
 
-2048 Nova uses automated tests for deterministic rules, persistence integrity, controller behavior, accessibility semantics, terminal-state safety, Auto Play isolation, and important UI flows. GitHub Actions is the objective source of truth for repository-wide formatter, analyzer, test, and build status.
+2048 Nova uses automated tests for deterministic rules, persistence integrity, controller behavior, accessibility semantics, terminal-state safety, Auto Play isolation, read-only replay integrity, and important UI flows. GitHub Actions is the objective source of truth for repository-wide formatter, analyzer, test, and build status.
 
 ## Unit and controller coverage
 
@@ -29,6 +29,15 @@
 - matching seeded sessions producing matching recommendation/board/score/move/RNG sequences;
 - stepping on an alternate board size;
 - independence from application persistence and player-statistics orchestration.
+
+`test/replay_timeline_test.dart` covers the read-only replay domain boundary:
+- filtering out stale-session snapshots;
+- rejecting snapshots that represent future move/merge/score progress;
+- ordering retained frames by move count;
+- collapsing duplicate move-number frames;
+- making the current game the authoritative final frame;
+- defensive copies of board/state data;
+- an unmodifiable returned timeline.
 
 `test/daily_record_test.dart` covers Daily Challenge progress, completion, retained wins, serialization, date validation, counter/tile validation, completion flags, and timestamps.
 
@@ -69,9 +78,18 @@
 - Auto Play starts and exposes Pause;
 - pausing stops later timer ticks from advancing the sandbox in the background.
 
-## Current Phase 12 quality evidence
+`test/replay_screen_test.dart` verifies the spectator Replay boundary:
+- Home navigation to Move Replay when a saved game exists;
+- first/next/latest frame navigation;
+- live board, score, move count, and RNG staying unchanged while replay frames are viewed;
+- timed playback advancing retained frames;
+- Pause preventing later timer ticks from advancing the replay in the background;
+- a safe empty state when the replay route is opened without a current game;
+- controls are explicitly scrolled into the constrained widget-test viewport before taps, matching the production screen's scrollable layout instead of assuming every control is initially visible.
 
-The latest completed quality gate for the Auto Play implementation is:
+## Historical Phase 12 quality evidence
+
+The completed Auto Play quality gate was:
 
 ```text
 Workflow: CI
@@ -86,6 +104,8 @@ Web release build: PASS
 ```
 
 The Web build also completed Flutter's WASM dry run successfully. The existing informational CupertinoIcons font lookup warning remained non-fatal and the release Web output was produced.
+
+Current Phase 13 Replay evidence is recorded in `docs/VERIFICATION.md` and `what_changed.md` after the final replay gate completes; historical/superseded runs are retained there when they exposed an actionable regression or test-harness issue.
 
 ## CI quality gate
 
@@ -127,6 +147,8 @@ Automated tests do not replace manual interaction checks. Stable releases should
 - screen-reader behavior on real supported platforms;
 - long-session save/resume, Daily, and challenge timing behavior;
 - Auto Play start/pause/resume, single-step, speed changes, reset, navigation-away timer cleanup, and readability on representative real platforms;
+- Move Replay first/previous/next/latest navigation, slider scrubbing, play/pause, all speed choices, bounded-history disclosure, navigation-away timer cleanup, and readability on representative real platforms;
+- confirmation that replay does not mutate the actual saved game while it is being viewed;
 - real browser/email external-link handlers;
 - native splash/icon presentation;
 - haptic/sound capability behavior;
