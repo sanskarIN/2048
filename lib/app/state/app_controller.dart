@@ -275,9 +275,18 @@ class AppController extends ChangeNotifier {
     game = await store.loadGame();
     if (game != null) {
       _engine = GameEngine(config: game!.config);
+      final restoredUndo = await store.loadUndoHistory();
+      final current = game!;
       _undo
         ..clear()
-        ..addAll(await store.loadUndoHistory());
+        ..addAll(
+          restoredUndo.where(
+            (snapshot) => _belongsToCurrentSession(snapshot, current),
+          ),
+        );
+      if (_undo.length != restoredUndo.length) {
+        await store.saveUndoHistory(_undo);
+      }
       _sessionCounted = true;
       _winCounted = game!.hasAcknowledgedWin;
     }
@@ -439,6 +448,21 @@ class AppController extends ChangeNotifier {
     await store.saveStats(stats.toJson());
     await store.saveDailyHistory(dailyHistory);
     await _saveAchievements();
+  }
+
+  bool _belongsToCurrentSession(GameState snapshot, GameState current) {
+    final candidate = snapshot.config;
+    final active = current.config;
+    return snapshot.startedAt.isAtSameMomentAs(current.startedAt) &&
+        candidate.mode == active.mode &&
+        candidate.size == active.size &&
+        candidate.target == active.target &&
+        candidate.moveLimit == active.moveLimit &&
+        candidate.timeLimitSeconds == active.timeLimitSeconds &&
+        candidate.seed == active.seed &&
+        snapshot.moves <= current.moves &&
+        snapshot.score <= current.score &&
+        snapshot.totalMerges <= current.totalMerges;
   }
 
   void _applyTerminalStats(GameState state) {
