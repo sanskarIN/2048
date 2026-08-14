@@ -12,6 +12,7 @@ class LocalStore {
   static const _statsKey = 'nova.stats.v1';
   static const _achievementsKey = 'nova.achievements.v1';
   static const _dailyHistoryKey = 'nova.daily_history.v1';
+  static const _gameUnrankedKey = 'nova.current_game_unranked.v1';
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
@@ -29,14 +30,28 @@ class LocalStore {
       if (json is! Map<String, dynamic>) {
         await prefs.remove(_gameKey);
         await prefs.remove(_undoKey);
+        await prefs.remove(_gameUnrankedKey);
         return null;
       }
       return GameState.fromJson(Map<String, Object?>.from(json));
     } on Object {
       await prefs.remove(_gameKey);
       await prefs.remove(_undoKey);
+      await prefs.remove(_gameUnrankedKey);
       return null;
     }
+  }
+
+  Future<void> saveCurrentGameUnranked(bool value) async {
+    await (await _prefs).setBool(_gameUnrankedKey, value);
+  }
+
+  Future<bool> loadCurrentGameUnranked() async {
+    final prefs = await _prefs;
+    final value = prefs.get(_gameUnrankedKey);
+    if (value is bool) return value;
+    if (value != null) await prefs.remove(_gameUnrankedKey);
+    return false;
   }
 
   Future<void> saveUndoHistory(List<GameState> history) async {
@@ -174,6 +189,7 @@ class LocalStore {
     final prefs = await _prefs;
     await prefs.remove(_gameKey);
     await prefs.remove(_undoKey);
+    await prefs.remove(_gameUnrankedKey);
   }
 
   Future<void> clearAll() async {
@@ -185,6 +201,7 @@ class LocalStore {
       _statsKey,
       _achievementsKey,
       _dailyHistoryKey,
+      _gameUnrankedKey,
     ]) {
       await prefs.remove(key);
     }
