@@ -109,13 +109,13 @@
 - a safe empty state when the replay route is opened without a current game;
 - controls are explicitly scrolled into the constrained widget-test viewport before taps, matching the production screen's scrollable layout instead of assuming every control is initially visible.
 
-`test/game_backup_screen_test.dart` verifies the portable backup UI flow:
-- Home navigation into Game Backup after scrolling the card into the constrained widget-test viewport;
-- clipboard export producing a decodable current-game-only backup;
-- a valid clipboard import showing the required unranked preview/confirmation before replacing state;
+`test/game_backup_screen_test.dart` verifies the portable backup UI flow with an injected in-memory `TextClipboard`, while production defaults to `SystemTextClipboard`:
+- export producing a decodable current-game-only backup;
+- a valid import showing the required unranked preview/confirmation before replacing state;
 - confirmed restore producing an unranked current game while preserving the device lifetime best policy;
 - Cancel preserving an existing ranked game unchanged;
-- malformed clipboard text being rejected without replacing the current game.
+- malformed clipboard text being rejected without replacing the current game;
+- page actions are deliberately scrolled above the bottom navigation/test viewport before taps, matching the production screen's scrollable layout.
 
 ## Phase 14 portable-backup evidence
 
@@ -126,14 +126,27 @@ Phase 14 adds **20 focused automated tests** to the Phase 13 total of 92:
 - 4 backup-screen tests;
 - 4 unranked-marker tests.
 
-The resulting full-suite target is **112 tests**. The exact final quality-gate run is recorded in [`VERIFICATION.md`](VERIFICATION.md) and [`../what_changed.md`](../what_changed.md) after the final documentation state is verified.
+The complete suite is therefore **112 tests**.
 
-The final Phase 14 production/native state is already covered by:
+Final maintained quality gate:
+
+```text
+Workflow: CI
+Run: 31787639781
+Verified source/test commit: 137180a1c886852e1b2b4dfda4bbcb514c927eb2
+Formatting: PASS
+Static analysis: PASS
+Tests: PASS — 112/112
+Web release build: PASS
+Overall: SUCCESS
+```
+
+Final production/native state after isolating system clipboard access behind a testable boundary:
 
 ```text
 Workflow: Platform Builds
-Run: 31784286707
-Production-code commit: 741dfd42e51386646aa64be116cf7e913e98d211
+Run: 31787016748
+Production-code commit: dd3c79bec40cf1aa1e4b00190d32393b249902e0
 Overall: SUCCESS
 ```
 
@@ -145,7 +158,7 @@ Results:
 - macOS release: **PASS**
 - iOS release with `--no-codesign`: **PASS**
 
-That commit contains the backup codec/controller/store/UI/navigation policy and the final in-app Guide/About documentation compiled into the application.
+`TextClipboard` is a narrow boundary: `SystemTextClipboard` uses Flutter's platform clipboard in production, while widget tests use an in-memory implementation. This keeps tests deterministic without changing the user-facing clipboard behavior.
 
 ### Transparent Phase 14 defects and tooling failures
 
@@ -153,10 +166,11 @@ Phase 14 deliberately records real intermediate issues rather than rewriting his
 
 - CI run `31781326279` failed after backup screen tests were introduced because static analysis found an unused test import. Commit `3446413574582c196a47877fe1bfbe63addbf71d` (`fix: remove unused backup test import`) removed it.
 - The oversized-backup fixture initially used non-Dart string multiplication. Commit `a4a2de5bfb9e32fb9f02cf13b5019f69141ff567` (`fix: build oversized backup fixture with valid Dart`) replaced it with `List.filled(...).join()`.
-- The backup Home-card widget tests initially assumed the card was visible in Flutter's default 800×600 test viewport. Commit `24b2063f365b63a86009c9acbebf2c4bafe73bed` (`test: scroll game backup entry into widget viewport`) made the harness scroll before tapping, matching the production Home screen's scrollable layout.
-- Several temporary one-time patch/wiring workflows failed for development-tooling reasons such as source-anchor mismatch, an invalid handwritten patch, or a plain Ubuntu patch job not installing Dart. The actual source changes were then applied through normal repository file commits, and every temporary workflow file was removed. The permanent workflow directory contains only maintained CI/build/bootstrap/format/dependency workflows.
+- The initial Backup widget harness used platform clipboard calls and unbounded settle behavior. The production clipboard access was isolated behind `TextClipboard`; tests now use an in-memory implementation and bounded frame pumping.
+- A later full suite completed with **110 passed / 2 failed**. Focused diagnostics showed only Backup export and Cancel failed because their page actions remained below the bottom navigation in Flutter's default 800×600 widget-test viewport. Commit `137180a1c886852e1b2b4dfda4bbcb514c927eb2` scrolls the Backup page before those actions are tapped. The next maintained CI passed **112/112**.
+- Several temporary one-time patch/wiring/diagnostic workflows failed for development-tooling reasons such as source-anchor mismatch, an invalid handwritten patch, missing Dart in a plain Ubuntu patch job, YAML helper parsing, or diagnostic-only test failures. The actual source changes were applied through normal repository commits, and temporary helper/diagnostic workflow files were removed after use.
 
-These failures are not presented as successful release evidence. The final source is judged by the later permanent CI/native gates.
+These failures are not presented as successful release evidence. The final source is judged by the maintained CI/native gates above.
 
 ## Historical Phase 13 quality evidence
 
