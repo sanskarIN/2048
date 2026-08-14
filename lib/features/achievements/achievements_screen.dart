@@ -23,18 +23,53 @@ class AchievementsScreen extends StatelessWidget {
             );
           }
           final item = controller.achievements[index];
+          final progress = controller.achievementProgress(item);
+          final fraction = (progress / item.threshold).clamp(0, 1).toDouble();
           return Card(
-            child: ListTile(
-              leading: Icon(
-                item.unlocked
-                    ? Icons.emoji_events_rounded
-                    : Icons.lock_outline_rounded,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    item.unlocked
+                        ? Icons.emoji_events_rounded
+                        : Icons.lock_outline_rounded,
+                    size: 30,
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                item.title,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ),
+                            if (item.unlocked)
+                              const Icon(Icons.check_circle_rounded, size: 20),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(item.description),
+                        const SizedBox(height: 10),
+                        LinearProgressIndicator(value: fraction),
+                        const SizedBox(height: 5),
+                        Text(
+                          item.unlocked
+                              ? 'Unlocked ${_date(item.unlockedAt!)}'
+                              : '$progress / ${item.threshold}',
+                          style: Theme.of(context).textTheme.labelMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              title: Text(item.title),
-              subtitle: Text(item.description),
-              trailing: item.unlocked
-                  ? const Icon(Icons.check_circle_rounded)
-                  : null,
             ),
           );
         },
@@ -42,19 +77,26 @@ class AchievementsScreen extends StatelessWidget {
     );
   }
 
+  static String _date(DateTime value) {
+    final date = value.toLocal();
+    final month = date.month.toString().padLeft(2, '0');
+    final day = date.day.toString().padLeft(2, '0');
+    return '${date.year}-$month-$day';
+  }
+
   Future<void> _reset(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Reset achievements?'),
         content: const Text('All local achievement unlocks will be cleared.'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: const Text('Cancel'),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.pop(dialogContext, true),
             child: const Text('Reset'),
           ),
         ],
