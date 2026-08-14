@@ -29,6 +29,11 @@ Current objective evidence is recorded in `docs/VERIFICATION.md` and `what_chang
 - [x] Replay widget coverage verifies first/next/latest navigation, timed playback, Pause, safe empty state, and live board/score/move/RNG immutability
 - [x] Replay reuses the existing bounded Undo persistence rather than introducing a second unvalidated history format
 - [x] Replay production code is included in the configured native build matrix recorded in `docs/VERIFICATION.md`
+- [x] Challenge Code codec round-trips supported seeded configurations and reproduces the deterministic opening board/RNG state
+- [x] Challenge Codes reject missing seed, Daily mode, malformed/oversized input, unsupported prefixes/shapes, invalid checksums, and unsafe seed bounds
+- [x] Challenge Code UI regression coverage verifies deterministic generation/copy, Paste/Validate/preview/start, invalid-input preservation, and recoverable-game replacement cancellation
+- [x] Challenge Codes add no cloud/account dependency or persistence key and never import board progress, scores, achievements, settings, Daily history, or Undo data
+- [x] Daily Challenge remains excluded from arbitrary Challenge Code seed import
 - [x] Game Backup envelope round trip and exclusion of settings/statistics/achievements/Daily/Undo are regression tested
 - [x] Game Backup rejects malformed, unsupported-version, missing-game, invalid-timestamp, invalid-GameState, and oversized clipboard text
 - [x] Game Backup UI verifies explicit restore confirmation, cancellation without replacement, clipboard export, and malformed-input rejection
@@ -37,11 +42,10 @@ Current objective evidence is recorded in `docs/VERIFICATION.md` and `what_chang
 - [x] Imported terminal state cannot award a local ranked win
 - [x] Corrupt/cleared current-game state removes the associated unranked marker
 - [x] Normal new local game exits imported unranked policy
-- [x] Backup production code and in-app documentation build successfully in Android/Linux/Windows/macOS/unsigned-iOS matrix run `31784286707`
 - [x] Permanent workflow directory is clean of temporary one-time patch/wiring workflows
-- [x] Complete user, architecture, engine, mode, persistence, backup, privacy, accessibility, development, platform, CI/CD, testing, FAQ, troubleshooting, security, contribution, support, and release documentation is present
+- [x] Complete user, architecture, engine, mode, Challenge Code, persistence, backup, privacy, accessibility, development, platform, CI/CD, testing, FAQ, troubleshooting, security, contribution, support, and release documentation is present
 
-If production code changes after the evidence recorded in `docs/VERIFICATION.md`, repeat the affected automated gate before release.
+The exact latest CI/native evidence for the Challenge Code production state is recorded in [`VERIFICATION.md`](VERIFICATION.md) after Phase 15 verification completes. If production code changes after that evidence, repeat the affected automated gate before release.
 
 ## Manual device and interaction qualification
 
@@ -57,6 +61,16 @@ Complete these before promoting to `1.0.0`:
 - [ ] Verify reduced-motion and platform animation-reduction behavior
 - [ ] Verify touch/swipe controls on representative Android and iOS devices
 - [ ] Verify keyboard focus, Arrow/WASD controls, H/U/P/Escape/R shortcuts, and window resizing on desktop/web
+- [ ] Verify Challenge Codes generate/copy correctly on representative Android, iOS, Web, Windows, macOS, and Linux clipboard environments where supported
+- [ ] Verify manual entry and Paste/Validate of a valid Challenge Code on representative platforms
+- [ ] Verify invalid prefix, checksum corruption, empty clipboard, and oversized Challenge Code input fail without replacing the current game
+- [ ] Verify the decoded Challenge Code preview accurately shows mode, board, target, limits, and seed
+- [ ] Verify recoverable-game replacement confirmation from Challenge Codes preserves the current game when cancelled
+- [ ] Verify two independent sessions using the same code start on exactly the same board/RNG state
+- [ ] Verify the same valid move sequence keeps two same-code sessions deterministic and different moves are allowed to diverge
+- [ ] Verify Target Challenge Codes for each supported target choice and at least one Time Challenge, Move Limit, Quick, Extended, Challenge, Endless, and Zen code
+- [ ] Confirm Daily Challenge cannot be encoded/opened as an arbitrary Challenge Code and normal date-derived Daily behavior remains unchanged
+- [ ] Confirm a Challenge Code starts a fresh normal non-Daily game rather than restoring sender progress
 - [ ] Verify Move Replay appears for saved/terminal games as intended and does not replace the normal Continue rule
 - [ ] Verify Move Replay first/previous/next/latest controls, slider scrub, Play/Pause, all speed options, bounded-history disclosure, and final-frame behavior on representative real platforms
 - [ ] Navigate away from Move Replay while playing and verify no user-visible/background timer behavior remains
@@ -83,12 +97,15 @@ Complete these before promoting to `1.0.0`:
 - [ ] Verify board and tile announcements with VoiceOver
 - [ ] Verify a representative desktop/browser screen reader
 - [ ] Verify visible focus order and focus recovery around dialogs/navigation
+- [ ] Verify Challenge Codes mode/target selection, Generate, selectable code text, Copy, multiline input, Paste, Validate, preview, errors, Start, and replacement confirmation with representative screen readers
+- [ ] Verify long Challenge Code text remains selectable/editable/readable with large text and keyboard-only navigation
+- [ ] Verify Challenge Code clipboard success/failure and validation feedback are announced understandably without relying on color
 - [ ] Verify Move Replay read-only explanation, frame/move metrics, semantic board, slider, first/previous/next/latest controls, Play/Pause, and speed selector with representative screen readers
 - [ ] Verify replay playback can be paused immediately and does not create uncontrollable repeated announcements
 - [ ] Verify Auto Play controls, demo-state label, board semantics, speed selector, and demo metrics with representative screen readers
 - [ ] Verify Game Backup Copy/Import controls, validation messages, candidate preview, Cancel, and Restore Unranked Backup dialog with TalkBack/VoiceOver/desktop screen reader
 - [ ] Verify imported/unranked continuation status is understandable without color alone
-- [ ] Verify large system text scaling without clipped primary controls, including Replay, Auto Play, and Game Backup confirmation screens
+- [ ] Verify large system text scaling without clipped primary controls, including Challenge Codes, Replay, Auto Play, and Game Backup confirmation screens
 - [ ] Verify high contrast and non-color tile-value identification
 - [ ] Verify reduced-motion behavior on Replay and Auto Play boards
 - [ ] Verify timed challenge updates do not create disruptive repeated announcements
@@ -98,10 +115,10 @@ Complete these before promoting to `1.0.0`:
 - [ ] Configure real Android distribution signing for the intended store/channel
 - [ ] Configure Apple signing/provisioning for real iOS distribution
 - [ ] Produce and inspect final store/package artifacts
-- [ ] Confirm store privacy/data-safety metadata matches the offline-first implementation, explicit clipboard backup behavior, persistent local unranked marker, read-only local Replay behavior, and in-memory-only Auto Play sandbox
+- [ ] Confirm store privacy/data-safety metadata matches the offline-first implementation, explicit Challenge Code/Game Backup clipboard behavior, persistent local unranked marker, read-only local Replay behavior, and in-memory-only Auto Play sandbox
 - [ ] Prepare final screenshots/listing text where required
 - [ ] Recheck README, documentation index, CHANGELOG, ROADMAP, version, release notes, `docs/VERIFICATION.md`, and `what_changed.md`
 - [ ] Confirm no credentials/private signing material are committed
 - [ ] Review dependency/update state deliberately; do not upgrade blindly immediately before release
-- [ ] Document any remaining known limitations, including bounded Replay history, plain-JSON clipboard backup, imported-game unranked policy, and the heuristic rather than guaranteed-optimal Auto Play solver
+- [ ] Document any remaining known limitations, including non-cryptographic Challenge Code checksums, same-code divergence after different move sequences, bounded Replay history, plain-JSON clipboard backup, imported-game unranked policy, and the heuristic rather than guaranteed-optimal Auto Play solver
 - [ ] Promote version/tag to `1.0.0` only after the stable-release criteria are satisfied
