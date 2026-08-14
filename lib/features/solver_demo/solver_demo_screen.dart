@@ -135,12 +135,18 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                   spacing: 10,
                   runSpacing: 10,
                   children: [
-                    _Metric(label: l10n.text('Demo score'), value: '${game.score}'),
-                    _Metric(label: l10n.text('Demo moves'), value: '${game.moves}'),
-                    _Metric(label: l10n.text('Highest'), value: '${game.highestTile}'),
+                    _Metric(
+                        label: l10n.text('Demo score'), value: '${game.score}'),
+                    _Metric(
+                        label: l10n.text('Demo moves'), value: '${game.moves}'),
+                    _Metric(
+                        label: l10n.text('Highest'),
+                        value: '${game.highestTile}'),
                     _Metric(
                       label: l10n.text('Last move'),
-                      value: direction == null ? '—' : l10n.directionName(direction),
+                      value: direction == null
+                          ? '—'
+                          : l10n.directionName(direction),
                     ),
                   ],
                 ),
@@ -177,7 +183,8 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                               ? Icons.pause_rounded
                               : Icons.play_arrow_rounded,
                         ),
-                        label: Text(l10n.text(_running ? 'Pause' : 'Auto Play')),
+                        label:
+                            Text(l10n.text(_running ? 'Pause' : 'Auto Play')),
                       ),
                       FilledButton.tonalIcon(
                         onPressed: _running || _session.isComplete
@@ -226,9 +233,8 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
   }
 
   static String _speedLabel(Duration duration, NovaLocalizations l10n) {
-    final count = duration.inMilliseconds == 1000
-        ? 1
-        : 1000 ~/ duration.inMilliseconds;
+    final count =
+        duration.inMilliseconds == 1000 ? 1 : 1000 ~/ duration.inMilliseconds;
     return l10n.isHindi
         ? '$count चाल / सेकंड'
         : '$count move${count == 1 ? '' : 's'} / sec';
