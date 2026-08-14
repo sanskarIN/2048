@@ -2,6 +2,8 @@
 
 2048 Nova supports a portable, clipboard-based backup for the **current game only**. The feature is deliberately narrow: it lets a player carry or preserve one game state without importing lifetime records or treating externally supplied data as trusted ranked progress.
 
+This is distinct from [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md). A Challenge Code shares only a fresh-game configuration and deterministic seed; Game Backup shares actual board/session progress.
+
 ## What is exported
 
 `GameBackup.encode()` serializes a JSON envelope containing:
@@ -122,17 +124,37 @@ The marker is read only when a current game exists. It is removed when:
 
 Starting a normal new game explicitly resets the marker to ranked/local behavior.
 
+## Backup versus Challenge Codes
+
+These portable-text features intentionally have different trust semantics:
+
+| Property | Game Backup | Challenge Code |
+| --- | --- | --- |
+| Carries current board/progress | Yes | No |
+| Carries score/moves/RNG state | Yes | No; only initial deterministic seed |
+| Starts a fresh game | No | Yes |
+| Imported/restored session ranked | No, always unranked | Normal local non-Daily policy |
+| Can encode Daily mode | Backup can contain a Daily-configured board, but imported play remains unranked and cannot update Daily history | No; Daily is rejected |
+| Format | Versioned JSON envelope | `NOVA1.<payload>.<checksum>` |
+| Integrity mechanism | Strict schema/state validation | Strict config validation plus corruption checksum |
+
+The difference is intentional. Backup text can assert an arbitrary board/score and therefore must never become trusted record progress. Challenge Codes cannot assert progress; they only choose the deterministic setup of a brand-new game.
+
 ## Privacy and security boundary
 
 The backup is plain JSON text. It is not encrypted, signed, or authenticated. A user should treat copied backup text like any other clipboard content and share it only when intended.
 
 Because imported data is unranked and strictly validated, the feature does not use portable backups as proof of trustworthy achievements or records. The app also does not upload backup data to a server.
 
+Challenge Codes are also plain clipboard text, but their checksum is only corruption detection and their payload contains configuration/seed rather than progress. See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md).
+
 ## Compatibility policy
 
 Version `1` is the only portable backup envelope version currently accepted. Future incompatible backup structures should increment the envelope version and add an explicit migration path if backward compatibility is desired. Unknown future versions are rejected rather than guessed.
 
 The embedded game state maintains its own schema validation/migration rules independently of the outer backup envelope.
+
+Challenge Code schema versioning is separate from the Game Backup envelope version; neither protocol should silently parse the other.
 
 ## Automated regression coverage
 
@@ -157,6 +179,8 @@ Current backup-related tests cover:
 
 See `test/game_backup_test.dart`, `test/game_backup_screen_test.dart`, `test/imported_game_policy_test.dart`, and `test/local_store_test.dart`.
 
+Challenge Code behavior has separate codec/UI tests so changes to one portable format cannot silently weaken the other boundary.
+
 ## Manual release checks
 
 Before stable distribution, verify on representative target platforms:
@@ -170,4 +194,5 @@ Before stable distribution, verify on representative target platforms:
 - Undo behavior after imported moves;
 - importing Daily/target/timed/move-limit states;
 - screen-reader reading of backup actions and confirmation content;
-- long text and large-text layout behavior.
+- long text and large-text layout behavior;
+- switching between Challenge Code and Game Backup clipboard workflows without confusing the two formats.
