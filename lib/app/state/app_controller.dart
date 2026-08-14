@@ -130,6 +130,7 @@ class AppController extends ChangeNotifier {
   final List<DailyRecord> dailyHistory = [];
   bool _sessionCounted = false;
   bool _winCounted = false;
+  bool _moveInProgress = false;
 
   final List<Achievement> achievements = [
     Achievement(
@@ -233,7 +234,7 @@ class AppController extends ChangeNotifier {
   ];
 
   bool get hasGame => game != null;
-  bool get canUndo => _undo.isNotEmpty;
+  bool get canUndo => !_moveInProgress && _undo.isNotEmpty;
 
   Future<void> initialize() async {
     settings = AppSettings.fromJson(await store.loadSettings());
@@ -255,6 +256,7 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> newGame(GameConfig config) async {
+    if (_moveInProgress) return;
     _engine = GameEngine(config: config);
     game = _engine!.createGame(bestScore: stats.bestScore);
     _undo.clear();
@@ -269,44 +271,49 @@ class AppController extends ChangeNotifier {
   Future<MoveOutcome?> move(Direction direction) async {
     final current = game;
     final engine = _engine;
-    if (current == null || engine == null) return null;
-    final snapshot = current.copy();
-    final outcome = engine.move(current, direction);
-    if (!outcome.changed) {
+    if (current == null || engine == null || _moveInProgress) return null;
+    _moveInProgress = true;
+    try {
+      final snapshot = current.copy();
+      final outcome = engine.move(current, direction);
+      if (!outcome.changed) {
+        notifyListeners();
+        return outcome;
+      }
+      _undo.add(snapshot);
+      if (_undo.length > 50) _undo.removeAt(0);
+      stats.totalMoves += 1;
+      stats.totalMerges += outcome.merges;
+      stats.bestScore = current.bestScore > stats.bestScore
+          ? current.bestScore
+          : stats.bestScore;
+      stats.highestTile = current.highestTile > stats.highestTile
+          ? current.highestTile
+          : stats.highestTile;
+      if (current.status == GameStatus.won && !_winCounted) {
+        stats.gamesWon += 1;
+        stats.currentStreak += 1;
+        if (stats.currentStreak > stats.bestStreak) {
+          stats.bestStreak = stats.currentStreak;
+        }
+        _winCounted = true;
+      }
+      if (current.status == GameStatus.lost && _sessionCounted) {
+        stats.currentStreak = 0;
+        _sessionCounted = false;
+      }
+      _updateDailyRecord(current);
+      _unlockAchievements();
+      await _persist();
       notifyListeners();
       return outcome;
+    } finally {
+      _moveInProgress = false;
     }
-    _undo.add(snapshot);
-    if (_undo.length > 50) _undo.removeAt(0);
-    stats.totalMoves += 1;
-    stats.totalMerges += outcome.merges;
-    stats.bestScore = current.bestScore > stats.bestScore
-        ? current.bestScore
-        : stats.bestScore;
-    stats.highestTile = current.highestTile > stats.highestTile
-        ? current.highestTile
-        : stats.highestTile;
-    if (current.status == GameStatus.won && !_winCounted) {
-      stats.gamesWon += 1;
-      stats.currentStreak += 1;
-      if (stats.currentStreak > stats.bestStreak) {
-        stats.bestStreak = stats.currentStreak;
-      }
-      _winCounted = true;
-    }
-    if (current.status == GameStatus.lost && _sessionCounted) {
-      stats.currentStreak = 0;
-      _sessionCounted = false;
-    }
-    _updateDailyRecord(current);
-    _unlockAchievements();
-    await _persist();
-    notifyListeners();
-    return outcome;
   }
 
   Future<void> undo() async {
-    if (_undo.isEmpty || game == null) return;
+    if (_moveInProgress || _undo.isEmpty || game == null) return;
     game = _undo.removeLast();
     _engine = GameEngine(config: game!.config);
     _updateDailyRecord(game!);
@@ -340,7 +347,7 @@ class AppController extends ChangeNotifier {
   Future<void> refreshChallengeStatus() async {
     final current = game;
     final engine = _engine;
-    if (current == null || engine == null) return;
+    if (current == null || engine == null || _moveInProgress) return;
     final before = current.status;
     engine.refreshStatus(current);
     if (before != current.status) {
@@ -352,7 +359,7 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> continueAfterWin() async {
-    if (game == null) return;
+    if (game == null || _moveInProgress) return;
     game!.hasAcknowledgedWin = true;
     game!.status = GameStatus.playing;
     _updateDailyRecord(game!);
@@ -362,6 +369,7 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> clearCurrentGame() async {
+    if (_moveInProgress) return;
     game = null;
     _engine = null;
     _undo.clear();
@@ -370,6 +378,7 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> clearAllData() async {
+    if (_moveInProgress) return;
     game = null;
     _engine = null;
     _undo.clear();
