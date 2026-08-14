@@ -5,14 +5,15 @@ class GameState {
     required this.board,
     required this.config,
     this.score = 0,
-    this.bestScore = 0,
+    int bestScore = 0,
     this.moves = 0,
     this.totalMerges = 0,
     this.status = GameStatus.playing,
     this.hasAcknowledgedWin = false,
     this.rngState = 0,
     DateTime? startedAt,
-  }) : startedAt = startedAt ?? DateTime.now();
+  })  : bestScore = bestScore < score ? score : bestScore,
+        startedAt = startedAt ?? DateTime.now();
 
   static const schemaVersion = 1;
 
