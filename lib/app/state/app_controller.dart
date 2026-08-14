@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/localization/nova_localizations.dart';
 import '../../core/theme/nova_theme.dart';
 import '../../data/local_store.dart';
 import '../../domain/daily_record.dart';
@@ -10,6 +11,7 @@ import '../../domain/game_types.dart';
 class AppSettings {
   AppSettings({
     this.themeMode = ThemeMode.system,
+    this.language = AppLanguage.system,
     this.palette = NovaPalette.classic,
     this.highContrast = false,
     this.reducedMotion = false,
@@ -19,6 +21,7 @@ class AppSettings {
   });
 
   ThemeMode themeMode;
+  AppLanguage language;
   NovaPalette palette;
   bool highContrast;
   bool reducedMotion;
@@ -28,6 +31,7 @@ class AppSettings {
 
   Map<String, Object?> toJson() => {
         'themeMode': themeMode.name,
+        'language': language.storageValue,
         'palette': palette.name,
         'highContrast': highContrast,
         'reducedMotion': reducedMotion,
@@ -49,6 +53,7 @@ class AppSettings {
     );
     return AppSettings(
       themeMode: theme,
+      language: AppLanguageX.parse(json['language']),
       palette: palette,
       highContrast: _boolValue(json['highContrast'], false),
       reducedMotion: _boolValue(json['reducedMotion'], false),
