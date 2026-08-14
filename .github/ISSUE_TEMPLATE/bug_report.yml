@@ -1,0 +1,59 @@
+name: Bug report
+description: Report a reproducible problem in 2048 Nova
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve 2048 Nova. Do not include passwords, tokens, or other private information.
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      placeholder: 0.9.0
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - Web
+        - Android
+        - iOS
+        - Windows
+        - macOS
+        - Linux
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. Start a Classic game\n2. Swipe left\n3. ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: media
+    attributes:
+      label: Screenshots or video
+      description: Add visual evidence when useful.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Paste only non-sensitive logs.
+      render: shell
