@@ -32,8 +32,10 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
   }
 
-  Future<void> tapVisible(WidgetTester tester, Finder finder) async {
-    await tester.ensureVisible(finder);
+  Future<void> tapPageAction(WidgetTester tester, Finder finder) async {
+    final pageList = find.byType(ListView);
+    await tester.drag(pageList, const Offset(0, -260));
+    await tester.pump();
     await tester.tap(finder);
   }
 
@@ -86,7 +88,7 @@ void main() {
     );
 
     await pumpBackupScreen(tester, controller, clipboard);
-    await tapVisible(tester, find.text('Copy game backup'));
+    await tapPageAction(tester, find.text('Copy game backup'));
     await pumpUi(tester);
 
     expect(clipboard.text, isNotNull);
@@ -110,14 +112,14 @@ void main() {
     );
 
     await pumpBackupScreen(tester, controller, clipboard);
-    await tapVisible(tester, find.text('Import from clipboard'));
+    await tapPageAction(tester, find.text('Import from clipboard'));
     await pumpUi(tester);
 
     expect(find.text('Restore unranked backup?'), findsOneWidget);
     expect(find.text('Restore unranked backup'), findsOneWidget);
     expect(controller.game, isNull);
 
-    await tapVisible(tester, find.text('Restore unranked backup'));
+    await tester.tap(find.text('Restore unranked backup'));
     await pumpUi(tester);
 
     expect(controller.currentGameIsUnranked, isTrue);
@@ -143,9 +145,9 @@ void main() {
     );
 
     await pumpBackupScreen(tester, controller, clipboard);
-    await tapVisible(tester, find.text('Import from clipboard'));
+    await tapPageAction(tester, find.text('Import from clipboard'));
     await pumpUi(tester);
-    await tapVisible(tester, find.text('Cancel'));
+    await tester.tap(find.text('Cancel'));
     await pumpUi(tester);
 
     expect(controller.currentGameIsUnranked, isFalse);
@@ -159,7 +161,7 @@ void main() {
     await controller.initialize();
 
     await pumpBackupScreen(tester, controller, clipboard);
-    await tapVisible(tester, find.text('Import from clipboard'));
+    await tapPageAction(tester, find.text('Import from clipboard'));
     await pumpUi(tester);
 
     expect(controller.game, isNull);
