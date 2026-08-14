@@ -44,6 +44,38 @@ void main() {
     expect(results.whereType<Object>(), hasLength(1));
   });
 
+  test('losing after continuing a win does not erase the win streak', () async {
+    final controller = AppController(store: LocalStore());
+    await controller.initialize();
+    await controller.newGame(
+      const GameConfig(mode: GameMode.classic, size: 4, target: 4),
+    );
+
+    controller.game!.board
+      ..[0] = [2, 2, 0, 0]
+      ..[1] = [0, 0, 0, 0]
+      ..[2] = [0, 0, 0, 0]
+      ..[3] = [0, 0, 0, 0];
+
+    await controller.move(Direction.left);
+    expect(controller.game!.status, GameStatus.won);
+    expect(controller.stats.gamesWon, 1);
+    expect(controller.stats.currentStreak, 1);
+
+    await controller.continueAfterWin();
+    controller.game!.board
+      ..[0] = [4, 8, 16, 32]
+      ..[1] = [64, 128, 256, 512]
+      ..[2] = [1024, 4, 8, 16]
+      ..[3] = [0, 32, 64, 128];
+
+    await controller.move(Direction.left);
+
+    expect(controller.game!.status, GameStatus.lost);
+    expect(controller.stats.gamesWon, 1);
+    expect(controller.stats.currentStreak, 1);
+  });
+
   test('clear all restores in-memory defaults', () async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
