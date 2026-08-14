@@ -141,3 +141,22 @@ Phase 16 adds focused tests for:
 - Hindi board semantics.
 
 See [`TESTING.md`](TESTING.md) and [`VERIFICATION.md`](VERIFICATION.md) for current repository-wide evidence.
+
+## Verified Phase 16 evidence
+
+The completed repository-wide gate for the localization phase is:
+
+```text
+CI run: 31806785165
+Commit: 9dea87e73803d83c3aa0614d35f7860773dbca04
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+Format: 70 files, 0 changed
+Analyze: No issues found
+Tests: 134/134 passed
+Web release: passed
+```
+
+The runtime localization source was also compiled successfully by Platform Builds run `31804713200` on commit `5048486775b0c9702583f348bfc5be71219e83ae` for Android, Linux, Windows, macOS, and unsigned iOS.
+
+These automated results do not replace real English/Hindi font, layout, screen-reader, focus, clipboard, lifecycle, or store-metadata qualification.
