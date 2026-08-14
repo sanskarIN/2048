@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../domain/game_types.dart';
+import 'hindi_translations.dart';
 
 enum AppLanguage { system, english, hindi }
 
@@ -56,7 +57,7 @@ class NovaLocalizations {
 
   String text(String english) {
     if (!isHindi) return english;
-    return _hindi[english] ?? english;
+    return hindiTranslations[english] ?? _hindi[english] ?? english;
   }
 
   String modeName(GameMode mode) => text(
