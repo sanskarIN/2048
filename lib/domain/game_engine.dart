@@ -3,7 +3,12 @@ import 'game_types.dart';
 import 'random_source.dart';
 
 class MoveOutcome {
-  const MoveOutcome({required this.changed, required this.scoreGain, required this.merges});
+  const MoveOutcome({
+    required this.changed,
+    required this.scoreGain,
+    required this.merges,
+  });
+
   final bool changed;
   final int scoreGain;
   final int merges;
@@ -11,23 +16,36 @@ class MoveOutcome {
 
 class GameEngine {
   GameEngine({required this.config, RandomSource? random})
-      : random = random ?? DartRandomSource(config.seed);
+      : random = random ??
+            SeededRandomSource(
+              config.seed ?? DateTime.now().microsecondsSinceEpoch,
+            );
 
   final GameConfig config;
   final RandomSource random;
 
   GameState createGame({int bestScore = 0}) {
-    final board = List.generate(config.size, (_) => List.filled(config.size, 0));
-    final state = GameState(board: board, config: config, bestScore: bestScore);
+    final board = List.generate(
+      config.size,
+      (_) => List.filled(config.size, 0),
+    );
+    final state = GameState(
+      board: board,
+      config: config,
+      bestScore: bestScore,
+      rngState: random.state,
+    );
     spawnTile(state);
     spawnTile(state);
     return state;
   }
 
   MoveOutcome move(GameState state, Direction direction) {
+    refreshStatus(state);
     if (state.status == GameStatus.lost) {
       return const MoveOutcome(changed: false, scoreGain: 0, merges: 0);
     }
+
     final before = _signature(state.board);
     var scoreGain = 0;
     var mergeCount = 0;
@@ -42,7 +60,7 @@ class GameEngine {
 
     final changed = before != _signature(state.board);
     if (!changed) {
-      _refreshStatus(state);
+      refreshStatus(state);
       return const MoveOutcome(changed: false, scoreGain: 0, merges: 0);
     }
 
@@ -51,8 +69,12 @@ class GameEngine {
     state.moves += 1;
     state.totalMerges += mergeCount;
     spawnTile(state);
-    _refreshStatus(state);
-    return MoveOutcome(changed: true, scoreGain: scoreGain, merges: mergeCount);
+    refreshStatus(state);
+    return MoveOutcome(
+      changed: true,
+      scoreGain: scoreGain,
+      merges: mergeCount,
+    );
   }
 
   void spawnTile(GameState state) {
@@ -63,8 +85,10 @@ class GameEngine {
       }
     }
     if (empties.isEmpty) return;
+    random.state = state.rngState;
     final chosen = empties[random.nextInt(empties.length)];
     state.board[chosen.$1][chosen.$2] = random.nextDouble() < 0.9 ? 2 : 4;
+    state.rngState = random.state;
   }
 
   bool canMove(GameState state) {
@@ -74,15 +98,24 @@ class GameEngine {
     for (var row = 0; row < config.size; row++) {
       for (var col = 0; col < config.size; col++) {
         final value = state.board[row][col];
-        if (row + 1 < config.size && state.board[row + 1][col] == value) return true;
-        if (col + 1 < config.size && state.board[row][col + 1] == value) return true;
+        if (row + 1 < config.size && state.board[row + 1][col] == value) {
+          return true;
+        }
+        if (col + 1 < config.size && state.board[row][col + 1] == value) {
+          return true;
+        }
       }
     }
     return false;
   }
 
   Direction? hint(GameState state) {
-    const preference = [Direction.left, Direction.down, Direction.right, Direction.up];
+    const preference = [
+      Direction.left,
+      Direction.down,
+      Direction.right,
+      Direction.up,
+    ];
     for (final direction in preference) {
       final clone = state.copy();
       final before = _signature(clone.board);
@@ -95,17 +128,36 @@ class GameEngine {
     return null;
   }
 
-  void _refreshStatus(GameState state) {
+  void refreshStatus(GameState state, {DateTime? now}) {
     final reachedTarget = state.highestTile >= config.target;
-    final isEndless = config.mode == GameMode.endless || config.mode == GameMode.zen;
+    final isEndless =
+        config.mode == GameMode.endless || config.mode == GameMode.zen;
+
     if (reachedTarget && !isEndless && !state.hasAcknowledgedWin) {
       state.status = GameStatus.won;
       return;
     }
+
+    final moveLimit = config.moveLimit;
+    if (moveLimit != null && state.moves >= moveLimit && !reachedTarget) {
+      state.status = GameStatus.lost;
+      return;
+    }
+
+    final timeLimit = config.timeLimitSeconds;
+    if (timeLimit != null) {
+      final elapsed = (now ?? DateTime.now()).difference(state.startedAt).inSeconds;
+      if (elapsed >= timeLimit && !reachedTarget) {
+        state.status = GameStatus.lost;
+        return;
+      }
+    }
+
     if (!canMove(state)) {
       state.status = GameStatus.lost;
       return;
     }
+
     if (state.status != GameStatus.won || state.hasAcknowledgedWin) {
       state.status = GameStatus.playing;
     }
@@ -133,16 +185,29 @@ class GameEngine {
     return _LineResult(output, scoreGain, merges);
   }
 
-  List<int> _readLine(List<List<int>> board, int index, Direction direction) {
+  List<int> _readLine(
+    List<List<int>> board,
+    int index,
+    Direction direction,
+  ) {
     return switch (direction) {
       Direction.left => [...board[index]],
       Direction.right => board[index].reversed.toList(),
-      Direction.up => [for (var row = 0; row < config.size; row++) board[row][index]],
-      Direction.down => [for (var row = config.size - 1; row >= 0; row--) board[row][index]],
+      Direction.up => [
+          for (var row = 0; row < config.size; row++) board[row][index],
+        ],
+      Direction.down => [
+          for (var row = config.size - 1; row >= 0; row--) board[row][index],
+        ],
     };
   }
 
-  void _writeLine(List<List<int>> board, int index, Direction direction, List<int> values) {
+  void _writeLine(
+    List<List<int>> board,
+    int index,
+    Direction direction,
+    List<int> values,
+  ) {
     switch (direction) {
       case Direction.left:
         board[index] = [...values];
@@ -163,11 +228,13 @@ class GameEngine {
     }
   }
 
-  String _signature(List<List<int>> board) => board.map((row) => row.join(',')).join('|');
+  String _signature(List<List<int>> board) =>
+      board.map((row) => row.join(',')).join('|');
 }
 
 class _LineResult {
   const _LineResult(this.values, this.scoreGain, this.merges);
+
   final List<int> values;
   final int scoreGain;
   final int merges;
