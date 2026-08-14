@@ -37,8 +37,8 @@ class GuideScreen extends StatelessWidget {
         'Undo restores the previous board snapshot including deterministic random state. Hints evaluate legal moves using empty-space, merge, corner, monotonicity, and smoothness heuristics. A normal hint suggests one move and never moves tiles automatically.',
       ),
       (
-        'Solver Demo',
-        'Solver Demo is an optional local Auto Play demonstration. It repeatedly applies the same deterministic heuristic used by Hint to a separate seeded Endless 4×4 sandbox. You can autoplay, pause/resume, step one move at a time, choose the demonstration speed, or reset the seed. Demo score and moves are never mixed with your saved game, lifetime statistics, achievements, or Daily Challenge history.',
+        'Auto Play / AI Demo',
+        'Auto Play Demo is an optional local heuristic demonstration. It repeatedly applies the same deterministic solver used by Hint to a separate seeded Endless 4×4 sandbox. You can start, pause/resume, step one move at a time, choose the demonstration speed, or reset the seed. It is not machine learning and does not claim optimal play. Demo score and moves are never mixed with your saved game, lifetime statistics, achievements, or Daily Challenge history.',
       ),
       (
         'Daily Challenge',
@@ -50,7 +50,7 @@ class GuideScreen extends StatelessWidget {
       ),
       (
         'Offline and privacy',
-        'Core gameplay and Solver Demo work offline. No account, analytics, advertising tracker, or cloud synchronization is required.',
+        'Core gameplay and Auto Play Demo work offline. No account, analytics, advertising tracker, or cloud synchronization is required.',
       ),
       (
         'FAQ',
