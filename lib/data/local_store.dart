@@ -26,7 +26,11 @@ class LocalStore {
     if (raw == null) return null;
     try {
       final json = jsonDecode(raw);
-      if (json is! Map<String, dynamic>) return null;
+      if (json is! Map<String, dynamic>) {
+        await prefs.remove(_gameKey);
+        await prefs.remove(_undoKey);
+        return null;
+      }
       return GameState.fromJson(Map<String, Object?>.from(json));
     } on Object {
       await prefs.remove(_gameKey);
@@ -49,13 +53,33 @@ class LocalStore {
     if (raw == null) return [];
     try {
       final json = jsonDecode(raw);
-      if (json is! List) return [];
-      final states = <GameState>[];
-      for (final item in json) {
-        if (item is! Map<String, dynamic>) continue;
-        states.add(GameState.fromJson(Map<String, Object?>.from(item)));
+      if (json is! List) {
+        await prefs.remove(_undoKey);
+        return [];
       }
-      return states.length <= 50 ? states : states.sublist(states.length - 50);
+      final states = <GameState>[];
+      var repaired = false;
+      for (final item in json) {
+        if (item is! Map<String, dynamic>) {
+          repaired = true;
+          continue;
+        }
+        try {
+          states.add(GameState.fromJson(Map<String, Object?>.from(item)));
+        } on Object {
+          repaired = true;
+        }
+      }
+      final limited =
+          states.length <= 50 ? states : states.sublist(states.length - 50);
+      if (limited.length != states.length) repaired = true;
+      if (repaired) {
+        await prefs.setString(
+          _undoKey,
+          jsonEncode(limited.map((state) => state.toJson()).toList()),
+        );
+      }
+      return limited;
     } on Object {
       await prefs.remove(_undoKey);
       return [];
@@ -68,20 +92,35 @@ class LocalStore {
     if (raw == null) return [];
     try {
       final json = jsonDecode(raw);
-      if (json is! List) return [];
+      if (json is! List) {
+        await prefs.remove(_dailyHistoryKey);
+        return [];
+      }
       final records = <DailyRecord>[];
+      var repaired = false;
       for (final item in json) {
-        if (item is! Map<String, dynamic>) continue;
+        if (item is! Map<String, dynamic>) {
+          repaired = true;
+          continue;
+        }
         try {
           records.add(
             DailyRecord.fromJson(Map<String, Object?>.from(item)),
           );
-        } on FormatException {
-          continue;
+        } on Object {
+          repaired = true;
         }
       }
       records.sort((a, b) => b.seed.compareTo(a.seed));
-      return records.length <= 60 ? records : records.sublist(0, 60);
+      final limited = records.length <= 60 ? records : records.sublist(0, 60);
+      if (limited.length != records.length) repaired = true;
+      if (repaired) {
+        await prefs.setString(
+          _dailyHistoryKey,
+          jsonEncode(limited.map((record) => record.toJson()).toList()),
+        );
+      }
+      return limited;
     } on Object {
       await prefs.remove(_dailyHistoryKey);
       return [];
@@ -128,14 +167,18 @@ class LocalStore {
       _saveMap(_achievementsKey, value);
 
   Future<Map<String, Object?>> _loadMap(String key) async {
-    final raw = (await _prefs).getString(key);
+    final prefs = await _prefs;
+    final raw = prefs.getString(key);
     if (raw == null) return {};
     try {
       final value = jsonDecode(raw);
-      return value is Map<String, dynamic>
-          ? Map<String, Object?>.from(value)
-          : {};
+      if (value is Map<String, dynamic>) {
+        return Map<String, Object?>.from(value);
+      }
+      await prefs.remove(key);
+      return {};
     } on Object {
+      await prefs.remove(key);
       return {};
     }
   }
