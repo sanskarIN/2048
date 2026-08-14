@@ -50,7 +50,7 @@ void main() {
     expect(controller.stats.bestScore, initialBest);
   });
 
-  testWidgets('auto play demo can be paused without continuing in background',
+  testWidgets('auto play speed can change and pause stops background moves',
       (tester) async {
     SharedPreferences.setMockInitialValues({});
     final controller = AppController(store: LocalStore());
@@ -66,8 +66,16 @@ void main() {
       250,
       scrollable: find.byType(Scrollable).last,
     );
+
+    expect(find.text('2 moves / sec'), findsOneWidget);
+    await tester.tap(find.text('2 moves / sec'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('4 moves / sec').last);
+    await tester.pumpAndSettle();
+    expect(find.text('4 moves / sec'), findsOneWidget);
+
     await tester.tap(find.text('Auto Play'));
-    await tester.pump(const Duration(milliseconds: 1100));
+    await tester.pump(const Duration(milliseconds: 550));
 
     expect(find.text('Pause'), findsOneWidget);
     final movesAfterRun = _visibleMoveCount(tester);
