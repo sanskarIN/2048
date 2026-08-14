@@ -24,6 +24,7 @@ jobs:
         shell: bash
         run: |
           flutter pub get
+          git checkout -- analysis_options.yaml
           rm .github/workflows/phase16-lock-localization.yml
           git config user.name Sanskar
           git config user.email sanskarin@outlook.in
