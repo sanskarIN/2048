@@ -63,4 +63,23 @@ void main() {
     );
     expect(find.text('Zen'), findsOneWidget);
   });
+
+  testWidgets('home opens the challenge code workspace', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final controller = AppController(store: LocalStore());
+    await controller.initialize();
+    await tester.pumpWidget(NovaApp(controller: controller));
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+      find.text('Challenge Codes'),
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.text('Challenge Codes'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Same seed, same opening'), findsOneWidget);
+    expect(find.text('Create a challenge'), findsOneWidget);
+  });
 }
