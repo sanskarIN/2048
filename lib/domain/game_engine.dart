@@ -146,16 +146,20 @@ class GameEngine {
     switch (direction) {
       case Direction.left:
         board[index] = [...values];
+        break;
       case Direction.right:
         board[index] = values.reversed.toList();
+        break;
       case Direction.up:
         for (var row = 0; row < config.size; row++) {
           board[row][index] = values[row];
         }
+        break;
       case Direction.down:
         for (var row = 0; row < config.size; row++) {
           board[config.size - 1 - row][index] = values[row];
         }
+        break;
     }
   }
 
