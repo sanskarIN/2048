@@ -116,7 +116,11 @@ void main() {
   });
 
   test('oversized backup text is rejected before JSON parsing', () {
-    final oversized = 'x' * (GameBackup.maxEncodedLength + 1);
+    final oversized = List.filled(
+      GameBackup.maxEncodedLength + 1,
+      'x',
+      growable: false,
+    ).join();
     expect(() => GameBackup.decode(oversized), throwsFormatException);
   });
 }
