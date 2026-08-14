@@ -1,0 +1,46 @@
+name: Lock Flutter Dependencies
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/lock-dependencies.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  lock:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependency lockfile
+        run: flutter pub get
+
+      - name: Commit application lockfile
+        run: |
+          git add pubspec.lock
+          if git diff --cached --quiet; then
+            echo "Dependency lockfile is already current."
+            exit 0
+          fi
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+          git commit -m "build: lock Flutter dependencies"
+          git reset --hard HEAD
+          git clean -fd
+          git pull --rebase origin main
+          git push origin HEAD:main
