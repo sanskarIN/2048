@@ -53,7 +53,7 @@ class AboutScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Release candidate 0.9 adds ten game modes, deterministic save and undo integrity, Daily Challenges, statistics and achievements, seven palettes, accessibility controls, heuristic hints, keyboard shortcuts, and cross-platform release builds.',
+                    'Release candidate 0.9 includes ten game modes, deterministic save and Undo integrity, Daily Challenges, statistics and achievements, seven palettes, accessibility controls, heuristic hints, keyboard shortcuts, an isolated Auto Play Demo, read-only Move Replay, validated portable current-game backup with persistent unranked restore policy, and cross-platform release-build verification.',
                   ),
                 ],
               ),
