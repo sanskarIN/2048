@@ -226,3 +226,9 @@ By contributing, you agree that your contribution can be distributed under the r
 ## Community conduct
 
 Participation is subject to [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Keep technical review focused on the work, provide reproducible evidence where possible, and treat regressions as issues to diagnose rather than hide.
+
+## Localization contributions
+
+Player-facing behavior changes must keep English/Hindi localization coherent. Route fixed UI strings through the project localization layer, add Hindi catalog entries, preserve English fallback, and add focused tests for critical flows. Dynamic messages should use typed helpers where grammar or values vary.
+
+Do not translate protocol identifiers, JSON keys, URLs, email addresses, seeds, or code. A registered locale is not considered release-qualified until representative layout and assistive-technology checks are also documented. See [`docs/LOCALIZATION.md`](docs/LOCALIZATION.md).
