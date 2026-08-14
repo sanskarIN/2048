@@ -7,11 +7,12 @@ Completed in the current release-candidate line:
 - Deterministic core engine, save/resume, bounded Undo, and persisted RNG integrity.
 - Ten configured game modes, including Daily Challenge and challenge limits.
 - Deterministic heuristic hints with focused regression coverage.
+- Isolated deterministic **Auto Play Demo** with pause/resume, single-step control, speed selection, seed reset, and strict separation from player saves/statistics/achievements/Daily history.
 - Statistics, achievements, Daily history, replay-result preservation, and history repair.
 - Responsive touch/keyboard UI, desktop shortcuts, themes, high contrast, reduced motion, sound/haptic toggles, and accessibility semantics.
 - Android, iOS, Web, Windows, macOS, and Linux Flutter runners.
 - Hosted release-build verification for Android, Linux, Windows, macOS, and unsigned iOS.
-- Expanded automated engine, persistence, controller, interaction, session-integrity, and accessibility tests.
+- Expanded automated engine, persistence, controller, interaction, session-integrity, accessibility, and Auto Play isolation tests.
 - Open-source documentation, branding, CI, contribution/security templates, and project support/contact integration.
 
 Remaining release qualification before `1.0.0`:
@@ -39,7 +40,7 @@ These are intentionally non-blocking and must not destabilize core gameplay:
 
 - Localization framework and Hindi translation.
 - Replay visualization and export/import support.
-- Optional isolated expectimax/advanced AI demonstration and benchmark suite.
+- Optional expectimax or other advanced solver behind the already-isolated Auto Play Demo boundary, plus a benchmark suite.
 - Golden/visual-regression matrices for major breakpoints and themes.
 - More mode-specific records and challenge metadata.
 - Richer platform-aware sound/haptic effects using only compatible/licensed resources.
