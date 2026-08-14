@@ -18,7 +18,8 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(l10n.text('Appearance'), style: Theme.of(context).textTheme.titleMedium),
+          Text(l10n.text('Appearance'),
+              style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 12),
           DropdownButtonFormField<AppLanguage>(
             initialValue: settings.language,
@@ -130,7 +131,8 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const Divider(height: 32),
-          Text(l10n.text('Gameplay'), style: Theme.of(context).textTheme.titleMedium),
+          Text(l10n.text('Gameplay'),
+              style: Theme.of(context).textTheme.titleMedium),
           SwitchListTile(
             title: Text(l10n.text('Confirm restart')),
             value: settings.confirmRestart,
@@ -139,11 +141,13 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const Divider(height: 32),
-          Text(l10n.text('Data'), style: Theme.of(context).textTheme.titleMedium),
+          Text(l10n.text('Data'),
+              style: Theme.of(context).textTheme.titleMedium),
           ListTile(
             leading: const Icon(Icons.restart_alt_rounded),
             title: Text(l10n.text('Reset current game')),
-            subtitle: Text(l10n.text('Remove the saved board and undo history.')),
+            subtitle:
+                Text(l10n.text('Remove the saved board and undo history.')),
             enabled: controller.hasGame,
             onTap: controller.hasGame
                 ? () => _confirmAction(
