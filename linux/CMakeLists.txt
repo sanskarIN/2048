@@ -5,9 +5,9 @@ project(runner LANGUAGES CXX)
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
 set(BINARY_NAME "nova_2048")
-# The unique GTK application identifier for this application. See:
-# https://wiki.gnome.org/HowDoI/ChooseApplicationID
-set(APPLICATION_ID "com.sanskarin.nova_2048")
+# The unique GTK application identifier for this application. Underscores are
+# not valid in a GApplication ID, so keep the reverse-domain identifier compact.
+set(APPLICATION_ID "com.sanskarin.nova2048")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
