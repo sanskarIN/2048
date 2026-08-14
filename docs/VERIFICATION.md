@@ -1,135 +1,137 @@
-# Release Candidate Verification
+# Verification Record
 
-This document provides a compact index of the objective verification evidence for **2048 Nova `0.9.0+1`**. The chronological development record, including intermediate failures and their fixes, remains in [`what_changed.md`](../what_changed.md).
+This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
-## Current verified code state
+## Phase 14 — Portable Game Backup + complete documentation
 
-Latest completed Phase 13 Move Replay quality gate:
+### Production/native state
 
-- Workflow: `CI`
-- Run: `31779838751`
-- Verified commit: `278ba039d0b7b59ce54c72c5ed0fcd0401ba537a`
-- Flutter: `3.47.0` stable
-- Dart: `3.13.0`
-- Dart formatting: **PASS** — 55 files checked, 0 changed
-- Static analysis: **PASS** — no issues found
-- Automated regression suite: **PASS — 92/92 tests**
-- Web release build: **PASS** — `build/web` produced successfully
-- Web WASM dry run: **PASS**
+The final Phase 14 application source requiring native compilation is:
 
-The verified suite includes deterministic engine rules, save migration/validation, persistence repair, Daily Challenge history/replay behavior, Undo and statistics-reset integrity, terminal-state behavior, restored challenge status, hint determinism, external-link policy, keyboard interactions, replacement guards, accessibility semantics, Auto Play determinism/isolation, and Move Replay filtering/immutability/playback behavior.
+```text
+741dfd42e51386646aa64be116cf7e913e98d211
+docs: refresh in-app release candidate highlights
+```
 
-The Web build continues to emit a non-fatal informational CupertinoIcons font lookup warning even though the project does not directly reference `CupertinoIcons`; the release Web output is still produced successfully.
+That source state includes all preceding Phase 14 production changes: the `GameBackup` codec and strict 128 KiB envelope validation; persistent `nova.current_game_unranked.v1` policy marker; controller-level imported-session isolation from trusted lifetime records; backup route/screen/Home entry; explicit clipboard export/import confirmation; `Continue Unranked Backup` labeling; imported historical-best isolation; and in-app Guide/About documentation for Backup, Replay, Auto Play, offline/privacy, and release-candidate boundaries.
 
-## Current verified native production-code state
+Native build evidence:
 
-The complete Replay production code and in-app guide integration are covered by:
+```text
+Workflow: Platform Builds
+Run: 31784286707
+Verified production commit: 741dfd42e51386646aa64be116cf7e913e98d211
+Conclusion: SUCCESS
+```
 
-- Workflow: `Platform Builds`
-- Run: `31779566057`
-- Verified commit: `4f3cc6f55ae6b2f50b4758db22569b7ec48ddafd`
+Jobs:
 
-Results:
+- Android release APK — **PASS**
+- Linux release — **PASS**
+- Windows release — **PASS**
+- macOS release — **PASS**
+- iOS release with `--no-codesign` — **PASS**
 
-- Android release APK: **PASS**
-- Linux release: **PASS**
-- Windows release: **PASS**
-- macOS release: **PASS**
-- iOS release with `--no-codesign`: **PASS**
+The iOS job is intentionally unsigned. Real signing/provisioning remains a manual distribution boundary.
 
-That native commit contains the Replay timeline domain code, Replay screen, route, Home entry, guide integration, Auto Play production code, and all preceding core production changes. Later Phase 13 commits changed tests or Markdown documentation only.
+### Phase 14 automated-test expansion
 
-The iOS build is deliberately unsigned. Signing/provisioning credentials are not stored in the repository.
+Phase 13 completed at **92 tests**. Phase 14 adds exactly 20 focused test cases across four new files:
 
-## Move Replay verification boundary
+- `test/game_backup_test.dart` — 7;
+- `test/imported_game_policy_test.dart` — 5;
+- `test/game_backup_screen_test.dart` — 4;
+- `test/unranked_marker_test.dart` — 4.
 
-The optional Replay / move-history feature is implemented as a read-only spectator view backed by the existing validated bounded Undo history rather than a second persistence format.
+The complete Phase 14 suite therefore contains **112 automated tests**. The permanent CI run triggered by this verification-document commit confirms the repository-wide formatter, analyzer, coverage test execution, and Web release build. Its exact run ID/result is recorded in the follow-up verification-only commit after GitHub Actions completes.
 
-Automated verification covers:
+Automated trust-boundary coverage verifies that backup round trip preserves the current game; unrelated lifetime/settings/achievement/Daily/Undo data is excluded; malformed/unsupported/invalid/oversized backup text is rejected; strict embedded `GameState` validation remains authoritative; clipboard export is decodable; import requires explicit confirmation; Cancel/invalid input preserve existing state; imported sessions remain unranked across restart; imported moves cannot mutate lifetime records, achievements, streaks, or Daily history; imported historical best cannot replace the device lifetime record; terminal imported state cannot award a ranked win; a normal new game exits imported policy; and malformed/cleared/corrupt current-game state cleans the associated unranked marker.
 
-- current-session filtering using start time and complete game configuration identity;
-- rejection of future/impossible move, merge, or score frames;
-- chronological ordering by move count;
-- duplicate move-number collapse;
-- authoritative current game as the final frame;
-- defensive copied board/state data;
-- an unmodifiable returned timeline;
-- first/next/latest UI navigation;
-- timed replay playback;
-- Pause stopping later automatic frame changes;
-- safe empty state when no current game exists;
-- live player board, score, move count, and RNG remaining unchanged while replay frames are viewed.
+### Transparent Phase 14 intermediate failures
 
-Replay adds no new persistence key, network service, account data, or telemetry. Because Undo history is bounded, a long game's replay may begin at the earliest retained snapshot rather than move zero; the UI explicitly discloses this limitation.
+These are not counted as final verification:
 
-### Transparent intermediate Replay test failure
+- CI run `31781326279` failed because strict analysis exposed an unused backup-test import. Commit `3446413574582c196a47877fe1bfbe63addbf71d` fixed it.
+- The oversized-backup fixture initially used unsupported Dart string multiplication; commit `a4a2de5bfb9e32fb9f02cf13b5019f69141ff567` replaced it with a valid `List.filled(...).join()` fixture.
+- Backup widget tests initially assumed the below-the-fold Home card was visible in the default 800×600 test viewport; commit `24b2063f365b63a86009c9acbebf2c4bafe73bed` scrolls it into view before tapping.
+- Temporary one-time patch/wiring helpers had development-tooling failures (`31780514759`, `31780577741`, `31780703213`, `31780791461`, `31781232021`) and were removed after source changes were committed normally.
+- Phase-14-log helper attempts `31785071035` and `31785159285` failed at workflow parsing, while `31785331045` appended successfully in its temporary checkout but failed before commit because staging named an already-removed helper path. Final helper run `31785495844` completed successfully, appended Phase 14 to `what_changed.md`, committed it, and removed itself.
 
-CI run `31779369661` passed formatting and static analysis but recorded **90 passed / 2 failed** in the test step. The two Replay widget tests attempted to tap timeline controls that were below Flutter's default 800×600 widget-test viewport. The production Replay screen was already scrollable; the test harness had incorrectly assumed the controls were initially visible.
+The permanent workflow directory after cleanup contains only:
 
-Commit `501b2a512c2f185461129f2e294504e43e883d59` (`test: scroll replay controls before widget taps`) scrolled the controls into view before tapping. The final 92-test gate above then passed. This failure is retained as evidence rather than hidden.
+- `bootstrap-branding.yml`
+- `bootstrap-platforms.yml`
+- `ci.yml`
+- `format-code.yml`
+- `lock-dependencies.yml`
+- `platform-builds.yml`
 
-## Auto Play / AI Demonstration verification boundary
+## Historical Phase 13 — Move Replay
 
-The optional Auto Play feature is implemented as a deterministic local heuristic demonstration rather than a cloud/model-backed AI service.
+```text
+Workflow: CI
+Run: 31779838751
+Verified commit: 278ba039d0b7b59ce54c72c5ed0fcd0401ba537a
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+Formatting: PASS — 55 files, 0 changed
+Analysis: PASS — No issues found
+Tests: PASS — 92/92
+Web release build: PASS — build/web
+WASM dry run: PASS
+Overall CI job: SUCCESS
+```
 
-Automated verification covers:
+Native matrix `31779566057` on production commit `4f3cc6f55ae6b2f50b4758db22569b7ec48ddafd` passed Android release APK, Linux, Windows, macOS, and unsigned iOS.
 
-- fixed-seed reset reproducibility;
-- matching-seed autoplay sequence reproducibility;
-- single-step behavior;
-- Auto Play start/pause;
-- speed selection;
-- stopped timer behavior after Pause;
-- demo metrics that are explicitly labeled as demo values;
-- no creation/replacement of the player `AppController.game`;
-- no changes to player games-played, total-moves, or lifetime-best statistics during demo stepping/reset;
-- no persistence key, network service, model download, achievement write, or Daily-history write path in the demo architecture.
+Intermediate Replay CI run `31779369661` recorded 90 passing / 2 failing tests because the widget harness tapped below-the-fold controls without scrolling. Commit `501b2a512c2f185461129f2e294504e43e883d59` fixed the harness; the final 92-test gate above passed.
 
-This verifies the implemented heuristic Auto Play boundary. It does not claim optimal 2048 solving, machine-learning behavior, or an expectimax guarantee.
+## Historical Phase 12 — Auto Play Demo
 
-## Historical quality progression
+```text
+Workflow: CI
+Run: 31778558429
+Commit: 1d98042558ab7ffe40c9da4ad42dbbf8263dcaf6
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+Formatting: PASS — 51 files, 0 changed
+Analysis: PASS — No issues found
+Tests: PASS — 86/86
+Web release build: PASS
+```
 
-Phase 12 Auto Play quality gate:
+Native matrix `31778424208` on production commit `a1cc17836834750c542c69ffdf3c5e582d4e43ab` passed Android, Linux, Windows, macOS, and unsigned iOS release builds.
 
-- CI run `31778558429`
-- commit `1d98042558ab7ffe40c9da4ad42dbbf8263dcaf6`
-- formatter **PASS** — 51 files, 0 changed
-- analyzer **PASS**
-- **86/86 tests PASS**
-- Web release build **PASS**.
+## Historical Phase 11 — Deep hardening
 
-Phase 11 pre-Auto-Play quality gate:
+```text
+Workflow: CI
+Run: 31777374553
+Commit: 1ecbf0881f723af1829fda523752562660a86a98
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+Formatting: PASS — 47 files, 0 changed
+Analysis: PASS — No issues found
+Tests: PASS — 81/81
+Web release build: PASS
+```
 
-- CI run `31777374553`
-- commit `1ecbf0881f723af1829fda523752562660a86a98`
-- formatter **PASS** — 47 files, 0 changed
-- analyzer **PASS**
-- **81/81 tests PASS**
-- Web release build **PASS**.
+## What automated verification proves
 
-## Development-log finalization
+A successful current quality gate provides evidence that the tested repository state is Dart-format clean, passes configured Flutter static analysis, passes the complete automated unit/widget regression suite, produces a Flutter Web release build, and preserves the tested deterministic/persistence/accessibility/Replay/Auto Play/Backup trust boundaries. A successful native matrix provides evidence that the relevant production code compiles as configured on GitHub-hosted Android/Linux/Windows/macOS/iOS runners.
 
-The expanded Phase 11 record was appended to `what_changed.md` by temporary one-time documentation workflow run `31777838508`, producing commit `fafc9d86d4f0ddf890f80716dbaa9bcd613d1ffb` and removing its temporary files.
+## What automated verification does not prove
 
-Phase 12 was appended by workflow run `31778939887`, producing commit `1e4bba007c4e7f43607d46e7cbc152c65840d0e9` and removing its temporary files.
+It does not prove universal absence of defects; every physical device or OS version; real touch/orientation behavior on all devices; final TalkBack/VoiceOver/Narrator/browser-screen-reader quality; every real clipboard/browser/email handler; long-duration lifecycle behavior; Android production keystore/store signing; Apple signing/provisioning/notarization; or store acceptance/final privacy-data-safety listing accuracy.
 
-Phase 13 evidence is appended to `what_changed.md` after this verification manifest is updated.
+Those remain explicit tasks in [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
 
-The permanent workflow set remains limited to the maintained branding/platform bootstrap, CI, formatting, dependency-lock, and platform-build workflows.
+## Release-candidate status
 
-## Release boundary
+```text
+Project: 2048 Nova
+Version: 0.9.0+1
+Stable 1.0.0 claim: NOT YET
+```
 
-This evidence validates repository automation and hosted-runner builds; it is not an absolute zero-bug or universal-device-readiness claim. Promotion to `1.0.0` still requires the manual qualification in [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md), including representative physical-device gameplay/lifecycle checks, real assistive-technology testing, Replay and Auto Play timer/control behavior on representative real platforms, external-handler checks, native visual review, signing/provisioning, and final distribution/store metadata.
-
-## Source of truth
-
-Use these files together:
-
-- [`what_changed.md`](../what_changed.md) — chronological development, defects, fixes, commits, and evidence.
-- [`CHANGELOG.md`](../CHANGELOG.md) — release-facing notable changes.
-- [`TESTING.md`](TESTING.md) — automated and manual test strategy.
-- [`ARCHITECTURE.md`](ARCHITECTURE.md) — core, persistence, Replay, and Auto Play boundaries.
-- [`HINT_SOLVER.md`](HINT_SOLVER.md) — hint heuristic and isolated Auto Play architecture.
-- [`ACCESSIBILITY.md`](ACCESSIBILITY.md) — implemented accessibility foundations and manual qualification.
-- [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) — automated gate and remaining manual release tasks.
-- [`ROADMAP.md`](../ROADMAP.md) — stable-release boundary and non-blocking later work.
+Use this document with [`TESTING.md`](TESTING.md), [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md), [`../CHANGELOG.md`](../CHANGELOG.md), and [`../what_changed.md`](../what_changed.md).
