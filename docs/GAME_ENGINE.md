@@ -1,6 +1,6 @@
 # Game Engine Rules and Invariants
 
-2048 Nova keeps gameplay rules in `lib/domain/` so they can be tested independently from Flutter widgets and local persistence. The primary implementation is `GameEngine`, with serializable state in `GameState`, configuration in `GameConfig`, deterministic random behavior in `RandomSource`, and move recommendations in `HintSolver`.
+2048 Nova keeps gameplay rules in `lib/domain/` so they can be tested independently from Flutter widgets and local persistence. The primary implementation is `GameEngine`, with serializable state in `GameState`, configuration in `GameConfig`, deterministic random behavior in `RandomSource`, move recommendations in `HintSolver`, and portable seeded configuration in `ChallengeCode`.
 
 ## Board representation
 
@@ -25,6 +25,8 @@ Persisted state validation rejects malformed dimensions, negative values, non-po
 6. returns the initialized state.
 
 When `GameConfig.seed` is present, the default random source is initialized from that seed. Without a configured seed, a fresh engine uses the current microsecond timestamp as its initial seed.
+
+Challenge Codes always require a valid explicit seed. Therefore a decoded Challenge Code bypasses timestamp-derived initialization and reproduces the same supported configuration/seed on each start.
 
 ## Move algorithm
 
@@ -105,6 +107,23 @@ The current pseudo-random state is part of every normal game snapshot. Therefore
 
 Features that inspect possible moves, such as Hint and Replay, must not consume the player's RNG state.
 
+### Challenge Code determinism
+
+Challenge Codes preserve the initial deterministic boundary rather than a progressed snapshot. A code contains a validated `GameConfig` with an explicit seed. Starting it constructs the normal `GameEngine(config: decodedConfig)` and calls `createGame()`.
+
+For the same supported configuration and seed:
+
+- the first random source state is the same;
+- the two opening spawn coordinate/value choices are the same;
+- the resulting opening board is the same;
+- the saved `rngState` after those opening spawns is the same.
+
+If two players then make the same sequence of **valid** moves from identical states, their deterministic spawn sequence remains aligned. Different moves can change board occupancy and therefore cause later boards/spawn coordinates to diverge even though each run remains deterministic on its own path.
+
+Challenge Codes do not contain a board, score, moves, merges, status, start timestamp, or advanced RNG snapshot. They are a fresh-game configuration transport, not a replay/backup mechanism.
+
+See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md).
+
 ## Move availability and game over
 
 `canMove()` returns true if either:
@@ -157,6 +176,8 @@ If elapsed whole seconds reach the configured limit before the target is reached
 
 Because `startedAt` is persisted, closing/reopening the app does not reset the timer. Controller initialization reconciles a restored challenge before the stale state is offered for continuation.
 
+A Time Challenge Code reproduces its configuration and initial random seed, but each player's time limit begins from that player's newly created local `startedAt`. The code does not synchronize wall-clock start times across devices.
+
 ## Terminal-state precedence
 
 Current status refresh order is:
@@ -190,6 +211,7 @@ See [`HINT_SOLVER.md`](HINT_SOLVER.md) for the algorithm boundary and the isolat
 `GameEngine` intentionally does not own:
 
 - `SharedPreferences` persistence;
+- Challenge Code encode/decode or checksum policy;
 - lifetime statistics;
 - achievement unlocks;
 - Daily history;
@@ -198,7 +220,13 @@ See [`HINT_SOLVER.md`](HINT_SOLVER.md) for the algorithm boundary and the isolat
 - replacement confirmation;
 - external links.
 
-Those responsibilities live in higher layers. This keeps engine tests focused and prevents UI concerns from changing rule semantics.
+Those responsibilities live in other domain/higher layers. This keeps engine tests focused and prevents UI/portable-format concerns from changing rule semantics.
+
+## Challenge Code relationship
+
+`ChallengeCode` is a pure-domain codec around validated `GameConfig`; it does not modify `GameEngine` rules. After decode and UI replacement confirmation, the normal `AppController.newGame(config)` path constructs the engine.
+
+Daily mode is rejected by `ChallengeCode` even though the engine can accept a seeded Daily configuration. That restriction belongs to the portable-format policy because Daily Challenge has separate UTC-date/history semantics.
 
 ## Portable backup relationship
 
@@ -228,5 +256,7 @@ Any engine-related change should keep tests for at least:
 - Endless/Zen target continuation;
 - hint immutability and terminal suppression;
 - serialization/deserialization invariants when state shape changes.
+
+Challenge Code changes should independently verify exact configuration round trip, supported-mode policy, invalid/tampered input, and matching seeded opening board/RNG state rather than relying only on generic engine tests.
 
 The broader suite and current automated evidence are documented in [`TESTING.md`](TESTING.md) and [`VERIFICATION.md`](VERIFICATION.md).
