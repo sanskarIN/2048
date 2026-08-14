@@ -37,6 +37,10 @@ class GuideScreen extends StatelessWidget {
         'Undo restores the previous board snapshot including deterministic random state. Hints evaluate legal moves using empty-space, merge, corner, monotonicity, and smoothness heuristics. A normal hint suggests one move and never moves tiles automatically.',
       ),
       (
+        'Move Replay',
+        'When a saved game exists, Home can open Move Replay. It is a read-only spectator view built from the current game and its retained Undo snapshots. You can scrub between frames, jump to the first or latest retained frame, step backward or forward, play/pause the timeline, and choose 1, 2, or 4 frames per second. Undo history is bounded, so very long games may replay only the most recent retained moves. Replay uses defensive copies and never changes the live board, score, RNG, statistics, achievements, or Daily history.',
+      ),
+      (
         'Auto Play / AI Demo',
         'Auto Play Demo is an optional local heuristic demonstration. It repeatedly applies the same deterministic solver used by Hint to a separate seeded Endless 4×4 sandbox. You can start, pause/resume, step one move at a time, choose the demonstration speed, or reset the seed. It is not machine learning and does not claim optimal play. Demo score and moves are never mixed with your saved game, lifetime statistics, achievements, or Daily Challenge history.',
       ),
@@ -50,7 +54,7 @@ class GuideScreen extends StatelessWidget {
       ),
       (
         'Offline and privacy',
-        'Core gameplay and Auto Play Demo work offline. No account, analytics, advertising tracker, or cloud synchronization is required.',
+        'Core gameplay, Move Replay, and Auto Play Demo work offline. No account, analytics, advertising tracker, or cloud synchronization is required.',
       ),
       (
         'FAQ',
