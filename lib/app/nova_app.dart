@@ -4,6 +4,7 @@ import '../core/theme/nova_theme.dart';
 import '../features/about/about_screen.dart';
 import '../features/achievements/achievements_screen.dart';
 import '../features/backup/game_backup_screen.dart';
+import '../features/challenge_codes/challenge_code_screen.dart';
 import '../features/daily_challenge/daily_challenge_screen.dart';
 import '../features/game/game_screen.dart';
 import '../features/guide/guide_screen.dart';
@@ -49,6 +50,7 @@ class NovaApp extends StatelessWidget {
               '/modes': (_) => const ModeSelectionScreen(),
               '/game': (_) => const GameScreen(),
               '/daily': (_) => const DailyChallengeScreen(),
+              '/challenge-codes': (_) => const ChallengeCodeScreen(),
               '/backup': (_) => const GameBackupScreen(),
               '/replay': (_) => const ReplayScreen(),
               '/solver-demo': (_) => const SolverDemoScreen(),
