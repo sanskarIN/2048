@@ -1,164 +1,188 @@
 # 2048 Nova — Development Log
 
-> This file is the primary continuity/progress record for the repository. Objective CI/build evidence is recorded here instead of relying on chat history.
+> This file is the primary continuity/progress record for the repository. Objective test/build evidence is recorded here instead of relying on chat history.
 
-## 2026-08-14 — Repository build-out to 0.9.0 release-candidate line
+## 2026-08-14 — 0.9.0 release-candidate implementation and verification
 
 ### Project
 
 - **Project:** 2048 Nova
-- **Version:** 0.9.0+1
+- **Version:** `0.9.0+1`
 - **Repository:** https://github.com/sanskarIN/2048
 - **Branch:** `main`
 - **Creator / branding:** Sanskar / **Made by the Sanskar**
-- **Repository commit email:** `sanskarin@outlook.in`
+- **Commit email used by repository automation:** `sanskarin@outlook.in`
 - **License:** MIT
-- **Current phase:** Phase 9–10 — QA, CI, platform build verification, release engineering
-- **Latest commit at this log update:** `a0ede44ea4bfe571ec66c9e46b9f7ef08456ba77` — `ci: add native platform release build verification`
+- **Current phase:** Phase 10 — release-candidate verification complete; manual/device release validation remains before 1.0.0
+- **Latest production-code commit used by native build verification:** `eacdb9dc04b4467271f98ce2104e60daf0124f6d` — `fix: use portable page transition builders`
+- **Latest test-fix commit used by the final quality gate:** `f3e7aaec6404139951425144cb1fb4d2fda66e27` — `test: scroll lazy mode list before asserting offscreen entries`
+- **Latest documentation commit before this log refresh:** `3d5988f1a7a29d38dbd72602e2c489d5975c7b5b` — `docs: update changelog for release candidate verification`
 
-### Phase 0 — Repository audit and bootstrap
+---
 
-The preferred repository `sanskarIN/2048` was used rather than creating or renaming a second repository. The repository began without the required Flutter implementation, so the project was bootstrapped directly on `main` using small Conventional Commit changes.
+## Phase 0 — Repository audit and bootstrap
 
-Repository commits created by the automated generation workflows are explicitly configured with:
+The preferred repository `sanskarIN/2048` was used rather than creating or renaming a second repository. The repository did not already contain the required complete Flutter game, so implementation was built directly from the actual repository state using many small Conventional Commits.
+
+Repository-writing workflows explicitly configure:
 
 ```text
 user.name  = Sanskar
 user.email = sanskarin@outlook.in
 ```
 
-No access token, signing key, password, or other credential is stored in the repository.
+No access token, signing key, password, API key, or other private credential is committed.
 
-### Phase 1 — Foundation
+## Phase 1 — Foundation
 
-Added/configured:
+Added and configured:
 
-- `pubspec.yaml`
-- `analysis_options.yaml`
-- `.gitignore`
-- `lib/main.dart`
-- Material 3 app shell and navigation
-- `AppScope`/`AppController` state layer
+- Flutter application package and dependency manifest
+- strict analysis configuration
+- repository `.gitignore`
+- app entry point
+- Material 3 application shell
+- named navigation routes
+- lightweight `ChangeNotifier` + `InheritedNotifier` app-state architecture
 - central project/contact constants
 - reusable scaffold and external-link handling
-- local persistence service
-- theme/design foundations
+- local persistence layer
+- design/theme foundations
 
-Architecture decision: keep the game engine and serializable domain state independent from Flutter widgets. App orchestration uses a deliberately lightweight `ChangeNotifier` + `InheritedNotifier` approach rather than introducing a third-party state-management framework.
+Architecture decision: deterministic 2048 rules and serializable game state remain independent of Flutter widgets. UI does not directly manipulate persistence internals.
 
-Runtime dependencies are intentionally limited to `shared_preferences` and `url_launcher` beyond Flutter itself.
+Runtime packages beyond Flutter are intentionally limited to:
 
-### Phase 2 — Deterministic game engine
+- `shared_preferences`
+- `url_launcher`
+
+The resolved application dependencies are committed in `pubspec.lock`.
+
+## Phase 2 — Deterministic game engine
 
 Implemented:
 
-- board state and board-size configuration
-- all four movement directions
-- compression before merge
-- adjacent equal-tile merge
-- one-merge-per-source-tile rule
-- score gain accounting
-- merge counting
+- board and tile-value state
+- configurable board dimensions
+- Up / Down / Left / Right movement
+- zero-cell compression
+- adjacent-equal merge logic
+- correct one-merge-per-source-tile behavior
+- score gain calculation
+- merge count calculation
 - valid/invalid move detection
-- new-tile spawning only after a state-changing move
-- 90% tile `2` / 10% tile `4` spawn rule
+- spawn only after a board-changing move
+- 90% `2` / 10% `4` spawn rule
+- win/target detection
 - game-over detection
-- target/win detection
-- Endless/Zen continuation behavior
-- move-limit challenge rules
-- time-challenge expiry rules
-- deterministic `RandomSource`
-- persisted RNG state for undo/save integrity
-- lightweight board-changing-direction hint heuristic
+- Endless and Zen continuation rules
+- move-limit challenge expiry
+- time-challenge expiry
+- deterministic seeded RNG abstraction
+- persisted RNG state
+- deterministic undo/save integrity
+- lightweight valid-direction hint heuristic
 
-Important bug prevention/fixes:
+Important defects prevented/fixed:
 
-- Explicitly terminated directional write switch cases.
-- Replaced non-restorable runtime randomness with a deterministic stateful generator so save/resume and undo can restore random sequence integrity.
-- Added a controller-level move lock so repeated swipe/keyboard requests cannot race persistence and mutate the board concurrently.
+- directional write switch cases explicitly terminate
+- invalid moves never create new tiles
+- `[2, 2, 4]` cannot chain into `8` in one move
+- persisted/undo state restores RNG sequence rather than only visual board state
+- repeated touch/keyboard requests are serialized by the controller to prevent mutation/persistence races
 
-### Phase 3 — Core UI and controls
+## Phase 3 — Core UI and controls
 
 Implemented:
 
-- immediate branded splash screen without artificial delay
-- premium responsive Home screen
-- mode-selection screen
-- Game screen
-- responsive square board for 3×3 through 6×6 modes
-- score/best/moves/highest-tile metrics
-- remaining-move metric for Move Limit
-- remaining-seconds metric for Time Challenge
-- touch swipe controls with accidental-move velocity threshold
+- branded splash screen with no artificial launch delay
+- responsive Home screen
+- mode selection
+- responsive Game screen
+- square 3×3 through 6×6 board layouts
+- score / best / moves / highest-tile metrics
+- remaining move count for Move Limit
+- remaining seconds for Time Challenge
+- touch swipe input with a minimum velocity threshold
 - Arrow Key controls
 - W/A/S/D controls
-- Hint, Undo, Pause, and Restart actions
+- Hint
+- Undo
+- Pause
+- Restart
 - win/continue dialog
-- game-over/restart dialog
-- pause menu with Resume, Settings, and Home
-- dynamic tile text sizing for large values
-- spawn/merge value transitions with reduced-motion support
-- optional system sound and haptic feedback where supported
+- game-over/restart flow
+- pause menu with Resume / Settings / Home
+- adaptive text size for high-value tiles
+- spawn/merge value transitions
+- reduced-motion and platform animation-preference handling
+- optional system sound feedback
+- optional haptic feedback where supported
 
-### Phase 4 — Persistence, save/resume, undo, and local data
+## Phase 4 — Save/resume, undo, and local data integrity
 
-Implemented versioned local persistence for:
+Versioned local persistence now stores:
 
-- current game
+- current board
 - score / best score
 - move count / merge count
 - mode and board size
-- challenge configuration
-- target state
-- RNG state
-- bounded undo history (up to 50 snapshots)
+- target/challenge configuration
+- status/win acknowledgement
+- game start time
+- deterministic RNG state
+- bounded undo history up to 50 snapshots
 - appearance/gameplay settings
 - statistics
 - achievements
-- Daily Challenge history
+- Daily Challenge history up to 60 records
 
-Malformed project-owned current-game data is handled safely rather than crashing startup. The malformed current save and associated undo history are discarded when they cannot be decoded safely.
+Malformed current-game JSON fails safely instead of crashing startup. When the current saved game is malformed, its associated undo history is also removed rather than being applied to an unrelated future session.
 
-Added confirmed destructive-data flows for:
+Confirmed destructive-data controls exist for:
 
 - current game reset
 - statistics reset
-- achievement reset
-- complete project-owned local data reset
+- achievements reset
+- complete 2048 Nova local-data reset
 
-`clearAll()` removes only 2048 Nova keys rather than wiping unrelated application/platform preferences.
+The complete reset removes only project-owned keys instead of wiping unrelated platform/application preferences.
 
-### Phase 5 — UX, themes, personalization, and accessibility
+## Phase 5 — Themes, personalization, and accessibility
 
-Implemented:
+Implemented appearance options:
 
-- Light / Dark / System brightness
-- Classic Nova palette
-- Midnight palette
-- Neon palette
-- Ocean palette
-- Forest palette
-- Sunset palette
-- Monochrome palette
-- High Contrast option
-- Reduced Motion option
-- respect for platform `disableAnimations`
-- sound toggle
-- haptics toggle
-- restart-confirmation toggle
+- Light
+- Dark
+- System
+- Classic Nova
+- Midnight
+- Neon
+- Ocean
+- Forest
+- Sunset
+- Monochrome
+- High Contrast
+- Reduced Motion
+
+Implemented accessibility foundations:
+
 - semantic tile labels
-- exact visible tile values so color is never the only signal
-- keyboard gameplay support
-- tooltips/labels for important actions
+- exact visible tile values, so color is never the only indicator
+- keyboard gameplay
+- tooltips/labels on important controls
 - responsive constrained layouts
-- system text-scaling compatibility
-- fitted high-value tile labels
+- Flutter/system text scaling
+- fitted high-value labels
+- respect for `MediaQuery.disableAnimations`
+- independently disableable sound and haptics
+- semantic BMC support label
 
-Accessibility design/QA guidance is documented in `docs/ACCESSIBILITY.md`.
+Detailed manual accessibility QA remains documented in `docs/ACCESSIBILITY.md` because automated tests do not replace physical assistive-technology testing.
 
-### Phase 6 — Game modes, statistics, achievements, and Daily Challenge
+## Phase 6 — Modes, statistics, achievements, and Daily Challenge
 
-Implemented modes:
+Implemented game modes:
 
 1. Classic 4×4
 2. Quick 3×3
@@ -171,7 +195,7 @@ Implemented modes:
 9. Daily Challenge
 10. Zen
 
-Target mode currently supports selectable milestones:
+Target mode supports:
 
 - 128
 - 256
@@ -182,7 +206,7 @@ Target mode currently supports selectable milestones:
 - 8192
 - 16384
 
-Statistics include:
+Statistics implemented:
 
 - games played
 - games won
@@ -194,73 +218,95 @@ Statistics include:
 - current streak
 - best streak
 
-Achievements currently include merge, tile, score, total-win, and Daily Challenge milestones. Achievement UI shows progress, completion, and unlock date.
+Achievements include:
 
-Daily Challenge uses a UTC `YYYYMMDD` deterministic seed and stores recent local history without requiring an account or network connection.
+- first merge
+- 128 / 256 / 512 / 1024 / 2048 / 4096 / 8192 milestones
+- 10,000 / 50,000 score milestones
+- 1 / 5 total-win milestones
+- 1 / 7 Daily Challenge win milestones
+- visible progress
+- persistent unlocked state
+- unlock dates
 
-### Phase 7 — Guide, support, project information, and privacy
+Daily Challenge:
+
+- works offline
+- derives deterministic seed from UTC `YYYYMMDD`
+- persists score, moves, highest tile, completion, and win state
+- maintains recent local history
+
+## Phase 7 — Guide, project information, support, BMC, and privacy
 
 Added in-app:
 
-- detailed How to Play / Guide
+- detailed How to Play guide
+- controls and merging explanation
+- strategy guidance
+- mode explanations
+- feature/accessibility explanations
 - About screen
 - Support screen
+- third-party license UI
 - GitHub repository link
 - GitHub profile link
 - LinkedIn link
 - both business email actions
 - support email action
-- Buy Me a Coffee entry points
-- third-party license UI
+- Buy Me a Coffee support controls
 - **Made by the Sanskar** branding
 
-Buy Me a Coffee opens:
+Buy Me a Coffee destination:
 
 `https://buymeacoffee.com/sanskarIN`
 
-It is clearly presented as optional support and does not interrupt gameplay or imitate a payment form.
+It is explicitly presented as optional and does not interrupt game moves or imitate a payment form.
 
-Privacy behavior: no analytics, ad tracker, account system, or cloud synchronization has been added. Core gameplay remains offline-first. See `docs/PRIVACY.md`.
+Default privacy behavior remains offline-first with no analytics SDK, advertising tracker, account system, or cloud synchronization.
 
-### Phase 8 — Branding and platform runners
+## Phase 8 — Branding and platform runners
 
-Created original source logo:
+Original editable branding source:
 
 - `assets/branding/2048_nova_logo.svg`
 
-Added an automated branding exporter which generated/updates:
+Generated branding exports include:
 
 - Android launcher icons
-- iOS AppIcon set
-- iOS native launch images
-- macOS AppIcon set
+- iOS AppIcon assets
+- iOS launch images
+- macOS AppIcon assets
 - Windows multi-resolution ICO
-- Web/PWA 192×192 and 512×512 icons
+- PWA 192×192 / 512×512 icons
 - maskable PWA icons
 - web favicon PNG
 - `assets/branding/2048_nova_icon_1024.png`
 
-Branding bootstrap workflow status:
+### Branding generation evidence
 
-- `Bootstrap Branding Assets` run `31770394131`: **SUCCESS**
-- generated asset commit: `f2ffe3588fabec1a6c383132da04954bc7de5d02` — `feat: export branded platform icons and splash assets`
+- Workflow: `Bootstrap Branding Assets`
+- Run: `31770394131`
+- Result: **SUCCESS**
+- Generated commit: `f2ffe3588fabec1a6c383132da04954bc7de5d02`
+- Commit message: `feat: export branded platform icons and splash assets`
 
-Flutter platform runners were generated for Android, iOS, Linux, macOS, and Windows by an automated repository workflow.
+### Flutter platform-runner generation evidence
 
-Platform bootstrap history:
+The first generated-runner push encountered a normal non-fast-forward race because other atomic commits reached `main` during the workflow. The workflow was fixed to clean the workspace, rebase on current `main`, and push normally. No force push was used.
 
-- Initial generation workflow encountered a concurrent non-fast-forward push while other atomic commits were being added.
-- The workflow was corrected to clean generated workspace state, rebase on current `main`, then push normally.
-- Corrected `Bootstrap Flutter Platforms` run `31769867015`: **SUCCESS**
-- runner generation commit: `7a1d039b8552692234c6519cc81895be65726489` — `build: generate Flutter platform runners`
+- Workflow: `Bootstrap Flutter Platforms`
+- Corrected run: `31769867015`
+- Result: **SUCCESS**
+- Generated commit: `7a1d039b8552692234c6519cc81895be65726489`
+- Commit message: `build: generate Flutter platform runners`
 
-No force push was used.
+Configured runners now exist for Android, iOS, Linux, macOS, and Windows, while Web is configured directly in the repository.
 
-Native metadata was updated to the **2048 Nova** product name for Android, iOS, Windows, macOS, and Linux. Android native launch backgrounds now use the branded launcher asset.
+Native product metadata is branded as **2048 Nova**. Android launch backgrounds use the branded launcher asset.
 
-### Phase 9 — Automated tests
+## Phase 9 — Tests, analyzer, formatter, and Web build
 
-Test files added:
+Automated test files:
 
 - `test/game_engine_test.dart`
 - `test/game_state_test.dart`
@@ -269,37 +315,125 @@ Test files added:
 - `test/app_controller_test.dart`
 - `test/widget_smoke_test.dart`
 
-Automated coverage includes:
+Coverage includes:
 
-- horizontal/vertical moves
+- all movement directions
 - compression
-- multiple merges
+- single and multiple merges
 - no double/chained merge
 - score/merge accounting
-- invalid move spawn prevention
-- deterministic spawning
-- target completion
+- invalid-move spawn prevention
+- deterministic spawning/RNG state
 - game over
-- move-limit expiry
-- deterministic time-limit expiry
+- target win
+- Move Limit
+- deterministic Time Challenge expiry
 - game-state serialization
-- malformed board rejection
+- invalid board rejection
 - save/resume
-- undo-history persistence
+- persistent undo history
 - malformed-save recovery
-- scoped data reset
-- Daily Challenge persistence and record integrity
+- scoped complete-data reset
+- Daily Challenge persistence/record integrity
 - settings persistence
-- serialized concurrent move requests
-- app startup/navigation
-- theme behavior
-- mode availability
+- rapid/concurrent move serialization
+- app startup and navigation
+- theme selection
+- requested mode availability
 
-**Current repository-wide CI status at this exact log update:** latest quality run is queued/pending because the repository is still receiving the final documentation/release-engineering commits. Final analyzer/test/build results will replace this line before the release candidate is treated as verified.
+### Final quality-gate evidence
 
-### Phase 10 — Open-source and release engineering
+- Workflow: `CI`
+- Run: `31770835591`
+- Tested commit: `f3e7aaec6404139951425144cb1fb4d2fda66e27`
+- Flutter: **3.47.0 stable**
+- Dart: **3.11.0**
+- Formatter: **PASS** — 28 files checked, 0 changed
+- Analyzer: **PASS** — `No issues found!`
+- Automated tests: **PASS — 29/29 tests**
+- Web release build: **PASS** — `build/web` produced successfully
+- Overall job result: **SUCCESS**
 
-Added/updated:
+A previous test run correctly exposed a widget-test assumption: lazy `ListView` entries such as Daily Challenge and Zen were not built while offscreen. The test was fixed to scroll the list into view before asserting those entries, then the full quality gate passed.
+
+A previous analyzer run also exposed two release blockers which were fixed before the successful run:
+
+- explicit `PlayerStats()` constructor added
+- unavailable Cupertino transition builder replaced with portable Flutter transition builders
+
+## Phase 10 — Native release-build verification
+
+The native build workflow executed on production-code commit:
+
+`eacdb9dc04b4467271f98ce2104e60daf0124f6d`
+
+Workflow:
+
+- `Platform Builds`
+- Run: `31770715273`
+- Overall native build result: **SUCCESS**
+
+### Android
+
+- Job: `Android release APK`
+- Job ID: `94675905971`
+- `flutter build apk --release`: **SUCCESS**
+- Release APK produced: `build/app/outputs/flutter-apk/app-release.apk`
+- Reported artifact size: **48.9 MB**
+
+The hosted runner emitted a non-fatal file-watcher exception after the APK had been built; the build command and job still completed successfully. This is recorded rather than hidden.
+
+### Linux
+
+- Job: `Linux release`
+- Job ID: `94675905885`
+- `flutter build linux --release`: **SUCCESS**
+- Job result: **SUCCESS**
+
+An earlier native-build run exposed an invalid underscore in the Linux GApplication ID (`com.sanskarin.nova_2048`). It was fixed to `com.sanskarin.nova2048`, and the corrected Linux release build passed.
+
+### Windows
+
+- Job: `Windows release`
+- Job ID: `94675905908`
+- `flutter build windows --release`: **SUCCESS**
+- Job result: **SUCCESS**
+
+### macOS
+
+- Job: `macOS and unsigned iOS release`
+- Job ID: `94675905949`
+- `flutter build macos --release`: **SUCCESS**
+- Output: `build/macos/Build/Products/Release/2048 Nova.app`
+- Reported application size: **42.1 MB**
+
+The Xcode build emitted the standard informational warning that the Flutter Assemble run-script phase has no declared outputs and therefore runs every build. It did not fail the release build.
+
+### iOS
+
+- Same Apple job: `94675905949`
+- `flutter build ios --release --no-codesign`: **SUCCESS**
+- Bundle identifier: `com.sanskarin.nova2048`
+- Output: `build/ios/iphoneos/Runner.app`
+- Reported application size: **16.2 MB**
+
+This is deliberately an **unsigned** iOS release build. Real App Store/device deployment still requires Apple signing/provisioning outside this CI verification.
+
+### Native build conclusion
+
+All configured native release-build jobs completed successfully in GitHub Actions:
+
+- Android: **PASS**
+- Linux: **PASS**
+- Windows: **PASS**
+- macOS: **PASS**
+- iOS unsigned: **PASS**
+
+This verifies compilation/build configuration on hosted CI runners. It does **not** replace physical-device usability, store-signing, distribution, screen-reader, or long-session testing.
+
+## Open-source and release-engineering files
+
+Added/maintained:
 
 - `README.md`
 - `LICENSE`
@@ -325,33 +459,26 @@ Added/updated:
 - documentation issue template
 - pull-request template
 - Dependabot configuration
-- CI quality workflow
-- platform-build verification workflow
-- one-time/safe platform-runner bootstrap workflow
-- reproducible branding-export workflow
+- quality CI workflow
+- native-platform build workflow
+- safe platform-runner generation workflow
+- reproducible branding export workflow
+- reproducible Dart formatting workflow
+- reproducible dependency-lock workflow
 
-CI quality workflow verifies:
+### Formatting / dependency workflow evidence
 
-```text
-flutter pub get
-dart format --output=none --set-exit-if-changed lib test
-flutter analyze
-flutter test --coverage
-flutter build web --release
-```
+- `Format Dart` run `31770549129`: **SUCCESS**
+- Formatting commit: `8b79b4a12aa6cdb74232bc469d4ebb950be2f572` — `style: format Dart sources and tests`
+- `Lock Flutter Dependencies` run `31770562267`: **SUCCESS**
+- Lockfile commit: `7c4e2102ebeec5e9719221d77eb4eb07d122ae1c` — `build: lock Flutter dependencies`
 
-Native build workflow is configured for:
+## Commit strategy
 
-- Android release APK
-- Linux release
-- Windows release
-- macOS release
-- unsigned iOS release build
+Work was split into many meaningful atomic Conventional Commits instead of one giant commit. Examples:
 
-### Commit strategy
-
-Development was intentionally split into many small, meaningful Conventional Commits rather than one giant commit. Examples include:
-
+- `chore: initialize 2048 Nova repository`
+- `chore: configure Flutter project and strict linting`
 - `feat: implement deterministic 2048 domain engine`
 - `feat: preserve deterministic RNG state across saves and undo`
 - `feat: add responsive accessible game board`
@@ -359,16 +486,21 @@ Development was intentionally split into many small, meaningful Conventional Com
 - `feat: persist undo history across app restarts`
 - `feat: add seven visual theme palettes`
 - `feat: track daily challenge progress and history`
+- `feat: expand achievements with progress metrics`
 - `fix: serialize game moves to prevent input race conditions`
+- `build: generate Flutter platform runners`
 - `feat: export branded platform icons and splash assets`
-- `docs: replace bootstrap readme with complete project guide`
-- `ci: add native platform release build verification`
+- `fix: use valid Linux application identifier`
+- `fix: add explicit player statistics constructor`
+- `fix: use portable page transition builders`
+- `test: scroll lazy mode list before asserting offscreen entries`
+- `docs: update changelog for release candidate verification`
 
-Commits were kept logically scoped; artificial one-line commit spam was not used solely to inflate the count.
+Artificial no-op or one-line spam commits were not created merely to inflate history.
 
-### Dependency changes
+## Dependency state
 
-Added only:
+Runtime dependencies beyond Flutter:
 
 - `shared_preferences`
 - `url_launcher`
@@ -378,76 +510,88 @@ Development dependencies:
 - `flutter_test`
 - `flutter_lints`
 
-No analytics, advertising, account, payment, or cloud SDK was added.
+CI reported newer versions for some transitive/development packages that are outside the currently resolved compatibility constraints. This is informational; the committed lockfile and current Flutter 3.47.0 build/test matrix passed. Dependabot is configured for ongoing updates.
 
-### Known limitations / remaining release verification
-
-At this log update, implementation work is substantially complete for the 0.9.0 release-candidate scope, but the repository must **not** be called 1.0.0 or fully production-verified until the currently configured quality and native-platform workflows complete successfully.
-
-Still to verify objectively before stable release claims:
-
-- formatter gate
-- analyzer gate
-- complete automated test suite
-- Web release build
-- Android release build
-- Linux release build
-- Windows release build
-- macOS release build
-- unsigned iOS release build
-- manual screen-reader and physical-device checks where applicable
-
-Optional post-stable expansion remains documented in `ROADMAP.md` and includes richer AI/expectimax demonstration, replay/export features, localization, and deeper visual-regression/device coverage. These optional items are intentionally not allowed to destabilize the core game.
+No analytics, advertising, account, payment, telemetry, or cloud-sync SDK is present.
 
 ---
 
-## Completion report — pending final CI evidence
+## Release-candidate completion report
 
 ```text
 Project: 2048 Nova
 Version: 0.9.0+1
-Current phase: Phase 9–10 — QA / Release Engineering
+Current phase: Release-candidate verification complete
 Repository: https://github.com/sanskarIN/2048
 Branch: main
-Latest commit: a0ede44ea4bfe571ec66c9e46b9f7ef08456ba77
+Production build commit: eacdb9dc04b4467271f98ce2104e60daf0124f6d
+Final quality-test commit: f3e7aaec6404139951425144cb1fb4d2fda66e27
 
 Implemented:
-- Deterministic core 2048 engine
+- Deterministic 2048 engine
 - 10 game modes
-- Responsive touch/keyboard game UI
+- Responsive touch/keyboard UI
 - Save/resume and persistent deterministic undo
-- Settings, 7 palettes, accessibility options
-- Statistics and achievements
+- Hints, pause, challenge timers/limits
+- 7 palettes plus brightness/high-contrast/reduced-motion settings
+- Optional sound/haptics
+- Statistics and progress-based achievements
 - Offline Daily Challenge history
 - Guide/About/Support/BMC/contact integration
-- Original logo, platform icons and splash branding
-- Cross-platform Flutter runners
-- Open-source documentation/templates
-- CI and native build verification workflows
+- Original logo, icons and splash branding
+- Android/iOS/Web/Windows/macOS/Linux Flutter configuration
+- Open-source documentation, templates and CI
 
 Tests:
-- Repository-wide CI final status pending at this log revision
+- 29/29 automated tests passed
+
+Formatter:
+- PASS — 28 files checked, 0 changed
 
 Analyzer:
-- Final CI status pending at this log revision
+- PASS — No issues found
 
 Builds:
-- Platform runner generation: SUCCESS
-- Branding generation: SUCCESS
-- Quality/Web build: pending final run
-- Native release verification: pending final run
+- Web release: PASS
+- Android release APK: PASS
+- Linux release: PASS
+- Windows release: PASS
+- macOS release: PASS
+- iOS unsigned release: PASS
+- Platform runner generation: PASS
+- Branding generation: PASS
 
 Accessibility:
-- Semantic tile labels, exact numeric values, keyboard controls,
-  high contrast, reduced motion, system animation preference,
-  responsive text/layout foundations implemented
+- Semantic tile labels
+- Visible exact numeric values
+- Keyboard controls
+- High contrast
+- Reduced motion + system animation preference
+- Responsive text/layout foundations
+- Disableable sound/haptics
 
-Known issues:
-- No known core logic issue intentionally left open.
-- Objective final build/test verification is still in progress.
+Known release limitations:
+- Physical-device and screen-reader manual QA has not been performed by this coding session.
+- iOS CI build is unsigned and still requires normal Apple signing/provisioning for deployment.
+- Store packaging/submission has not been performed.
+- Android CI logged a non-fatal runner file-watcher exception after successfully producing the release APK.
+- macOS CI logged a non-fatal Xcode run-script dependency-analysis warning.
 
-Next:
-- Resolve any CI/analyzer/test/build failure.
-- Record exact final CI evidence here.
-- Only then advance toward a stable 1.0.0 release.
+Release decision:
+- Keep version at 0.9.0+1 release-candidate line.
+- Do not claim absolute zero bugs or physical-device production readiness solely from CI.
+- Advance to 1.0.0 only after the remaining manual/device/store-release checklist is completed.
 ```
+
+## Next optional expansion after stable validation
+
+The current core release-candidate scope is implemented and objectively build/test verified. Future non-blocking expansion is documented in `ROADMAP.md`, including:
+
+- expectimax/advanced AI demonstration
+- replay/export/import
+- localization and Hindi support
+- deeper golden/visual regression testing
+- broader physical-device/accessibility matrices
+- additional challenge/customization systems
+
+These optional features should not be added at the expense of core correctness or stability.
