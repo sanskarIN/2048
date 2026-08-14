@@ -1,0 +1,213 @@
+# CI/CD and Repository Automation
+
+2048 Nova uses GitHub Actions for repeatable formatting, static analysis, automated tests, Web release builds, native release-build verification, dependency locking, platform-runner generation, and branding export. The workflows are intended to make repository state reproducible without committing credentials or using force pushes.
+
+## Permanent workflows
+
+The permanent workflow set lives in `.github/workflows/`:
+
+| Workflow | Primary purpose |
+| --- | --- |
+| `ci.yml` | Format verification, analyzer, test suite with coverage, and Web release build. |
+| `platform-builds.yml` | Android, Linux, Windows, macOS, and unsigned iOS release-build matrix. |
+| `format-code.yml` | Auto-format `lib/` and `test/` on `main` and commit only when formatting changes are required. |
+| `lock-dependencies.yml` | Resolve and commit `pubspec.lock` when explicitly triggered. |
+| `bootstrap-platforms.yml` | Recreate Flutter native platform runners with the project package/org configuration. |
+| `bootstrap-branding.yml` | Export project branding into platform-specific icon/splash assets. |
+
+Temporary one-time patch/logging workflows used during development are removed after their purpose is complete. They are not part of the permanent automation surface.
+
+## CI quality gate
+
+Workflow name: **CI**
+
+Triggers:
+
+- every push to `main`;
+- pull requests targeting `main`.
+
+The quality job runs on Ubuntu and currently performs, in order:
+
+```bash
+flutter --version
+flutter pub get
+dart format --output=none --set-exit-if-changed lib test
+flutter analyze
+flutter test --coverage
+flutter build web --release
+```
+
+The order is deliberate. Formatting and analysis fail fast before spending time on tests/builds when source quality is already invalid.
+
+The workflow has read-only repository contents permission and uses concurrency cancellation so an older in-progress run for the same ref can be replaced by newer work.
+
+## Native platform build matrix
+
+Workflow name: **Platform Builds**
+
+It triggers on `main`/pull-request changes affecting application source, assets, dependency manifests, native runner directories, or the workflow itself. It can also be started manually through `workflow_dispatch`.
+
+### Android
+
+Runner: Ubuntu
+
+```bash
+flutter pub get
+flutter build apk --release
+```
+
+This verifies a release APK can be produced. Store distribution signing remains a separate release responsibility.
+
+### Linux
+
+Runner: Ubuntu
+
+The workflow installs the required desktop build packages, enables Linux desktop support, resolves dependencies, and runs:
+
+```bash
+flutter build linux --release
+```
+
+### Windows
+
+Runner: Windows
+
+The workflow enables Windows desktop support and runs:
+
+```bash
+flutter build windows --release
+```
+
+### macOS and iOS
+
+Runner: macOS
+
+The Apple job enables macOS desktop support and runs:
+
+```bash
+flutter build macos --release
+flutter build ios --release --no-codesign
+```
+
+The iOS command deliberately verifies an **unsigned** release. The repository does not contain Apple signing certificates or provisioning credentials.
+
+## Automatic Dart formatting
+
+Workflow name: **Format Dart**
+
+It runs on relevant `main` changes to `lib/`, `test/`, or the workflow itself and can be manually dispatched.
+
+The workflow:
+
+1. checks out full history;
+2. installs stable Flutter;
+3. resolves dependencies;
+4. runs `dart format lib test`;
+5. commits only if formatter output changed files;
+6. rebases on the current `main`;
+7. pushes normally.
+
+Automation-generated formatting commits use:
+
+```text
+user.name  = Sanskar
+user.email = sanskarin@outlook.in
+```
+
+The job skips when the actor is `github-actions[bot]` to prevent a formatting-commit loop.
+
+## Dependency lock workflow
+
+Workflow name: **Lock Flutter Dependencies**
+
+This workflow is intentionally narrow. It runs when its own workflow file changes or when manually dispatched, executes `flutter pub get`, and commits `pubspec.lock` only if resolution changes the lockfile.
+
+The application lockfile is committed because 2048 Nova is an application, not a reusable Dart library.
+
+## Platform bootstrap
+
+Workflow name: **Bootstrap Flutter Platforms**
+
+The workflow can recreate native Flutter runner files with:
+
+```bash
+flutter create . \
+  --platforms=android,ios,linux,macos,windows \
+  --project-name=nova_2048 \
+  --org=com.sanskarin
+```
+
+Generated changes are committed only when necessary, then rebased and pushed normally. Existing project-specific native metadata and branding must be reviewed after any intentional regeneration because `flutter create` can update generated files across Flutter versions.
+
+## Branding bootstrap
+
+The branding workflow generates platform icon/splash assets from the repository's original branding source rather than requiring manually maintained duplicate raster exports.
+
+The editable source of identity remains under `assets/branding/`. See [`BRANDING.md`](BRANDING.md) for the exact source/export layout and prior successful workflow evidence.
+
+## Commit and push policy
+
+Repository-writing workflows:
+
+- use the requested author identity `Sanskar <sanskarin@outlook.in>`;
+- do not force-push `main`;
+- rebase against current `main` before pushing when appropriate;
+- exit without a commit when generated output is unchanged;
+- do not store access tokens or signing secrets in repository files.
+
+GitHub's automatically supplied workflow token is used through normal Actions checkout/push behavior.
+
+## CI evidence policy
+
+`docs/VERIFICATION.md` contains the compact current evidence, while `what_changed.md` preserves chronological evidence including intermediate failures that exposed real regressions.
+
+A later successful run does not erase an earlier failure. If a failure reveals a defect, the development log records:
+
+- failing workflow/run;
+- failing gate;
+- observed defect;
+- correcting commit;
+- later successful verification.
+
+This makes the verification trail auditable rather than presenting only the final green badge.
+
+## What CI proves
+
+Successful automated workflows provide evidence that the tested repository state:
+
+- is formatter-clean;
+- passes Flutter static analysis;
+- passes the automated test suite;
+- produces a Web release build;
+- when the native matrix is run, compiles configured native release targets on GitHub-hosted runners.
+
+## What CI does not prove
+
+CI alone does not establish:
+
+- universal absence of defects;
+- physical-device touch behavior across every device;
+- real screen-reader quality;
+- store acceptance;
+- Android release-key management;
+- Apple signing/provisioning;
+- every browser's clipboard/external-handler behavior;
+- long-duration lifecycle behavior;
+- real-world performance on low-end hardware.
+
+Those remain in [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
+
+## Adding a new workflow
+
+A new permanent workflow should:
+
+1. have one clear purpose;
+2. request the minimum permissions it needs;
+3. use concurrency when duplicate runs would waste resources;
+4. avoid secrets in logs;
+5. avoid force pushes;
+6. have explicit path filters if expensive and not needed for documentation-only changes;
+7. use stable/reviewed third-party Actions versions;
+8. be documented here if it becomes part of the permanent project process.
+
+One-time migration or repair workflows should be deleted after successful use rather than accumulating as inactive maintenance debt.
