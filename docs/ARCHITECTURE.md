@@ -14,6 +14,7 @@
 - `hint_solver.dart` — deterministic, non-mutating heuristic move evaluation.
 - `autoplay_session.dart` — isolated seeded Auto Play Demo session that repeatedly applies heuristic recommendations without app persistence or lifetime-player state.
 - `replay_timeline.dart` — read-only timeline builder that filters current-session Undo snapshots, removes impossible/future frames, orders retained moves, and returns defensive unmodifiable copies plus the authoritative current frame.
+- `challenge_code.dart` — versioned/checksummed deterministic game-configuration codec for offline shareable seeded challenges.
 - `game_backup.dart` — versioned portable current-game JSON codec with size, envelope, timestamp, and strict embedded-state validation.
 
 The domain layer does not depend on Flutter widgets, SharedPreferences, analytics, network services, or cloud services. The engine owns authoritative gameplay rules; widgets do not directly implement merge/spawn logic.
@@ -33,6 +34,8 @@ The domain layer does not depend on Flutter widgets, SharedPreferences, analytic
 Persistence is treated as untrusted input on read. Current-game state is validated before use. Invalid map structures are removed. Undo/Daily collections salvage valid entries, discard malformed entries, apply size bounds, and rewrite repaired storage. Daily records are normalized to one record per date seed so duplicate records cannot inflate local Daily achievement counts.
 
 If the current game is corrupt, the store also removes its associated Undo history and unranked marker so metadata from a broken session cannot attach to a later unrelated game.
+
+Challenge Codes deliberately add **no persistence key**. Generated/decoded codes exist in screen memory and clipboard text only. After the player starts a valid code, the resulting fresh game uses the normal current-game/Undo/statistics persistence path.
 
 Replay deliberately adds **no new persistence format or key**. It reads already-validated bounded Undo history and the current saved game, then creates defensive display copies through `ReplayTimeline`.
 
@@ -62,6 +65,8 @@ Statistics and achievements intentionally remain lifetime/application data rathe
 
 Imported sessions are a special trust boundary: the controller allows their board/session state to progress and persist while suppressing lifetime statistics, achievement, streak, and Daily-history mutation.
 
+A valid Challenge Code is different from an imported backup: it contains no progress or historical record. After decoding/confirmation, the screen calls the normal `AppController.newGame(config)` path so it behaves like a fresh locally chosen non-Daily game.
+
 ## Features
 
 Each user-facing screen sits under `lib/features`:
@@ -71,6 +76,7 @@ Each user-facing screen sits under `lib/features`:
 - `modes/`
 - `game/`
 - `daily_challenge/`
+- `challenge_codes/`
 - `backup/`
 - `replay/`
 - `solver_demo/`
@@ -82,6 +88,8 @@ Each user-facing screen sits under `lib/features`:
 - `support/`
 
 The Game feature renders controller/domain state, translates touch/keyboard gestures into directions/actions, and shows explicit terminal dialogs. It does not implement merge rules or choose spawned tiles.
+
+The Challenge Codes feature generates fresh seeded preset configurations, encodes them through `ChallengeCode`, copies code text through the shared clipboard abstraction, decodes pasted/manual text through the domain validator, previews valid configuration fields, requires normal recoverable-game replacement confirmation, and then starts the decoded configuration through `AppController.newGame`. It does not persist code text, import progress, or write SharedPreferences directly.
 
 The Backup feature performs explicit clipboard export/import. It delegates validation to `GameBackup`, previews a valid candidate, requires explicit restore confirmation, and delegates unranked-session installation to `AppController`. It does not write `SharedPreferences` directly.
 
@@ -95,7 +103,8 @@ The Auto Play Demo feature owns only an in-memory `AutoplaySession`, a periodic 
 
 - common scaffold/navigation presentation;
 - validated external-link handoff;
-- recoverable-game replacement confirmation.
+- recoverable-game replacement confirmation;
+- `TextClipboard` abstraction with the production `SystemTextClipboard` implementation used by portable text features and deterministic in-memory test implementations.
 
 `lib/core` contains project constants and theme generation.
 
@@ -117,6 +126,32 @@ GameScreen input
 Move requests are serialized in the controller so rapid touch/keyboard input cannot overlap board mutation and persistence operations.
 
 An invalid/no-change engine move never creates an Undo snapshot, increments a move counter, or spawns a tile.
+
+## Challenge Code boundary
+
+Challenge Codes are portable **configuration**, not portable progress:
+
+```text
+Selected preset + generated seed
+  -> ChallengeCode.encode()
+  -> NOVA1 Base64URL payload + FNV-1a checksum
+  -> explicit Copy action
+
+Manual/clipboard code text
+  -> ChallengeCode.decode()
+  -> size/prefix/checksum/Base64URL/JSON validation
+  -> strict GameConfig validation + supported-mode allowlist
+  -> decoded preview
+  -> normal recoverable-game replacement confirmation
+  -> AppController.newGame(config)
+  -> normal fresh-game persistence/statistics policy
+```
+
+`ChallengeCode` requires a deterministic seed and rejects Daily mode. Daily Challenge already uses the UTC date as a shared seed and has dedicated date-history semantics.
+
+The checksum detects accidental corruption but is not a cryptographic signature. The code is intentionally plain text and user-editable. This is acceptable under the current local-only trust model because code payloads cannot import board progress, score, lifetime statistics, achievements, streaks, settings, Daily history, or Undo snapshots.
+
+See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md).
 
 ## Backup trust boundary
 
@@ -180,6 +215,8 @@ On startup, the controller refreshes terminal rules before presenting the sessio
 
 The imported-game unranked flag is stored outside `GameState`. This is intentional: a portable/edited game payload cannot claim that it is trusted ranked data.
 
+Challenge Code text is not persisted as a separate app record. Once started, only the resulting normal `GameState`/Undo/statistics state is persisted.
+
 Move Replay reads saved game/Undo state but never writes it. Leaving the replay screen discards the in-memory defensive timeline.
 
 The Auto Play Demo has no persistence key. Leaving or destroying the demo screen discards its sandbox state; reopening it starts from the documented deterministic seed.
@@ -197,24 +234,25 @@ See [`DATA_STORAGE.md`](DATA_STORAGE.md).
 
 Explicit browser/email actions are routed through the shared external-link helper. It accepts secure hosted `https` URLs and non-empty `mailto` links and rejects unsupported/insecure schemes. Failed launches offer a copy fallback.
 
-Normal gameplay, backup codec, Replay, Hint, Auto Play, statistics, achievements, and Daily generation do not require an external service.
+Normal gameplay, Challenge Code codec, backup codec, Replay, Hint, Auto Play, statistics, achievements, and Daily generation do not require an external service.
 
 ## Dependency policy
 
-The project intentionally uses only `shared_preferences` and `url_launcher` beyond Flutter itself. Backup uses Flutter clipboard and Dart JSON APIs; Replay and Auto Play add no package, network service, model download, analytics dependency, or cloud requirement.
+The project intentionally uses only `shared_preferences` and `url_launcher` beyond Flutter itself. Challenge Codes use Dart JSON/Base64URL plus the existing Flutter clipboard API abstraction; Backup uses Flutter clipboard and Dart JSON APIs; Replay and Auto Play add no package, network service, model download, analytics dependency, or cloud requirement.
 
 This keeps the offline game lightweight and avoids coupling the deterministic engine to a state-management framework, database, analytics SDK, account system, AI service, or cloud service.
 
 ## Verification boundary
 
-Automated unit/widget tests and GitHub Actions verify deterministic rules, persistence behavior, backup validation/isolation, analyzer cleanliness, Web builds, Replay immutability/filtering, Auto Play isolation, and configured native compilation.
+Automated unit/widget tests and GitHub Actions verify deterministic rules, Challenge Code round-trip/validation/deterministic opening behavior/UI replacement safety, persistence behavior, backup validation/isolation, analyzer cleanliness, Web builds, Replay immutability/filtering, Auto Play isolation, and configured native compilation.
 
-Physical-device UX, real screen-reader behavior, platform clipboard/browser/email handlers, signing/provisioning, long-session qualification, and store submission remain explicit manual release boundaries.
+Physical-device UX, real screen-reader behavior, real platform clipboard behavior for Challenge Codes and Game Backup, platform browser/email handlers, signing/provisioning, long-session qualification, and store submission remain explicit manual release boundaries.
 
 For more detail:
 
 - [`GAME_ENGINE.md`](GAME_ENGINE.md)
 - [`GAME_MODES.md`](GAME_MODES.md)
+- [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md)
 - [`DATA_STORAGE.md`](DATA_STORAGE.md)
 - [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md)
 - [`HINT_SOLVER.md`](HINT_SOLVER.md)
