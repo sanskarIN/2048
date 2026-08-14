@@ -149,3 +149,9 @@ The default runtime deliberately does **not** include:
 - database package.
 
 Future work can revisit these choices only with explicit product, privacy, maintenance, and cross-platform review.
+
+## Localization dependency
+
+Phase 16 adds `flutter_localizations` from the **Flutter SDK** so Material, Widgets, and Cupertino framework controls follow English/Hindi locale selection correctly. It is not a third-party analytics, translation, networking, or cloud dependency. Flutter's SDK localization package resolves `intl` transitively in `pubspec.lock`.
+
+Project-specific English/Hindi strings remain in repository source under `lib/core/localization/`; no remote translation package or service is used.
