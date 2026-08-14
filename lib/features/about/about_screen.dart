@@ -41,6 +41,24 @@ class AboutScreen extends StatelessWidget {
               ),
             ),
           ),
+          const Card(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'What’s new',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Release candidate 0.9 adds ten game modes, deterministic save and undo integrity, Daily Challenges, statistics and achievements, seven palettes, accessibility controls, heuristic hints, keyboard shortcuts, and cross-platform release builds.',
+                  ),
+                ],
+              ),
+            ),
+          ),
           for (final item in links)
             Card(
               child: ListTile(
@@ -53,8 +71,18 @@ class AboutScreen extends StatelessWidget {
           const Card(
             child: Padding(
               padding: EdgeInsets.all(16),
-              child: Text(
-                '2048 Nova is open source under the MIT License. Third-party package licenses remain available through Flutter’s standard license system.',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Credits and license',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Created by Sanskar. 2048 Nova is open source under the MIT License. Third-party package licenses remain available through Flutter’s standard license system.',
+                  ),
+                ],
               ),
             ),
           ),
