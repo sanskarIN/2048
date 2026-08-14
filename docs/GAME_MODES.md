@@ -89,9 +89,31 @@ Daily history is normalized by seed, capped at 60 records, and repaired when par
 
 Starting or replaying a Daily Challenge that would replace a recoverable current game requires explicit replacement confirmation.
 
+Daily Challenge is intentionally **not** encodable as a Challenge Code. It already has a globally reproducible UTC-date seed and separate local history semantics; arbitrary imported Daily seeds would blur that contract.
+
 ## Zen
 
 Zen uses a 4×4 board and deliberately continues beyond the nominal 2048 target. It shares the standard engine, scoring, save, Undo, and game-over rules but avoids target-win interruption.
+
+## Shareable seeded Challenge Codes
+
+The Challenge Codes screen can create a fresh deterministic seed for these modes:
+
+- Classic;
+- Quick;
+- Extended;
+- Challenge;
+- Endless;
+- Target;
+- Time Challenge;
+- Move Limit;
+- Zen.
+
+The selected preset plus seed is encoded as a checksummed `NOVA1...` text value. Decoding reconstructs the exact `GameConfig`; the same supported configuration/seed produces the same initial board and RNG state.
+
+Starting a code creates a fresh normal non-Daily game. It does not import somebody else's board progress, score, statistics, achievements, Daily history, or Undo data.
+
+See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md) for format/validation/trust details.
 
 ## Shared behavior across modes
 
@@ -111,6 +133,8 @@ Unless a mode explicitly changes a rule above, all player modes share:
 
 Imported portable backups are deliberately marked **unranked**, regardless of their embedded mode. They may be played normally, but their later movement cannot update lifetime statistics, achievements, streaks, or Daily Challenge history. See [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md).
 
+A Challenge Code is different: it contains no progress or historical record, so after strict validation it starts a fresh normal game through the same `AppController.newGame` path used by the mode picker.
+
 ## Configuration validation
 
 Deserialized `GameConfig` values are validated before use. Current accepted structural bounds are:
@@ -120,5 +144,7 @@ Deserialized `GameConfig` values are validated before use. Current accepted stru
 - move limit: 1 through 1,000,000 when present;
 - time limit: 1 through 86,400 seconds when present;
 - seed: 0 through `0x7fffffff` when present.
+
+Challenge Code decoding reuses this parser and then applies the stricter supported-mode and required-seed policy.
 
 These broader validation bounds support safe deserialization and future compatible configurations; the built-in presets remain the ten modes documented above.
