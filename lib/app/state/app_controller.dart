@@ -289,7 +289,8 @@ class AppController extends ChangeNotifier {
         await store.saveUndoHistory(_undo);
       }
       _sessionCounted = true;
-      _winCounted = current.hasAcknowledgedWin || current.status == GameStatus.won;
+      _winCounted =
+          current.hasAcknowledgedWin || current.status == GameStatus.won;
       final previousStatus = current.status;
       final previousStreak = stats.currentStreak;
       _engine!.refreshStatus(current);

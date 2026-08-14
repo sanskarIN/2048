@@ -10,7 +10,8 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  test('expired timed game is reconciled before the UI can resume it', () async {
+  test('expired timed game is reconciled before the UI can resume it',
+      () async {
     const config = GameConfig(
       mode: GameMode.timeChallenge,
       size: 4,
