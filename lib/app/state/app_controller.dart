@@ -60,6 +60,8 @@ class AppSettings {
 }
 
 class PlayerStats {
+  PlayerStats();
+
   int gamesPlayed = 0;
   int gamesWon = 0;
   int bestScore = 0;
