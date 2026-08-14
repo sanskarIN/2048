@@ -65,6 +65,19 @@ void main() {
     expect(records.single.score, 1024);
   });
 
+  test('keeps valid daily history entries when one record is corrupt', () async {
+    SharedPreferences.setMockInitialValues({
+      'nova.daily_history.v1':
+          '[{"seed":20260814,"score":128,"moves":12,"highestTile":64,"completed":false,"won":false,"updatedAt":"2026-08-14T00:00:00.000Z"},{"seed":20260230,"score":999},{"seed":20260813,"score":64,"moves":8,"highestTile":32,"completed":false,"won":false,"updatedAt":"2026-08-13T00:00:00.000Z"}]',
+    });
+    final store = LocalStore();
+
+    final records = await store.loadDailyHistory();
+
+    expect(records, hasLength(2));
+    expect(records.map((record) => record.seed), [20260814, 20260813]);
+  });
+
   test('clearing game also clears undo history', () async {
     final store = LocalStore();
     await store.saveGame(state(4));
