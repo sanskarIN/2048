@@ -151,7 +151,8 @@ class _ReplayScreenState extends State<ReplayScreen> {
                         interval: _interval,
                         reducedMotion: controller.settings.reducedMotion,
                         onTogglePlayback: _togglePlayback,
-                        onPrevious: _index > 0 ? () => _moveTo(_index - 1) : null,
+                        onPrevious:
+                            _index > 0 ? () => _moveTo(_index - 1) : null,
                         onNext: _index < frames.length - 1
                             ? () => _moveTo(_index + 1)
                             : null,
