@@ -122,10 +122,17 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.insights_rounded),
             title: const Text('Reset statistics'),
+            subtitle: Text(
+              controller.hasGame
+                  ? 'Clear historical statistics while keeping the active game as the current session.'
+                  : 'Clear all locally stored statistics.',
+            ),
             onTap: () => _confirmAction(
               context,
               title: 'Reset statistics?',
-              message: 'All locally stored statistics will be cleared.',
+              message: controller.hasGame
+                  ? 'Historical statistics will be cleared. The active game remains counted as the current session so future win-rate data stays valid.'
+                  : 'All locally stored statistics will be cleared.',
               action: controller.resetStats,
             ),
           ),
