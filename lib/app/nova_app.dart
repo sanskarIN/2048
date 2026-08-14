@@ -29,8 +29,14 @@ class NovaApp extends StatelessWidget {
           return MaterialApp(
             title: '2048 Nova',
             debugShowCheckedModeBanner: false,
-            theme: NovaTheme.light(controller.settings.highContrast),
-            darkTheme: NovaTheme.dark(controller.settings.highContrast),
+            theme: NovaTheme.light(
+              controller.settings.highContrast,
+              controller.settings.palette,
+            ),
+            darkTheme: NovaTheme.dark(
+              controller.settings.highContrast,
+              controller.settings.palette,
+            ),
             themeMode: controller.settings.themeMode,
             initialRoute: '/',
             routes: {
