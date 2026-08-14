@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/state/app_scope.dart';
 import '../../core/constants/project_info.dart';
+import '../../domain/game_types.dart';
 import '../../shared/external_link.dart';
 import '../../shared/nova_scaffold.dart';
 
@@ -11,6 +12,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = AppScope.of(context);
+    final canContinue =
+        controller.game != null && controller.game!.status != GameStatus.lost;
     return NovaScaffold(
       title: ProjectInfo.name,
       body: SingleChildScrollView(
@@ -24,7 +27,7 @@ class HomeScreen extends StatelessWidget {
               runSpacing: 12,
               alignment: WrapAlignment.center,
               children: [
-                if (controller.hasGame)
+                if (canContinue)
                   FilledButton.icon(
                     onPressed: () => Navigator.pushNamed(context, '/game'),
                     icon: const Icon(Icons.play_arrow_rounded),
