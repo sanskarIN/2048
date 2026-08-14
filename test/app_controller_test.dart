@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nova_2048/app/state/app_controller.dart';
 import 'package:nova_2048/core/theme/nova_theme.dart';
 import 'package:nova_2048/data/local_store.dart';
+import 'package:nova_2048/domain/game_state.dart';
 import 'package:nova_2048/domain/game_types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,6 +43,35 @@ void main() {
     ]);
 
     expect(results.whereType<Object>(), hasLength(1));
+  });
+
+  test('timed challenge expiry resets an active streak', () async {
+    const config = GameConfig(
+      mode: GameMode.timeChallenge,
+      size: 4,
+      timeLimitSeconds: 1,
+    );
+    final controller = AppController(store: LocalStore());
+    await controller.initialize();
+    controller.stats.currentStreak = 3;
+    controller.stats.bestStreak = 3;
+    await controller.newGame(config);
+    controller.game = GameState(
+      board: [
+        [2, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+      ],
+      config: config,
+      startedAt: DateTime.now().subtract(const Duration(seconds: 2)),
+    );
+
+    await controller.refreshChallengeStatus();
+
+    expect(controller.game!.status, GameStatus.lost);
+    expect(controller.stats.currentStreak, 0);
+    expect(controller.stats.bestStreak, 3);
   });
 
   test('losing after continuing a win does not erase the win streak', () async {
