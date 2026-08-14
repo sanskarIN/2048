@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/constants/project_info.dart';
+import '../../core/localization/nova_localizations.dart';
 import '../../shared/external_link.dart';
 import '../../shared/nova_scaffold.dart';
 
@@ -9,8 +10,9 @@ class SupportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return NovaScaffold(
-      title: 'Support 2048 Nova',
+      title: l10n.text('Support 2048 Nova'),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -22,24 +24,26 @@ class SupportScreen extends StatelessWidget {
                   const Icon(Icons.coffee_rounded, size: 56),
                   const SizedBox(height: 12),
                   Text(
-                    'Support Sanskar on Buy Me a Coffee',
+                    l10n.text('Support Sanskar on Buy Me a Coffee'),
                     style: Theme.of(context).textTheme.titleLarge,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Supporting is optional. 2048 Nova remains playable without a donation.',
+                  Text(
+                    l10n.text(
+                      'Supporting is optional. 2048 Nova remains playable without a donation.',
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   Semantics(
                     button: true,
-                    label: 'Support Sanskar on Buy Me a Coffee',
+                    label: l10n.text('Support Sanskar on Buy Me a Coffee'),
                     child: FilledButton.icon(
                       onPressed: () =>
                           openExternal(context, ProjectInfo.buyMeACoffee),
                       icon: const Icon(Icons.open_in_new_rounded),
-                      label: const Text('Open Buy Me a Coffee'),
+                      label: Text(l10n.text('Open Buy Me a Coffee')),
                     ),
                   ),
                 ],
@@ -49,7 +53,7 @@ class SupportScreen extends StatelessWidget {
           Card(
             child: ListTile(
               leading: const Icon(Icons.support_agent_rounded),
-              title: const Text('Email support'),
+              title: Text(l10n.text('Email support')),
               subtitle: const Text(ProjectInfo.supportEmail),
               onTap: () => openExternal(
                 context,
@@ -60,7 +64,7 @@ class SupportScreen extends StatelessWidget {
           Card(
             child: ListTile(
               leading: const Icon(Icons.mail_outline_rounded),
-              title: const Text('Business contact'),
+              title: Text(l10n.text('Business contact')),
               subtitle: const Text(ProjectInfo.businessEmailPrimary),
               onTap: () => openExternal(
                 context,
@@ -71,8 +75,8 @@ class SupportScreen extends StatelessWidget {
           Card(
             child: ListTile(
               leading: const Icon(Icons.bug_report_outlined),
-              title: const Text('Report a bug on GitHub'),
-              subtitle: const Text('Open the repository bug report template'),
+              title: Text(l10n.text('Report a bug on GitHub')),
+              subtitle: Text(l10n.text('Open the repository bug report template')),
               onTap: () => openExternal(context, ProjectInfo.bugReport),
             ),
           ),
