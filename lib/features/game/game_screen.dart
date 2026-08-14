@@ -24,7 +24,7 @@ class _GameScreenState extends State<GameScreen> {
     super.initState();
     _challengeTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
-      AppScope.of(context).refreshChallengeStatus();
+      unawaited(AppScope.of(context).refreshChallengeStatus());
       setState(() {});
     });
   }
@@ -52,8 +52,7 @@ class _GameScreenState extends State<GameScreen> {
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      if (_dialogVisible) return;
+      if (!mounted || _dialogVisible) return;
       if (game.status == GameStatus.won && !game.hasAcknowledgedWin) {
         _dialogVisible = true;
         _showWinDialog().whenComplete(() => _dialogVisible = false);
@@ -85,6 +84,11 @@ class _GameScreenState extends State<GameScreen> {
           icon: const Icon(Icons.undo_rounded),
         ),
         IconButton(
+          tooltip: 'Pause',
+          onPressed: _showPauseMenu,
+          icon: const Icon(Icons.pause_rounded),
+        ),
+        IconButton(
           tooltip: 'New game',
           onPressed: _restart,
           icon: const Icon(Icons.refresh_rounded),
@@ -94,15 +98,9 @@ class _GameScreenState extends State<GameScreen> {
         autofocus: true,
         onKeyEvent: (_, event) {
           if (event is! KeyDownEvent) return KeyEventResult.ignored;
-          final direction = switch (event.logicalKey) {
-            LogicalKeyboardKey.arrowUp || LogicalKeyboardKey.keyW => Direction.up,
-            LogicalKeyboardKey.arrowDown || LogicalKeyboardKey.keyS => Direction.down,
-            LogicalKeyboardKey.arrowLeft || LogicalKeyboardKey.keyA => Direction.left,
-            LogicalKeyboardKey.arrowRight || LogicalKeyboardKey.keyD => Direction.right,
-            _ => null,
-          };
+          final direction = _directionForKey(event.logicalKey);
           if (direction == null) return KeyEventResult.ignored;
-          controller.move(direction);
+          unawaited(_performMove(direction));
           return KeyEventResult.handled;
         },
         child: GestureDetector(
@@ -113,7 +111,7 @@ class _GameScreenState extends State<GameScreen> {
             final direction = velocity.dx.abs() > velocity.dy.abs()
                 ? (velocity.dx > 0 ? Direction.right : Direction.left)
                 : (velocity.dy > 0 ? Direction.down : Direction.up);
-            controller.move(direction);
+            unawaited(_performMove(direction));
           },
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -165,9 +163,83 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  Direction? _directionForKey(LogicalKeyboardKey key) {
+    if (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.keyW) {
+      return Direction.up;
+    }
+    if (key == LogicalKeyboardKey.arrowDown ||
+        key == LogicalKeyboardKey.keyS) {
+      return Direction.down;
+    }
+    if (key == LogicalKeyboardKey.arrowLeft ||
+        key == LogicalKeyboardKey.keyA) {
+      return Direction.left;
+    }
+    if (key == LogicalKeyboardKey.arrowRight ||
+        key == LogicalKeyboardKey.keyD) {
+      return Direction.right;
+    }
+    return null;
+  }
+
+  Future<void> _performMove(Direction direction) async {
+    if (!mounted || _dialogVisible) return;
+    final controller = AppScope.of(context);
+    final outcome = await controller.move(direction);
+    if (!mounted || outcome == null || !outcome.changed) return;
+
+    if (controller.settings.hapticsEnabled) {
+      if (outcome.merges > 0) {
+        await HapticFeedback.mediumImpact();
+      } else {
+        await HapticFeedback.selectionClick();
+      }
+    }
+    if (controller.settings.soundEnabled) {
+      await SystemSound.play(SystemSoundType.click);
+    }
+  }
+
   int _secondsLeft(DateTime startedAt, int limit) {
     final elapsed = DateTime.now().difference(startedAt).inSeconds;
     return (limit - elapsed).clamp(0, limit).toInt();
+  }
+
+  Future<void> _showPauseMenu() async {
+    if (_dialogVisible) return;
+    _dialogVisible = true;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Paused'),
+        content: const Text('Your current game is saved locally.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Resume'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              Navigator.pushNamed(context, '/settings');
+            },
+            child: const Text('Settings'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/home',
+                (route) => false,
+              );
+            },
+            child: const Text('Home'),
+          ),
+        ],
+      ),
+    );
+    _dialogVisible = false;
   }
 
   Future<void> _restart() async {
@@ -201,7 +273,7 @@ class _GameScreenState extends State<GameScreen> {
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Target reached!'),
         content: Text(
           'You reached ${controller.game?.highestTile}. Continue your Nova run?',
@@ -209,7 +281,7 @@ class _GameScreenState extends State<GameScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               Navigator.pushReplacementNamed(context, '/modes');
             },
             child: const Text('New game'),
@@ -217,7 +289,7 @@ class _GameScreenState extends State<GameScreen> {
           FilledButton(
             onPressed: () async {
               await controller.continueAfterWin();
-              if (context.mounted) Navigator.pop(context);
+              if (dialogContext.mounted) Navigator.pop(dialogContext);
             },
             child: const Text('Continue'),
           ),
@@ -229,19 +301,25 @@ class _GameScreenState extends State<GameScreen> {
   Future<void> _showLossDialog() async {
     await showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Game over'),
         content: Text('Score: ${AppScope.of(context).game?.score ?? 0}'),
         actions: [
           TextButton(
-            onPressed: () =>
-                Navigator.popUntil(context, ModalRoute.withName('/')),
-            child: const Text('Close'),
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/home',
+                (route) => false,
+              );
+            },
+            child: const Text('Home'),
           ),
           FilledButton(
             onPressed: () {
-              Navigator.pop(context);
-              _restart();
+              Navigator.pop(dialogContext);
+              unawaited(_restart());
             },
             child: const Text('Restart'),
           ),
