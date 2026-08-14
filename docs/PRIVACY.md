@@ -117,3 +117,9 @@ See [`DEPENDENCIES.md`](DEPENDENCIES.md).
 Store privacy/data-safety declarations must be reviewed against the **exact release build and store configuration** before publication. The repository's offline-first design does not replace Google Play, Apple App Store, Microsoft Store, or other platform-specific disclosure requirements.
 
 If future work adds analytics, ads, accounts, multiplayer/cloud synchronization, remote AI, push notifications, or another data-transmitting feature, this document and store disclosures must be updated before release.
+
+## Localization privacy
+
+Language switching is an offline local operation. 2048 Nova does not send UI strings, selected language, game text, clipboard contents, or user data to an online translation API. English and Hindi strings ship with the application.
+
+Changing language does not alter or upload saved games, statistics, achievements, Daily history, Challenge Codes, Game Backup, Replay, or Auto Play data. The only network-capable actions remain explicit external browser/email/support destinations initiated by the player.
