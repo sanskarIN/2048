@@ -288,7 +288,8 @@ class AppController extends ChangeNotifier {
         await store.saveUndoHistory(_undo);
       }
       _sessionCounted = true;
-      _winCounted = game!.hasAcknowledgedWin;
+      _winCounted =
+          game!.hasAcknowledgedWin || game!.status == GameStatus.won;
     }
     _unlockAchievements();
   }
@@ -390,6 +391,7 @@ class AppController extends ChangeNotifier {
     if (game == null || _moveInProgress) return;
     game!.hasAcknowledgedWin = true;
     game!.status = GameStatus.playing;
+    _winCounted = true;
     _updateDailyRecord(game!);
     _unlockAchievements();
     await _persist();
