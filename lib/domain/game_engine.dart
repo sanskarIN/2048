@@ -1,5 +1,6 @@
 import 'game_state.dart';
 import 'game_types.dart';
+import 'hint_solver.dart';
 import 'random_source.dart';
 
 class MoveOutcome {
@@ -111,22 +112,7 @@ class GameEngine {
 
   Direction? hint(GameState state) {
     if (state.status != GameStatus.playing) return null;
-    const preference = [
-      Direction.left,
-      Direction.down,
-      Direction.right,
-      Direction.up,
-    ];
-    for (final direction in preference) {
-      final clone = state.copy();
-      final before = _signature(clone.board);
-      for (var i = 0; i < config.size; i++) {
-        final result = _collapse(_readLine(clone.board, i, direction));
-        _writeLine(clone.board, i, direction, result.values);
-      }
-      if (before != _signature(clone.board)) return direction;
-    }
-    return null;
+    return HintSolver(size: config.size).recommend(state.board);
   }
 
   void refreshStatus(GameState state, {DateTime? now}) {
