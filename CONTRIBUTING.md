@@ -1,6 +1,6 @@
 # Contributing to 2048 Nova
 
-Thank you for helping improve 2048 Nova. Contributions should preserve the project's deterministic game rules, offline-first behavior, accessibility requirements, local-data integrity, and truthful release verification.
+Thank you for helping improve 2048 Nova. Contributions should preserve the project's deterministic game rules, offline-first behavior, accessibility requirements, portable-input trust boundaries, local-data integrity, and truthful release verification.
 
 ## Before you start
 
@@ -10,7 +10,9 @@ Read the documentation relevant to your change:
 - [`docs/README.md`](docs/README.md) — documentation index.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — layer boundaries.
 - [`docs/GAME_ENGINE.md`](docs/GAME_ENGINE.md) — game-rule invariants.
+- [`docs/CHALLENGE_CODES.md`](docs/CHALLENGE_CODES.md) — shareable seeded-code format and trust model.
 - [`docs/DATA_STORAGE.md`](docs/DATA_STORAGE.md) — persistence rules.
+- [`docs/BACKUP_AND_RESTORE.md`](docs/BACKUP_AND_RESTORE.md) — portable progress trust boundary.
 - [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md) — accessibility requirements.
 - [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) — detailed development workflow.
 
@@ -58,13 +60,14 @@ Native changes should also be exercised on the relevant host/platform where prac
 
 ## Architecture rules
 
-- Keep deterministic game rules in `lib/domain/` and independent from Flutter widgets.
+- Keep deterministic game rules and portable codecs in `lib/domain/` and independent from Flutter widgets.
 - Keep `SharedPreferences` access inside the data layer rather than feature screens.
 - Use `AppController` for ranked player-session/statistics/achievement/Daily orchestration.
-- Keep reusable route/link/replacement helpers under shared application utilities.
+- Keep reusable route/link/replacement/clipboard helpers under shared application utilities.
 - Do not make Replay mutate the live player session.
 - Do not make Auto Play Demo write player saves or lifetime records.
-- Keep portable imported games unranked unless the entire trust model is deliberately redesigned and reviewed.
+- Keep portable imported progress unranked unless the entire trust model is deliberately redesigned and reviewed.
+- Keep Challenge Codes configuration-only unless a separately versioned protocol and trust policy are deliberately introduced.
 
 ## Game-engine changes
 
@@ -83,6 +86,26 @@ At minimum consider:
 
 Do not change a rule only in the UI while leaving the domain engine inconsistent.
 
+## Challenge Code changes
+
+Challenge Code text is untrusted input and the format is a public compatibility surface. Preserve or deliberately version:
+
+- `NOVA1` prefix/format identity;
+- envelope version;
+- maximum input length before decode/parse;
+- checksum verification before payload parsing;
+- Base64URL/UTF-8/JSON validation;
+- strict `GameConfig.fromJson()` validation;
+- deterministic seed requirement and bounds;
+- supported-mode allowlist;
+- Daily Challenge exclusion unless Daily history semantics are intentionally redesigned;
+- explicit decoded preview and normal recoverable-game replacement confirmation;
+- no board progress, score, lifetime record, achievement, setting, Daily history, or Undo import;
+- no hidden networking/account/cloud behavior;
+- documentation that describes the checksum only as corruption detection, not cryptographic authentication.
+
+Add focused pure-domain tests in `test/challenge_code_test.dart` and UI-flow tests in `test/challenge_code_screen_test.dart`. Changes to clipboard behavior should retain the `TextClipboard` abstraction so tests need not depend on a real platform channel.
+
 ## Persistence and migration changes
 
 Persisted input is untrusted. New or changed persistence must:
@@ -98,6 +121,8 @@ Persisted input is untrusted. New or changed persistence must:
 
 Do not use blanket preference clearing for project reset.
 
+Challenge Codes currently add no persistence key. Adding a code-history store would require an explicit retention, reset, privacy, and migration design.
+
 ## Backup/import changes
 
 Portable Game Backup is an explicit trust boundary. Preserve:
@@ -111,7 +136,7 @@ Portable Game Backup is an explicit trust boundary. Preserve:
 - exclusion of lifetime statistics, achievements, settings, and Daily history;
 - no lifetime-record mutation by imported play.
 
-See [`docs/BACKUP_AND_RESTORE.md`](docs/BACKUP_AND_RESTORE.md).
+Do not reuse the Challenge Code ranked/fresh-game policy for Backup. Challenge Codes contain no progress; Backup does. See [`docs/BACKUP_AND_RESTORE.md`](docs/BACKUP_AND_RESTORE.md).
 
 ## UI and accessibility changes
 
@@ -125,6 +150,8 @@ For user-facing changes:
 - test large text/narrow layouts when relevant;
 - add widget or semantics regression tests for critical flows.
 
+Portable text UIs also need readable validation messages, long-text handling, explicit Copy/Paste actions, and safe replacement confirmation.
+
 A passing semantics unit test is not a substitute for final real screen-reader qualification.
 
 ## External links and privacy
@@ -132,6 +159,8 @@ A passing semantics unit test is not a substitute for final real screen-reader q
 Use the shared external-link helper for browser/email destinations. Do not introduce insecure or hidden schemes.
 
 Do not add analytics, advertising, account, tracking, cloud-sync, or remote-AI dependencies without an explicit project decision, privacy review, documentation update, and user-visible behavior review.
+
+Challenge Codes must remain local/offline by default unless a separate networked feature is explicitly designed and documented.
 
 ## Dependencies
 
@@ -174,6 +203,7 @@ A good pull request explains:
 - tests added/updated;
 - commands run and results;
 - persistence/schema impact;
+- portable-input/trust impact;
 - accessibility impact;
 - privacy/security impact;
 - platform/build impact;
