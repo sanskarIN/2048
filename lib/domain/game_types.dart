@@ -74,13 +74,39 @@ class GameConfig {
       (value) => value.name == modeName,
       orElse: () => GameMode.classic,
     );
+    final size = (json['size'] as num?)?.toInt() ?? 4;
+    final target = (json['target'] as num?)?.toInt() ?? 2048;
+    final moveLimit = (json['moveLimit'] as num?)?.toInt();
+    final timeLimitSeconds = (json['timeLimitSeconds'] as num?)?.toInt();
+    final seed = (json['seed'] as num?)?.toInt();
+
+    if (size < 3 || size > 8) {
+      throw const FormatException('Unsupported board size');
+    }
+    if (!_isPowerOfTwo(target) || target < 4 || target > 1 << 30) {
+      throw const FormatException('Invalid target tile');
+    }
+    if (moveLimit != null && (moveLimit < 1 || moveLimit > 1000000)) {
+      throw const FormatException('Invalid move limit');
+    }
+    if (timeLimitSeconds != null &&
+        (timeLimitSeconds < 1 || timeLimitSeconds > 86400)) {
+      throw const FormatException('Invalid time limit');
+    }
+    if (seed != null && seed < 0) {
+      throw const FormatException('Invalid random seed');
+    }
+
     return GameConfig(
       mode: mode,
-      size: (json['size'] as num?)?.toInt() ?? 4,
-      target: (json['target'] as num?)?.toInt() ?? 2048,
-      moveLimit: (json['moveLimit'] as num?)?.toInt(),
-      timeLimitSeconds: (json['timeLimitSeconds'] as num?)?.toInt(),
-      seed: (json['seed'] as num?)?.toInt(),
+      size: size,
+      target: target,
+      moveLimit: moveLimit,
+      timeLimitSeconds: timeLimitSeconds,
+      seed: seed,
     );
   }
+
+  static bool _isPowerOfTwo(int value) =>
+      value > 0 && (value & (value - 1)) == 0;
 }
