@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/localization/nova_localizations.dart';
 import '../../core/theme/nova_theme.dart';
 
 class GameBoard extends StatelessWidget {
@@ -12,10 +13,13 @@ class GameBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = board.length;
+    final l10n = context.l10n;
     return Semantics(
       container: true,
       explicitChildNodes: true,
-      label: '$size by $size game board',
+      label: l10n.isHindi
+          ? '$size बाय $size गेम बोर्ड'
+          : '$size by $size game board',
       child: LayoutBuilder(
         builder: (context, constraints) {
           final extent = constraints.maxWidth < constraints.maxHeight
@@ -72,6 +76,7 @@ class _Tile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = context.l10n;
     final digits = value == 0 ? 1 : value.toString().length;
     final fontSize = digits <= 4
         ? 28.0
@@ -82,11 +87,20 @@ class _Tile extends StatelessWidget {
     final animationDuration = reducedMotion || systemReducedMotion
         ? Duration.zero
         : const Duration(milliseconds: 140);
-    final position = 'Row ${row + 1}, column ${col + 1}';
+    final position = l10n.isHindi
+        ? 'पंक्ति ${row + 1}, कॉलम ${col + 1}'
+        : 'Row ${row + 1}, column ${col + 1}';
+    final semanticLabel = value == 0
+        ? l10n.isHindi
+            ? '$position, खाली'
+            : '$position, empty'
+        : l10n.isHindi
+            ? '$position, टाइल $value'
+            : '$position, tile $value';
     return Semantics(
       container: true,
       excludeSemantics: true,
-      label: value == 0 ? '$position, empty' : '$position, tile $value',
+      label: semanticLabel,
       child: AnimatedContainer(
         duration: animationDuration,
         alignment: Alignment.center,
