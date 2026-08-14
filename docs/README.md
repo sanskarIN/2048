@@ -1,6 +1,6 @@
 # 2048 Nova Documentation
 
-This directory is the user, technical, development, and release documentation set for 2048 Nova. The application is a Flutter/Dart, offline-first 2048 implementation with deterministic game rules, validated local persistence, multiple modes, accessibility controls, read-only Replay, an isolated heuristic Auto Play Demo, and portable current-game backup/restore.
+This directory is the user, technical, development, platform, and release documentation set for 2048 Nova. The application is a Flutter/Dart, offline-first 2048 implementation with deterministic game rules, validated local persistence, multiple modes, accessibility controls, read-only Replay, an isolated heuristic Auto Play Demo, and portable current-game backup/restore.
 
 ## Start here
 
@@ -17,6 +17,7 @@ This directory is the user, technical, development, and release documentation se
 | [`ACCESSIBILITY.md`](ACCESSIBILITY.md) | Implemented accessibility features and remaining manual assistive-technology checks. |
 | [`PRIVACY.md`](PRIVACY.md) | Offline-first data behavior, clipboard, external links, local storage, Replay, Auto Play, and backup privacy. |
 | [`DEVELOPMENT.md`](DEVELOPMENT.md) | Development environment, repository layout, local workflow, testing, and contribution practices. |
+| [`PLATFORMS.md`](PLATFORMS.md) | Android/iOS/Web/Windows/macOS/Linux setup, build commands, hosted verification, and signing/distribution boundaries. |
 | [`CI_CD.md`](CI_CD.md) | Permanent GitHub Actions workflows, quality gates, native build matrix, and automation boundaries. |
 | [`TESTING.md`](TESTING.md) | Automated test strategy, regression areas, and current evidence. |
 | [`VERIFICATION.md`](VERIFICATION.md) | Compact current automated verification record. |
