@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../app/state/app_scope.dart';
+import '../../core/localization/nova_localizations.dart';
 import '../../data/local_store.dart';
 import '../../domain/game_state.dart';
 import '../../domain/replay_timeline.dart';
@@ -133,7 +134,7 @@ class _ReplayScreenState extends State<ReplayScreen> {
     final frames = _frames;
 
     return NovaScaffold(
-      title: 'Move Replay',
+      title: context.l10n.text('Move Replay'),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: _loadError != null
@@ -208,14 +209,16 @@ class _ReplayBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final frame = frames[index];
     final width = MediaQuery.sizeOf(context).width;
     final boardExtent = width.clamp(280.0, 520.0).toDouble();
     final retainedStart = frames.first.moves;
     final replayDescription = retainedStart == 0
-        ? 'Replay includes the retained start of this game.'
-        : 'Undo history is bounded, so this replay begins at move '
-            '$retainedStart and shows the most recent retained timeline.';
+        ? l10n.text('Replay includes the retained start of this game.')
+        : l10n.isHindi
+            ? 'अनडू हिस्ट्री सीमित है, इसलिए यह रिप्ले चाल $retainedStart से शुरू होता है और सबसे हाल की सुरक्षित टाइमलाइन दिखाता है।'
+            : 'Undo history is bounded, so this replay begins at move $retainedStart and shows the most recent retained timeline.';
 
     return SingleChildScrollView(
       child: Center(
@@ -231,15 +234,14 @@ class _ReplayBody extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Read-only spectator replay',
+                        l10n.text('Read-only spectator replay'),
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Replay is built from the same persisted Undo snapshots '
-                        'used by the current game. Viewing, scrubbing, or playing '
-                        'the timeline never changes the live board, score, RNG, '
-                        'statistics, achievements, or Daily history.',
+                      Text(
+                        l10n.text(
+                          'Replay is built from the same persisted Undo snapshots used by the current game. Viewing, scrubbing, or playing the timeline never changes the live board, score, RNG, statistics, achievements, or Daily history.',
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -256,10 +258,11 @@ class _ReplayBody extends StatelessWidget {
                 runSpacing: 8,
                 alignment: WrapAlignment.center,
                 children: [
-                  _Metric('Frame', index + 1, suffix: ' / ${frames.length}'),
-                  _Metric('Move', frame.moves),
-                  _Metric('Score', frame.score),
-                  _Metric('Highest', frame.highestTile),
+                  _Metric(l10n.text('Frame'), index + 1,
+                      suffix: ' / ${frames.length}'),
+                  _Metric(l10n.text('Move'), frame.moves),
+                  _Metric(l10n.text('Score'), frame.score),
+                  _Metric(l10n.text('Highest'), frame.highestTile),
                 ],
               ),
               const SizedBox(height: 14),
@@ -275,13 +278,17 @@ class _ReplayBody extends StatelessWidget {
               const SizedBox(height: 16),
               if (frames.length > 1)
                 Semantics(
-                  label: 'Replay frame ${index + 1} of ${frames.length}',
+                  label: l10n.isHindi
+                      ? 'रिप्ले फ्रेम ${index + 1}, कुल ${frames.length}'
+                      : 'Replay frame ${index + 1} of ${frames.length}',
                   child: Slider(
                     value: index.toDouble(),
                     min: 0,
                     max: (frames.length - 1).toDouble(),
                     divisions: frames.length - 1,
-                    label: 'Move ${frame.moves}',
+                    label: l10n.isHindi
+                        ? 'चाल ${frame.moves}'
+                        : 'Move ${frame.moves}',
                     onChanged: onSliderChanged,
                   ),
                 ),
@@ -292,12 +299,12 @@ class _ReplayBody extends StatelessWidget {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   IconButton(
-                    tooltip: 'First retained frame',
+                    tooltip: l10n.text('First retained frame'),
                     onPressed: onFirst,
                     icon: const Icon(Icons.first_page_rounded),
                   ),
                   IconButton(
-                    tooltip: 'Previous frame',
+                    tooltip: l10n.text('Previous frame'),
                     onPressed: onPrevious,
                     icon: const Icon(Icons.skip_previous_rounded),
                   ),
@@ -306,15 +313,17 @@ class _ReplayBody extends StatelessWidget {
                     icon: Icon(
                       running ? Icons.pause_rounded : Icons.play_arrow_rounded,
                     ),
-                    label: Text(running ? 'Pause Replay' : 'Play Replay'),
+                    label: Text(
+                      l10n.text(running ? 'Pause Replay' : 'Play Replay'),
+                    ),
                   ),
                   IconButton(
-                    tooltip: 'Next frame',
+                    tooltip: l10n.text('Next frame'),
                     onPressed: onNext,
                     icon: const Icon(Icons.skip_next_rounded),
                   ),
                   IconButton(
-                    tooltip: 'Latest frame',
+                    tooltip: l10n.text('Latest frame'),
                     onPressed: onLatest,
                     icon: const Icon(Icons.last_page_rounded),
                   ),
@@ -325,7 +334,7 @@ class _ReplayBody extends StatelessWidget {
                       for (final speed in _ReplayScreenState._speeds)
                         DropdownMenuItem(
                           value: speed,
-                          child: Text(_speedLabel(speed)),
+                          child: Text(_speedLabel(speed, l10n)),
                         ),
                     ],
                   ),
@@ -333,8 +342,9 @@ class _ReplayBody extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Frame status: ${frame.status.name} · '
-                'Merges: ${frame.totalMerges}',
+                l10n.isHindi
+                    ? 'फ्रेम स्थिति: ${l10n.text(frame.status.name)} · मर्ज: ${frame.totalMerges}'
+                    : 'Frame status: ${frame.status.name} · Merges: ${frame.totalMerges}',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
@@ -345,9 +355,11 @@ class _ReplayBody extends StatelessWidget {
     );
   }
 
-  static String _speedLabel(Duration duration) {
-    if (duration.inMilliseconds == 1000) return '1 frame / sec';
-    return '${1000 ~/ duration.inMilliseconds} frames / sec';
+  static String _speedLabel(Duration duration, NovaLocalizations l10n) {
+    final count = duration.inMilliseconds == 1000
+        ? 1
+        : 1000 ~/ duration.inMilliseconds;
+    return l10n.isHindi ? '$count फ्रेम / सेकंड' : '$count frame${count == 1 ? '' : 's'} / sec';
   }
 }
 
@@ -371,6 +383,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -378,13 +391,13 @@ class _EmptyState extends StatelessWidget {
           const Icon(Icons.movie_filter_outlined, size: 56),
           const SizedBox(height: 12),
           Text(
-            'No game replay is available yet.',
+            l10n.text('No game replay is available yet.'),
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 12),
           FilledButton(
             onPressed: onStart,
-            child: const Text('Start a game'),
+            child: Text(l10n.text('Start a game')),
           ),
         ],
       ),
@@ -399,15 +412,16 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.error_outline_rounded, size: 56),
           const SizedBox(height: 12),
-          const Text('Replay history could not be loaded safely.'),
+          Text(l10n.text('Replay history could not be loaded safely.')),
           const SizedBox(height: 12),
-          OutlinedButton(onPressed: onRetry, child: const Text('Retry')),
+          OutlinedButton(onPressed: onRetry, child: Text(l10n.text('Retry'))),
         ],
       ),
     );
