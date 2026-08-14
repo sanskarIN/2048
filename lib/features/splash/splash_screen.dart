@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/constants/project_info.dart';
+import '../../core/localization/nova_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,11 +22,12 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = context.l10n;
     return Scaffold(
       body: SafeArea(
         child: Center(
           child: Semantics(
-            label: '2048 Nova splash screen. Made by the Sanskar.',
+            label: l10n.text('2048 Nova splash screen. Made by the Sanskar.'),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
