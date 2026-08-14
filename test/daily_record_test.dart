@@ -55,5 +55,62 @@ void main() {
     expect(restored.seed, original.seed);
     expect(restored.score, original.score);
     expect(restored.highestTile, original.highestTile);
+    expect(restored.updatedAt.isUtc, isTrue);
+  });
+
+  test('rejects impossible and wrongly typed daily seeds', () {
+    expect(
+      () => DailyRecord.fromJson({'seed': 20260230}),
+      throwsFormatException,
+    );
+    expect(
+      () => DailyRecord.fromJson({'seed': '20260814'}),
+      throwsFormatException,
+    );
+  });
+
+  test('rejects invalid counters and highest tiles', () {
+    expect(
+      () => DailyRecord.fromJson({'seed': 20260814, 'score': -1}),
+      throwsFormatException,
+    );
+    expect(
+      () => DailyRecord.fromJson({'seed': 20260814, 'moves': 1.5}),
+      throwsFormatException,
+    );
+    expect(
+      () => DailyRecord.fromJson({'seed': 20260814, 'highestTile': 3}),
+      throwsFormatException,
+    );
+  });
+
+  test('rejects malformed completion and update metadata', () {
+    expect(
+      () => DailyRecord.fromJson({'seed': 20260814, 'completed': 'yes'}),
+      throwsFormatException,
+    );
+    expect(
+      () => DailyRecord.fromJson({'seed': 20260814, 'won': 1}),
+      throwsFormatException,
+    );
+    expect(
+      () => DailyRecord.fromJson({
+        'seed': 20260814,
+        'updatedAt': 'not-a-date',
+      }),
+      throwsFormatException,
+    );
+  });
+
+  test('a win is always restored as completed', () {
+    final restored = DailyRecord.fromJson({
+      'seed': 20260814,
+      'completed': false,
+      'won': true,
+      'updatedAt': DateTime.utc(2026, 8, 14).toIso8601String(),
+    });
+
+    expect(restored.won, isTrue);
+    expect(restored.completed, isTrue);
   });
 }
