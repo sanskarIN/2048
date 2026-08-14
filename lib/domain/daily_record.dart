@@ -50,17 +50,89 @@ class DailyRecord {
       };
 
   factory DailyRecord.fromJson(Map<String, Object?> json) {
-    final seed = (json['seed'] as num?)?.toInt();
-    if (seed == null) throw const FormatException('Missing daily seed');
+    final seed = _requiredNonNegativeInt(json['seed'], 'daily seed');
+    if (!_isValidDailySeed(seed)) {
+      throw const FormatException('Invalid daily seed');
+    }
+    final score = _optionalNonNegativeInt(json['score'], 'daily score');
+    final moves = _optionalNonNegativeInt(json['moves'], 'daily moves');
+    final highestTile =
+        _optionalNonNegativeInt(json['highestTile'], 'daily highest tile');
+    if (!_isValidTile(highestTile)) {
+      throw const FormatException('Invalid daily highest tile');
+    }
+
+    final rawCompleted = json['completed'];
+    if (rawCompleted != null && rawCompleted is! bool) {
+      throw const FormatException('Invalid daily completion state');
+    }
+    final rawWon = json['won'];
+    if (rawWon != null && rawWon is! bool) {
+      throw const FormatException('Invalid daily win state');
+    }
+    final won = rawWon as bool? ?? false;
+    final completed = (rawCompleted as bool? ?? false) || won;
+
+    final rawUpdatedAt = json['updatedAt'];
+    if (rawUpdatedAt != null && rawUpdatedAt is! String) {
+      throw const FormatException('Invalid daily update time');
+    }
+    final updatedAt = rawUpdatedAt is String
+        ? DateTime.tryParse(rawUpdatedAt)?.toUtc()
+        : DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
+    if (updatedAt == null) {
+      throw const FormatException('Invalid daily update time');
+    }
+
     return DailyRecord(
       seed: seed,
-      score: (json['score'] as num?)?.toInt() ?? 0,
-      moves: (json['moves'] as num?)?.toInt() ?? 0,
-      highestTile: (json['highestTile'] as num?)?.toInt() ?? 0,
-      completed: json['completed'] as bool? ?? false,
-      won: json['won'] as bool? ?? false,
-      updatedAt: DateTime.tryParse(json['updatedAt'] as String? ?? '') ??
-          DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+      score: score,
+      moves: moves,
+      highestTile: highestTile,
+      completed: completed,
+      won: won,
+      updatedAt: updatedAt,
     );
+  }
+
+  static int _requiredNonNegativeInt(Object? value, String label) {
+    if (value == null) throw FormatException('Missing $label');
+    return _checkedNonNegativeInt(value, label);
+  }
+
+  static int _optionalNonNegativeInt(Object? value, String label) {
+    if (value == null) return 0;
+    return _checkedNonNegativeInt(value, label);
+  }
+
+  static int _checkedNonNegativeInt(Object value, String label) {
+    if (value is! num ||
+        !value.isFinite ||
+        value.toInt() != value ||
+        value < 0) {
+      throw FormatException('Invalid $label');
+    }
+    return value.toInt();
+  }
+
+  static bool _isValidDailySeed(int seed) {
+    final year = seed ~/ 10000;
+    final month = (seed ~/ 100) % 100;
+    final day = seed % 100;
+    if (year < 1 || year > 9999 || month < 1 || month > 12 || day < 1) {
+      return false;
+    }
+    try {
+      final date = DateTime.utc(year, month, day);
+      return date.year == year && date.month == month && date.day == day;
+    } on ArgumentError {
+      return false;
+    }
+  }
+
+  static bool _isValidTile(int value) {
+    if (value == 0) return true;
+    if (value < 2 || value > 1 << 30) return false;
+    return (value & (value - 1)) == 0;
   }
 }
