@@ -10,6 +10,8 @@ import 'package:nova_2048/features/backup/game_backup_screen.dart';
 import 'package:nova_2048/shared/text_clipboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'support/localized_test_app.dart';
+
 class _MemoryClipboard implements TextClipboard {
   String? text;
 
@@ -45,7 +47,7 @@ void main() {
     TextClipboard clipboard,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(
+      localizedTestApp(
         routes: {
           '/game': (_) => const Scaffold(body: Text('Game destination')),
         },
