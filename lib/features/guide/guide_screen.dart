@@ -14,7 +14,7 @@ class GuideScreen extends StatelessWidget {
       ),
       (
         'Controls',
-        'Swipe on touch devices. On desktop and web use Arrow Keys or W/A/S/D. Use the toolbar for undo, hint, and restart.',
+        'Swipe on touch devices. On desktop and web use Arrow Keys or W/A/S/D. H requests a hint, U performs Undo, P or Escape opens Pause, and R starts the restart flow.',
       ),
       (
         'Merging',
@@ -34,7 +34,11 @@ class GuideScreen extends StatelessWidget {
       ),
       (
         'Undo and hints',
-        'Undo restores the previous board snapshot including deterministic random state. Hints evaluate legal moves using empty-space, merge, corner, monotonicity, and smoothness heuristics. A hint suggests one move and never moves tiles automatically.',
+        'Undo restores the previous board snapshot including deterministic random state. Hints evaluate legal moves using empty-space, merge, corner, monotonicity, and smoothness heuristics. A normal hint suggests one move and never moves tiles automatically.',
+      ),
+      (
+        'Solver Demo',
+        'Solver Demo is an optional local Auto Play demonstration. It repeatedly applies the same deterministic heuristic used by Hint to a separate seeded Endless 4×4 sandbox. You can autoplay, pause/resume, step one move at a time, choose the demonstration speed, or reset the seed. Demo score and moves are never mixed with your saved game, lifetime statistics, achievements, or Daily Challenge history.',
       ),
       (
         'Daily Challenge',
@@ -46,7 +50,7 @@ class GuideScreen extends StatelessWidget {
       ),
       (
         'Offline and privacy',
-        'Core gameplay works offline. No account, analytics, advertising tracker, or cloud synchronization is required.',
+        'Core gameplay and Solver Demo work offline. No account, analytics, advertising tracker, or cloud synchronization is required.',
       ),
       (
         'FAQ',
