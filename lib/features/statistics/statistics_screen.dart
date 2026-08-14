@@ -9,6 +9,10 @@ class StatisticsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stats = AppScope.of(context).stats;
+    final averageMoves =
+        stats.gamesPlayed == 0 ? 0.0 : stats.totalMoves / stats.gamesPlayed;
+    final averageMerges =
+        stats.gamesPlayed == 0 ? 0.0 : stats.totalMerges / stats.gamesPlayed;
     final values = [
       ('Games played', '${stats.gamesPlayed}'),
       ('Games won', '${stats.gamesWon}'),
@@ -17,8 +21,10 @@ class StatisticsScreen extends StatelessWidget {
       ('Highest tile', '${stats.highestTile}'),
       ('Total moves', '${stats.totalMoves}'),
       ('Total merges', '${stats.totalMerges}'),
-      ('Current streak', '${stats.currentStreak}'),
-      ('Best streak', '${stats.bestStreak}'),
+      ('Average moves / game', averageMoves.toStringAsFixed(1)),
+      ('Average merges / game', averageMerges.toStringAsFixed(1)),
+      ('Current win streak', '${stats.currentStreak}'),
+      ('Best win streak', '${stats.bestStreak}'),
     ];
     return NovaScaffold(
       title: 'Statistics',
@@ -46,25 +52,30 @@ class StatisticsScreen extends StatelessWidget {
   }
 
   Future<void> _reset(BuildContext context) async {
+    final controller = AppScope.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Reset statistics?'),
-        content: const Text('This cannot be undone.'),
+        content: Text(
+          controller.hasGame
+              ? 'Historical statistics will be cleared. The active game remains counted as the current session so future win-rate data stays valid.'
+              : 'All locally stored statistics will be cleared. This cannot be undone.',
+        ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: const Text('Cancel'),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.pop(dialogContext, true),
             child: const Text('Reset'),
           ),
         ],
       ),
     );
     if (confirmed == true && context.mounted) {
-      await AppScope.of(context).resetStats();
+      await controller.resetStats();
     }
   }
 }
