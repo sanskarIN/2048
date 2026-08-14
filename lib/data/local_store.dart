@@ -111,9 +111,11 @@ class LocalStore {
           repaired = true;
         }
       }
-      records.sort((a, b) => b.seed.compareTo(a.seed));
-      final limited = records.length <= 60 ? records : records.sublist(0, 60);
-      if (limited.length != records.length) repaired = true;
+      final normalized = _normalizeDailyHistory(records);
+      if (normalized.length != records.length) repaired = true;
+      final limited =
+          normalized.length <= 60 ? normalized : normalized.sublist(0, 60);
+      if (limited.length != normalized.length) repaired = true;
       if (repaired) {
         await prefs.setString(
           _dailyHistoryKey,
@@ -128,10 +130,42 @@ class LocalStore {
   }
 
   Future<void> saveDailyHistory(List<DailyRecord> records) async {
-    final limited = records.length <= 60 ? records : records.sublist(0, 60);
+    final normalized = _normalizeDailyHistory(records);
+    final limited =
+        normalized.length <= 60 ? normalized : normalized.sublist(0, 60);
     await (await _prefs).setString(
       _dailyHistoryKey,
       jsonEncode(limited.map((record) => record.toJson()).toList()),
+    );
+  }
+
+  List<DailyRecord> _normalizeDailyHistory(List<DailyRecord> records) {
+    final bySeed = <int, DailyRecord>{};
+    for (final record in records) {
+      final previous = bySeed[record.seed];
+      bySeed[record.seed] =
+          previous == null ? record : _mergeDailyRecords(previous, record);
+    }
+    final normalized = bySeed.values.toList()
+      ..sort((a, b) => b.seed.compareTo(a.seed));
+    return normalized;
+  }
+
+  DailyRecord _mergeDailyRecords(DailyRecord a, DailyRecord b) {
+    final scoreSource = b.score > a.score ||
+            (b.score == a.score && b.updatedAt.isAfter(a.updatedAt))
+        ? b
+        : a;
+    final updatedAt = a.updatedAt.isAfter(b.updatedAt) ? a.updatedAt : b.updatedAt;
+    return DailyRecord(
+      seed: a.seed,
+      score: scoreSource.score,
+      moves: scoreSource.moves,
+      highestTile:
+          a.highestTile > b.highestTile ? a.highestTile : b.highestTile,
+      completed: a.completed || b.completed,
+      won: a.won || b.won,
+      updatedAt: updatedAt,
     );
   }
 
