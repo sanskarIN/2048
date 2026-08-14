@@ -341,7 +341,11 @@ class AppController extends ChangeNotifier {
 
   Future<void> undo() async {
     if (_moveInProgress || _undo.isEmpty || game == null) return;
-    game = _undo.removeLast();
+    final restored = _undo.removeLast();
+    if (restored.bestScore < stats.bestScore) {
+      restored.bestScore = stats.bestScore;
+    }
+    game = restored;
     _engine = GameEngine(config: game!.config);
     _updateDailyRecord(game!);
     await store.saveGame(game!);
