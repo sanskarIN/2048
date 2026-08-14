@@ -85,6 +85,47 @@ void main() {
     expect(repairedJson, hasLength(2));
   });
 
+  test('deduplicates daily history while preserving the strongest record',
+      () async {
+    SharedPreferences.setMockInitialValues({
+      'nova.daily_history.v1': jsonEncode([
+        {
+          'seed': 20260814,
+          'score': 4096,
+          'moves': 170,
+          'highestTile': 1024,
+          'completed': false,
+          'won': false,
+          'updatedAt': '2026-08-14T01:00:00.000Z',
+        },
+        {
+          'seed': 20260814,
+          'score': 1024,
+          'moves': 80,
+          'highestTile': 2048,
+          'completed': true,
+          'won': true,
+          'updatedAt': '2026-08-14T02:00:00.000Z',
+        },
+      ]),
+    });
+    final store = LocalStore();
+
+    final records = await store.loadDailyHistory();
+    final repairedRaw = (await SharedPreferences.getInstance())
+        .getString('nova.daily_history.v1');
+    final repairedJson = jsonDecode(repairedRaw!) as List<dynamic>;
+
+    expect(records, hasLength(1));
+    expect(records.single.score, 4096);
+    expect(records.single.moves, 170);
+    expect(records.single.highestTile, 2048);
+    expect(records.single.won, isTrue);
+    expect(records.single.completed, isTrue);
+    expect(records.single.updatedAt, DateTime.parse('2026-08-14T02:00:00.000Z'));
+    expect(repairedJson, hasLength(1));
+  });
+
   test('repairs undo history by dropping invalid snapshots', () async {
     final valid = state(2).toJson();
     final invalid = state(4).toJson()..['board'] = 'broken';
