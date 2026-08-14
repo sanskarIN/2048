@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nova_2048/data/local_store.dart';
 import 'package:nova_2048/domain/daily_record.dart';
@@ -74,9 +76,45 @@ void main() {
     final store = LocalStore();
 
     final records = await store.loadDailyHistory();
+    final repairedRaw =
+        (await SharedPreferences.getInstance()).getString('nova.daily_history.v1');
+    final repairedJson = jsonDecode(repairedRaw!) as List<dynamic>;
 
     expect(records, hasLength(2));
     expect(records.map((record) => record.seed), [20260814, 20260813]);
+    expect(repairedJson, hasLength(2));
+  });
+
+  test('repairs undo history by dropping invalid snapshots', () async {
+    final valid = state(2).toJson();
+    final invalid = state(4).toJson()..['board'] = 'broken';
+    SharedPreferences.setMockInitialValues({
+      'nova.undo_history.v1': jsonEncode([valid, invalid, 'bad-entry']),
+    });
+    final store = LocalStore();
+
+    final restored = await store.loadUndoHistory();
+    final repairedRaw =
+        (await SharedPreferences.getInstance()).getString('nova.undo_history.v1');
+    final repairedJson = jsonDecode(repairedRaw!) as List<dynamic>;
+
+    expect(restored, hasLength(1));
+    expect(restored.single.board[0][0], 2);
+    expect(repairedJson, hasLength(1));
+  });
+
+  test('invalid map persistence is removed after safe recovery', () async {
+    SharedPreferences.setMockInitialValues({
+      'nova.settings.v1': '["not","a","map"]',
+      'nova.stats.v1': '{not-json',
+    });
+    final store = LocalStore();
+
+    expect(await store.loadSettings(), isEmpty);
+    expect(await store.loadStats(), isEmpty);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.containsKey('nova.settings.v1'), isFalse);
+    expect(prefs.containsKey('nova.stats.v1'), isFalse);
   });
 
   test('clearing game also clears undo history', () async {
