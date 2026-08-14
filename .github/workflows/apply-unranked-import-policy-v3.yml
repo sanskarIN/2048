@@ -1,0 +1,228 @@
+name: Apply Unranked Import Policy V3
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/apply-unranked-import-policy-v3.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch controller import policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('lib/app/state/app_controller.dart')
+          text = path.read_text(encoding='utf-8')
+
+          def replace_once(old, new, label):
+              global text
+              if text.count(old) != 1:
+                  raise SystemExit(f'{label}: anchor count={text.count(old)}')
+              text = text.replace(old, new, 1)
+
+          def regex_once(pattern, replacement, label):
+              global text
+              text, count = re.subn(pattern, replacement, text, count=1, flags=re.MULTILINE)
+              if count != 1:
+                  raise SystemExit(f'{label}: regex count={count}')
+
+          replace_once(
+              '  bool _moveInProgress = false;\n',
+              '  bool _moveInProgress = false;\n  bool _currentGameUnranked = false;\n',
+              'field',
+          )
+          replace_once(
+              '  bool get hasGame => game != null;\n  bool get canUndo => !_moveInProgress && _undo.isNotEmpty;\n',
+              '  bool get hasGame => game != null;\n  bool get canUndo => !_moveInProgress && _undo.isNotEmpty;\n  bool get currentGameIsUnranked => game != null && _currentGameUnranked;\n',
+              'getter',
+          )
+          replace_once(
+              '    game = await store.loadGame();\n    var repairedSession = false;\n',
+              '    game = await store.loadGame();\n    _currentGameUnranked =\n        game != null && await store.loadCurrentGameUnranked();\n    var repairedSession = false;\n',
+              'initialize marker',
+          )
+
+          regex_once(
+              r'''      _sessionCounted = true;\n      _winCounted =\n          current\.hasAcknowledgedWin \|\| current\.status == GameStatus\.won;\n      final previousStatus = current\.status;\n      final previousStreak = stats\.currentStreak;\n      _engine!\.refreshStatus\(current\);\n      _applyTerminalStats\(current\);\n      if \(current\.status != previousStatus\) \{\n        _updateDailyRecord\(current\);\n        repairedSession = true;\n      \}\n      if \(stats\.currentStreak != previousStreak\) \{\n        repairedSession = true;\n      \}''',
+              '''      _sessionCounted = !_currentGameUnranked;
+      _winCounted = _currentGameUnranked ||
+          current.hasAcknowledgedWin ||
+          current.status == GameStatus.won;
+      final previousStatus = current.status;
+      final previousStreak = stats.currentStreak;
+      _engine!.refreshStatus(current);
+      if (!_currentGameUnranked) {
+        _applyTerminalStats(current);
+      }
+      if (current.status != previousStatus) {
+        if (!_currentGameUnranked) {
+          _updateDailyRecord(current);
+        }
+        repairedSession = true;
+      }
+      if (!_currentGameUnranked && stats.currentStreak != previousStreak) {
+        repairedSession = true;
+      }''',
+              'initialize stats',
+          )
+
+          replace_once(
+              '    game = _engine!.createGame(bestScore: stats.bestScore);\n    _undo.clear();\n    _sessionCounted = true;\n',
+              '    game = _engine!.createGame(bestScore: stats.bestScore);\n    _undo.clear();\n    _currentGameUnranked = false;\n    _sessionCounted = true;\n',
+              'new game',
+          )
+
+          regex_once(
+              r'''      stats\.totalMoves \+= 1;\n      stats\.totalMerges \+= outcome\.merges;\n      stats\.bestScore = current\.bestScore > stats\.bestScore\n          \? current\.bestScore\n          : stats\.bestScore;\n      stats\.highestTile = current\.highestTile > stats\.highestTile\n          \? current\.highestTile\n          : stats\.highestTile;\n      _applyTerminalStats\(current\);\n      _updateDailyRecord\(current\);\n      _unlockAchievements\(\);''',
+              '''      if (!_currentGameUnranked) {
+        stats.totalMoves += 1;
+        stats.totalMerges += outcome.merges;
+        stats.bestScore = current.bestScore > stats.bestScore
+            ? current.bestScore
+            : stats.bestScore;
+        stats.highestTile = current.highestTile > stats.highestTile
+            ? current.highestTile
+            : stats.highestTile;
+        _applyTerminalStats(current);
+        _updateDailyRecord(current);
+        _unlockAchievements();
+      }''',
+              'move stats',
+          )
+
+          replace_once(
+              '    _updateDailyRecord(game!);\n    await store.saveGame(game!);\n',
+              '    if (!_currentGameUnranked) _updateDailyRecord(game!);\n    await store.saveGame(game!);\n',
+              'undo daily',
+          )
+
+          regex_once(
+              r'''    if \(before != current\.status\) \{\n      _applyTerminalStats\(current\);\n      _updateDailyRecord\(current\);\n      _unlockAchievements\(\);\n      await _persist\(\);\n      notifyListeners\(\);\n    \}''',
+              '''    if (before != current.status) {
+      if (!_currentGameUnranked) {
+        _applyTerminalStats(current);
+        _updateDailyRecord(current);
+        _unlockAchievements();
+      }
+      await _persist();
+      notifyListeners();
+    }''',
+              'refresh status',
+          )
+
+          replace_once(
+              '    _winCounted = true;\n    _updateDailyRecord(game!);\n    _unlockAchievements();\n',
+              '    _winCounted = true;\n    if (!_currentGameUnranked) {\n      _updateDailyRecord(game!);\n      _unlockAchievements();\n    }\n',
+              'continue win',
+          )
+
+          import_anchor = '  Future<void> clearCurrentGame() async {\n'
+          import_method = '''  Future<void> importGameBackup(GameState imported) async {
+            if (_moveInProgress) return;
+            final restored = imported.copy();
+            restored.bestScore = restored.score > stats.bestScore
+                ? restored.score
+                : stats.bestScore;
+            _engine = GameEngine(config: restored.config);
+            _engine!.refreshStatus(restored);
+            game = restored;
+            _undo.clear();
+            _currentGameUnranked = true;
+            _sessionCounted = false;
+            _winCounted = true;
+            await store.saveGame(restored);
+            await store.saveUndoHistory(_undo);
+            await store.saveCurrentGameUnranked(true);
+            notifyListeners();
+          }
+
+          '''
+          import_method = ''.join(line[10:] if line.startswith('          ') else line for line in import_method.splitlines(True))
+          replace_once(import_anchor, import_method + import_anchor, 'import method')
+
+          replace_once(
+              '    game = null;\n    _engine = null;\n    _undo.clear();\n    await store.clearGame();\n',
+              '    game = null;\n    _engine = null;\n    _undo.clear();\n    _currentGameUnranked = false;\n    await store.clearGame();\n',
+              'clear current',
+          )
+          replace_once(
+              '    settings = AppSettings();\n    stats = PlayerStats();\n    _sessionCounted = false;\n',
+              '    settings = AppSettings();\n    stats = PlayerStats();\n    _currentGameUnranked = false;\n    _sessionCounted = false;\n',
+              'clear all',
+          )
+
+          reset_start = text.index('  Future<void> resetStats() async {')
+          reset_end = text.index('  Future<void> resetAchievements() async {', reset_start)
+          section = text[reset_start:reset_end]
+          old = '    final current = game;\n    if (current != null) {\n'
+          new = '''    final current = game;
+            if (current != null && _currentGameUnranked) {
+              current.bestScore = current.score;
+              for (final snapshot in _undo) {
+                snapshot.bestScore = snapshot.score > current.score
+                    ? snapshot.score
+                    : current.score;
+              }
+              _sessionCounted = false;
+              _winCounted = true;
+              await store.saveGame(current);
+              await store.saveUndoHistory(_undo);
+              await store.saveStats(stats.toJson());
+              notifyListeners();
+              return;
+            }
+            if (current != null) {
+          '''
+          new = ''.join(line[10:] if line.startswith('          ') else line for line in new.splitlines(True))
+          if section.count(old) != 1:
+              raise SystemExit(f'reset stats anchor count={section.count(old)}')
+          section = section.replace(old, new, 1)
+          text = text[:reset_start] + section + text[reset_end:]
+
+          replace_once(
+              '  Future<void> _persist() async {\n    if (game != null) await store.saveGame(game!);\n',
+              '  Future<void> _persist() async {\n    if (game != null) {\n      await store.saveGame(game!);\n      await store.saveCurrentGameUnranked(_currentGameUnranked);\n    }\n',
+              'persist marker',
+          )
+
+          path.write_text(text, encoding='utf-8')
+          PY
+          dart format lib/app/state/app_controller.dart
+
+      - name: Remove one-time workflows
+        shell: bash
+        run: |
+          git rm .github/workflows/apply-unranked-import-policy-v3.yml
+          for file in \
+            .github/workflows/apply-unranked-import-policy.yml \
+            .github/workflows/apply-unranked-import-policy-v2.yml; do
+            if [[ -f "$file" ]]; then git rm "$file"; fi
+          done
+
+      - name: Commit controller policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add lib/app/state/app_controller.dart .github/workflows
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+          git commit -m "feat: restore imported games as persistent unranked sessions"
+          git pull --rebase origin main
+          git push origin HEAD:main
