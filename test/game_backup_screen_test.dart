@@ -13,11 +13,16 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
+  Future<void> pumpUi(WidgetTester tester) async {
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+  }
+
   Future<void> openBackup(WidgetTester tester) async {
     final backupEntry = find.text('Game Backup');
     await tester.ensureVisible(backupEntry);
     await tester.tap(backupEntry);
-    await tester.pumpAndSettle();
+    await pumpUi(tester);
   }
 
   GameState backupState() => GameState(
@@ -49,7 +54,7 @@ void main() {
     );
 
     await tester.pumpWidget(NovaApp(controller: controller));
-    await tester.pumpAndSettle();
+    await pumpUi(tester);
     await openBackup(tester);
     await tester.tap(find.text('Copy game backup'));
     await tester.pump();
@@ -79,17 +84,17 @@ void main() {
     );
 
     await tester.pumpWidget(NovaApp(controller: controller));
-    await tester.pumpAndSettle();
+    await pumpUi(tester);
     await openBackup(tester);
     await tester.tap(find.text('Import from clipboard'));
-    await tester.pumpAndSettle();
+    await pumpUi(tester);
 
     expect(find.text('Restore unranked backup?'), findsOneWidget);
     expect(find.text('Restore unranked backup'), findsOneWidget);
     expect(controller.game, isNull);
 
     await tester.tap(find.text('Restore unranked backup'));
-    await tester.pumpAndSettle();
+    await pumpUi(tester);
 
     expect(controller.currentGameIsUnranked, isTrue);
     expect(controller.game!.score, 32);
@@ -116,12 +121,12 @@ void main() {
     );
 
     await tester.pumpWidget(NovaApp(controller: controller));
-    await tester.pumpAndSettle();
+    await pumpUi(tester);
     await openBackup(tester);
     await tester.tap(find.text('Import from clipboard'));
-    await tester.pumpAndSettle();
+    await pumpUi(tester);
     await tester.tap(find.text('Cancel'));
-    await tester.pumpAndSettle();
+    await pumpUi(tester);
 
     expect(controller.currentGameIsUnranked, isFalse);
     expect(controller.game!.toJson(), before);
@@ -134,7 +139,7 @@ void main() {
     await Clipboard.setData(const ClipboardData(text: '{invalid'));
 
     await tester.pumpWidget(NovaApp(controller: controller));
-    await tester.pumpAndSettle();
+    await pumpUi(tester);
     await openBackup(tester);
     await tester.tap(find.text('Import from clipboard'));
     await tester.pump();
