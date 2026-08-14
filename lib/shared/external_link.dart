@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../core/localization/nova_localizations.dart';
+
 bool isAllowedExternalUri(Uri uri) {
   if (uri.scheme == 'https') {
     return uri.host.isNotEmpty;
@@ -18,7 +20,7 @@ Future<void> openExternal(BuildContext context, String value) async {
     _showCopyFallback(
       context,
       value,
-      message: 'This link cannot be opened safely.',
+      message: context.l10n.text('This link cannot be opened safely.'),
     );
     return;
   }
@@ -34,7 +36,7 @@ Future<void> openExternal(BuildContext context, String value) async {
     _showCopyFallback(
       context,
       value,
-      message: 'Could not open this link on your device.',
+      message: context.l10n.text('Could not open this link on your device.'),
     );
   }
 }
@@ -49,7 +51,7 @@ void _showCopyFallback(
     SnackBar(
       content: Text(message),
       action: SnackBarAction(
-        label: 'Copy',
+        label: context.l10n.text('Copy'),
         onPressed: () {
           Clipboard.setData(ClipboardData(text: value));
         },
