@@ -92,7 +92,8 @@ void main() {
     });
 
     test('rejects oversized input before payload parsing', () {
-      final oversized = List.filled(ChallengeCode.maxCodeLength + 1, 'A').join();
+      final oversized =
+          List.filled(ChallengeCode.maxCodeLength + 1, 'A').join();
       expect(() => ChallengeCode.decode(oversized), throwsFormatException);
     });
 
