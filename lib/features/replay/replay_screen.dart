@@ -356,10 +356,11 @@ class _ReplayBody extends StatelessWidget {
   }
 
   static String _speedLabel(Duration duration, NovaLocalizations l10n) {
-    final count = duration.inMilliseconds == 1000
-        ? 1
-        : 1000 ~/ duration.inMilliseconds;
-    return l10n.isHindi ? '$count फ्रेम / सेकंड' : '$count frame${count == 1 ? '' : 's'} / sec';
+    final count =
+        duration.inMilliseconds == 1000 ? 1 : 1000 ~/ duration.inMilliseconds;
+    return l10n.isHindi
+        ? '$count फ्रेम / सेकंड'
+        : '$count frame${count == 1 ? '' : 's'} / sec';
   }
 }
 
