@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../core/theme/nova_theme.dart';
 import '../features/about/about_screen.dart';
 import '../features/achievements/achievements_screen.dart';
+import '../features/daily_challenge/daily_challenge_screen.dart';
 import '../features/game/game_screen.dart';
 import '../features/guide/guide_screen.dart';
 import '../features/home/home_screen.dart';
@@ -44,6 +45,7 @@ class NovaApp extends StatelessWidget {
               '/home': (_) => const HomeScreen(),
               '/modes': (_) => const ModeSelectionScreen(),
               '/game': (_) => const GameScreen(),
+              '/daily': (_) => const DailyChallengeScreen(),
               '/statistics': (_) => const StatisticsScreen(),
               '/achievements': (_) => const AchievementsScreen(),
               '/settings': (_) => const SettingsScreen(),
