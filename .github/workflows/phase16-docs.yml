@@ -1,0 +1,57 @@
+name: Phase 16 Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/phase16-docs.yml
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply localization documentation
+        shell: bash
+        run: |
+          python3 .phase16_docs.py
+          git config user.name Sanskar
+          git config user.email sanskarin@outlook.in
+
+          commit_file() {
+            file="$1"
+            message="$2"
+            git add "$file"
+            if ! git diff --cached --quiet; then
+              git commit -m "$message"
+            fi
+          }
+
+          commit_file README.md "docs: document English and Hindi language support"
+          commit_file docs/USER_GUIDE.md "docs: add player language selection guide"
+          commit_file docs/FAQ.md "docs: answer Hindi localization questions"
+          commit_file docs/ARCHITECTURE.md "docs: document localization architecture"
+          commit_file docs/DATA_STORAGE.md "docs: document persisted language preference"
+          commit_file docs/ACCESSIBILITY.md "docs: add localized accessibility semantics"
+          commit_file docs/PRIVACY.md "docs: document offline localization privacy"
+          commit_file docs/DEPENDENCIES.md "docs: document Flutter localization dependency"
+          commit_file docs/DEVELOPMENT.md "docs: add localization development guidance"
+          commit_file docs/PLATFORMS.md "docs: document cross-platform locale behavior"
+          commit_file docs/TROUBLESHOOTING.md "docs: add localization troubleshooting"
+          commit_file CONTRIBUTING.md "docs: add localization contribution requirements"
+          commit_file SUPPORT.md "docs: add language issue reporting guidance"
+          commit_file SECURITY.md "docs: define localization security boundary"
+          commit_file docs/RELEASE_CHECKLIST.md "docs: add Hindi release qualification checks"
+          commit_file ROADMAP.md "docs: mark English and Hindi localization complete"
+          commit_file CHANGELOG.md "docs: record Phase 16 localization changes"
+
+          rm .phase16_docs.py .github/workflows/phase16-docs.yml
+          git add -u .phase16_docs.py .github/workflows/phase16-docs.yml
+          git commit -m "chore: remove Phase 16 documentation helpers"
+          git pull --rebase origin main
+          git push origin HEAD:main
