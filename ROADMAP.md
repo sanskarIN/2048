@@ -6,6 +6,8 @@ Completed in the current release-candidate line:
 
 - Deterministic core engine, save/resume, bounded Undo, and persisted RNG integrity.
 - Ten configured game modes, including Daily Challenge and challenge limits.
+- Offline shareable seeded **Challenge Codes** with a versioned `NOVA1` format, deterministic config/seed round trip, corruption checksum, strict input validation, manual/clipboard entry, decoded preview, replacement protection, and no account/cloud requirement.
+- Daily Challenge isolation from arbitrary Challenge Codes so date-derived seed/history semantics remain separate.
 - Deterministic heuristic hints with focused regression coverage.
 - Isolated deterministic **Auto Play Demo** with pause/resume, single-step control, speed selection, seed reset, and strict separation from player saves/statistics/achievements/Daily history.
 - Read-only **Move Replay** built from validated bounded Undo snapshots, with timeline scrubbing, first/previous/next/latest navigation, play/pause, speed selection, defensive copies, and no live-game mutation path.
@@ -15,7 +17,7 @@ Completed in the current release-candidate line:
 - Responsive touch/keyboard UI, desktop shortcuts, themes, high contrast, reduced motion, sound/haptic toggles, and accessibility semantics.
 - Android, iOS, Web, Windows, macOS, and Linux Flutter runners.
 - Hosted release-build verification for Android, Linux, Windows, macOS, and unsigned iOS.
-- Expanded automated engine, persistence, controller, interaction, session-integrity, accessibility, Auto Play isolation, Replay timeline, portable-backup, clipboard-flow, and imported-ranking tests.
+- Expanded automated engine, persistence, controller, interaction, session-integrity, accessibility, Challenge Code, Auto Play isolation, Replay timeline, portable-backup, clipboard-flow, and imported-ranking tests.
 - Complete user/technical/development/release documentation set, branding, CI, contribution/security templates, and project support/contact integration.
 
 Remaining release qualification before `1.0.0`:
@@ -24,6 +26,7 @@ Remaining release qualification before `1.0.0`:
 - Representative touch, orientation, keyboard, focus, and responsive-layout checks on real target environments.
 - VoiceOver, TalkBack, Narrator/browser-screen-reader checks on representative platforms.
 - Long-session and real-device Daily/timed/move-limit/Undo/win-continue testing.
+- Real-platform Challenge Code generate/copy/paste/manual-entry/validation/replacement/determinism/accessibility checks using actual clipboard/browser handlers.
 - Real-platform Move Replay scrub/play/pause/navigation-away/accessibility checks.
 - Real-platform Game Backup copy/import/cancel/restore/restart/Undo checks using actual clipboard handlers.
 - Real browser/email-handler checks for external destinations.
@@ -36,7 +39,7 @@ Promote the release candidate only when:
 
 - automated formatter, analyzer, regression tests, Web build, and configured native builds are green for the candidate state;
 - manual device/accessibility qualification above is complete;
-- backup/restore and external platform-handler checks are complete on representative targets;
+- Challenge Code, backup/restore, and external platform-handler checks are complete on representative targets;
 - no known release-blocking defect remains;
 - version, changelog, release notes, privacy information, complete documentation, and `what_changed.md` are ready for the stable tag.
 
@@ -47,7 +50,7 @@ These are intentionally non-blocking and must not destabilize core gameplay:
 - Localization framework and Hindi translation.
 - A separate full-session replay export/import format beyond the current bounded Undo-backed viewer.
 - Optional file-based backup import/export in addition to the implemented clipboard backup, with the same strict validation/unranked policy.
-- Shareable seeded challenge codes without accounts or cloud synchronization.
+- Optional QR rendering/scanning or OS share-sheet convenience for the already-implemented Challenge Code text format, only if cross-platform/privacy/accessibility costs are justified.
 - Optional expectimax or another advanced solver behind the already-isolated Auto Play Demo boundary, plus a benchmark suite.
 - Golden/visual-regression matrices for major breakpoints and themes.
 - More mode-specific records and challenge metadata.
@@ -59,10 +62,12 @@ These are intentionally non-blocking and must not destabilize core gameplay:
 Future expansion should preserve these verified boundaries unless a deliberate redesign is documented and tested:
 
 - deterministic engine remains independent of UI;
+- Challenge Codes remain configuration-only unless a separately versioned protocol is designed; checksum must not be described as authentication;
+- Daily Challenge seed/history remains protected from arbitrary portable-code injection unless intentionally redesigned;
 - normal Hint remains read-only;
 - Auto Play remains isolated from trusted player state;
 - Replay remains spectator-only;
-- portable/editable import remains unranked unless a real trust/authentication system is introduced;
+- portable/editable progress import remains unranked unless a real trust/authentication system is introduced;
 - local persistence remains validated and corruption-safe;
 - growing histories remain bounded;
 - external links remain explicit and scheme-validated;
