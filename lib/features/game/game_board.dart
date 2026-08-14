@@ -14,6 +14,7 @@ class GameBoard extends StatelessWidget {
     final size = board.length;
     return Semantics(
       container: true,
+      explicitChildNodes: true,
       label: '$size by $size game board',
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -83,6 +84,7 @@ class _Tile extends StatelessWidget {
         : const Duration(milliseconds: 140);
     final position = 'Row ${row + 1}, column ${col + 1}';
     return Semantics(
+      container: true,
       label: value == 0 ? '$position, empty' : '$position, tile $value',
       child: AnimatedContainer(
         duration: animationDuration,
