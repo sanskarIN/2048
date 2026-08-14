@@ -8,6 +8,7 @@ This directory is the user, technical, development, platform, and release docume
 | --- | --- |
 | [`../README.md`](../README.md) | Project overview, features, setup, controls, build commands, links, and support. |
 | [`USER_GUIDE.md`](USER_GUIDE.md) | Complete player guide for rules, controls, modes, Undo, Hint, Replay, Auto Play, Backup, settings, and data controls. |
+| [`FAQ.md`](FAQ.md) | Common user/developer questions about rules, modes, saves, Replay, Auto Play, Backup, privacy, accessibility, platforms, and release status. |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Layer boundaries, state flow, persistence responsibilities, trust boundaries, and feature architecture. |
 | [`GAME_ENGINE.md`](GAME_ENGINE.md) | Exact move/merge/spawn rules, deterministic RNG, terminal-state behavior, and invariants. |
 | [`GAME_MODES.md`](GAME_MODES.md) | All supported game modes, board sizes, targets, timers, move limits, and Daily Challenge behavior. |
