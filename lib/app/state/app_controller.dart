@@ -37,26 +37,29 @@ class AppSettings {
       };
 
   factory AppSettings.fromJson(Map<String, Object?> json) {
-    final themeName = json['themeMode'] as String? ?? ThemeMode.system.name;
+    final themeName = json['themeMode'];
     final theme = ThemeMode.values.firstWhere(
-      (value) => value.name == themeName,
+      (value) => themeName is String && value.name == themeName,
       orElse: () => ThemeMode.system,
     );
-    final paletteName = json['palette'] as String? ?? NovaPalette.classic.name;
+    final paletteName = json['palette'];
     final palette = NovaPalette.values.firstWhere(
-      (value) => value.name == paletteName,
+      (value) => paletteName is String && value.name == paletteName,
       orElse: () => NovaPalette.classic,
     );
     return AppSettings(
       themeMode: theme,
       palette: palette,
-      highContrast: json['highContrast'] as bool? ?? false,
-      reducedMotion: json['reducedMotion'] as bool? ?? false,
-      soundEnabled: json['soundEnabled'] as bool? ?? true,
-      hapticsEnabled: json['hapticsEnabled'] as bool? ?? true,
-      confirmRestart: json['confirmRestart'] as bool? ?? true,
+      highContrast: _boolValue(json['highContrast'], false),
+      reducedMotion: _boolValue(json['reducedMotion'], false),
+      soundEnabled: _boolValue(json['soundEnabled'], true),
+      hapticsEnabled: _boolValue(json['hapticsEnabled'], true),
+      confirmRestart: _boolValue(json['confirmRestart'], true),
     );
   }
+
+  static bool _boolValue(Object? value, bool fallback) =>
+      value is bool ? value : fallback;
 }
 
 class PlayerStats {
@@ -86,15 +89,37 @@ class PlayerStats {
 
   factory PlayerStats.fromJson(Map<String, Object?> json) {
     final stats = PlayerStats();
-    stats.gamesPlayed = (json['gamesPlayed'] as num?)?.toInt() ?? 0;
-    stats.gamesWon = (json['gamesWon'] as num?)?.toInt() ?? 0;
-    stats.bestScore = (json['bestScore'] as num?)?.toInt() ?? 0;
-    stats.highestTile = (json['highestTile'] as num?)?.toInt() ?? 0;
-    stats.totalMoves = (json['totalMoves'] as num?)?.toInt() ?? 0;
-    stats.totalMerges = (json['totalMerges'] as num?)?.toInt() ?? 0;
-    stats.currentStreak = (json['currentStreak'] as num?)?.toInt() ?? 0;
-    stats.bestStreak = (json['bestStreak'] as num?)?.toInt() ?? 0;
+    stats.gamesPlayed = _nonNegativeInt(json['gamesPlayed']);
+    final parsedWins = _nonNegativeInt(json['gamesWon']);
+    stats.gamesWon = parsedWins > stats.gamesPlayed
+        ? stats.gamesPlayed
+        : parsedWins;
+    stats.bestScore = _nonNegativeInt(json['bestScore']);
+    stats.highestTile = _validTileOrZero(json['highestTile']);
+    stats.totalMoves = _nonNegativeInt(json['totalMoves']);
+    stats.totalMerges = _nonNegativeInt(json['totalMerges']);
+    stats.currentStreak = _nonNegativeInt(json['currentStreak']);
+    stats.bestStreak = _nonNegativeInt(json['bestStreak']);
+    if (stats.bestStreak < stats.currentStreak) {
+      stats.bestStreak = stats.currentStreak;
+    }
     return stats;
+  }
+
+  static int _nonNegativeInt(Object? value) {
+    if (value is! num || !value.isFinite || value < 0 || value.toInt() != value) {
+      return 0;
+    }
+    return value.toInt();
+  }
+
+  static int _validTileOrZero(Object? value) {
+    final tile = _nonNegativeInt(value);
+    if (tile == 0) return 0;
+    if (tile < 2 || tile > 1 << 30 || (tile & (tile - 1)) != 0) {
+      return 0;
+    }
+    return tile;
   }
 }
 
@@ -460,8 +485,8 @@ class AppController extends ChangeNotifier {
 
   void _restoreAchievements(Map<String, Object?> raw) {
     for (final achievement in achievements) {
-      final value = raw[achievement.id] as String?;
-      achievement.unlockedAt = value == null ? null : DateTime.tryParse(value);
+      final value = raw[achievement.id];
+      achievement.unlockedAt = value is String ? DateTime.tryParse(value) : null;
     }
   }
 
