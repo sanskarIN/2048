@@ -14,11 +14,12 @@ void main() {
     DateTime? started,
     List<List<int>>? board,
   }) {
+    final exponent = moves.clamp(0, 4).toInt();
     return GameState(
       config: config,
       board: board ??
           [
-            [2 << moves.clamp(0, 4), 0, 0, 0],
+            [2 << exponent, 0, 0, 0],
             [0, 0, 0, 0],
             [0, 0, 0, 0],
             [0, 0, 0, 0],
