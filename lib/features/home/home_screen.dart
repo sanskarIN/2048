@@ -55,6 +55,11 @@ class HomeScreen extends StatelessWidget {
               childAspectRatio: 1.25,
               children: const [
                 _NavCard('Daily', Icons.today_rounded, '/daily'),
+                _NavCard(
+                  'Solver Demo',
+                  Icons.auto_awesome_rounded,
+                  '/solver-demo',
+                ),
                 _NavCard('Statistics', Icons.insights_rounded, '/statistics'),
                 _NavCard(
                   'Achievements',
