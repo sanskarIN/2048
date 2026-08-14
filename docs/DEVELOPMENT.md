@@ -280,3 +280,9 @@ Behavior changes should update the matching technical document in the same devel
 ## Release discipline
 
 Automated green CI is necessary but does not prove universal production readiness. Before promoting the `0.9.0+1` release candidate to stable, follow [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md), including physical-device, screen-reader, long-session, real Challenge Code/Game Backup clipboard, external-handler, signing, and store-review checks.
+
+## Localization development
+
+New player-facing fixed strings should be rendered through `context.l10n.text(...)` and supplied with a Hindi catalog entry. Dynamic grammar should use a typed `NovaLocalizations` helper instead of fragile translated-fragment concatenation.
+
+When changing locale behavior, test AppLanguage parsing/persistence, English fallback, Hindi rendering, and relevant semantics. Do not translate protocol tokens, JSON field names, URLs, email addresses, deterministic seeds, or numeric tile values that must remain exact. See [`LOCALIZATION.md`](LOCALIZATION.md) for the full contributor procedure.
