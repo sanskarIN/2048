@@ -87,6 +87,42 @@
 - a safe empty state when the replay route is opened without a current game;
 - controls are explicitly scrolled into the constrained widget-test viewport before taps, matching the production screen's scrollable layout instead of assuming every control is initially visible.
 
+## Current Phase 13 quality evidence
+
+The final Replay quality gate is:
+
+```text
+Workflow: CI
+Run: 31779838751
+Verified commit: 278ba039d0b7b59ce54c72c5ed0fcd0401ba537a
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+Formatting: PASS — 55 files, 0 changed
+Analysis: PASS — No issues found
+Tests: PASS — 92/92
+Web release build: PASS — build/web
+WASM dry run: PASS
+Overall CI job: SUCCESS
+```
+
+The Web build emitted the existing informational CupertinoIcons font lookup warning while still producing the release Web output. The project does not directly reference `CupertinoIcons`.
+
+The Phase 13 native matrix is:
+
+```text
+Workflow: Platform Builds
+Run: 31779566057
+Production-code commit: 4f3cc6f55ae6b2f50b4758db22569b7ec48ddafd
+```
+
+Results: Android release APK **PASS**, Linux **PASS**, Windows **PASS**, macOS **PASS**, and unsigned iOS **PASS**.
+
+## Transparent Phase 13 intermediate test failure
+
+CI run `31779369661` passed formatting and static analysis but finished the test step with **90 passed / 2 failed**. The failing Replay widget tests attempted to tap Next/Play controls that were below Flutter's default 800×600 widget-test viewport. The production Replay screen itself is intentionally scrollable.
+
+Commit `501b2a512c2f185461129f2e294504e43e883d59` (`test: scroll replay controls before widget taps`) corrected the test harness by scrolling the controls into view before tapping them. The final 92-test gate above then passed. The failure is kept as evidence rather than being hidden as a superseded run.
+
 ## Historical Phase 12 quality evidence
 
 The completed Auto Play quality gate was:
@@ -103,9 +139,7 @@ Tests: PASS — 86/86
 Web release build: PASS
 ```
 
-The Web build also completed Flutter's WASM dry run successfully. The existing informational CupertinoIcons font lookup warning remained non-fatal and the release Web output was produced.
-
-Current Phase 13 Replay evidence is recorded in `docs/VERIFICATION.md` and `what_changed.md` after the final replay gate completes; historical/superseded runs are retained there when they exposed an actionable regression or test-harness issue.
+The Web build also completed Flutter's WASM dry run successfully.
 
 ## CI quality gate
 
