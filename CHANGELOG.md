@@ -46,6 +46,7 @@ All notable changes to this project are documented here.
 - Prevented directional engine write logic from falling through switch cases.
 - Preserved RNG state across save/resume and undo snapshots.
 - Preserved lifetime best score when undoing to an earlier board snapshot.
+- Prevented Reset Statistics followed by Undo from resurrecting a pre-reset lifetime best score through retained undo snapshots.
 - Blocked board mutation after reaching a non-Endless target until the win is explicitly acknowledged.
 - Suppressed hints after terminal game states.
 - Preserved a counted win streak if a player continues beyond the target and later loses that same run.
@@ -55,6 +56,7 @@ All notable changes to this project are documented here.
 - Filtered stale persisted undo snapshots that belong to another game session.
 - Hidden Home’s Continue action for completed/lost games.
 - Protected win and game-over dialogs from accidental barrier/back dismissal so a terminal state always receives an explicit choice.
+- Exposed board dimensions and every positional tile/empty-cell label as distinct semantic nodes while excluding duplicate visual-text semantics.
 - Corrected Linux GApplication identifier to a valid reverse-domain value without underscores.
 - Added the explicit `PlayerStats` constructor required by strict analysis.
 - Corrected the widget smoke test to scroll lazy mode-list entries into view before asserting them.
@@ -69,9 +71,10 @@ All notable changes to this project are documented here.
 ### Verification
 - Earlier release-candidate quality gate on commit `f3e7aaec6404139951425144cb1fb4d2fda66e27`: formatter clean, analyzer reported no issues, all 29 automated tests passed, and Web release build succeeded.
 - A later post-hardening gate expanded this to 37 passing automated tests before the Phase 11 work above.
+- Final Phase 11 quality gate: CI run `31777374553` on commit `1ecbf0881f723af1829fda523752562660a86a98` used Flutter 3.47.0 / Dart 3.13.0; formatting passed with 47 files and 0 changes, analysis reported no issues, **81/81 tests passed**, and the Web release build succeeded.
+- Final production-code native matrix: Platform Builds run `31777275982` on commit `b95d0a630521f896016dff733c8c4f9dc1e082e3`; Android release APK, Linux release, Windows release, macOS release, and unsigned iOS release all succeeded.
 - Flutter platform-runner bootstrap and branded asset-generation workflows succeeded.
-- Native Android, Linux, Windows, macOS, and unsigned iOS release builds previously passed.
-- The exact latest Phase 11 formatter/analyzer/test/Web/native build evidence is maintained in `what_changed.md` after the final workflows complete.
+- Full chronological evidence, including real intermediate failures that were fixed rather than hidden, is maintained in `what_changed.md`.
 
 ### Security
 - No embedded credentials, analytics SDK, advertising tracker, account system, payment SDK, or cloud synchronization service.
