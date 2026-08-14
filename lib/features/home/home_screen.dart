@@ -75,6 +75,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 _NavCard('Guide', Icons.menu_book_rounded, '/guide'),
                 _NavCard('Settings', Icons.tune_rounded, '/settings'),
+                _NavCard('Game Backup', Icons.backup_rounded, '/backup'),
                 _NavCard('About', Icons.info_outline_rounded, '/about'),
                 _NavCard('Support', Icons.coffee_rounded, '/support'),
               ],
