@@ -225,3 +225,9 @@ Optional project support:
 https://buymeacoffee.com/sanskarIN
 
 **Made by the Sanskar**
+
+## Can I use 2048 Nova in Hindi?
+
+Yes. Open **Settings → Language** and select **हिन्दी**. You can also choose **System default** or **English**. Language preference is local, works offline, and does not send text to an online translation service.
+
+If the stored language value becomes malformed or references an unsupported value, the app safely falls back to System default. Automated tests cover representative Hindi UI and board semantics, while real-device Hindi font/layout and screen-reader qualification remains part of the manual release checklist.
