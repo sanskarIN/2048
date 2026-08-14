@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nova_2048/features/game/game_board.dart';
+
+import 'support/localized_test_app.dart';
 
 void main() {
   testWidgets('board exposes size and positional tile semantics',
@@ -8,20 +9,18 @@ void main() {
     final semantics = tester.ensureSemantics();
     try {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Center(
-              child: SizedBox.square(
-                dimension: 320,
-                child: GameBoard(
-                  reducedMotion: true,
-                  board: const [
-                    [2, 0, 0, 0],
-                    [0, 4, 0, 0],
-                    [0, 0, 0, 0],
-                    [0, 0, 0, 0],
-                  ],
-                ),
+        localizedTestApp(
+          home: const Center(
+            child: SizedBox.square(
+              dimension: 320,
+              child: GameBoard(
+                reducedMotion: true,
+                board: [
+                  [2, 0, 0, 0],
+                  [0, 4, 0, 0],
+                  [0, 0, 0, 0],
+                  [0, 0, 0, 0],
+                ],
               ),
             ),
           ),
