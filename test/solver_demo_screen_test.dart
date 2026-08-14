@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nova_2048/app/nova_app.dart';
 import 'package:nova_2048/app/state/app_controller.dart';
@@ -81,13 +82,10 @@ void main() {
 }
 
 int _visibleMoveCount(WidgetTester tester) {
-  final text = tester
-      .widgetList(find.textContaining('Moves: '))
-      .map((widget) => widget.toString())
-      .firstWhere((value) => value.contains('Moves: '));
-  final match = RegExp(r'Moves: (\d+)').firstMatch(text);
-  if (match == null) {
-    throw StateError('Could not read the visible solver move count.');
-  }
-  return int.parse(match.group(1)!);
+  final value = tester
+      .widgetList<Text>(find.byType(Text))
+      .map((widget) => widget.data)
+      .whereType<String>()
+      .firstWhere((text) => text.startsWith('Moves: '));
+  return int.parse(value.substring('Moves: '.length));
 }
