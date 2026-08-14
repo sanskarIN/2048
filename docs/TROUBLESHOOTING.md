@@ -309,3 +309,9 @@ Include:
 - for Challenge Code issues, whether the failure is generation, copy, paste, validation, preview, deterministic opening, or replacement behavior (do not include private clipboard content you do not intend to share).
 
 For security-sensitive reports, follow [`../SECURITY.md`](../SECURITY.md) rather than posting exploit details publicly.
+
+## Language does not look correct
+
+Open **Settings → Language** and select English or हिन्दी explicitly to distinguish an app preference issue from the platform's System default locale. If a stored language value is invalid, 2048 Nova falls back safely to System default.
+
+If a specific label remains English while Hindi is selected, report the screen and exact label: the localization layer intentionally falls back to the English source string rather than crashing when a translation key is missing. For clipped/wrapped Hindi text, include device/platform, display size, text-scale setting, and a screenshot when possible.
