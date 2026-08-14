@@ -96,7 +96,7 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
     final game = _session.state;
     final direction = _session.lastDirection;
     final width = MediaQuery.sizeOf(context).width;
-    final boardExtent = width.clamp(280.0, 520.0);
+    final boardExtent = width.clamp(280.0, 520.0).toDouble();
 
     return NovaScaffold(
       title: 'Solver Demo',
