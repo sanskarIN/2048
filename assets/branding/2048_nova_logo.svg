@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="2048 Nova logo">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#6C4DFF"/>
+      <stop offset="1" stop-color="#14B8A6"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#g)"/>
+  <g fill="#fff">
+    <rect x="72" y="72" width="152" height="152" rx="34"/>
+    <rect x="288" y="72" width="152" height="152" rx="34" opacity=".8"/>
+    <rect x="72" y="288" width="152" height="152" rx="34" opacity=".8"/>
+    <rect x="288" y="288" width="152" height="152" rx="34"/>
+  </g>
+  <text x="256" y="280" text-anchor="middle" font-family="Arial,sans-serif" font-size="94" font-weight="900" fill="#201A40">2048</text>
+</svg>
