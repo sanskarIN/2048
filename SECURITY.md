@@ -140,3 +140,7 @@ No fixed response-time guarantee is promised by this open-source project, but re
 Relevant automated coverage includes malformed persisted-state recovery, strict configuration/state parsing, external URI allowlisting, stale Undo filtering, Challenge Code size/prefix/checksum/payload/config/mode validation, deterministic Challenge Code opening behavior, replacement cancellation, backup envelope validation, oversized-backup rejection, imported-session ranking isolation, and scoped project-data reset.
 
 Automated tests do not replace real platform clipboard/security behavior, dependency advisory monitoring, assistive-technology review, or secure store-signing practices.
+
+## Localization security boundary
+
+Localization is static application data plus a validated local preference. No remote translation endpoint, locale-specific executable code, or downloaded language pack is used. Unknown persisted language values fall back to System default and cannot select arbitrary assets, URLs, or code paths.
