@@ -106,7 +106,7 @@ class _ReplayScreenState extends State<ReplayScreen> {
     final frames = _frames;
     if (frames == null || frames.isEmpty) return;
     _stopPlayback();
-    setState(() => _index = index.clamp(0, frames.length - 1));
+    setState(() => _index = index.clamp(0, frames.length - 1).toInt());
   }
 
   void _changeSpeed(Duration? value) {
