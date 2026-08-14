@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/state/app_scope.dart';
 import '../../domain/game_types.dart';
+import '../../shared/game_replacement_guard.dart';
 import '../../shared/nova_scaffold.dart';
 
 class ModeSelectionScreen extends StatelessWidget {
@@ -66,6 +67,8 @@ class ModeSelectionScreen extends StatelessWidget {
   }
 
   Future<void> _startMode(BuildContext context, GameMode mode) async {
+    if (!await confirmGameReplacement(context) || !context.mounted) return;
+
     int? target;
     if (mode == GameMode.target) {
       target = await showDialog<int>(
