@@ -1,0 +1,268 @@
+name: Apply Unranked Import Policy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/apply-unranked-import-policy.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch controller import policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/app/state/app_controller.dart')
+          text = path.read_text(encoding='utf-8')
+
+          replacements = [
+            (
+              '  bool _moveInProgress = false;\n',
+              '  bool _moveInProgress = false;\n  bool _currentGameUnranked = false;\n',
+            ),
+            (
+              '  bool get hasGame => game != null;\n  bool get canUndo => !_moveInProgress && _undo.isNotEmpty;\n',
+              '  bool get hasGame => game != null;\n  bool get canUndo => !_moveInProgress && _undo.isNotEmpty;\n  bool get currentGameIsUnranked => game != null && _currentGameUnranked;\n',
+            ),
+            (
+              '    game = await store.loadGame();\n    var repairedSession = false;\n',
+              '    game = await store.loadGame();\n    _currentGameUnranked =\n        game != null && await store.loadCurrentGameUnranked();\n    var repairedSession = false;\n',
+            ),
+            (
+              '''      _sessionCounted = true;
+              _winCounted =
+                  current.hasAcknowledgedWin || current.status == GameStatus.won;
+              final previousStatus = current.status;
+              final previousStreak = stats.currentStreak;
+              _engine!.refreshStatus(current);
+              _applyTerminalStats(current);
+              if (current.status != previousStatus) {
+                _updateDailyRecord(current);
+                repairedSession = true;
+              }
+              if (stats.currentStreak != previousStreak) {
+                repairedSession = true;
+              }
+          ''',
+              '''      _sessionCounted = !_currentGameUnranked;
+              _winCounted = _currentGameUnranked ||
+                  current.hasAcknowledgedWin ||
+                  current.status == GameStatus.won;
+              final previousStatus = current.status;
+              final previousStreak = stats.currentStreak;
+              _engine!.refreshStatus(current);
+              if (!_currentGameUnranked) {
+                _applyTerminalStats(current);
+              }
+              if (current.status != previousStatus) {
+                if (!_currentGameUnranked) {
+                  _updateDailyRecord(current);
+                }
+                repairedSession = true;
+              }
+              if (!_currentGameUnranked &&
+                  stats.currentStreak != previousStreak) {
+                repairedSession = true;
+              }
+          ''',
+            ),
+            (
+              '''    game = _engine!.createGame(bestScore: stats.bestScore);
+              _undo.clear();
+              _sessionCounted = true;
+          ''',
+              '''    game = _engine!.createGame(bestScore: stats.bestScore);
+              _undo.clear();
+              _currentGameUnranked = false;
+              _sessionCounted = true;
+          ''',
+            ),
+            (
+              '''      stats.totalMoves += 1;
+              stats.totalMerges += outcome.merges;
+              stats.bestScore = current.bestScore > stats.bestScore
+                  ? current.bestScore
+                  : stats.bestScore;
+              stats.highestTile = current.highestTile > stats.highestTile
+                  ? current.highestTile
+                  : stats.highestTile;
+              _applyTerminalStats(current);
+              _updateDailyRecord(current);
+              _unlockAchievements();
+          ''',
+              '''      if (!_currentGameUnranked) {
+                stats.totalMoves += 1;
+                stats.totalMerges += outcome.merges;
+                stats.bestScore = current.bestScore > stats.bestScore
+                    ? current.bestScore
+                    : stats.bestScore;
+                stats.highestTile = current.highestTile > stats.highestTile
+                    ? current.highestTile
+                    : stats.highestTile;
+                _applyTerminalStats(current);
+                _updateDailyRecord(current);
+                _unlockAchievements();
+              }
+          ''',
+            ),
+            (
+              '    _updateDailyRecord(game!);\n    await store.saveGame(game!);\n',
+              '    if (!_currentGameUnranked) _updateDailyRecord(game!);\n    await store.saveGame(game!);\n',
+            ),
+            (
+              '''    if (before != current.status) {
+                _applyTerminalStats(current);
+                _updateDailyRecord(current);
+                _unlockAchievements();
+                await _persist();
+          ''',
+              '''    if (before != current.status) {
+                if (!_currentGameUnranked) {
+                  _applyTerminalStats(current);
+                  _updateDailyRecord(current);
+                  _unlockAchievements();
+                }
+                await _persist();
+          ''',
+            ),
+            (
+              '''    _winCounted = true;
+              _updateDailyRecord(game!);
+              _unlockAchievements();
+          ''',
+              '''    _winCounted = true;
+              if (!_currentGameUnranked) {
+                _updateDailyRecord(game!);
+                _unlockAchievements();
+              }
+          ''',
+            ),
+            (
+              '''    game = null;
+              _engine = null;
+              _undo.clear();
+              await store.clearGame();
+          ''',
+              '''    game = null;
+              _engine = null;
+              _undo.clear();
+              _currentGameUnranked = false;
+              await store.clearGame();
+          ''',
+            ),
+            (
+              '''    settings = AppSettings();
+              stats = PlayerStats();
+              _sessionCounted = false;
+          ''',
+              '''    settings = AppSettings();
+              stats = PlayerStats();
+              _currentGameUnranked = false;
+              _sessionCounted = false;
+          ''',
+            ),
+            (
+              '''  Future<void> _persist() async {
+              if (game != null) await store.saveGame(game!);
+          ''',
+              '''  Future<void> _persist() async {
+              if (game != null) {
+                await store.saveGame(game!);
+                await store.saveCurrentGameUnranked(_currentGameUnranked);
+              }
+          ''',
+            ),
+          ]
+
+          for old, new in replacements:
+            if old not in text:
+              raise SystemExit(f'Controller patch anchor missing:\n{old[:140]}')
+            text = text.replace(old, new, 1)
+
+          import_anchor = '''  Future<void> clearCurrentGame() async {
+          '''
+          import_method = '''  Future<void> importGameBackup(GameState imported) async {
+            if (_moveInProgress) return;
+            final restored = imported.copy();
+            restored.bestScore = restored.score > stats.bestScore
+                ? restored.score
+                : stats.bestScore;
+            _engine = GameEngine(config: restored.config);
+            _engine!.refreshStatus(restored);
+            game = restored;
+            _undo.clear();
+            _currentGameUnranked = true;
+            _sessionCounted = false;
+            _winCounted = true;
+            await store.saveGame(restored);
+            await store.saveUndoHistory(_undo);
+            await store.saveCurrentGameUnranked(true);
+            notifyListeners();
+          }
+
+          '''
+          if import_anchor not in text:
+            raise SystemExit('Import method anchor missing')
+          text = text.replace(import_anchor, import_method + import_anchor, 1)
+
+          reset_anchor = '''    final current = game;
+            if (current != null) {
+          '''
+          reset_replacement = '''    final current = game;
+            if (current != null && _currentGameUnranked) {
+              current.bestScore = current.score;
+              for (final snapshot in _undo) {
+                snapshot.bestScore = snapshot.score > current.score
+                    ? snapshot.score
+                    : current.score;
+              }
+              _sessionCounted = false;
+              _winCounted = true;
+              await store.saveGame(current);
+              await store.saveUndoHistory(_undo);
+              await store.saveStats(stats.toJson());
+              notifyListeners();
+              return;
+            }
+            if (current != null) {
+          '''
+          reset_start = text.index('  Future<void> resetStats() async {')
+          reset_end = text.index('  Future<void> resetAchievements() async {', reset_start)
+          section = text[reset_start:reset_end]
+          if reset_anchor not in section:
+            raise SystemExit('Reset stats anchor missing')
+          section = section.replace(reset_anchor, reset_replacement, 1)
+          text = text[:reset_start] + section + text[reset_end:]
+
+          path.write_text(text, encoding='utf-8')
+          PY
+          dart format lib/app/state/app_controller.dart
+
+      - name: Remove one-time workflow
+        run: git rm .github/workflows/apply-unranked-import-policy.yml
+
+      - name: Commit controller policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add lib/app/state/app_controller.dart .github/workflows/apply-unranked-import-policy.yml
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+          git commit -m "feat: restore imported games as persistent unranked sessions"
+          git pull --rebase origin main
+          git push origin HEAD:main
