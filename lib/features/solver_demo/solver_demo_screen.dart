@@ -139,7 +139,8 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                     _Metric(label: 'Highest', value: '${game.highestTile}'),
                     _Metric(
                       label: 'Last move',
-                      value: direction == null ? '—' : _directionName(direction),
+                      value:
+                          direction == null ? '—' : _directionName(direction),
                     ),
                   ],
                 ),
@@ -168,8 +169,7 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                     alignment: WrapAlignment.center,
                     children: [
                       FilledButton.icon(
-                        onPressed:
-                            _session.isComplete ? null : _toggleRunning,
+                        onPressed: _session.isComplete ? null : _toggleRunning,
                         icon: Icon(
                           _running
                               ? Icons.pause_rounded
