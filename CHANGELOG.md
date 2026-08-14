@@ -16,6 +16,8 @@ All notable changes to this project are documented here.
 - Read-only **Move Replay** using the validated current game and bounded Undo history, with defensive timeline copies, first/previous/next/latest navigation, slider scrubbing, play/pause, 1/2/4-frame-per-second playback, and bounded-history disclosure.
 - Deterministic local heuristic hint solver using board mobility, merges, corner placement, monotonicity, and smoothness.
 - Optional clearly labeled **Auto Play Demo / AI Demonstration** using an isolated deterministic seeded sandbox, with Auto Play, pause/resume, single-step execution, speed selection, seed reset, demo-only metrics, and strict separation from player saves/statistics/achievements/Daily history.
+- Portable **Game Backup** for copying one current game as versioned validated JSON to the clipboard and restoring it after explicit preview/confirmation.
+- Persistent local imported-game **unranked** marker so portable/editable backup data remains isolated from trusted lifetime statistics, achievements, streaks, and Daily Challenge history across restarts.
 - Local statistics, average moves/merges per game, achievement progress/unlock dates, and offline Daily Challenge history.
 - Seven visual palettes plus light/dark/system brightness, high contrast, reduced motion, optional sound, and optional haptics.
 - Positional board/tile semantics with row and column information for assistive technologies.
@@ -23,10 +25,10 @@ All notable changes to this project are documented here.
 - Direct in-app GitHub bug-report-template action.
 - Recoverable-game replacement confirmation before starting a different mode or Daily Challenge.
 - Original 2048 Nova SVG logo, platform launcher icons, PWA icons, native launch branding, and automated branding export workflow.
-- Unit/widget tests for engine rules, persistence, Daily Challenge records, controller state, navigation, themes, mode availability, save migration, external URI policy, accessibility semantics, terminal dialogs, replacement guards, session integrity, hints, Auto Play determinism/isolation/controls, Replay filtering/immutability/playback, and persistence repair.
-- Open-source governance, contribution, security, privacy, architecture, testing, dependency, accessibility, branding, hint-solver, verification, and release documentation.
+- Unit/widget tests for engine rules, persistence, Daily Challenge records, controller state, navigation, themes, mode availability, save migration, external URI policy, accessibility semantics, terminal dialogs, replacement guards, session integrity, hints, Auto Play determinism/isolation/controls, Replay filtering/immutability/playback, portable backup validation/UI/unranked policy, and persistence repair.
+- Complete user/maintainer documentation index plus dedicated User Guide, FAQ, game-mode reference, data-storage reference, Backup/Restore trust model, platform setup/build guide, development guide, CI/CD guide, troubleshooting guide, and expanded architecture/privacy/accessibility/security/contribution/support/release documentation.
 - GitHub Actions for formatting, static analysis, tests, web release builds, native platform release builds, platform bootstrapping, asset generation, and dependency locking.
-- Dependabot, issue templates, and pull-request template.
+- Dependabot, expanded issue templates, and expanded pull-request engineering checklist.
 - Legacy save-schema migration from schema 0 to the current schema 1 representation.
 - Friendly copy fallback when an approved external destination cannot be opened by the platform.
 
@@ -45,6 +47,11 @@ All notable changes to this project are documented here.
 - Challenge countdown refresh runs only for timed games rather than waking every Game screen once per second.
 - The existing Hint heuristic is reused by Auto Play only through an isolated `AutoplaySession`; the player-facing Hint remains suggestion-only and read-only.
 - Move Replay reuses the existing validated bounded Undo history instead of introducing a second persistence schema or tracking database.
+- Portable backup restores clear unrelated prior Undo history and use the normal deterministic engine/save path while record/achievement/Daily mutation is suppressed for the imported session.
+- Imported backup `bestScore` history is not trusted as a lifetime record; the local device lifetime best remains authoritative.
+- Home explicitly labels a resumable imported session as **Continue Unranked Backup**.
+- The in-app Guide and About release-candidate text now document Game Backup, Replay, Auto Play, offline/privacy boundaries, and unranked restore behavior.
+- Repository documentation now distinguishes configured/compiled platform support from real-device, assistive-technology, signing/provisioning, and store-release qualification.
 
 ### Fixed
 - Prevented directional engine write logic from falling through switch cases.
@@ -65,11 +72,15 @@ All notable changes to this project are documented here.
 - Added the explicit `PlayerStats` constructor required by strict analysis.
 - Corrected the widget smoke test to scroll lazy mode-list entries into view before asserting them.
 - Corrected Replay widget tests to scroll controls into the constrained test viewport before tapping instead of assuming below-the-fold controls were initially visible.
+- Corrected Game Backup widget tests to scroll the Home backup entry into the constrained test viewport before tapping it.
+- Removed an unused backup test import exposed by strict static analysis.
+- Corrected the oversized-backup test fixture to construct a large Dart string with `List.filled(...).join()` rather than invalid string multiplication syntax.
 - Restricted external actions to validated `https` and non-empty `mailto` URIs; unsupported, insecure, or malformed schemes are rejected.
 - Added persisted configuration bounds and strict type validation for board size, target, move/time limits, game mode, and random seed.
 - Added persisted board validation for dimensions, tile values, score invariants, counters, RNG state, status/acknowledgement consistency, and timed-game start timestamps.
 - Future/unsupported save schemas fail safely instead of being interpreted as the current format.
-- Malformed settings, statistics, and achievement timestamps recover to safe values instead of causing initialization failures.
+- Malformed settings, statistics, achievement timestamps, and imported-game marker values recover to safe values instead of causing initialization failures.
+- Corrupt current-game recovery removes associated Undo and imported-game unranked metadata so stale session policy cannot attach to a future game.
 - Daily Challenge records validate date seeds, counters, tiles, flags, and update timestamps.
 - Duplicate Daily Challenge records for the same date are merged into one strongest consistent record, preventing duplicate-history inflation.
 
@@ -82,7 +93,11 @@ All notable changes to this project are documented here.
 - Phase 13 Move Replay quality gate: CI run `31779838751` on commit `278ba039d0b7b59ce54c72c5ed0fcd0401ba537a` used Flutter 3.47.0 / Dart 3.13.0; formatting passed with 55 files and 0 changes, analysis reported no issues, **92/92 tests passed**, the Web release build succeeded, and the WASM dry run passed.
 - Phase 13 Replay native matrix: Platform Builds run `31779566057` on production commit `4f3cc6f55ae6b2f50b4758db22569b7ec48ddafd`; Android release APK, Linux release, Windows release, macOS release, and unsigned iOS release all succeeded.
 - Intermediate Replay CI run `31779369661` recorded 90 passing / 2 failing tests because below-the-fold controls were tapped without scrolling in the widget harness; commit `501b2a512c2f185461129f2e294504e43e883d59` fixed the harness and the final 92-test run passed.
+- Phase 14 portable-backup test coverage adds 20 focused tests (7 codec, 5 imported-policy, 4 backup-screen, 4 unranked-marker) to the prior 92-test suite; the final exact permanent CI run/count is recorded in `docs/VERIFICATION.md` and `what_changed.md` after the completed documentation state is verified.
+- Phase 14 native matrix: Platform Builds run `31784286707` on production/in-app-doc commit `741dfd42e51386646aa64be116cf7e913e98d211`; Android release APK, Linux release, Windows release, macOS release, and unsigned iOS release all succeeded.
+- Phase 14 intermediate CI run `31781326279` exposed an unused backup-test import under static analysis; the import was removed by commit `3446413574582c196a47877fe1bfbe63addbf71d`.
 - Flutter platform-runner bootstrap and branded asset-generation workflows succeeded.
+- The permanent workflow directory has been cleaned of temporary one-time patch/wiring workflows and contains only maintained bootstrap, CI, formatting, dependency-lock, and platform-build automation.
 - Full chronological evidence, including real intermediate failures that were fixed rather than hidden, is maintained in `what_changed.md`.
 
 ### Security
@@ -92,3 +107,7 @@ All notable changes to this project are documented here.
 - Persisted save configuration, state relationships, and board values are type/range-checked before use.
 - Move Replay reads existing local game/Undo data through defensive copies and has no live-game/statistics/achievement/Daily mutation path.
 - Auto Play adds no network service, model download, or player-data persistence path; its sandbox is discarded with the demo screen.
+- Portable Game Backup is an explicit clipboard action and is limited to 128 KiB before JSON parsing; the envelope format/version/timestamp and embedded `GameState` are strictly validated.
+- Portable backup JSON is plain, unsigned, user-editable data and therefore can never choose its own trusted ranking status; every confirmed import is locally marked unranked.
+- Portable import cannot import or mutate lifetime statistics, achievements, streaks, Daily history, settings, or old Undo data, and cannot award a ranked terminal win.
+- No signing credentials, platform private keys, provisioning profiles, or secrets are stored in the public repository.
