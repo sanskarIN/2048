@@ -37,6 +37,10 @@ class GuideScreen extends StatelessWidget {
         'Undo restores the previous board snapshot including deterministic random state. Hints evaluate legal moves using empty-space, merge, corner, monotonicity, and smoothness heuristics. A normal hint suggests one move and never moves tiles automatically.',
       ),
       (
+        'Challenge Codes',
+        'Home can open Challenge Codes to create or open an offline shared deterministic challenge. A NOVA1 code contains only a supported game configuration and random seed, so the same code produces the same opening board and random state. It never contains board progress, score, lifetime statistics, achievements, Daily history, settings, or Undo snapshots. Codes are checksummed for accidental corruption, not signed or encrypted. Daily Challenge stays separate because it already uses the UTC date as its shared seed. Starting a valid code creates a fresh normal non-Daily game and uses the normal local statistics policy.',
+      ),
+      (
         'Game Backup',
         'Home can open Game Backup to copy one validated current-game JSON backup to the clipboard or restore a valid backup after an explicit confirmation. Portable backup excludes settings, lifetime statistics, achievements, Daily history, and old Undo history. Every imported game is deliberately marked unranked, stays unranked after restart, and cannot change lifetime records, achievements, streaks, or Daily results. Imported play can still save and create new Undo snapshots for that restored session.',
       ),
@@ -54,11 +58,11 @@ class GuideScreen extends StatelessWidget {
       ),
       (
         'Accessibility',
-        'Use system text scaling, keyboard controls, positional semantic tile labels, high contrast, and reduced motion. Tile values are always shown as text, not color alone.',
+        'Use system text scaling, keyboard controls, positional semantic tile labels, high contrast, and reduced motion. Tile values are always shown as text, not color alone. Challenge Codes use labeled form controls, selectable generated text, explicit validation feedback, and a decoded configuration preview.',
       ),
       (
         'Offline and privacy',
-        'Core gameplay, Game Backup validation, Move Replay, and Auto Play Demo work without a project server. No account, analytics, advertising tracker, remote AI service, or cloud synchronization is required. Clipboard backup is read or written only after you choose the corresponding backup action.',
+        'Core gameplay, Challenge Codes, Game Backup validation, Move Replay, and Auto Play Demo work without a project server. No account, analytics, advertising tracker, remote AI service, or cloud synchronization is required. Clipboard text is read or written only after you choose the corresponding Challenge Code or Game Backup action.',
       ),
       (
         'FAQ',
