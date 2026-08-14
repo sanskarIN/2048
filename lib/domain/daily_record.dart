@@ -28,11 +28,14 @@ class DailyRecord {
     final won = previous?.won == true || reachedTarget;
     final completed =
         previous?.completed == true || won || state.status == GameStatus.lost;
+    final isBestScore = previous == null || state.score >= previous.score;
     return DailyRecord(
       seed: state.config.seed!,
-      score: state.score,
-      moves: state.moves,
-      highestTile: state.highestTile,
+      score: isBestScore ? state.score : previous.score,
+      moves: isBestScore ? state.moves : previous.moves,
+      highestTile: previous == null || state.highestTile > previous.highestTile
+          ? state.highestTile
+          : previous.highestTile,
       completed: completed,
       won: won,
       updatedAt: DateTime.now().toUtc(),
