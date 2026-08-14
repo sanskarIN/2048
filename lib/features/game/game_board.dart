@@ -85,6 +85,7 @@ class _Tile extends StatelessWidget {
     final position = 'Row ${row + 1}, column ${col + 1}';
     return Semantics(
       container: true,
+      excludeSemantics: true,
       label: value == 0 ? '$position, empty' : '$position, tile $value',
       child: AnimatedContainer(
         duration: animationDuration,
