@@ -20,13 +20,20 @@ class _GameScreenState extends State<GameScreen> {
   Timer? _challengeTimer;
 
   @override
-  void initState() {
-    super.initState();
-    _challengeTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!mounted) return;
-      unawaited(AppScope.of(context).refreshChallengeStatus());
-      setState(() {});
-    });
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final timed =
+        AppScope.of(context).game?.config.timeLimitSeconds != null;
+    if (timed && _challengeTimer == null) {
+      _challengeTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+        if (!mounted) return;
+        unawaited(AppScope.of(context).refreshChallengeStatus());
+        setState(() {});
+      });
+    } else if (!timed && _challengeTimer != null) {
+      _challengeTimer?.cancel();
+      _challengeTimer = null;
+    }
   }
 
   @override
