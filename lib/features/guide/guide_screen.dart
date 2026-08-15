@@ -51,6 +51,10 @@ class GuideScreen extends StatelessWidget {
         'When a saved game exists, Home can open Move Replay. It is a read-only spectator view built from the current game and its retained Undo snapshots. You can scrub between frames, jump to the first or latest retained frame, step backward or forward, play/pause the timeline, and choose 1, 2, or 4 frames per second. Undo history is bounded, so very long games may replay only the most recent retained moves. Replay uses defensive copies and never changes the live board, score, RNG, statistics, achievements, or Daily history.',
       ),
       (
+        'Full Replay Archive',
+        'Move Replay can open Full Replay Archive. A newly started game records a bounded deterministic action stream from its opening state, including valid moves, Undo, continue-after-win, and timed status transitions. A complete capture can be copied as portable JSON or opened later from clipboard/manual text in spectator mode. Imported replay data never replaces the live game or imports trusted statistics, achievements, streaks, Daily results, or per-mode records. Capture is limited to 4,096 events; if that safety limit is reached, export is disabled instead of silently creating an incomplete archive. Legacy or restored games that did not begin with full capture remain playable but are not falsely exported as complete sessions.',
+      ),
+      (
         'Auto Play / AI Demo',
         'Auto Play Demo is an optional isolated solver sandbox. Heuristic is the fast default and is also used by normal Hint. Expectimax is a bounded look-ahead strategy that evaluates possible 2/4 spawns without consuming the game RNG. You can switch strategy, start, pause/resume, step one move at a time, choose speed, or reset the deterministic seed. Neither strategy is machine learning or guaranteed optimal play, and demo score, moves, search work, and boards are never mixed with your saved game, statistics, achievements, or Daily Challenge history.',
       ),
@@ -68,7 +72,7 @@ class GuideScreen extends StatelessWidget {
       ),
       (
         'Offline and privacy',
-        'Core gameplay, Challenge Codes, Game Backup validation, Move Replay, Auto Play Demo, and language switching work without a project server. No account, analytics, advertising tracker, remote AI service, cloud synchronization, or online translation service is required. Clipboard text is read or written only after you choose the corresponding Challenge Code or Game Backup action.',
+        'Core gameplay, Challenge Codes, Game Backup validation, Move Replay, Full Replay Archive, Auto Play Demo, and language switching work without a project server. No account, analytics, advertising tracker, remote AI service, cloud synchronization, or online translation service is required. Clipboard text is read or written only after you choose the corresponding Challenge Code, Game Backup, or Full Replay Archive action.',
       ),
       (
         'FAQ',
