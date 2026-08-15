@@ -233,3 +233,9 @@ The active full-session replay capture uses the project-owned SharedPreferences 
 Legacy or restored sessions can receive an incomplete capture so the app remains safe without inventing missing earlier actions. A Game Backup import always receives an incomplete capture. Incomplete or overflowed captures cannot be encoded as portable full-session archives.
 
 Replay capture belongs to the current game lifecycle. Corrupt current-game recovery, Reset Current Game, and Clear All remove it. Malformed capture persistence is removed safely. Opening imported portable replay text is a separate spectator-only in-memory operation and does not install external replay data as trusted current-game progress.
+
+## Phase 20 file backup storage boundary
+
+Saving or opening a `.nova2048` file does not add a new SharedPreferences key or a file-history database. Export writes the existing current-game backup envelope only to the explicit destination selected by the player. Import validates a selected file and then uses the existing current-game/unranked-marker persistence path.
+
+The application does not retain source file paths, filenames, recent-file lists, cloud-provider metadata, or imported raw backup text after the restore flow. `GameBackup.maxFileBytes` is 512 KiB before UTF-8 decoding; the existing 128 Ki-character envelope limit is still applied afterward.
