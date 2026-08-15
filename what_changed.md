@@ -3251,3 +3251,112 @@ Additional small localization-helper/fix commits remain in Git history because t
 ## Acceptance status at this point
 
 Phase 18 is not marked accepted by this entry alone. The final permanent CI and current-source native matrix are recorded only after all source/tests/documentation stop moving and the maintained workflows complete against the final candidate. Stable `1.0.0` remains separately blocked on the documented physical-device/accessibility/signing/store qualification.
+
+
+## Final Phase 18 maintained acceptance and native matrix
+
+Phase 18 was not declared complete from source inspection. The completed source/test candidate was passed through the permanent CI gate and the full hosted native matrix.
+
+### Acceptance attempt 1 — duplicate translation key and CLI lint findings
+
+```text
+Commit: 959f8a230484b0cbdf0e028eabbbe4847ef51d41
+CI run: 31869526679
+Formatting: PASS — 79 files, 0 changed
+Static analysis: FAIL — 9 issues
+Tests: skipped
+Web build: skipped
+```
+
+The analyzer found one duplicate constant-map key for Hindi `Strategy` plus eight `avoid_print` lints in `tool/solver_benchmark.dart`. The benchmark CLI was changed to `dart:io` `stdout.writeln`, and the duplicate newly-added solver `Strategy` key was removed so the already-existing `Strategy` → `रणनीति` entry remains the shared source.
+
+### Acceptance attempt 2 — missing localization import in Hindi solver test
+
+A final runtime-source documentation commit was used to trigger the maintained CI/native workflows on the complete Phase 18 runtime tree:
+
+```text
+e324882fc861e9e4221020aabb00515c7366a6f7
+docs: clarify autoplay strategy isolation in source
+```
+
+Its CI gate stopped at one test-code analyzer error:
+
+```text
+CI run: 31869794852
+CI job: 94976548162
+Formatting: PASS — 80 files, 0 changed
+Static analysis: FAIL — 1 issue
+Cause: Undefined name 'AppLanguage' in test/solver_demo_localization_test.dart
+Tests: skipped
+Web build: skipped
+```
+
+Production solver/runtime code was not implicated. The new Hindi widget test was missing the localization module import. It was corrected in:
+
+```text
+b114255b6f510f0e7ba8d0516e9a30eebf4451b8
+fix: import solver demo language enum
+```
+
+### Authoritative Phase 18 CI gate
+
+The permanent CI workflow then completed successfully:
+
+```text
+Commit: b114255b6f510f0e7ba8d0516e9a30eebf4451b8
+CI workflow run: 31869835223
+CI job: 94976646621
+Result: SUCCESS
+Runner: ubuntu-24.04
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Dependency resolution: PASS
+Formatting: PASS — 80 files, 0 changed
+Static analysis: PASS — No issues found
+Automated regression tests: PASS — 161/161
+Flutter Web release build: PASS — build/web produced
+Flutter Web WASM dry run: PASS
+```
+
+The complete test total moved from 144 in Phase 17 to 161 in Phase 18, exactly matching the 17 focused expectimax/strategy/benchmark/localization additions. The Web compiler emitted the existing non-fatal Cupertino icon-font availability warning but still produced `build/web`.
+
+### Current runtime native matrix
+
+The full permanent Platform Builds workflow completed against runtime commit `e324882fc861e9e4221020aabb00515c7366a6f7`. The later `b114...` fix changes only a test import, so runtime application source is identical.
+
+```text
+Platform Builds workflow run: 31869794809
+Result: SUCCESS
+
+Linux release
+  Job: 94976574317
+  flutter build linux --release: PASS
+
+Android release APK
+  Job: 94976574376
+  flutter build apk --release: PASS
+
+Windows release
+  Job: 94976574323
+  flutter build windows --release: PASS
+
+macOS and unsigned iOS release
+  Job: 94976574495
+  flutter build macos --release: PASS
+  flutter build ios --release --no-codesign: PASS
+```
+
+This supersedes the Phase 17 native matrix as the latest hosted multi-platform compilation evidence.
+
+### Phase 18 qualification status
+
+The bounded deterministic Expectimax strategy, selectable Auto Play strategy layer, benchmark library/CLI, English/Hindi solver UI, and all existing project behavior are accepted by the maintained automated gates. No failing analyzer/test/native build is being hidden or counted as passing evidence.
+
+Stable `1.0.0` remains intentionally unpromoted because hosted CI cannot replace physical Android/iOS lifecycle/gameplay checks, real TalkBack/VoiceOver/desktop screen-reader checks, expectimax responsiveness on representative slower devices, real clipboard/platform-handler behavior, long-session checks, native splash/icon review, signing/provisioning/notarization, and store metadata/review.
+
+Focused permanent evidence is recorded in:
+
+```text
+docs/PHASE_18_VERIFICATION.md
+```
