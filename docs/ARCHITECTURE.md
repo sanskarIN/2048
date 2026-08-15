@@ -296,3 +296,19 @@ A fresh `AppController.newGame()` creates `ReplayCapture.start(game)`. Valid mov
 Portable export requires `startsAtSessionStart == true` and `overflowed == false`. The action list is capped at 4,096 events; overflow disables complete export while gameplay continues. Game Backup imports are incomplete by design because sender-side earlier actions are unavailable.
 
 Opening an archive constructs defensive spectator frames only. It never installs the imported replay as `AppController.game` and cannot update saves, achievements, streaks, Daily history, or per-mode records. Because JSON is editable, the format provides deterministic validation, not proof of authorship. See [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md).
+
+## Phase 20 file transport boundary
+
+File-based Game Backup keeps transport separate from validation and trusted-state policy:
+
+```text
+GameBackupScreen
+  -> GameBackupFilePort
+       -> SystemGameBackupFilePort / file_picker
+  -> GameBackup.decode
+  -> explicit restore preview
+  -> AppController.importGameBackup
+  -> LocalStore current game + persistent unranked marker
+```
+
+`GameBackupFilePort` owns only explicit user-selected text file read/write. It cannot rank an imported game. The domain `GameBackup` codec remains independent of the plugin, and `AppController` remains the single trust boundary that installs portable progress as unranked. This separation lets widget tests use an in-memory file port without invoking native platform channels.
