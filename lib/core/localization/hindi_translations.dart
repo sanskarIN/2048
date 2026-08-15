@@ -283,4 +283,6 @@ const hindiTranslations = <String, String>{
   'Search nodes': 'खोज नोड',
   'Heuristic': 'ह्यूरिस्टिक',
   'Expectimax': 'एक्सपेक्टिमैक्स',
+  'Auto Play Demo is an optional isolated solver sandbox. Heuristic is the fast default and is also used by normal Hint. Expectimax is a bounded look-ahead strategy that evaluates possible 2/4 spawns without consuming the game RNG. You can switch strategy, start, pause/resume, step one move at a time, choose speed, or reset the deterministic seed. Neither strategy is machine learning or guaranteed optimal play, and demo score, moves, search work, and boards are never mixed with your saved game, statistics, achievements, or Daily Challenge history.':
+      'ऑटो प्ले डेमो एक वैकल्पिक अलग सॉल्वर सैंडबॉक्स है। ह्यूरिस्टिक तेज़ डिफ़ॉल्ट रणनीति है और सामान्य संकेत भी उसी का उपयोग करता है। एक्सपेक्टिमैक्स सीमित लुक-अहेड रणनीति है जो गेम RNG का उपयोग किए बिना संभावित 2/4 स्पॉन का मूल्यांकन करती है। आप रणनीति बदल सकते हैं, शुरू या रोक/जारी कर सकते हैं, एक-एक चाल चला सकते हैं, गति चुन सकते हैं या निर्धारक सीड रीसेट कर सकते हैं। कोई भी रणनीति मशीन लर्निंग या सर्वोत्तम खेल की गारंटी नहीं है और डेमो स्कोर, चालें, खोज कार्य तथा बोर्ड आपके सेव गेम, आँकड़ों, उपलब्धियों या डेली चैलेंज हिस्ट्री में नहीं मिलते।',
 };
