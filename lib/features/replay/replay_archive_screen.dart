@@ -161,7 +161,8 @@ class _ReplayArchiveScreenState extends State<ReplayArchiveScreen> {
             : 'Replay rejected: ${error.message}',
       );
     } on Object {
-      _showMessage(context.l10n.text('Replay archive was rejected as invalid.'));
+      _showMessage(
+          context.l10n.text('Replay archive was rejected as invalid.'));
     }
   }
 
@@ -445,7 +446,9 @@ class _ReplayViewer extends StatelessWidget {
           runSpacing: 8,
           alignment: WrapAlignment.center,
           children: [
-            Chip(label: Text('${l10n.text('Frame')}: ${index + 1} / ${frames.length}')),
+            Chip(
+                label: Text(
+                    '${l10n.text('Frame')}: ${index + 1} / ${frames.length}')),
             Chip(label: Text('${l10n.text('Move')}: ${frame.moves}')),
             Chip(label: Text('${l10n.text('Score')}: ${frame.score}')),
             Chip(label: Text('${l10n.text('Highest')}: ${frame.highestTile}')),
@@ -495,7 +498,8 @@ class _ReplayViewer extends StatelessWidget {
             ),
             FilledButton.icon(
               onPressed: frames.length > 1 ? onTogglePlayback : null,
-              icon: Icon(running ? Icons.pause_rounded : Icons.play_arrow_rounded),
+              icon: Icon(
+                  running ? Icons.pause_rounded : Icons.play_arrow_rounded),
               label: Text(l10n.text(running ? 'Pause Replay' : 'Play Replay')),
             ),
             IconButton(
