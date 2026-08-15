@@ -475,3 +475,42 @@ Phase 18 adds exactly 17 tests over the Phase 17 total of 144. They cover bounde
 Two failed analyzer gates remain intentionally visible. CI `31869526679` caught a duplicate Hindi `Strategy` map key plus eight CLI `avoid_print` lints; CI `31869794852` caught a missing `AppLanguage` import in the new Hindi solver widget test. Neither failed run is counted as passing evidence. The corrections precede the final 161-test gate.
 
 The current runtime tree is additionally covered by Platform Builds `31869794809`, which passed Android, Linux, Windows, macOS, and unsigned iOS release compilation. See [`PHASE_18_VERIFICATION.md`](PHASE_18_VERIFICATION.md).
+
+## Phase 19 — Full Replay Archive regression coverage
+
+Phase 19 adds **22 focused automated tests** to the Phase 18 total of 161, producing **183 tests** in the first formatter/analyzer/test/Web-clean Phase 19 gate.
+
+Focused additions:
+
+```text
+test/replay_archive_test.dart                8
+test/replay_capture_store_test.dart          3
+test/replay_capture_controller_test.dart     4
+test/replay_archive_screen_test.dart         4
+test/replay_archive_navigation_test.dart     1
+test/replay_archive_localization_test.dart   2
+------------------------------------------------
+Phase 19 additions                          22
+```
+
+Coverage verifies deterministic full-session multi-move round trip, replay Undo, explicit continue-after-win, recorded-time timed status transition, invalid actions and event ordering, incomplete/overflowed export rejection, malformed/unsupported/oversized input, event-count/shape validation, persistence and corruption repair, current-game/reset cleanup, controller fresh capture/restart/Undo behavior, Game Backup incomplete-capture policy, valid clipboard export, imported spectator-only UI, live game/statistics isolation, invalid-input preservation, Hindi controls/trust copy, and navigation from Move Replay.
+
+First clean maintained Phase 19 gate after formatter normalization:
+
+```text
+Commit: 4a16608c9f8e94de529ef79ca5d213a81b66baae
+CI run: 31871817119
+CI job: 94981543084
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS — 88 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 183/183
+Web release: PASS — build/web
+Web WASM dry run: PASS
+```
+
+This is behavioral evidence before the final current-runtime native qualification pass. The final Phase 19 CI/native matrix is recorded in `VERIFICATION.md` and `PHASE_19_VERIFICATION.md` after the final source-documentation trigger completes.
+
+Early Phase 19 helper and formatting failures remain recorded in `what_changed.md`; none is treated as passing analyzer/test evidence.
