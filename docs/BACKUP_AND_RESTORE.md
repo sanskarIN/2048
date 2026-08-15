@@ -66,6 +66,7 @@ Current constants in `lib/domain/game_backup.dart` are:
 format = 2048-nova-game-backup
 version = 1
 maxEncodedLength = 128 KiB
+maxFileBytes = 512 KiB
 ```
 
 Malformed JSON, wrong envelope type, unsupported format/version, invalid timestamps, missing game data, invalid board values, invalid dimensions, invalid counters, unsupported save schemas, and other invalid `GameState` fields are rejected rather than partially trusted.
