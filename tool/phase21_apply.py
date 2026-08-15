@@ -72,9 +72,21 @@ commit(str(p), 'feat: localize Challenge Code QR sharing')
 # 3. Screen-level QR and Hindi behavior regression coverage.
 p = Path('test/challenge_code_screen_test.dart')
 s = p.read_text()
-import_needle = "import 'package:nova_2048/shared/text_clipboard.dart';\n"
+import_needle = "import 'package:nova_2048/features/challenge_codes/challenge_code_screen.dart';\n"
 assert import_needle in s
-s = s.replace(import_needle, import_needle + "import 'package:qr_flutter/qr_flutter.dart';\n", 1)
+s = s.replace(
+    import_needle,
+    import_needle
+    + "import 'package:nova_2048/features/challenge_codes/challenge_code_qr.dart';\n",
+    1,
+)
+clipboard_import = "import 'package:nova_2048/shared/text_clipboard.dart';\n"
+assert clipboard_import in s
+s = s.replace(
+    clipboard_import,
+    clipboard_import + "import 'package:qr_flutter/qr_flutter.dart';\n",
+    1,
+)
 pump_needle = """    int Function()? seedFactory,
   }) async {"""
 assert pump_needle in s
@@ -98,11 +110,12 @@ replacement = """    await tapVisible(tester, find.text('Generate new seeded cod
     final expectedCode = ChallengeCode.encode(
       ChallengeCode.withSeed(GameConfig.preset(GameMode.classic), 24680),
     );
-    expect(find.byType(QrImageView), findsOneWidget);
-    final qr = tester.widget<QrImageView>(find.byType(QrImageView));
-    expect(qr.data, expectedCode);
-    expect(qr.backgroundColor, Colors.white);
-    expect(qr.semanticsLabel, 'QR code containing this challenge code');
+    expect(find.byType(ChallengeCodeQr), findsOneWidget);
+    final qrCard = tester.widget<ChallengeCodeQr>(find.byType(ChallengeCodeQr));
+    expect(qrCard.code, expectedCode);
+    final qrImage = tester.widget<QrImageView>(find.byType(QrImageView));
+    expect(qrImage.backgroundColor, Colors.white);
+    expect(qrImage.semanticsLabel, 'QR code containing this challenge code');
 
     await tapVisible(tester, find.text('Copy challenge code'));
     expect(clipboard.text, expectedCode);
