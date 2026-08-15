@@ -63,7 +63,7 @@ class AboutScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     l10n.text(
-                      'Release candidate 0.9 includes ten game modes, deterministic save and Undo integrity, Daily Challenges, offline shareable seeded Challenge Codes, English/Hindi localization with a persisted language setting, statistics and achievements, seven palettes, accessibility controls, heuristic hints, keyboard shortcuts, an isolated Auto Play Demo, read-only Move Replay, validated portable current-game backup with persistent unranked restore policy, and cross-platform release-build verification.',
+                      'Release candidate 0.9 includes ten game modes, deterministic save and Undo integrity, Daily Challenges, offline shareable seeded Challenge Codes, English/Hindi localization with a persisted language setting, statistics and achievements, seven palettes, accessibility controls, heuristic hints, keyboard shortcuts, an isolated Auto Play Demo with Heuristic and bounded Expectimax strategies, deterministic solver benchmarks, read-only Move Replay, validated portable current-game backup with persistent unranked restore policy, and cross-platform release-build verification.',
                     ),
                   ),
                 ],
