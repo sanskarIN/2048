@@ -14,8 +14,7 @@ class HintSolver {
     for (final direction in Direction.values) {
       final simulation = _simulate(board, direction);
       if (!simulation.changed) continue;
-      final score =
-          _evaluate(simulation.board, simulation.mergeScore) +
+      final score = _evaluate(simulation.board, simulation.mergeScore) +
           _directionBias(direction);
       if (score > bestScore) {
         bestScore = score;
@@ -65,12 +64,12 @@ class HintSolver {
         }
         final exponent = _exponent(value);
         if (col + 1 < size && board[row][col + 1] != 0) {
-          smoothnessPenalty += (exponent - _exponent(board[row][col + 1]))
-              .abs();
+          smoothnessPenalty +=
+              (exponent - _exponent(board[row][col + 1])).abs();
         }
         if (row + 1 < size && board[row + 1][col] != 0) {
-          smoothnessPenalty += (exponent - _exponent(board[row + 1][col]))
-              .abs();
+          smoothnessPenalty +=
+              (exponent - _exponent(board[row + 1][col])).abs();
         }
       }
     }
@@ -84,8 +83,7 @@ class HintSolver {
       ]);
     }
 
-    final inCorner =
-        highest > 0 &&
+    final inCorner = highest > 0 &&
         (highestRow == 0 || highestRow == size - 1) &&
         (highestCol == 0 || highestCol == size - 1);
     final cornerReward = inCorner ? _exponent(highest) * 120.0 : 0.0;
@@ -113,11 +111,11 @@ class HintSolver {
   }
 
   double _directionBias(Direction direction) => switch (direction) {
-    Direction.down => 0.04,
-    Direction.left => 0.03,
-    Direction.right => 0.02,
-    Direction.up => 0.01,
-  };
+        Direction.down => 0.04,
+        Direction.left => 0.03,
+        Direction.right => 0.02,
+        Direction.up => 0.01,
+      };
 
   double _exponent(int value) => math.log(value) / math.ln2;
 
@@ -147,8 +145,8 @@ class HintSolver {
       Direction.right => board[index].reversed.toList(),
       Direction.up => [for (var row = 0; row < size; row++) board[row][index]],
       Direction.down => [
-        for (var row = size - 1; row >= 0; row--) board[row][index],
-      ],
+          for (var row = size - 1; row >= 0; row--) board[row][index],
+        ],
     };
   }
 

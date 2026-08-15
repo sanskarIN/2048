@@ -312,26 +312,26 @@ class _InfoCard extends StatelessWidget {
     final title = capture == null
         ? l10n.text('No full-session capture yet')
         : capture!.overflowed
-        ? l10n.text('Replay capture reached its safety limit')
-        : capture!.startsAtSessionStart
-        ? l10n.text('Complete full-session capture available')
-        : l10n.text('Current replay began after the session started');
+            ? l10n.text('Replay capture reached its safety limit')
+            : capture!.startsAtSessionStart
+                ? l10n.text('Complete full-session capture available')
+                : l10n.text('Current replay began after the session started');
 
     final description = capture == null
         ? l10n.text(
             'Start a new game to record a portable full-session spectator replay.',
           )
         : capture!.overflowed
-        ? l10n.text(
-            'This replay exceeded the 4,096-event safety limit, so export is disabled rather than silently producing an incomplete archive.',
-          )
-        : capture!.startsAtSessionStart
-        ? l10n.text(
-            'The archive stores a validated starting state plus deterministic replay actions. Exported or imported replay data is spectator-only and cannot change player records.',
-          )
-        : l10n.text(
-            'Legacy or restored progress does not contain the earlier actions needed for a true full-session archive. Start a new game to create a complete portable replay.',
-          );
+            ? l10n.text(
+                'This replay exceeded the 4,096-event safety limit, so export is disabled rather than silently producing an incomplete archive.',
+              )
+            : capture!.startsAtSessionStart
+                ? l10n.text(
+                    'The archive stores a validated starting state plus deterministic replay actions. Exported or imported replay data is spectator-only and cannot change player records.',
+                  )
+                : l10n.text(
+                    'Legacy or restored progress does not contain the earlier actions needed for a true full-session archive. Start a new game to create a complete portable replay.',
+                  );
 
     return Card(
       child: Padding(
@@ -372,7 +372,9 @@ class _NoReplayCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               context.l10n.text(
-                showingImported ? 'No imported replay frames are available.' : 'A complete current full-session replay is not available.',
+                showingImported
+                    ? 'No imported replay frames are available.'
+                    : 'A complete current full-session replay is not available.',
               ),
               textAlign: TextAlign.center,
             ),
@@ -528,9 +530,8 @@ class _ReplayViewer extends StatelessWidget {
   }
 
   static String _speedLabel(Duration duration, NovaLocalizations l10n) {
-    final count = duration.inMilliseconds == 1000
-        ? 1
-        : 1000 ~/ duration.inMilliseconds;
+    final count =
+        duration.inMilliseconds == 1000 ? 1 : 1000 ~/ duration.inMilliseconds;
     return l10n.isHindi
         ? '$count फ्रेम / सेकंड'
         : '$count frame${count == 1 ? '' : 's'} / sec';

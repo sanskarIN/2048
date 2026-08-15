@@ -17,11 +17,10 @@ class MoveOutcome {
 
 class GameEngine {
   GameEngine({required this.config, RandomSource? random})
-    : random =
-          random ??
-          SeededRandomSource(
-            config.seed ?? DateTime.now().microsecondsSinceEpoch,
-          );
+      : random = random ??
+            SeededRandomSource(
+              config.seed ?? DateTime.now().microsecondsSinceEpoch,
+            );
 
   final GameConfig config;
   final RandomSource random;
@@ -130,9 +129,8 @@ class GameEngine {
 
     final timeLimit = config.timeLimitSeconds;
     if (timeLimit != null) {
-      final elapsed = (now ?? DateTime.now())
-          .difference(state.startedAt)
-          .inSeconds;
+      final elapsed =
+          (now ?? DateTime.now()).difference(state.startedAt).inSeconds;
       if (elapsed >= timeLimit && !reachedTarget) {
         state.status = GameStatus.lost;
         return;
@@ -176,11 +174,11 @@ class GameEngine {
       Direction.left => [...board[index]],
       Direction.right => board[index].reversed.toList(),
       Direction.up => [
-        for (var row = 0; row < config.size; row++) board[row][index],
-      ],
+          for (var row = 0; row < config.size; row++) board[row][index],
+        ],
       Direction.down => [
-        for (var row = config.size - 1; row >= 0; row--) board[row][index],
-      ],
+          for (var row = config.size - 1; row >= 0; row--) board[row][index],
+        ],
     };
   }
 

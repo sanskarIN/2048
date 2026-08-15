@@ -13,15 +13,15 @@ void main() {
   });
 
   GameState state(int value, {int rngState = 0}) => GameState(
-    board: [
-      [value, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ],
-    config: const GameConfig(mode: GameMode.classic, size: 4),
-    rngState: rngState,
-  );
+        board: [
+          [value, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+        ],
+        config: const GameConfig(mode: GameMode.classic, size: 4),
+        rngState: rngState,
+      );
 
   test('persists current game and undo history', () async {
     final store = LocalStore();
@@ -67,7 +67,8 @@ void main() {
     'keeps valid daily history entries when one record is corrupt',
     () async {
       SharedPreferences.setMockInitialValues({
-        'nova.daily_history.v1': '[{"seed":20260814,"score":128,"moves":12,"highestTile":64,"completed":false,"won":false,"updatedAt":"2026-08-14T00:00:00.000Z"},{"seed":20260230,"score":999},{"seed":20260813,"score":64,"moves":8,"highestTile":32,"completed":false,"won":false,"updatedAt":"2026-08-13T00:00:00.000Z"}]',
+        'nova.daily_history.v1':
+            '[{"seed":20260814,"score":128,"moves":12,"highestTile":64,"completed":false,"won":false,"updatedAt":"2026-08-14T00:00:00.000Z"},{"seed":20260230,"score":999},{"seed":20260813,"score":64,"moves":8,"highestTile":32,"completed":false,"won":false,"updatedAt":"2026-08-13T00:00:00.000Z"}]',
       });
       final store = LocalStore();
 

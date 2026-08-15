@@ -49,7 +49,9 @@ class _SplashScreenState extends State<SplashScreen> {
                 const SizedBox(height: 20),
                 Text(
                   ProjectInfo.name,
-                  style: Theme.of(context).textTheme.headlineMedium
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineMedium
                       ?.copyWith(fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 8),

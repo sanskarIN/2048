@@ -8,16 +8,16 @@ void main() {
   const markerKey = 'nova.current_game_unranked.v1';
 
   GameState state() => GameState(
-    config: const GameConfig(mode: GameMode.classic, size: 4),
-    board: [
-      [2, 2, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ],
-    rngState: 77,
-    startedAt: DateTime.utc(2026, 8, 14, 9),
-  );
+        config: const GameConfig(mode: GameMode.classic, size: 4),
+        board: [
+          [2, 2, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+        ],
+        rngState: 77,
+        startedAt: DateTime.utc(2026, 8, 14, 9),
+      );
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});

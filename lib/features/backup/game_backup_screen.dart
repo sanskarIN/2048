@@ -252,8 +252,7 @@ class GameBackupScreen extends StatelessWidget {
     }
 
     if (!context.mounted) return;
-    final approved =
-        await showDialog<bool>(
+    final approved = await showDialog<bool>(
           context: context,
           barrierDismissible: false,
           builder: (dialogContext) => _ImportPreviewDialog(state: restored),
@@ -387,7 +386,7 @@ String _suggestedBackupFileName(DateTime now) {
 }
 
 String _statusLabel(GameState state) => switch (state.status) {
-  GameStatus.playing => 'Playing',
-  GameStatus.won => 'Won',
-  GameStatus.lost => 'Lost',
-};
+      GameStatus.playing => 'Playing',
+      GameStatus.won => 'Won',
+      GameStatus.lost => 'Lost',
+    };

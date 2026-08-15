@@ -92,20 +92,20 @@ void main() {
   }
 
   GameState backupState() => GameState(
-    config: const GameConfig(mode: GameMode.classic, size: 4, seed: 2026),
-    board: [
-      [2, 2, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ],
-    score: 32,
-    bestScore: 9999,
-    moves: 6,
-    totalMerges: 3,
-    rngState: 88,
-    startedAt: DateTime.utc(2026, 8, 14, 10),
-  );
+        config: const GameConfig(mode: GameMode.classic, size: 4, seed: 2026),
+        board: [
+          [2, 2, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+        ],
+        score: 32,
+        bestScore: 9999,
+        moves: 6,
+        totalMerges: 3,
+        rngState: 88,
+        startedAt: DateTime.utc(2026, 8, 14, 10),
+      );
 
   testWidgets('export copies a decodable current-game-only backup', (
     tester,

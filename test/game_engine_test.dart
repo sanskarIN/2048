@@ -86,15 +86,11 @@ void main() {
         [0, 0, 0, 0],
         [0, 0, 0, 0],
       ]);
-      final before = game.board
-          .expand((row) => row)
-          .where((value) => value != 0)
-          .length;
+      final before =
+          game.board.expand((row) => row).where((value) => value != 0).length;
       final result = engine.move(game, Direction.left);
-      final after = game.board
-          .expand((row) => row)
-          .where((value) => value != 0)
-          .length;
+      final after =
+          game.board.expand((row) => row).where((value) => value != 0).length;
       expect(result.changed, isFalse);
       expect(after, before);
     });

@@ -17,8 +17,7 @@ void main() {
     final exponent = moves.clamp(0, 4).toInt();
     return GameState(
       config: config,
-      board:
-          board ??
+      board: board ??
           [
             [2 << exponent, 0, 0, 0],
             [0, 0, 0, 0],
