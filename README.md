@@ -59,6 +59,7 @@ The complete documentation map is [`docs/README.md`](docs/README.md). Important 
 | Solver strategies + benchmarks | [`docs/SOLVER_BENCHMARKS.md`](docs/SOLVER_BENCHMARKS.md) |
 | Local storage/data | [`docs/DATA_STORAGE.md`](docs/DATA_STORAGE.md) |
 | Backup and restore | [`docs/BACKUP_AND_RESTORE.md`](docs/BACKUP_AND_RESTORE.md) |
+| File backup transport | [`docs/FILE_BACKUPS.md`](docs/FILE_BACKUPS.md) |
 | Accessibility | [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md) |
 | Privacy | [`docs/PRIVACY.md`](docs/PRIVACY.md) |
 | Development | [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) |
