@@ -196,3 +196,10 @@ Before stable distribution, verify on representative target platforms:
 - screen-reader reading of backup actions and confirmation content;
 - long text and large-text layout behavior;
 - switching between Challenge Code and Game Backup clipboard workflows without confusing the two formats.
+
+
+## Per-mode record isolation
+
+Phase 17 extends the existing imported-backup trust boundary to per-mode records. Importing a valid backup does not create or improve a mode best score/highest tile, continuing to play that imported board still does not update a mode record, and Reset Statistics does not rebuild a mode baseline from the unranked imported state.
+
+This is intentional because backup JSON is portable and editable. Its board/score can be useful for restoration without being treated as authenticated evidence for trusted local records. A fresh locally started game, including a locally started seeded configuration, returns to the normal ranked record path.
