@@ -101,17 +101,13 @@ class ExpectimaxSolver {
 
       final withTwo = _copyBoard(board);
       withTwo[cell.$1][cell.$2] = 2;
-      expected += locationWeight *
-          0.9 *
-          _playerValue(withTwo, depth, context);
+      expected += locationWeight * 0.9 * _playerValue(withTwo, depth, context);
 
       if (context.isExhausted) return _evaluate(board);
 
       final withFour = _copyBoard(board);
       withFour[cell.$1][cell.$2] = 4;
-      expected += locationWeight *
-          0.1 *
-          _playerValue(withFour, depth, context);
+      expected += locationWeight * 0.1 * _playerValue(withFour, depth, context);
     }
     return expected;
   }
@@ -324,8 +320,7 @@ class ExpectimaxSolver {
       }
       for (final value in row) {
         if (value < 0 ||
-            (value != 0 &&
-                (value < 2 || (value & (value - 1)) != 0))) {
+            (value != 0 && (value < 2 || (value & (value - 1)) != 0))) {
           throw ArgumentError('Board contains an invalid tile value.');
         }
       }

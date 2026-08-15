@@ -29,7 +29,9 @@ void main() {
       seed: 17,
     );
     final state = GameState(
-      board: [for (final row in board) [...row]],
+      board: [
+        for (final row in board) [...row]
+      ],
       config: config,
       rngState: 17,
     );
@@ -58,7 +60,9 @@ void main() {
       [64, 128, 0, 0],
       [0, 0, 0, 0],
     ];
-    final before = [for (final row in board) [...row]];
+    final before = [
+      for (final row in board) [...row]
+    ];
 
     const ExpectimaxSolver(size: 4, searchDepth: 2).recommend(board);
 

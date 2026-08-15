@@ -12,7 +12,9 @@ void main() {
 
   test('switching strategy does not mutate sandbox game state', () {
     final session = AutoplaySession(seed: 77);
-    final boardBefore = [for (final row in session.state.board) [...row]];
+    final boardBefore = [
+      for (final row in session.state.board) [...row]
+    ];
     final rngBefore = session.state.rngState;
     final movesBefore = session.state.moves;
     final scoreBefore = session.state.score;
@@ -69,7 +71,9 @@ void main() {
       seed: 512,
       strategy: AutoplayStrategy.expectimax,
     );
-    final initialBoard = [for (final row in session.state.board) [...row]];
+    final initialBoard = [
+      for (final row in session.state.board) [...row]
+    ];
     session.step();
     expect(session.lastDecisionNodes, greaterThan(0));
 
