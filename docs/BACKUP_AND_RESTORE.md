@@ -35,14 +35,12 @@ This separation is enforced by the codec shape and covered by automated tests.
 
 ## Export workflow
 
-From Home, open **Game Backup** and select **Copy game backup**. When a current game exists, the application:
+From Home, open **Game Backup**. A current game can be exported in either of two ways:
 
-1. encodes that game with `GameBackup.encode()`;
-2. writes the JSON text to the system clipboard;
-3. leaves the live player game unchanged;
-4. shows a confirmation message.
+- **Copy game backup** encodes with `GameBackup.encode()` and writes the JSON text to the system clipboard.
+- **Save backup file** encodes the same envelope to UTF-8 bytes and opens the explicit user-selected save flow through the file transport abstraction, proposing a UTC-stamped `.nova2048` filename.
 
-There is no file-system permission requirement and no extra package dependency for this workflow; it uses Flutter's clipboard API and Dart JSON encoding.
+Both flows leave the live player game unchanged. Cancelling a native Save dialog is a normal non-destructive outcome. On Web, the browser owns the download destination and the app does not require a returned filesystem path to treat the explicit download handoff as successful.
 
 ## Import workflow
 
