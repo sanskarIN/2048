@@ -7,6 +7,7 @@ import 'package:nova_2048/domain/game_backup.dart';
 import 'package:nova_2048/domain/game_state.dart';
 import 'package:nova_2048/domain/game_types.dart';
 import 'package:nova_2048/features/backup/game_backup_screen.dart';
+import 'package:nova_2048/shared/game_backup_file_port.dart';
 import 'package:nova_2048/shared/text_clipboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,6 +25,34 @@ class _MemoryClipboard implements TextClipboard {
   }
 }
 
+class _MemoryFilePort implements GameBackupFilePort {
+  BackupFileDocument? openDocument;
+  BackupFileSaveOutcome saveOutcome = BackupFileSaveOutcome.saved;
+  Object? openError;
+  Object? saveError;
+  int? requestedMaxBytes;
+  String? savedName;
+  String? savedText;
+
+  @override
+  Future<BackupFileDocument?> openText({required int maxBytes}) async {
+    requestedMaxBytes = maxBytes;
+    if (openError != null) throw openError!;
+    return openDocument;
+  }
+
+  @override
+  Future<BackupFileSaveOutcome> saveText({
+    required String suggestedName,
+    required String text,
+  }) async {
+    if (saveError != null) throw saveError!;
+    savedName = suggestedName;
+    savedText = text;
+    return saveOutcome;
+  }
+}
+
 void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
@@ -36,16 +65,18 @@ void main() {
 
   Future<void> tapPageAction(WidgetTester tester, Finder finder) async {
     final pageList = find.byType(ListView);
-    await tester.drag(pageList, const Offset(0, -260));
+    await tester.drag(pageList, const Offset(0, -320));
     await tester.pump();
+    await tester.ensureVisible(finder);
     await tester.tap(finder);
   }
 
   Future<void> pumpBackupScreen(
     WidgetTester tester,
     AppController controller,
-    TextClipboard clipboard,
-  ) async {
+    TextClipboard clipboard, {
+    GameBackupFilePort filePort = const SystemGameBackupFilePort(),
+  }) async {
     await tester.pumpWidget(
       localizedTestApp(
         routes: {
@@ -53,7 +84,10 @@ void main() {
         },
         home: AppScope(
           controller: controller,
-          child: GameBackupScreen(clipboard: clipboard),
+          child: GameBackupScreen(
+            clipboard: clipboard,
+            filePort: filePort,
+          ),
         ),
       ),
     );
@@ -102,6 +136,58 @@ void main() {
     );
   });
 
+  testWidgets('file export writes a decodable backup with safe extension',
+      (tester) async {
+    final controller = AppController(store: LocalStore());
+    final clipboard = _MemoryClipboard();
+    final files = _MemoryFilePort();
+    await controller.initialize();
+    await controller.newGame(
+      const GameConfig(mode: GameMode.classic, size: 4, seed: 42),
+    );
+
+    await pumpBackupScreen(
+      tester,
+      controller,
+      clipboard,
+      filePort: files,
+    );
+    await tapPageAction(tester, find.text('Save backup file'));
+    await pumpUi(tester);
+
+    expect(files.savedName, startsWith('2048-nova-game-backup-'));
+    expect(files.savedName, endsWith('.nova2048'));
+    expect(files.savedText, isNotNull);
+    final restored = GameBackup.decode(files.savedText!);
+    expect(restored.toJson(), controller.game!.toJson());
+    expect(find.text('Game backup file saved.'), findsOneWidget);
+  });
+
+  testWidgets('cancelled file export is reported without mutating the game',
+      (tester) async {
+    final controller = AppController(store: LocalStore());
+    final clipboard = _MemoryClipboard();
+    final files = _MemoryFilePort()
+      ..saveOutcome = BackupFileSaveOutcome.cancelled;
+    await controller.initialize();
+    await controller.newGame(
+      const GameConfig(mode: GameMode.classic, size: 4, seed: 43),
+    );
+    final before = controller.game!.toJson();
+
+    await pumpBackupScreen(
+      tester,
+      controller,
+      clipboard,
+      filePort: files,
+    );
+    await tapPageAction(tester, find.text('Save backup file'));
+    await pumpUi(tester);
+
+    expect(controller.game!.toJson(), before);
+    expect(find.text('Backup file export cancelled.'), findsOneWidget);
+  });
+
   testWidgets('valid import requires confirmation and becomes unranked',
       (tester) async {
     final controller = AppController(store: LocalStore());
@@ -132,6 +218,43 @@ void main() {
     expect(find.text('Game destination'), findsOneWidget);
   });
 
+  testWidgets('valid file import uses the same unranked confirmation path',
+      (tester) async {
+    final controller = AppController(store: LocalStore());
+    final clipboard = _MemoryClipboard();
+    final files = _MemoryFilePort()
+      ..openDocument = BackupFileDocument(
+        name: 'shared.nova2048',
+        text: GameBackup.encode(
+          backupState(),
+          exportedAt: DateTime.utc(2026, 8, 14, 11),
+        ),
+      );
+    await controller.initialize();
+    controller.stats.bestScore = 128;
+
+    await pumpBackupScreen(
+      tester,
+      controller,
+      clipboard,
+      filePort: files,
+    );
+    await tapPageAction(tester, find.text('Import backup file'));
+    await pumpUi(tester);
+
+    expect(files.requestedMaxBytes, GameBackup.maxFileBytes);
+    expect(find.text('Restore unranked backup?'), findsOneWidget);
+    expect(controller.game, isNull);
+
+    await tester.tap(find.text('Restore unranked backup'));
+    await pumpUi(tester);
+
+    expect(controller.currentGameIsUnranked, isTrue);
+    expect(controller.game!.score, 32);
+    expect(controller.stats.bestScore, 128);
+    expect(find.text('Game destination'), findsOneWidget);
+  });
+
   testWidgets('cancelled import leaves an existing ranked game untouched',
       (tester) async {
     final controller = AppController(store: LocalStore());
@@ -156,6 +279,31 @@ void main() {
     expect(controller.game!.toJson(), before);
   });
 
+  testWidgets('cancelled file selection leaves ranked game untouched',
+      (tester) async {
+    final controller = AppController(store: LocalStore());
+    final clipboard = _MemoryClipboard();
+    final files = _MemoryFilePort();
+    await controller.initialize();
+    await controller.newGame(
+      const GameConfig(mode: GameMode.classic, size: 4, seed: 100),
+    );
+    final before = controller.game!.toJson();
+
+    await pumpBackupScreen(
+      tester,
+      controller,
+      clipboard,
+      filePort: files,
+    );
+    await tapPageAction(tester, find.text('Import backup file'));
+    await pumpUi(tester);
+
+    expect(controller.currentGameIsUnranked, isFalse);
+    expect(controller.game!.toJson(), before);
+    expect(find.text('Restore unranked backup?'), findsNothing);
+  });
+
   testWidgets('invalid clipboard text is rejected without replacing the game',
       (tester) async {
     final controller = AppController(store: LocalStore());
@@ -168,5 +316,28 @@ void main() {
 
     expect(controller.game, isNull);
     expect(find.textContaining('Backup rejected:'), findsOneWidget);
+  });
+
+  testWidgets('oversized file is rejected before restore confirmation',
+      (tester) async {
+    final controller = AppController(store: LocalStore());
+    final clipboard = _MemoryClipboard();
+    final files = _MemoryFilePort()
+      ..openError = const FormatException('Backup file is too large.');
+    await controller.initialize();
+
+    await pumpBackupScreen(
+      tester,
+      controller,
+      clipboard,
+      filePort: files,
+    );
+    await tapPageAction(tester, find.text('Import backup file'));
+    await pumpUi(tester);
+
+    expect(files.requestedMaxBytes, GameBackup.maxFileBytes);
+    expect(controller.game, isNull);
+    expect(find.textContaining('Backup rejected:'), findsOneWidget);
+    expect(find.text('Restore unranked backup?'), findsNothing);
   });
 }
