@@ -260,3 +260,9 @@ Source: 188e81c607eca76516018be8c668eab41b777cc1
 The first native run `31875177571` was intentionally not accepted because Android job `94989728523` failed generated plugin registration for `FilePickerPlugin`. The host was migrated to AGP-9 built-in Kotlin in `188e81c607eca76516018be8c668eab41b777cc1`, after which Android job `94990368847` passed together with Linux `94990368919`, Windows `94990368886`, and macOS/unsigned-iOS `94990368933`.
 
 CI on the repaired source passed 91-file formatting, analyzer, 189 tests, Web release, and WASM dry run. Hosted automation still does not exercise an interactive system file chooser.
+
+## Phase 21 QR verification path
+
+The normal CI gate covers QR Dart formatting, analyzer checks, the complete widget/unit suite, and the Web release/WASM dry run. Platform Builds must also compile the final runtime tree on Android, Linux, Windows, macOS, and unsigned iOS so the pinned QR package does not silently break a configured target.
+
+Optical scan testing remains manual and is not inferred from a successful build. Final Phase 21 run/job identifiers are recorded in `PHASE_21_VERIFICATION.md` and the canonical verification record after source freeze.
