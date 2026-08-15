@@ -7,7 +7,9 @@ import 'package:nova_2048/domain/challenge_code.dart';
 import 'package:nova_2048/domain/game_engine.dart';
 import 'package:nova_2048/domain/game_types.dart';
 import 'package:nova_2048/features/challenge_codes/challenge_code_screen.dart';
+import 'package:nova_2048/features/challenge_codes/challenge_code_qr.dart';
 import 'package:nova_2048/shared/text_clipboard.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'support/localized_test_app.dart';
@@ -34,9 +36,11 @@ void main() {
     AppController controller,
     _MemoryClipboard clipboard, {
     int Function()? seedFactory,
+    Locale? locale,
   }) async {
     await tester.pumpWidget(
       localizedTestApp(
+        locale: locale,
         routes: {
           '/game': (_) => const Scaffold(body: Text('Challenge game')),
         },
@@ -77,13 +81,44 @@ void main() {
       seedFactory: () => 24680,
     );
     await tapVisible(tester, find.text('Generate new seeded code'));
-    await tapVisible(tester, find.text('Copy challenge code'));
 
-    expect(clipboard.text, isNotNull);
+    final expectedCode = ChallengeCode.encode(
+      ChallengeCode.withSeed(GameConfig.preset(GameMode.classic), 24680),
+    );
+    expect(find.byType(ChallengeCodeQr), findsOneWidget);
+    final qrCard = tester.widget<ChallengeCodeQr>(find.byType(ChallengeCodeQr));
+    expect(qrCard.code, expectedCode);
+    final qrImage = tester.widget<QrImageView>(find.byType(QrImageView));
+    expect(qrImage.backgroundColor, Colors.white);
+    expect(qrImage.semanticsLabel, 'QR code containing this challenge code');
+
+    await tapVisible(tester, find.text('Copy challenge code'));
+    expect(clipboard.text, expectedCode);
     final config = ChallengeCode.decode(clipboard.text!);
     expect(config.mode, GameMode.classic);
     expect(config.size, 4);
     expect(config.seed, 24680);
+  });
+
+  testWidgets('generated Challenge Code QR is localized in Hindi',
+      (tester) async {
+    final controller = AppController(store: LocalStore());
+    final clipboard = _MemoryClipboard();
+    await controller.initialize();
+
+    await pumpScreen(
+      tester,
+      controller,
+      clipboard,
+      seedFactory: () => 13579,
+      locale: const Locale('hi'),
+    );
+    await tapVisible(tester, find.text('नया सीडेड कोड बनाएँ'));
+
+    expect(find.text('स्कैन करके साझा करें'), findsOneWidget);
+    final qr = tester.widget<QrImageView>(find.byType(QrImageView));
+    expect(qr.semanticsLabel, 'इस चैलेंज कोड वाला QR कोड');
+    expect(controller.game, isNull);
   });
 
   testWidgets('pastes validates and starts the same seeded challenge',
