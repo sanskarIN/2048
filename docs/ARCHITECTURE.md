@@ -312,3 +312,9 @@ GameBackupScreen
 ```
 
 `GameBackupFilePort` owns only explicit user-selected text file read/write. It cannot rank an imported game. The domain `GameBackup` codec remains independent of the plugin, and `AppController` remains the single trust boundary that installs portable progress as unranked. This separation lets widget tests use an in-memory file port without invoking native platform channels.
+
+## Phase 21 - Challenge Code QR presentation
+
+Phase 21 keeps QR rendering in `features/challenge_codes/` rather than moving it into the deterministic domain layer. `ChallengeCode.encode()` still produces the canonical portable string and `ChallengeCode.decode()` remains the only protocol-validation path. `ChallengeCodeQr` receives that already-generated string and renders it through `qr_flutter`; it has no `AppController`, persistence, clipboard, networking, or camera dependency.
+
+This preserves a one-way boundary: domain configuration -> canonical `NOVA1` text -> optional visual QR. A scanned string re-enters through the existing manual/clipboard decoder path; the QR widget itself never creates trusted progress or bypasses replacement confirmation.
