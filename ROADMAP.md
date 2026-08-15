@@ -12,19 +12,20 @@ Completed in the current release-candidate line:
 - Isolated deterministic **Auto Play Demo** with pause/resume, single-step control, speed selection, seed reset, and strict separation from player saves/statistics/achievements/Daily history.
 - Read-only **Move Replay** built from validated bounded Undo snapshots, with timeline scrubbing, first/previous/next/latest navigation, play/pause, speed selection, defensive copies, and no live-game mutation path.
 - Versioned **Game Backup** for copying/restoring one current game through the clipboard with strict input validation, explicit replacement confirmation, Undo isolation, and persistent unranked-import policy.
-- Imported-backup trust isolation so portable/editable data cannot inflate lifetime statistics, achievements, streaks, Daily history, or historical best-score records.
-- Statistics, achievements, Daily history, best-result preservation, and corruption/self-repair behavior.
+- Imported-backup trust isolation so portable/editable data cannot inflate lifetime statistics, achievements, streaks, Daily history, global best-score records, or per-mode records.
+- Statistics, achievements, Daily history, global best-result preservation, and corruption/self-repair behavior.
+- Trusted local **per-mode records** for best score and highest tile, including best-score board/target metadata, backward-compatible persistence, active-session reset baselines, localized Statistics presentation, and imported-backup isolation.
 - Responsive touch/keyboard UI, desktop shortcuts, themes, high contrast, reduced motion, sound/haptic toggles, accessibility semantics, and offline English/Hindi localization with persisted System/English/हिन्दी language selection.
 - Android, iOS, Web, Windows, macOS, and Linux Flutter runners.
 - Hosted release-build verification for Android, Linux, Windows, macOS, and unsigned iOS.
-- Expanded automated engine, persistence, controller, interaction, session-integrity, accessibility, Challenge Code, Auto Play isolation, Replay timeline, portable-backup, clipboard-flow, and imported-ranking tests.
+- Expanded automated engine, persistence, controller, interaction, session-integrity, accessibility, Challenge Code, Auto Play isolation, Replay timeline, portable-backup, clipboard-flow, imported-ranking, per-mode-record persistence/trust/reset, and localized Statistics UI tests.
 - Complete user/technical/development/release documentation set, branding, CI, contribution/security templates, and project support/contact integration.
 
 Remaining release qualification before `1.0.0`:
 
 - Physical Android and iOS gameplay/lifecycle/save-resume checks.
 - Representative touch, orientation, keyboard, focus, and responsive-layout checks on real target environments.
-- VoiceOver, TalkBack, Narrator/browser-screen-reader checks on representative platforms, including Hindi semantics, pronunciation, large-text wrapping, and language switching.
+- VoiceOver, TalkBack, Narrator/browser-screen-reader checks on representative platforms, including Hindi semantics, pronunciation, large-text wrapping, language switching, and expanded per-mode Statistics cards.
 - Long-session and real-device Daily/timed/move-limit/Undo/win-continue testing.
 - Real-platform Challenge Code generate/copy/paste/manual-entry/validation/replacement/determinism/accessibility checks using actual clipboard/browser handlers.
 - Real-platform Move Replay scrub/play/pause/navigation-away/accessibility checks.
@@ -53,7 +54,7 @@ These are intentionally non-blocking and must not destabilize core gameplay:
 - Optional QR rendering/scanning or OS share-sheet convenience for the already-implemented Challenge Code text format, only if cross-platform/privacy/accessibility costs are justified.
 - Optional expectimax or another advanced solver behind the already-isolated Auto Play Demo boundary, plus a benchmark suite.
 - Golden/visual-regression matrices for major breakpoints and themes.
-- More mode-specific records and challenge metadata.
+- Additional trustworthy mode-specific metadata beyond the implemented best-score/highest-tile records, only when it can be migrated and measured without inventing historical facts.
 - Richer platform-aware sound/haptic effects using only compatible/licensed resources.
 - Additional desktop/PWA convenience features where they preserve the offline-first design.
 
@@ -68,6 +69,7 @@ Future expansion should preserve these verified boundaries unless a deliberate r
 - Auto Play remains isolated from trusted player state;
 - Replay remains spectator-only;
 - portable/editable progress import remains unranked unless a real trust/authentication system is introduced;
+- local aggregate and per-mode records accept only trusted local-session progress;
 - local persistence remains validated and corruption-safe;
 - growing histories remain bounded;
 - external links remain explicit and scheme-validated;
