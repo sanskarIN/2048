@@ -3701,3 +3701,292 @@ Additional per-document commits remain in normal Git history with descriptive me
 Phase 19 does not promote the project to stable `1.0.0`. Manual qualification still includes physical Android/iOS lifecycle/gameplay, representative accessibility, real clipboard/platform-handler behavior, long-session checks, native branding, signing/provisioning/notarization, and store metadata/review. Phase 19 additionally requires real-platform checks for large replay copy/open/manual entry, long replay scrub/play/pause/timer cleanup, 4,096-event overflow behavior, incomplete-capture messaging, imported spectator isolation, English/Hindi large-text and screen-reader behavior, and slower-device responsiveness.
 
 Final current-source CI and native matrix evidence will be appended after the final runtime source-documentation trigger completes.
+
+# Phase 20 - File-Based Game Backup Import/Export
+
+Date: **2026-08-15**
+
+## Repository audit before Phase 20
+
+Phase 20 began with a verification/workflow audit rather than assuming the prior chat status was correct. That audit found a mismatch left after Phase 19:
+
+- Phase 19 final recorder run `31873308985` had failed;
+- final-source Phase 19 CI `31873227162` had been cancelled;
+- `.github/workflows/phase19-contributing-cleanup.yml` still existed;
+- `.github/workflows/phase19-final-verification.yml` still existed.
+
+The earlier clean Phase 19 behavioral gate remained valid (`4a16608c9f8e94de529ef79ca5d213a81b66baae`, CI `31871817119`, job `94981543084`, 183/183 tests, Web/WASM PASS), but the later failed/cancelled evidence was not treated as success.
+
+Cleanup commits:
+
+```text
+607afd4672443c40503c15816af296761342c01f  chore: remove stale Phase 19 contributor helper
+f7126fe9e32dd382efccd3b37e8cfcfe9692e5da  chore: remove failed Phase 19 verification helper
+```
+
+This corrects the repository record from the earlier overstatement instead of hiding it.
+
+## Phase 20 scope decision
+
+The next roadmap item chosen was file-based Game Backup import/export. The design deliberately reuses the existing version-1 `GameBackup` envelope and `AppController.importGameBackup()` path rather than introducing a second portable-progress schema or a new ranked import route.
+
+Guardrails:
+
+- explicit user-selected files only;
+- `.nova2048` / `.json` are chooser hints, not trust/authentication;
+- bounded bytes before text decode;
+- strict UTF-8;
+- existing Game Backup text/JSON/GameState validation remains authoritative;
+- explicit restore confirmation remains mandatory;
+- imported sessions remain persistently unranked;
+- no file history, directory scanner, account, cloud SDK, upload, or background sync;
+- platform transport is injectable/testable and separated from domain validation.
+
+## Runtime and build commits
+
+```text
+3120f41acce6a4ed08522b8cdfd6b7325dfb0adb  build: add cross-platform file picker
+a14f0ab631f05ebc01cec1c6c70016cda95f8c33  feat: add cross-platform backup file port
+a9013d7fc6f5e1254a4f2ee34137f0e2c3121401  build: allow selected backup files in macOS debug
+6804a25cb79c0fdbe9d7f391b14f7f3db4ae2399  build: allow selected backup files in macOS release
+dab5b3264f9d6b3c8265bb91efcc1b4be8de037f  feat: bound file backup input before decode
+29cdb6f7f333bbc912ee0880a1e01e7d9d32e1e4  feat: add file export and import to Game Backup
+69f4fbc0944d44e4418893efebc95d5324497722  build: pin verified stable file picker
+51059902639ffd1d435f3c58912412e9f6010359  feat: localize file-based Game Backup
+3b623a86ede467049560c97af33f71ae48000b5a  build: lock verified file picker dependency
+1ce1171a8b02c7615caa073f7c60d1715f4510a2  docs: explain file backups in in-app guide
+dc2ead03a4e5c8fd69898ad42ddc1658231bb188  style: format Dart sources and tests
+1cd1b4230f6200c9208709d0c76f12fd3a20fce2  fix: remove redundant backup file import
+dff8f881dab30b24810b768a944c2b1a66fc4e91  docs: codify Game Backup file trust boundary
+aa450da630e298047253915f141005076e8db10f  docs: keep file trust contract dependency-neutral
+188e81c607eca76516018be8c668eab41b777cc1  build: enable AGP 9 built-in Kotlin
+```
+
+`file_picker` is pinned to `11.0.2` in both `pubspec.yaml` and `pubspec.lock` for this release-candidate line.
+
+## File transport implementation
+
+`lib/shared/game_backup_file_port.dart` defines:
+
+- `BackupFileSaveOutcome.saved/cancelled`;
+- `BackupFileDocument`;
+- `GameBackupFilePort`;
+- `SystemGameBackupFilePort`.
+
+Production behavior:
+
+- save UTF-8 encoded backup bytes through the platform/browser save flow;
+- propose a UTC-stamped `.nova2048` filename;
+- filter chooser extensions to `nova2048` and `json` where supported;
+- treat native null save path as cancellation;
+- treat Web explicit download handoff as saved even though a native filesystem path is intentionally unavailable;
+- request one import file;
+- check picker-reported byte size before full reading;
+- check actual byte size after reading;
+- decode strict UTF-8;
+- return text to the feature layer without parsing/ranking it.
+
+`GameBackup.maxFileBytes` is `524,288` bytes. The existing `GameBackup.maxEncodedLength` remains `128 * 1024` characters. This creates a bounded byte-level file boundary before the existing text/JSON/domain validation.
+
+## macOS sandbox
+
+Both `macos/Runner/DebugProfile.entitlements` and `macos/Runner/Release.entitlements` now include:
+
+```text
+com.apple.security.files.user-selected.read-write = true
+```
+
+This is scoped to explicit user-selected files and is not treated as broad filesystem permission.
+
+## Game Backup UI/trust integration
+
+`GameBackupScreen` now accepts both `TextClipboard` and `GameBackupFilePort` dependencies. UI actions are:
+
+- Copy game backup;
+- Save backup file;
+- Import from clipboard;
+- Import backup file.
+
+Clipboard and file imports both converge on:
+
+```text
+portable text
+  -> GameBackup.decode
+  -> decoded preview / explicit confirmation
+  -> AppController.importGameBackup
+  -> persistent unranked current game
+```
+
+There is no file-specific ranked path. Cancelled selection/export and rejected data never replace the live game.
+
+## Focused tests
+
+```text
+9c3a61fbd97ecf12ff737e0c7f3389aebd249258  test: cover file-based Game Backup flows
+1a167c4cf3265f0f03ee1421b70b4a1320a968fb  test: cover Hindi file backup catalog
+```
+
+Five file-flow widget tests plus one Hindi catalog test increase the Phase 19 total from 183 to **189 tests**.
+
+Coverage includes decodable file export, `.nova2048` naming, cancelled export, valid file restore through the unranked confirmation path, cancelled selection, oversized-file rejection before confirmation, and Hindi actions/errors. Existing clipboard and imported-ranking regressions remain active.
+
+## Integration-helper failure and repair
+
+Initial integration staging commit:
+
+```text
+cc19146a173b3bea4bf32bf6bca3172b83a68e7e
+```
+
+Workflow run `31874615155` failed only at its final push. Flutter 3.47 `flutter pub get` migrated `analysis_options.yaml`, which remained as an unstaged runner edit; `git pull --rebase` therefore refused to proceed. Intended Hindi/lock commits existed only inside that runner and never reached `main`.
+
+The failed helper was removed:
+
+```text
+d5d68e7940ce66ce2741420cb6bab4e18ccc82e8  chore: remove failed Phase 20 integration helper
+```
+
+Repaired integration staging:
+
+```text
+27edeb9f351d25683862c890b0f2c1f8811e6951
+workflow run: 31874709676
+result: SUCCESS
+```
+
+The repaired helper explicitly discarded Flutter's unrelated `analysis_options.yaml` migration before rebase/push, committed the Hindi catalog and exact dependency lock, then removed itself (`2102c58a50f9eef51bacf5dcd61dd12c952698d1`).
+
+## Formatting/analyzer acceptance path
+
+CI `31874742612` stopped at formatting before analyzer/tests. It is not passing behavioral evidence.
+
+The maintained formatter then normalized the complete new Dart source/test tree:
+
+```text
+dc2ead03a4e5c8fd69898ad42ddc1658231bb188
+style: format Dart sources and tests
+```
+
+CI `31874841323`, job `94988934511`, passed formatting but failed analyzer because `game_backup_file_port.dart` imported `dart:typed_data` redundantly. No runtime behavior was changed to fix it; commit `1cd1b4230f6200c9208709d0c76f12fd3a20fce2` removed that import.
+
+## First clean Phase 20 functional gate
+
+```text
+Commit: 1cd1b4230f6200c9208709d0c76f12fd3a20fce2
+CI run: 31874929593
+CI job: 94989136815
+Result: SUCCESS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS - 91 files, 0 changed
+Static analysis: PASS - No issues found
+Tests: PASS - 189/189
+Web release: PASS
+Web WASM dry run: PASS
+```
+
+## Documentation phase
+
+Added dedicated `docs/FILE_BACKUPS.md` and synchronized README, ROADMAP, BACKUP_AND_RESTORE, ARCHITECTURE, DATA_STORAGE, PRIVACY, SECURITY, DEPENDENCIES, CONTRIBUTING, DEVELOPMENT, USER_GUIDE, FAQ, TROUBLESHOOTING, TESTING, PLATFORMS, CI_CD, RELEASE_CHECKLIST, documentation index, in-app Guide, and CHANGELOG.
+
+The documentation batch ran as workflow `31875136106`, job `94989624419`, and created separate document commits before removing its helper in `28a6e0651b37c23d725f2fcc81e812f2979cf4b3`.
+
+A later audit found the old optional file-backup roadmap line had survived the batch. It is removed in the final documentation consistency commits rather than being silently ignored.
+
+## First final-source native failure
+
+Candidate source `aa450da630e298047253915f141005076e8db10f` passed permanent CI:
+
+```text
+CI run: 31875177577
+CI job: 94989731971
+Result: SUCCESS
+Formatting: PASS - 91 files, 0 changed
+Static analysis: PASS
+Tests: PASS - 189/189
+Web release: PASS
+Web WASM dry run: PASS
+```
+
+But Platform Builds `31875177571` was correctly rejected because Android job `94989728523` failed:
+
+```text
+GeneratedPluginRegistrant.java:
+cannot find symbol
+com.mr.flutter.plugin.filepicker.FilePickerPlugin
+```
+
+Other jobs in that failed matrix were green:
+
+```text
+Linux: PASS - 94989728554
+Windows: PASS - 94989728560
+macOS + unsigned iOS: PASS - 94989728540
+```
+
+The Android failure was not bypassed, and the other successful jobs were not used to call the whole matrix green.
+
+## Android AGP-9 built-in-Kotlin repair
+
+The Android host already used AGP `9.1.0`, Flutter 3.47's application layout, and JVM-17 Kotlin compiler options. `android/gradle.properties` still disabled built-in Kotlin. `file_picker 11.0.2` detects AGP 9 and skips applying its legacy Kotlin Gradle plugin, so the host needed built-in Kotlin enabled to compile plugin Kotlin source.
+
+Repair:
+
+```text
+188e81c607eca76516018be8c668eab41b777cc1
+build: enable AGP 9 built-in Kotlin
+```
+
+The project now sets:
+
+```text
+android.newDsl=false
+android.builtInKotlin=true
+```
+
+No AGP downgrade and no vendored/modified third-party plugin source was used.
+
+## Final accepted Phase 20 CI
+
+```text
+Commit: 188e81c607eca76516018be8c668eab41b777cc1
+CI run: 31875447398
+CI job: 94990368739
+Result: SUCCESS
+Runner: Ubuntu 24.04
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+file_picker: 11.0.2
+Formatting: PASS - 91 files, 0 changed
+Static analysis: PASS - No issues found
+Tests: PASS - 189/189
+Web release: PASS - build/web
+Web WASM dry run: PASS
+```
+
+The known non-fatal Cupertino icon-font warning remains visible while the Web build completes successfully.
+
+## Final accepted Phase 20 native matrix
+
+```text
+Commit: 188e81c607eca76516018be8c668eab41b777cc1
+Platform Builds run: 31875447417
+Result: SUCCESS
+Android release APK: PASS - job 94990368847
+Linux release: PASS - job 94990368919
+Windows release: PASS - job 94990368886
+macOS release: PASS - job 94990368933
+unsigned iOS release: PASS - job 94990368933
+```
+
+This fresh matrix supersedes failed Android matrix `31875177571` and is the accepted cross-platform plugin compilation evidence.
+
+## Release status
+
+Phase 20 automated/runtime-source qualification is complete, but stable `1.0.0` remains intentionally unpromoted.
+
+Still-manual Phase 20 release boundaries include real `.nova2048` Save/Open/cancel/overwrite/round-trip behavior; Web browser download/file-input; Android/iOS document providers and selected cloud-backed files where practical; macOS sandbox access; Windows/Linux native pickers; malformed/non-UTF-8/oversized/large-valid files; restored-session restart/Undo behavior; and Hindi/large-text/keyboard/focus/screen-reader checks.
+
+Previously documented physical-device gameplay/lifecycle, Challenge Code, Replay/Full Replay, external browser/email handlers, native splash/icon review, signing/provisioning/notarization, and store metadata/review checks also remain required. Hosted builds are not physical-device or store qualification.
