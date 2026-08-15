@@ -381,3 +381,9 @@ Game Backup now supports the same current-game envelope through clipboard or fil
 - Restoring always replaces only after explicit confirmation and the session remains unranked after restart.
 
 The app does not automatically scan folders or upload backup files. See [`FILE_BACKUPS.md`](FILE_BACKUPS.md).
+
+## Sharing a Challenge Code by QR
+
+After choosing a supported mode and generating a seeded Challenge Code, 2048 Nova shows both the selectable `NOVA1...` text and a black-on-white QR containing exactly that text. Another device can scan the displayed QR with its own camera/scanner app, or you can use **Copy challenge code** and share the text normally.
+
+2048 Nova does not scan QR codes itself and does not need camera permission for this feature. Receiving/scanning a QR does not make a code trusted: validate/start it through the normal Challenge Codes screen, and remember that the checksum only detects accidental corruption.
