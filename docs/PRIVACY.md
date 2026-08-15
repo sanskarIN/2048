@@ -123,3 +123,10 @@ If future work adds analytics, ads, accounts, multiplayer/cloud synchronization,
 Language switching is an offline local operation. 2048 Nova does not send UI strings, selected language, game text, clipboard contents, or user data to an online translation API. English and Hindi strings ship with the application.
 
 Changing language does not alter or upload saved games, statistics, achievements, Daily history, Challenge Codes, Game Backup, Replay, or Auto Play data. The only network-capable actions remain explicit external browser/email/support destinations initiated by the player.
+
+
+## Per-mode record privacy
+
+Per-mode best score/highest-tile records are derived locally from trusted game sessions and stored inside the existing local statistics preference payload. They are not uploaded, synchronized, advertised, analyzed by telemetry, or attached to an account because 2048 Nova has no account/cloud analytics path.
+
+The Statistics screen reads these values locally. Game Backup export continues to contain only the current game envelope defined by the backup feature; lifetime aggregate statistics and per-mode records are not exported with it. Imported backups remain unranked and cannot write these records.
