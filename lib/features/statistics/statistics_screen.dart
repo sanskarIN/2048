@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../app/state/app_controller.dart';
 import '../../app/state/app_scope.dart';
 import '../../core/localization/nova_localizations.dart';
+import '../../domain/game_types.dart';
 import '../../shared/nova_scaffold.dart';
 
 class StatisticsScreen extends StatelessWidget {
@@ -28,25 +30,38 @@ class StatisticsScreen extends StatelessWidget {
       ('Current win streak', '${stats.currentStreak}'),
       ('Best win streak', '${stats.bestStreak}'),
     ];
+    final modeRecords = [
+      for (final mode in GameMode.values)
+        if (stats.existingRecordFor(mode)?.hasProgress ?? false)
+          (mode, stats.existingRecordFor(mode)!),
+    ];
+
     return NovaScaffold(
       title: l10n.text('Statistics'),
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
-        itemCount: values.length + 1,
+        itemCount: values.length + modeRecords.length + 1,
         separatorBuilder: (_, __) => const SizedBox(height: 8),
         itemBuilder: (context, index) {
-          if (index == values.length) {
-            return OutlinedButton.icon(
-              onPressed: () => _reset(context),
-              icon: const Icon(Icons.delete_outline_rounded),
-              label: Text(l10n.text('Reset statistics')),
+          if (index < values.length) {
+            return Card(
+              child: ListTile(
+                title: Text(l10n.text(values[index].$1)),
+                trailing: Text(values[index].$2),
+              ),
             );
           }
-          return Card(
-            child: ListTile(
-              title: Text(l10n.text(values[index].$1)),
-              trailing: Text(values[index].$2),
-            ),
+
+          final modeIndex = index - values.length;
+          if (modeIndex < modeRecords.length) {
+            final entry = modeRecords[modeIndex];
+            return _ModeRecordCard(mode: entry.$1, record: entry.$2);
+          }
+
+          return OutlinedButton.icon(
+            onPressed: () => _reset(context),
+            icon: const Icon(Icons.delete_outline_rounded),
+            label: Text(l10n.text('Reset statistics')),
           );
         },
       ),
@@ -82,5 +97,42 @@ class StatisticsScreen extends StatelessWidget {
     if (confirmed == true && context.mounted) {
       await controller.resetStats();
     }
+  }
+}
+
+class _ModeRecordCard extends StatelessWidget {
+  const _ModeRecordCard({required this.mode, required this.record});
+
+  final GameMode mode;
+  final ModeRecord record;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final metadata = <String>[
+      if (record.bestScoreBoardSize != null)
+        l10n.boardSize(record.bestScoreBoardSize!),
+      if (record.bestScoreTarget != null)
+        l10n.targetTile(record.bestScoreTarget!),
+    ];
+
+    return Card(
+      child: ExpansionTile(
+        title: Text(l10n.modeName(mode)),
+        subtitle: metadata.isEmpty ? null : Text(metadata.join(' • ')),
+        children: [
+          ListTile(
+            dense: true,
+            title: Text(l10n.text('Best score')),
+            trailing: Text('${record.bestScore}'),
+          ),
+          ListTile(
+            dense: true,
+            title: Text(l10n.text('Highest tile')),
+            trailing: Text('${record.highestTile}'),
+          ),
+        ],
+      ),
+    );
   }
 }
