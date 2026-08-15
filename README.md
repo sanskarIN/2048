@@ -221,6 +221,7 @@ More detail: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 Runtime dependencies beyond Flutter are intentionally limited to:
 
+- `file_picker` — explicit user-selected Game Backup file save/open transport across configured Flutter targets.
 - `shared_preferences` — small local game/settings/statistics storage.
 - `url_launcher` — safe handoff to browser/email handlers for explicit external actions.
 
