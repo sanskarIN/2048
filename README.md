@@ -363,3 +363,12 @@ Support is optional and is never required to play, build, fork, or contribute to
 Player-facing Home, modes, gameplay controls/dialogs, Daily Challenge, statistics, achievements, Challenge Codes, Game Backup, Move Replay, Auto Play Demo, Guide, About, Support, external-link fallbacks, and board accessibility semantics use the localization layer. Protocol identifiers such as `NOVA1`, JSON keys, seeds, tile values, URLs, and email addresses remain exact.
 
 See [`docs/LOCALIZATION.md`](docs/LOCALIZATION.md) for architecture, fallback rules, privacy behavior, contributor guidance, automated coverage, and remaining manual Hindi accessibility/layout qualification.
+
+
+## Trusted per-mode records
+
+The Statistics screen now keeps a trusted local best score and highest tile for every game mode that has ranked progress on this installation. When a best score is established, its board size and target are preserved as record metadata so configurable modes are not described as though they always used one setup.
+
+Per-mode records are offline-only and follow the same ranking boundary as the rest of 2048 Nova: normal locally started games, including deterministic seeded games, can update records; editable Game Backup imports remain unranked and cannot update them. Reset Statistics clears historical mode records and, when a ranked game is active, rebuilds only that active mode's observable baseline.
+
+See [`docs/MODE_RECORDS.md`](docs/MODE_RECORDS.md) for persistence, migration, reset, trust, and test details.
