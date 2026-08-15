@@ -163,6 +163,20 @@ class PlayerStats {
     if (stats.bestStreak < stats.currentStreak) {
       stats.bestStreak = stats.currentStreak;
     }
+    final rawModeRecords = json['modeRecords'];
+    if (rawModeRecords is Map) {
+      for (final mode in GameMode.values) {
+        final rawRecord = rawModeRecords[mode.name];
+        if (rawRecord is! Map) continue;
+        final normalized = <String, Object?>{};
+        for (final entry in rawRecord.entries) {
+          final key = entry.key;
+          if (key is String) normalized[key] = entry.value;
+        }
+        final record = ModeRecord.fromJson(normalized);
+        if (record.hasProgress) stats.modeRecords[mode] = record;
+      }
+    }
     return stats;
   }
 
