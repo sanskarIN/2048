@@ -1,0 +1,151 @@
+name: Phase 17 documentation commits
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/phase17-docs.yml
+
+permissions:
+  contents: write
+
+jobs:
+  phase17-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure commit identity
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+
+      - name: Document player-facing mode records
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('README.md')
+          text = path.read_text()
+          marker = '## Trusted per-mode records'
+          if marker in text:
+              raise SystemExit('README Phase 17 section already exists')
+          text += '''\n\n## Trusted per-mode records\n\nThe Statistics screen now keeps a trusted local best score and highest tile for every game mode that has ranked progress on this installation. When a best score is established, its board size and target are preserved as record metadata so configurable modes are not described as though they always used one setup.\n\nPer-mode records are offline-only and follow the same ranking boundary as the rest of 2048 Nova: normal locally started games, including deterministic seeded games, can update records; editable Game Backup imports remain unranked and cannot update them. Reset Statistics clears historical mode records and, when a ranked game is active, rebuilds only that active mode's observable baseline.\n\nSee [`docs/MODE_RECORDS.md`](docs/MODE_RECORDS.md) for persistence, migration, reset, trust, and test details.\n'''
+          path.write_text(text)
+          PY
+          git add README.md
+          git commit -m "docs: add per-mode records to project overview"
+
+      - name: Document storage schema extension
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('docs/DATA_STORAGE.md')
+          text = path.read_text()
+          marker = '## Phase 17 per-mode statistics extension'
+          if marker in text:
+              raise SystemExit('DATA_STORAGE Phase 17 section already exists')
+          text += '''\n\n## Phase 17 per-mode statistics extension\n\n`PlayerStats` now stores an optional `modeRecords` object inside the existing statistics JSON payload. Keys are current `GameMode.name` values. Each retained record may contain `bestScore`, `highestTile`, `bestScoreBoardSize`, and `bestScoreTarget`. No new preference key or storage backend is introduced.\n\nThe parser treats this as a backward-compatible optional extension: legacy statistics without `modeRecords` remain valid, unknown future mode keys are ignored, malformed record objects are skipped, numeric fields are range/type checked, tile/target values must be valid powers of two, board size must remain within 3 through 8, and empty records are omitted when serialized.\n\nA ranked restored current game can seed a missing record from its observable score/board. An imported Game Backup cannot seed or mutate records because its persistent unranked marker is restored before trusted statistics repair is applied. Reset Statistics clears historical records; a ranked active game then recreates only its current-mode baseline, while an unranked active import recreates none.\n\nSee [`MODE_RECORDS.md`](MODE_RECORDS.md) for the complete trust and migration contract.\n'''
+          path.write_text(text)
+          PY
+          git add docs/DATA_STORAGE.md
+          git commit -m "docs: describe per-mode record persistence"
+
+      - name: Document architecture boundary
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('docs/ARCHITECTURE.md')
+          text = path.read_text()
+          marker = '## Phase 17 per-mode record boundary'
+          if marker in text:
+              raise SystemExit('ARCHITECTURE Phase 17 section already exists')
+          text += '''\n\n## Phase 17 per-mode record boundary\n\nPer-mode records remain part of controller-owned player statistics rather than the deterministic engine. `ModeRecord` and `PlayerStats.modeRecords` live in `lib/app/state/app_controller.dart`; the engine still knows nothing about lifetime records, trust, imported backups, or UI presentation.\n\n`AppController` is the policy boundary. It updates a mode record only while `_currentGameUnranked` is false, seeds a missing record from a ranked restored session, preserves maxima across Undo, rebuilds only an active ranked baseline after Reset Statistics, and deliberately bypasses record mutation for imported portable progress. `StatisticsScreen` only reads the sanitized records and presents localized mode/configuration metadata.\n\nThis keeps three separate concerns explicit: deterministic game state, trusted local aggregate/record policy, and presentation. Future online/cloud/portable ranking work must not bypass this separation.\n'''
+          path.write_text(text)
+          PY
+          git add docs/ARCHITECTURE.md
+          git commit -m "docs: define per-mode record architecture"
+
+      - name: Document user workflow
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('docs/USER_GUIDE.md')
+          text = path.read_text()
+          marker = '## Per-mode records'
+          if marker in text:
+              raise SystemExit('USER_GUIDE per-mode section already exists')
+          text += '''\n\n## Per-mode records\n\nOpen **Statistics** to see the existing overall totals followed by an expandable card for every mode that has trusted local progress. A mode card shows its best score and highest tile. When a best score has configuration metadata, the card also shows the board size and target associated with that score.\n\nMode records are local to this installation and work fully offline. Normal games you start inside 2048 Nova can improve them. A Game Backup that you import is labeled unranked and cannot improve overall or per-mode records, even if you keep playing that imported board.\n\nChoosing **Reset statistics** removes historical mode records. If a ranked game is still active, its current observable progress becomes the fresh baseline for only that mode. If the active board came from an imported backup, no mode record is recreated from it.\n'''
+          path.write_text(text)
+          PY
+          git add docs/USER_GUIDE.md
+          git commit -m "docs: explain per-mode records to players"
+
+      - name: Document privacy behavior
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('docs/PRIVACY.md')
+          text = path.read_text()
+          marker = '## Per-mode record privacy'
+          if marker in text:
+              raise SystemExit('PRIVACY per-mode section already exists')
+          text += '''\n\n## Per-mode record privacy\n\nPer-mode best score/highest-tile records are derived locally from trusted game sessions and stored inside the existing local statistics preference payload. They are not uploaded, synchronized, advertised, analyzed by telemetry, or attached to an account because 2048 Nova has no account/cloud analytics path.\n\nThe Statistics screen reads these values locally. Game Backup export continues to contain only the current game envelope defined by the backup feature; lifetime aggregate statistics and per-mode records are not exported with it. Imported backups remain unranked and cannot write these records.\n'''
+          path.write_text(text)
+          PY
+          git add docs/PRIVACY.md
+          git commit -m "docs: record per-mode statistics privacy"
+
+      - name: Document backup isolation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('docs/BACKUP_AND_RESTORE.md')
+          text = path.read_text()
+          marker = '## Per-mode record isolation'
+          if marker in text:
+              raise SystemExit('BACKUP_AND_RESTORE per-mode section already exists')
+          text += '''\n\n## Per-mode record isolation\n\nPhase 17 extends the existing imported-backup trust boundary to per-mode records. Importing a valid backup does not create or improve a mode best score/highest tile, continuing to play that imported board still does not update a mode record, and Reset Statistics does not rebuild a mode baseline from the unranked imported state.\n\nThis is intentional because backup JSON is portable and editable. Its board/score can be useful for restoration without being treated as authenticated evidence for trusted local records. A fresh locally started game, including a locally started seeded configuration, returns to the normal ranked record path.\n'''
+          path.write_text(text)
+          PY
+          git add docs/BACKUP_AND_RESTORE.md
+          git commit -m "docs: extend backup trust boundary to mode records"
+
+      - name: Document security boundary
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('SECURITY.md')
+          text = path.read_text()
+          marker = '## Per-mode record integrity'
+          if marker in text:
+              raise SystemExit('SECURITY per-mode section already exists')
+          text += '''\n\n## Per-mode record integrity\n\nPer-mode records are convenience statistics, not cryptographic achievements. They are accepted only from the application's trusted local-session path; imported Game Backup progress is persistently marked unranked and cannot update them. Stored record fields are parsed defensively and bounded before use, and unknown future mode keys are ignored.\n\nThis boundary prevents the supported portable/editable backup format from directly inflating local mode records. It is not an anti-cheat or tamper-proof system: users with direct control of application storage can modify local preferences. Any future competitive/online ranking design would require a separate authenticated threat model rather than reusing these local records as proof.\n'''
+          path.write_text(text)
+          PY
+          git add SECURITY.md
+          git commit -m "docs: define per-mode record integrity boundary"
+
+      - name: Document regression coverage
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('docs/TESTING.md')
+          text = path.read_text()
+          marker = '## Phase 17 per-mode record regression coverage'
+          if marker in text:
+              raise SystemExit('TESTING Phase 17 section already exists')
+          text += '''\n\n## Phase 17 per-mode record regression coverage\n\nPhase 17 adds 10 focused tests across four files before the final maintained CI gate is recorded:\n\n- `mode_record_serialization_test.dart`: record round-trip, malformed/unknown-record handling, and legacy statistics compatibility.\n- `mode_record_tracking_test.dart`: ranked record persistence, migration from an observable legacy current game, and Reset Statistics active-mode baseline behavior.\n- `mode_record_unranked_test.dart`: imported-backup exclusion across import/move/reset plus ranked handling for locally started seeded configurations.\n- `statistics_mode_records_test.dart`: expandable per-mode Statistics presentation and reuse of English/Hindi localization for mode/configuration/record labels.\n\nThe feature intentionally relies on the existing imported-game, controller, persistence, and localization suites as additional cross-coverage. The current passing total must be taken from the newest CI/verification entry rather than inferred from this section.\n'''
+          path.write_text(text)
+          PY
+          git add docs/TESTING.md
+          git commit -m "docs: describe Phase 17 record regression coverage"
+
+      - name: Remove temporary helper and push documentation commits
+        run: |
+          git rm .github/workflows/phase17-docs.yml
+          git commit -m "chore: remove Phase 17 documentation helper"
+          git pull --rebase origin main
+          git push origin HEAD:main
