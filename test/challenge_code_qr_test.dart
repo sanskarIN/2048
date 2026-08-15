@@ -29,7 +29,8 @@ void main() {
     const code = 'NOVA1.exact-portable-code.89abcdef';
     await tester.pumpWidget(app(width: 400, code: code));
 
-    final wrapper = tester.widget<ChallengeCodeQr>(find.byType(ChallengeCodeQr));
+    final wrapper =
+        tester.widget<ChallengeCodeQr>(find.byType(ChallengeCodeQr));
     expect(wrapper.code, code);
 
     final qr = tester.widget<QrImageView>(find.byType(QrImageView));
