@@ -5,6 +5,8 @@ All notable changes to this project are documented here.
 ## [Unreleased]
 
 ### Added
+- Trusted local **per-mode records** for best score and highest tile, with best-score board-size/target metadata, backward-compatible persistence, and localized expandable Statistics cards.
+- Ten focused Phase 17 regression tests covering per-mode serialization/migration, ranked tracking/reset behavior, imported-backup isolation, and English/Hindi Statistics presentation.
 - Offline English/Hindi localization framework with System default, English, and हिन्दी language selection, persisted settings, English fallback, localized critical error paths, and Hindi board accessibility semantics.
 - Flutter SDK Material/Widgets/Cupertino localization delegates and a repository-owned Hindi translation catalog; no online translation service is required.
 - Initial 2048 Nova Flutter codebase with Android, iOS, Web, Windows, macOS, and Linux runners.
@@ -39,6 +41,8 @@ All notable changes to this project are documented here.
 - Friendly copy fallback when an approved external destination cannot be opened by the platform.
 
 ### Changed
+- Statistics reset now clears historical per-mode records while rebuilding only the observable baseline for a ranked active session; an imported unranked session rebuilds none.
+- Ranked legacy current games can seed missing per-mode records during startup repair without inventing records for historical games that are no longer observable.
 - Home, modes, gameplay controls/dialogs, Daily Challenge, statistics, achievements, Challenge Codes, Game Backup, Move Replay, Auto Play Demo, Guide, About, Support, splash semantics, and external-link fallbacks now use the shared localization layer.
 - Serialized game-move processing to prevent rapid swipe/keyboard requests from racing state persistence.
 - Scoped complete-data reset to project-owned preference keys only.
@@ -120,6 +124,8 @@ All notable changes to this project are documented here.
 - Full chronological evidence, including real intermediate failures and superseded runs rather than hidden history, is maintained in `what_changed.md`.
 
 ### Security
+- Portable/editable Game Backup progress is excluded from per-mode record updates across import, continued moves, restart restoration, and statistics reset.
+- Persisted per-mode record values are sanitized/bounded before use, and unknown future mode keys are ignored.
 - No embedded credentials, analytics SDK, advertising tracker, account system, payment SDK, or cloud synchronization service.
 - External destinations are opened only through explicit user actions and an `https`/`mailto` scheme allowlist.
 - Local structured data is validated; malformed current-game data fails safely; partially corrupt bounded histories are repaired from valid records when possible.
