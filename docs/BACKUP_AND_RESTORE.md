@@ -71,7 +71,7 @@ maxFileBytes = 512 KiB
 
 Malformed JSON, wrong envelope type, unsupported format/version, invalid timestamps, missing game data, invalid board values, invalid dimensions, invalid counters, unsupported save schemas, and other invalid `GameState` fields are rejected rather than partially trusted.
 
-The size check happens before JSON parsing so unexpectedly large clipboard content is refused early.
+The encoded-text size check happens before JSON parsing. File import adds a 512 KiB byte ceiling before UTF-8 conversion and checks the actual loaded byte length again before the existing 128 Ki-character protocol limit is applied. The filename and extension never bypass content validation.
 
 ## Unranked import policy
 
