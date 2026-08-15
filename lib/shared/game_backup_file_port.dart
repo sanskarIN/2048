@@ -15,6 +15,12 @@ class BackupFileDocument {
   final String text;
 }
 
+/// Explicit user-selected transport for portable current-game backup text.
+///
+/// Selecting a path or receiving a platform document grant does not make the
+/// file contents trusted. Callers must still pass imported text through the
+/// project-owned [GameBackup] codec before any state mutation and must preserve
+/// the controller's persistent unranked-import policy.
 abstract interface class GameBackupFilePort {
   Future<BackupFileSaveOutcome> saveText({
     required String suggestedName,
@@ -24,6 +30,11 @@ abstract interface class GameBackupFilePort {
   Future<BackupFileDocument?> openText({required int maxBytes});
 }
 
+/// Production file-picker adapter.
+///
+/// This class owns only platform/browser file transport and pre-decode byte
+/// bounds. It does not parse game state, decide ranking, retain file history,
+/// scan directories, or upload backup data.
 class SystemGameBackupFilePort implements GameBackupFilePort {
   const SystemGameBackupFilePort();
 
