@@ -225,3 +225,12 @@ One-time migration or repair workflows should be deleted after successful use ra
 Current runtime source commit `d33d65840aff67c4e9bf69ad203f46b85146093c` was verified by permanent CI run `31867788776` and Platform Builds run `31867788753`. CI passed formatting (74 files, 0 changed), static analysis, all **144/144 tests**, Web release compilation, and the Web WASM dry run. The native matrix passed Android APK, Linux, Windows, macOS, and unsigned iOS release builds.
 
 This current-source rerun was not created to substitute documentation for testing: the `lib/**` source-documentation clarification intentionally exercised the normal maintained workflow triggers after the final runtime parser correction. The results therefore apply to the corrected runtime tree.
+
+
+## Phase 18 maintained workflow evidence
+
+Phase 18 final automated qualification uses permanent CI run `31869835223` and Platform Builds run `31869794809`. CI passed formatting (80 files, 0 changed), static analysis, **161/161 tests**, Web release compilation, and the Web WASM dry run under Flutter 3.47.0 / Dart 3.13.0.
+
+The native workflow passed Android APK, Linux, Windows, macOS, and unsigned iOS release builds on runtime commit `e324882fc861e9e4221020aabb00515c7366a6f7`. The later CI-only commit `b114255b6f510f0e7ba8d0516e9a30eebf4451b8` fixes a missing test import and leaves runtime source unchanged.
+
+Intermediate analyzer failures `31869526679` and `31869794852` are retained in the verification/work log. The first caught a duplicate Hindi translation key and CLI `avoid_print` issues; the second caught a missing localization import in a widget test. Permanent quality gates were not weakened to bypass either issue.
