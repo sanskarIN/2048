@@ -7,6 +7,7 @@ import '../../domain/daily_record.dart';
 import '../../domain/game_engine.dart';
 import '../../domain/game_state.dart';
 import '../../domain/game_types.dart';
+import '../../domain/replay_archive.dart';
 
 class AppSettings {
   AppSettings({
@@ -236,6 +237,7 @@ class AppController extends ChangeNotifier {
   bool _winCounted = false;
   bool _moveInProgress = false;
   bool _currentGameUnranked = false;
+  ReplayCapture? _replayCapture;
 
   final List<Achievement> achievements = [
     Achievement(
@@ -341,6 +343,7 @@ class AppController extends ChangeNotifier {
   bool get hasGame => game != null;
   bool get canUndo => !_moveInProgress && _undo.isNotEmpty;
   bool get currentGameIsUnranked => game != null && _currentGameUnranked;
+  ReplayCapture? get replayCapture => _replayCapture;
 
   Future<void> initialize() async {
     settings = AppSettings.fromJson(await store.loadSettings());
@@ -350,11 +353,20 @@ class AppController extends ChangeNotifier {
       ..clear()
       ..addAll(await store.loadDailyHistory());
     game = await store.loadGame();
+    final storedReplayCapture = await store.loadReplayCapture();
     _currentGameUnranked =
         game != null && await store.loadCurrentGameUnranked();
     var repairedSession = false;
     if (game != null) {
       _engine = GameEngine(config: game!.config);
+      if (storedReplayCapture != null &&
+          storedReplayCapture.belongsTo(game!) &&
+          _isReplayCaptureValidForCurrent(storedReplayCapture, game!)) {
+        _replayCapture = storedReplayCapture;
+      } else {
+        _replayCapture = ReplayCapture.incomplete(game!);
+        if (storedReplayCapture != null) repairedSession = true;
+      }
       final restoredUndo = await store.loadUndoHistory();
       final current = game!;
       _undo
@@ -379,6 +391,7 @@ class AppController extends ChangeNotifier {
         _applyTerminalStats(current);
       }
       if (current.status != previousStatus) {
+        _replayCapture?.appendStatusRefresh(DateTime.now());
         if (!_currentGameUnranked) {
           _updateDailyRecord(current);
         }
@@ -387,6 +400,8 @@ class AppController extends ChangeNotifier {
       if (!_currentGameUnranked && stats.currentStreak != previousStreak) {
         repairedSession = true;
       }
+    } else if (storedReplayCapture != null) {
+      await store.clearReplayCapture();
     }
     _unlockAchievements();
     if (repairedSession) await _persist();
@@ -396,6 +411,7 @@ class AppController extends ChangeNotifier {
     if (_moveInProgress) return;
     _engine = GameEngine(config: config);
     game = _engine!.createGame(bestScore: stats.bestScore);
+    _replayCapture = ReplayCapture.start(game!);
     _undo.clear();
     _currentGameUnranked = false;
     _sessionCounted = true;
@@ -414,13 +430,16 @@ class AppController extends ChangeNotifier {
     _moveInProgress = true;
     try {
       final snapshot = current.copy();
-      final outcome = engine.move(current, direction);
+      final now = DateTime.now();
+      final outcome = engine.move(current, direction, now: now);
       if (!outcome.changed) {
         notifyListeners();
         return outcome;
       }
       _undo.add(snapshot);
       if (_undo.length > 50) _undo.removeAt(0);
+      (_replayCapture ??= ReplayCapture.incomplete(snapshot))
+          .appendMove(direction, now);
       if (!_currentGameUnranked) {
         stats.totalMoves += 1;
         stats.totalMerges += outcome.merges;
@@ -450,10 +469,19 @@ class AppController extends ChangeNotifier {
       restored.bestScore = stats.bestScore;
     }
     game = restored;
+    final capture = _replayCapture;
+    if (capture != null && capture.startsAtSessionStart) {
+      capture.appendUndo(DateTime.now());
+    } else {
+      _replayCapture = ReplayCapture.incomplete(restored);
+    }
     _engine = GameEngine(config: game!.config);
     if (!_currentGameUnranked) _updateDailyRecord(game!);
     await store.saveGame(game!);
     await store.saveUndoHistory(_undo);
+    if (_replayCapture != null) {
+      await store.saveReplayCapture(_replayCapture!);
+    }
     if (!_currentGameUnranked) {
       await store.saveDailyHistory(dailyHistory);
     }
@@ -486,8 +514,10 @@ class AppController extends ChangeNotifier {
     final engine = _engine;
     if (current == null || engine == null || _moveInProgress) return;
     final before = current.status;
-    engine.refreshStatus(current);
+    final now = DateTime.now();
+    engine.refreshStatus(current, now: now);
     if (before != current.status) {
+      _replayCapture?.appendStatusRefresh(now);
       if (!_currentGameUnranked) {
         _updateModeRecord(current);
         _applyTerminalStats(current);
@@ -501,8 +531,10 @@ class AppController extends ChangeNotifier {
 
   Future<void> continueAfterWin() async {
     if (game == null || _moveInProgress) return;
+    final now = DateTime.now();
     game!.hasAcknowledgedWin = true;
     game!.status = GameStatus.playing;
+    _replayCapture?.appendContinueAfterWin(now);
     _winCounted = true;
     if (!_currentGameUnranked) {
       _updateDailyRecord(game!);
@@ -520,12 +552,14 @@ class AppController extends ChangeNotifier {
     _engine = GameEngine(config: restored.config);
     _engine!.refreshStatus(restored);
     game = restored;
+    _replayCapture = ReplayCapture.incomplete(restored);
     _undo.clear();
     _currentGameUnranked = true;
     _sessionCounted = false;
     _winCounted = true;
     await store.saveGame(restored);
     await store.saveUndoHistory(_undo);
+    await store.saveReplayCapture(_replayCapture!);
     await store.saveCurrentGameUnranked(true);
     notifyListeners();
   }
@@ -535,6 +569,7 @@ class AppController extends ChangeNotifier {
     game = null;
     _engine = null;
     _undo.clear();
+    _replayCapture = null;
     _currentGameUnranked = false;
     await store.clearGame();
     notifyListeners();
@@ -545,6 +580,7 @@ class AppController extends ChangeNotifier {
     game = null;
     _engine = null;
     _undo.clear();
+    _replayCapture = null;
     dailyHistory.clear();
     settings = AppSettings();
     stats = PlayerStats();
@@ -627,9 +663,26 @@ class AppController extends ChangeNotifier {
       await store.saveCurrentGameUnranked(_currentGameUnranked);
     }
     await store.saveUndoHistory(_undo);
+    if (_replayCapture != null) {
+      await store.saveReplayCapture(_replayCapture!);
+    }
     await store.saveStats(stats.toJson());
     await store.saveDailyHistory(dailyHistory);
     await _saveAchievements();
+  }
+
+  bool _isReplayCaptureValidForCurrent(
+    ReplayCapture capture,
+    GameState current,
+  ) {
+    try {
+      final frames = ReplayArchivePlayer.build(capture);
+      if (frames.isEmpty) return false;
+      if (capture.overflowed) return true;
+      return ReplayArchivePlayer.equivalent(frames.last, current);
+    } on Object {
+      return false;
+    }
   }
 
   bool _belongsToCurrentSession(GameState snapshot, GameState current) {
