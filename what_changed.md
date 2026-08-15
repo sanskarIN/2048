@@ -3067,3 +3067,65 @@ A focused permanent verification record is available at:
 ```text
 docs/PHASE_17_VERIFICATION.md
 ```
+
+
+## Phase 17 final current-source native matrix
+
+A final audit found that Phase 17 already had successful hosted native-build evidence on commit `752bf15074ff43dd614d5e6888f8ec16f29560d7`, but that matrix predated the later parser correction in `341f2ad5d5b252f75e52e05ed7aede8a8aa38fbb`. Because the parser correction had been pushed by a one-time `GITHUB_TOKEN` helper, it did not trigger a new Platform Builds run.
+
+The evidence gap was closed without an empty/no-op commit. `lib/features/statistics/statistics_screen.dart` received maintainer-facing source documentation clarifying that the Statistics screen is read-only with respect to ranking, that `AppController` owns the imported-backup trust policy, and that board/target metadata is intentionally presented as one record context.
+
+```text
+d33d65840aff67c4e9bf69ad203f46b85146093c
+docs: clarify statistics record trust boundary in source
+```
+
+Because this is a real `lib/**` source change, the maintained push triggers verified the complete corrected runtime tree.
+
+### Current-source CI
+
+```text
+Commit: d33d65840aff67c4e9bf69ad203f46b85146093c
+CI workflow run: 31867788776
+CI job: 94971490776
+Result: SUCCESS
+Runner: ubuntu-24.04
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Dependency resolution: PASS
+Formatting: PASS — 74 files, 0 changed
+Static analysis: PASS — No issues found
+Automated tests: PASS — 144/144
+Flutter Web release build: PASS — build/web produced
+Flutter Web WASM dry run: PASS
+```
+
+The Web compiler again emitted the existing non-fatal Cupertino icon-font availability warning but completed successfully and produced `build/web`. A source search did not find a direct `CupertinoIcons` usage, so no speculative dependency/source change was made solely to silence a successful-build warning.
+
+### Current-source hosted native matrix
+
+```text
+Platform Builds workflow run: 31867788753
+Commit: d33d65840aff67c4e9bf69ad203f46b85146093c
+Result: SUCCESS
+
+Android release APK
+  Job: 94971490848
+  flutter build apk --release: PASS
+
+Linux release
+  Job: 94971490809
+  flutter build linux --release: PASS
+
+Windows release
+  Job: 94971490788
+  flutter build windows --release: PASS
+
+macOS and unsigned iOS release
+  Job: 94971490875
+  macOS release build: PASS
+  unsigned iOS release build: PASS
+```
+
+This supersedes the Phase 16 native matrix as the latest hosted multi-platform compilation evidence and covers the final Phase 17 per-mode-record deserializer/tracking/UI runtime source. It still does not replace physical-device gameplay/lifecycle testing, assistive-technology testing, signing/provisioning, or store metadata/review. Stable `1.0.0` therefore remains intentionally unpromoted.
