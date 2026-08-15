@@ -276,4 +276,12 @@ const hindiTranslations = <String, String>{
       'यह लिंक सुरक्षित रूप से नहीं खोला जा सकता।',
   'Could not open this link on your device.':
       'यह लिंक आपके डिवाइस पर नहीं खोला जा सका।',
+  'Deterministic local solver demonstration':
+      'निर्धारक स्थानीय सॉल्वर प्रदर्शन',
+  'Choose the fast heuristic or a bounded expectimax search. Both run only inside this isolated deterministic sandbox, never change your saved game, statistics, achievements, or Daily history, and never consume the live game RNG. Normal Hint remains the fast heuristic and is not replaced by expectimax.':
+      'तेज़ ह्यूरिस्टिक या सीमित एक्सपेक्टिमैक्स खोज चुनें। दोनों केवल इस अलग निर्धारक सैंडबॉक्स में चलते हैं, आपके सेव गेम, आँकड़े, उपलब्धियाँ या डेली हिस्ट्री को कभी नहीं बदलते और लाइव गेम RNG का उपयोग नहीं करते। सामान्य संकेत तेज़ ह्यूरिस्टिक ही रहता है और उसे एक्सपेक्टिमैक्स से नहीं बदला जाता।',
+  'Strategy': 'रणनीति',
+  'Search nodes': 'खोज नोड',
+  'Heuristic': 'ह्यूरिस्टिक',
+  'Expectimax': 'एक्सपेक्टिमैक्स',
 };
