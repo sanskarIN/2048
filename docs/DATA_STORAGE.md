@@ -170,7 +170,7 @@ Only achievement unlock timestamps are cleared.
 
 ### Clear all local data
 
-`clearAll()` removes only the seven project-owned keys listed above. It does not call a blanket preferences wipe and therefore does not remove unrelated keys that another component might own.
+`clearAll()` removes the eight project-owned keys, including the replay-capture key. It does not call a blanket preferences wipe and therefore does not remove unrelated keys that another component might own.
 
 Generated Challenge Code text is not one of those keys. Any clipboard copy is controlled by the operating system/platform clipboard and is outside `SharedPreferences` reset semantics.
 
@@ -225,3 +225,11 @@ The parser treats this as a backward-compatible optional extension: legacy stati
 A ranked restored current game can seed a missing record from its observable score/board. An imported Game Backup cannot seed or mutate records because its persistent unranked marker is restored before trusted statistics repair is applied. Reset Statistics clears historical records; a ranked active game then recreates only its current-mode baseline, while an unranked active import recreates none.
 
 See [`MODE_RECORDS.md`](MODE_RECORDS.md) for the complete trust and migration contract.
+
+## Full-session replay capture
+
+The active full-session replay capture uses the project-owned SharedPreferences key `nova.replay_capture.v1`. It stores a copied initial game state, `startsAtSessionStart`, `overflowed`, and at most 4,096 ordered replay events. Events record elapsed milliseconds plus the action kind and, for moves, direction.
+
+Legacy or restored sessions can receive an incomplete capture so the app remains safe without inventing missing earlier actions. A Game Backup import always receives an incomplete capture. Incomplete or overflowed captures cannot be encoded as portable full-session archives.
+
+Replay capture belongs to the current game lifecycle. Corrupt current-game recovery, Reset Current Game, and Clear All remove it. Malformed capture persistence is removed safely. Opening imported portable replay text is a separate spectator-only in-memory operation and does not install external replay data as trusted current-game progress.
