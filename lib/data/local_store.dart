@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../domain/daily_record.dart';
 import '../domain/game_state.dart';
+import '../domain/replay_archive.dart';
 
 class LocalStore {
   static const _gameKey = 'nova.current_game.v1';
@@ -13,6 +14,7 @@ class LocalStore {
   static const _achievementsKey = 'nova.achievements.v1';
   static const _dailyHistoryKey = 'nova.daily_history.v1';
   static const _gameUnrankedKey = 'nova.current_game_unranked.v1';
+  static const _replayCaptureKey = 'nova.replay_capture.v1';
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
@@ -31,6 +33,7 @@ class LocalStore {
         await prefs.remove(_gameKey);
         await prefs.remove(_undoKey);
         await prefs.remove(_gameUnrankedKey);
+        await prefs.remove(_replayCaptureKey);
         return null;
       }
       return GameState.fromJson(Map<String, Object?>.from(json));
@@ -38,8 +41,37 @@ class LocalStore {
       await prefs.remove(_gameKey);
       await prefs.remove(_undoKey);
       await prefs.remove(_gameUnrankedKey);
+      await prefs.remove(_replayCaptureKey);
       return null;
     }
+  }
+
+  Future<void> saveReplayCapture(ReplayCapture capture) async {
+    await (await _prefs).setString(
+      _replayCaptureKey,
+      jsonEncode(capture.toJson()),
+    );
+  }
+
+  Future<ReplayCapture?> loadReplayCapture() async {
+    final prefs = await _prefs;
+    final raw = prefs.getString(_replayCaptureKey);
+    if (raw == null) return null;
+    try {
+      final json = jsonDecode(raw);
+      if (json is! Map<String, dynamic>) {
+        await prefs.remove(_replayCaptureKey);
+        return null;
+      }
+      return ReplayCapture.fromJson(Map<String, Object?>.from(json));
+    } on Object {
+      await prefs.remove(_replayCaptureKey);
+      return null;
+    }
+  }
+
+  Future<void> clearReplayCapture() async {
+    await (await _prefs).remove(_replayCaptureKey);
   }
 
   Future<void> saveCurrentGameUnranked(bool value) async {
@@ -190,6 +222,7 @@ class LocalStore {
     await prefs.remove(_gameKey);
     await prefs.remove(_undoKey);
     await prefs.remove(_gameUnrankedKey);
+    await prefs.remove(_replayCaptureKey);
   }
 
   Future<void> clearAll() async {
@@ -202,6 +235,7 @@ class LocalStore {
       _achievementsKey,
       _dailyHistoryKey,
       _gameUnrankedKey,
+      _replayCaptureKey,
     ]) {
       await prefs.remove(key);
     }
