@@ -2,6 +2,66 @@
 
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
+## Phase 20 - File-Based Game Backup and current-source plugin matrix
+
+Date: **2026-08-15**
+
+Final accepted runtime source:
+
+```text
+Commit: 188e81c607eca76516018be8c668eab41b777cc1
+CI run: 31875447398
+CI job: 94990368739
+Result: SUCCESS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS - 91 files, 0 changed
+Static analysis: PASS - No issues found
+Tests: PASS - 189/189
+Web release: PASS - build/web
+Web WASM dry run: PASS
+```
+
+Fresh hosted native matrix on the same source:
+
+```text
+Platform Builds run: 31875447417
+Result: SUCCESS
+Android release APK: PASS - job 94990368847
+Linux release: PASS - job 94990368919
+Windows release: PASS - job 94990368886
+macOS release: PASS - job 94990368933
+unsigned iOS release: PASS - job 94990368933
+```
+
+The first final-source matrix `31875177571` failed Android only because `file_picker 11.0.2` was not being compiled into generated plugin registration with the host's AGP-9 built-in-Kotlin flag disabled. Linux, Windows, macOS, and unsigned iOS passed that run. Commit `188e81c607eca76516018be8c668eab41b777cc1` enabled `android.builtInKotlin=true`; the complete fresh matrix above then passed all configured targets.
+
+Phase 20 adds explicit user-selected `.nova2048` / `.json` Game Backup file transport with pre-decode byte bounds, strict UTF-8, the existing version-1 backup decoder, explicit confirmation, and the unchanged persistent unranked import policy. It adds six focused tests over the Phase 19 total of 183.
+
+Focused details: [`PHASE_20_VERIFICATION.md`](PHASE_20_VERIFICATION.md).
+
+## Phase 19 repository-audit correction
+
+Phase 19's earlier clean behavioral gate remains valid:
+
+```text
+Commit: 4a16608c9f8e94de529ef79ca5d213a81b66baae
+CI run: 31871817119
+CI job: 94981543084
+Result: SUCCESS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS - 88 files, 0 changed
+Static analysis: PASS - No issues found
+Tests: PASS - 183/183
+Web release: PASS
+Web WASM dry run: PASS
+```
+
+A later Phase 19 final-recorder run `31873308985` failed, final-source CI `31873227162` was cancelled, and stale temporary Phase 19 helpers were found and removed at the start of Phase 20. Those later failed/cancelled runs are not represented as successful Phase 19 acceptance evidence. Phase 20's native matrix compiles the accumulated runtime including Phase 19 code but is not relabeled as a Phase 19 focused matrix.
+
 ## Phase 18 — Bounded Expectimax and solver benchmarks
 
 Date: **2026-08-15**
