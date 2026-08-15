@@ -1,0 +1,30 @@
+name: Phase 21 documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/phase21-docs.yml
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply Phase 21 documentation commits
+        run: python3 tool/phase21_docs.py
+      - name: Push documentation commits
+        run: git push origin main
+      - name: Remove temporary documentation tools
+        run: |
+          git reset --hard HEAD
+          git rm tool/phase21_docs.py .github/workflows/phase21-docs.yml
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+          git commit -m "chore: remove Phase 21 documentation tools"
+          git push origin main
