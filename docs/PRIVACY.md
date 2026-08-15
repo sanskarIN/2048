@@ -137,3 +137,11 @@ The Statistics screen reads these values locally. Game Backup export continues t
 Heuristic, bounded Expectimax, and the deterministic solver benchmark run entirely on local in-memory board state. They send no board, seed, score, decision, benchmark metric, or diagnostic to a project server or third party. No remote AI/model API is used.
 
 Expectimax is available only through the isolated Auto Play sandbox. Its search-node count and expected-value calculation are transient diagnostics; they are not persisted as player data or analytics. The benchmark library/CLI creates fresh seeded sandbox sessions and writes no project preference key.
+
+## Full Replay Archive privacy
+
+Full Replay Archive records a bounded local action sequence for newly started sessions. The active capture stores the validated opening game state plus move, Undo, continue, and status events with elapsed action timing. It is local project data and is not uploaded, synchronized, analyzed, or sent to a remote AI service.
+
+Selecting **Copy full replay** writes a complete archive to the system clipboard only after explicit user action. **Open from clipboard** reads clipboard text only after explicit action; manual text entry is also available. The app does not monitor the clipboard in the background. Platform clipboard history and synchronization are controlled by the operating system or browser.
+
+A shared replay can reveal game configuration, seed and RNG state, opening board, move directions, timing, and reconstructed score and board evolution. The JSON is not encrypted or signed. Opening a replay is spectator-only and cannot import lifetime statistics, achievements, streaks, Daily history, settings, or per-mode records. Structural and deterministic validity is not proof of authorship.
