@@ -1,6 +1,6 @@
 # 2048 Nova Documentation
 
-This directory is the user, technical, development, platform, and release documentation set for 2048 Nova. The application is a Flutter/Dart, offline-first 2048 implementation with deterministic game rules, validated local persistence, multiple modes, trusted per-mode records, English/Hindi localization, accessibility controls, read-only Replay, an isolated heuristic Auto Play Demo, portable current-game backup/restore, and offline shareable seeded challenge codes.
+This directory is the user, technical, development, platform, and release documentation set for 2048 Nova. The application is a Flutter/Dart, offline-first 2048 implementation with deterministic game rules, validated local persistence, multiple modes, trusted per-mode records, English/Hindi localization, accessibility controls, read-only Replay, an isolated Heuristic/Expectimax Auto Play Demo with deterministic solver benchmarks, portable current-game backup/restore, and offline shareable seeded challenge codes.
 
 ## Start here
 
@@ -17,7 +17,8 @@ This directory is the user, technical, development, platform, and release docume
 | [`LOCALIZATION.md`](LOCALIZATION.md) | English/Hindi locale architecture, persisted language selection, fallback rules, contributor guidance, privacy, and accessibility boundaries. |
 | [`DATA_STORAGE.md`](DATA_STORAGE.md) | Local storage keys, save schemas, bounded collections, corruption recovery, and reset behavior. |
 | [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md) | Portable current-game backup format, clipboard workflow, strict validation, and unranked-import policy. |
-| [`HINT_SOLVER.md`](HINT_SOLVER.md) | Deterministic heuristic Hint and Auto Play Demo behavior and limitations. |
+| [`HINT_SOLVER.md`](HINT_SOLVER.md) | Deterministic heuristic Hint plus isolated Heuristic/Expectimax Auto Play behavior and limitations. |
+| [`SOLVER_BENCHMARKS.md`](SOLVER_BENCHMARKS.md) | Bounded expectimax design, node limits, sandbox trust boundary, deterministic benchmark library, and CLI harness. |
 | [`ACCESSIBILITY.md`](ACCESSIBILITY.md) | Implemented accessibility features and remaining manual assistive-technology checks, including localized semantics. |
 | [`PRIVACY.md`](PRIVACY.md) | Offline-first data behavior, language/localization, clipboard, external links, local storage, Replay, Auto Play, Backup, and Challenge Code privacy. |
 | [`DEVELOPMENT.md`](DEVELOPMENT.md) | Development environment, repository layout, localization practices, local workflow, testing, and contribution practices. |
@@ -53,6 +54,8 @@ A feature should not be documented as ranked/trusted when its source policy make
 - **Portable backup codec:** `lib/domain/game_backup.dart`.
 - **Replay timeline:** `lib/domain/replay_timeline.dart`.
 - **Auto Play sandbox:** `lib/domain/autoplay_session.dart`.
+- **Advanced solver:** `lib/domain/expectimax_solver.dart`.
+- **Solver benchmark library:** `lib/domain/solver_benchmark.dart`.
 - **Local persistence:** `lib/data/local_store.dart`.
 - **Player session/ranking/settings orchestration:** `lib/app/state/app_controller.dart`.
 - **Per-mode record presentation:** `lib/features/statistics/statistics_screen.dart`.
