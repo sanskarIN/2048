@@ -368,3 +368,16 @@ Imported archives are spectator-only. You can scrub, step, play or pause, jump t
 Capture is capped at 4,096 events. If a session reaches the cap, gameplay continues but complete export is disabled. Legacy games or Game Backup sessions whose earlier actions were never recorded are also not falsely exported as full sessions.
 
 Replay JSON is editable and not signed, so a valid archive means the sequence reconstructs consistently, not that the app has authenticated who played it. See [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md).
+
+## Save or open a backup file
+
+Game Backup now supports the same current-game envelope through clipboard or file transport.
+
+- Choose **Save backup file** to open the platform/browser save flow with a suggested `.nova2048` filename.
+- Choose **Import backup file** to select one `.nova2048` or `.json` file.
+- A cancelled picker changes nothing.
+- Oversized, non-UTF-8, malformed, unsupported, or invalid game-state content is rejected.
+- A valid file shows the same **Restore unranked backup?** preview as clipboard import.
+- Restoring always replaces only after explicit confirmation and the session remains unranked after restart.
+
+The app does not automatically scan folders or upload backup files. See [`FILE_BACKUPS.md`](FILE_BACKUPS.md).
