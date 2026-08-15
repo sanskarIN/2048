@@ -52,8 +52,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Classic'), findsOneWidget);
-    expect(find.text('4 × 4 board'), findsOneWidget);
-    expect(find.text('Target tile: 2048'), findsOneWidget);
+    expect(
+      find.text('4 × 4 board • Target tile: 2048'),
+      findsOneWidget,
+    );
 
     await tester.tap(find.text('Classic'));
     await tester.pumpAndSettle();
@@ -80,8 +82,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('क्लासिक'), findsOneWidget);
-    expect(find.text('4 × 4 बोर्ड'), findsOneWidget);
-    expect(find.text('लक्ष्य टाइल: 2048'), findsOneWidget);
+    expect(
+      find.text('4 × 4 बोर्ड • लक्ष्य टाइल: 2048'),
+      findsOneWidget,
+    );
 
     await tester.tap(find.text('क्लासिक'));
     await tester.pumpAndSettle();
