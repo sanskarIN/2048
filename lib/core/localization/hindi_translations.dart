@@ -381,5 +381,6 @@ const hindiTranslations = <String, String>{
   'Could not save backup file.': 'बैकअप फ़ाइल सेव नहीं की जा सकी।',
   'Could not open backup file.': 'बैकअप फ़ाइल खोली नहीं जा सकी।',
   'Backup file is too large.': 'बैकअप फ़ाइल बहुत बड़ी है।',
-  'Backup file is not valid UTF-8 text.': 'बैकअप फ़ाइल वैध UTF-8 टेक्स्ट नहीं है।',
+  'Backup file is not valid UTF-8 text.':
+      'बैकअप फ़ाइल वैध UTF-8 टेक्स्ट नहीं है।',
 };
