@@ -23,8 +23,8 @@ void main() {
     await tester.tap(find.text('Auto Play Demo'));
     await tester.pumpAndSettle();
 
-    expect(
-        find.text('Deterministic heuristic AI demonstration'), findsOneWidget);
+    expect(find.text('Deterministic local solver demonstration'), findsOneWidget);
+    expect(find.text('Strategy: Heuristic'), findsOneWidget);
     expect(find.text('Demo moves: 0'), findsOneWidget);
 
     await tester.scrollUntilVisible(
@@ -89,6 +89,43 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
     expect(_visibleMoveCount(tester), pausedMoves);
   });
+
+  testWidgets('expectimax can be selected without touching trusted app state',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final controller = AppController(store: LocalStore());
+    await controller.initialize();
+
+    await tester.pumpWidget(NovaApp(controller: controller));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Auto Play Demo'));
+    await tester.pumpAndSettle();
+
+    final initialGames = controller.stats.gamesPlayed;
+    final initialMoves = controller.stats.totalMoves;
+
+    await tester.scrollUntilVisible(
+      find.text('Heuristic'),
+      250,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.tap(find.text('Heuristic'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Expectimax').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Strategy: Expectimax'), findsOneWidget);
+    expect(find.text('Search nodes: —'), findsOneWidget);
+
+    await tester.tap(find.text('Step'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Demo moves: 1'), findsOneWidget);
+    expect(_visibleSearchNodeCount(tester), greaterThan(0));
+    expect(controller.stats.gamesPlayed, initialGames);
+    expect(controller.stats.totalMoves, initialMoves);
+    expect(controller.game, isNull);
+  });
 }
 
 int _visibleMoveCount(WidgetTester tester) {
@@ -98,4 +135,15 @@ int _visibleMoveCount(WidgetTester tester) {
       .whereType<String>()
       .firstWhere((text) => text.startsWith('Demo moves: '));
   return int.parse(value.substring('Demo moves: '.length));
+}
+
+int _visibleSearchNodeCount(WidgetTester tester) {
+  final value = tester
+      .widgetList<Text>(find.byType(Text))
+      .map((widget) => widget.data)
+      .whereType<String>()
+      .firstWhere(
+        (text) => text.startsWith('Search nodes: ') && !text.endsWith('—'),
+      );
+  return int.parse(value.substring('Search nodes: '.length));
 }
