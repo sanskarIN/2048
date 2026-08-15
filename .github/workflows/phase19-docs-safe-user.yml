@@ -20,105 +20,34 @@ jobs:
         run: |
           git config user.name "Sanskar"
           git config user.email "sanskarin@outlook.in"
-
       - name: Update user guide
+        env:
+          BLOCK_B64: "IyMgRnVsbCBSZXBsYXkgQXJjaGl2ZQoKRnJvbSBNb3ZlIFJlcGxheSB5b3UgY2FuIG9wZW4gKipGdWxsIFJlcGxheSBBcmNoaXZlKiogZXZlbiB3aGVuIG5vIGxpdmUgZ2FtZSBpcyBhdmFpbGFibGUsIHNvIGEgcmVjZWl2ZWQgcG9ydGFibGUgcmVwbGF5IGNhbiBiZSB2aWV3ZWQgd2l0aG91dCByZXBsYWNpbmcgcGxheWVyIHByb2dyZXNzLgoKRm9yIGEgbmV3bHkgc3RhcnRlZCBnYW1lLCB0aGUgYXJjaGl2ZSByZWNvcmRzIHRoZSBvcGVuaW5nIHN0YXRlIHBsdXMgZGV0ZXJtaW5pc3RpYyB2YWxpZCBtb3ZlcywgVW5kbyBhY3Rpb25zLCBleHBsaWNpdCBjb250aW51ZS1hZnRlci13aW4gYWN0aW9ucywgYW5kIHRpbWVkIHN0YXR1cy1vbmx5IHRyYW5zaXRpb25zLiBDaG9vc2UgKipDb3B5IGZ1bGwgcmVwbGF5KiogdG8gcGxhY2UgYSBjb21wbGV0ZSBgbm92YTIwNDguZnVsbFJlcGxheWAgSlNPTiBhcmNoaXZlIG9uIHRoZSBjbGlwYm9hcmQuIFVzZSAqKk9wZW4gZnJvbSBjbGlwYm9hcmQqKiBvciAqKkVudGVyIHJlcGxheSB0ZXh0KiogdG8gdmlldyBhbm90aGVyIGFyY2hpdmUuCgpJbXBvcnRlZCBhcmNoaXZlcyBhcmUgc3BlY3RhdG9yLW9ubHkuIFlvdSBjYW4gc2NydWIsIHN0ZXAsIHBsYXkgb3IgcGF1c2UsIGp1bXAgdG8gdGhlIGZpcnN0IG9yIGxhdGVzdCBmcmFtZSwgYW5kIGNob29zZSAxLCAyLCBvciA0IGZyYW1lcyBwZXIgc2Vjb25kLCBidXQgdGhlIGltcG9ydGVkIGJvYXJkIG5ldmVyIGJlY29tZXMgeW91ciBsaXZlIGdhbWUgYW5kIGNhbm5vdCB1cGRhdGUgc3RhdGlzdGljcywgYWNoaWV2ZW1lbnRzLCBzdHJlYWtzLCBEYWlseSByZXN1bHRzLCBvciBwZXItbW9kZSByZWNvcmRzLgoKQ2FwdHVyZSBpcyBjYXBwZWQgYXQgNCwwOTYgZXZlbnRzLiBJZiBhIHNlc3Npb24gcmVhY2hlcyB0aGUgY2FwLCBnYW1lcGxheSBjb250aW51ZXMgYnV0IGNvbXBsZXRlIGV4cG9ydCBpcyBkaXNhYmxlZC4gTGVnYWN5IGdhbWVzIG9yIEdhbWUgQmFja3VwIHNlc3Npb25zIHdob3NlIGVhcmxpZXIgYWN0aW9ucyB3ZXJlIG5ldmVyIHJlY29yZGVkIGFyZSBhbHNvIG5vdCBmYWxzZWx5IGV4cG9ydGVkIGFzIGZ1bGwgc2Vzc2lvbnMuCgpSZXBsYXkgSlNPTiBpcyBlZGl0YWJsZSBhbmQgbm90IHNpZ25lZCwgc28gYSB2YWxpZCBhcmNoaXZlIG1lYW5zIHRoZSBzZXF1ZW5jZSByZWNvbnN0cnVjdHMgY29uc2lzdGVudGx5LCBub3QgdGhhdCB0aGUgYXBwIGhhcyBhdXRoZW50aWNhdGVkIHdobyBwbGF5ZWQgaXQuIFNlZSBbYFJFUExBWV9BUkNISVZFUy5tZGBdKFJFUExBWV9BUkNISVZFUy5tZCkuCg=="
         run: |
-          if ! grep -q '^## Full Replay Archive$' docs/USER_GUIDE.md; then
-            cat >> docs/USER_GUIDE.md <<'EOF'
-
-## Full Replay Archive
-
-From Move Replay you can open **Full Replay Archive** even when no live game is available, so a received portable replay can be viewed without replacing player progress.
-
-For a newly started game, the archive records the opening state plus deterministic valid moves, Undo actions, explicit continue-after-win actions, and timed status-only transitions. Choose **Copy full replay** to place a complete `nova2048.fullReplay` JSON archive on the clipboard. Use **Open from clipboard** or **Enter replay text** to view another archive.
-
-Imported archives are spectator-only. You can scrub, step, play or pause, jump to the first or latest frame, and choose 1, 2, or 4 frames per second, but the imported board never becomes your live game and cannot update statistics, achievements, streaks, Daily results, or per-mode records.
-
-Capture is capped at 4,096 events. If a session reaches the cap, gameplay continues but complete export is disabled. Legacy games or Game Backup sessions whose earlier actions were never recorded are also not falsely exported as full sessions.
-
-Replay JSON is editable and not signed, so a valid archive means the sequence reconstructs consistently, not that the app has authenticated who played it. See [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md).
-EOF
-          fi
+          if ! grep -q '^## Full Replay Archive$' docs/USER_GUIDE.md; then printf '\n' >> docs/USER_GUIDE.md; echo "$BLOCK_B64" | base64 --decode >> docs/USER_GUIDE.md; fi
           git add docs/USER_GUIDE.md
           git commit -m "docs: add full replay archive user guide"
-
       - name: Update development guide
+        env:
+          BLOCK_B64: "IyMgRnVsbCBSZXBsYXkgQXJjaGl2ZSBkZXZlbG9wbWVudCBydWxlcwoKQm90aCByZXBsYXkgc3lzdGVtcyBhcmUgc3BlY3RhdG9yLW9ubHkuIE1vdmUgUmVwbGF5IGNvbnRpbnVlcyB0byB1c2UgZGVmZW5zaXZlIGNvcGllcyBmcm9tIGJvdW5kZWQgVW5kbyBoaXN0b3J5IGFuZCBtdXN0IG5ldmVyIGNhbGwgcGxheWVyIG11dGF0aW9uIG1ldGhvZHMgZnJvbSBpdHMgdmlld2VyIGNvbnRyb2xzLgoKRnVsbCBSZXBsYXkgQXJjaGl2ZSBpcyBhIHNlcGFyYXRlIHBvcnRhYmxlIHByb3RvY29sLiBDaGFuZ2VzIG11c3QgcHJlc2VydmUgZXhwbGljaXQgZm9ybWF0L3ZlcnNpb25pbmcsIGVuY29kZWQtc2l6ZSBib3VuZHMsIHN0cmljdCBvcGVuaW5nIGBHYW1lU3RhdGVgIHZhbGlkYXRpb24sIGRldGVybWluaXN0aWMgZXZlbnQgb3JkZXJpbmcgYW5kIGFjdGlvbiBsZWdhbGl0eSwgcmVwbGF5LXRpbWUgaW5qZWN0aW9uIGZvciB0aW1lZCBydWxlcywgdGhlIGhhcmQgNCwwOTYtZXZlbnQgY2FwdHVyZSBib3VuZCwgY29tcGxldGUgdmVyc3VzIGluY29tcGxldGUgY2FwdHVyZSBzZW1hbnRpY3MsIGNvcnJ1cHRpb24tc2FmZSBwZXJzaXN0ZW5jZSwgYW5kIHNwZWN0YXRvci1vbmx5IGltcG9ydGVkIGFyY2hpdmVzIHRoYXQgbmV2ZXIgcmVwbGFjZSBgQXBwQ29udHJvbGxlci5nYW1lYC4KClBvcnRhYmxlIHJlcGxheSB0ZXh0IG11c3QgbmV2ZXIgbXV0YXRlIHRydXN0ZWQgc3RhdGlzdGljcywgYWNoaWV2ZW1lbnRzLCBzdHJlYWtzLCBEYWlseSBoaXN0b3J5LCBvciBwZXItbW9kZSByZWNvcmRzLiBKU09OIHZhbGlkaXR5IG11c3Qgbm90IGJlIGRlc2NyaWJlZCBhcyBhdXRob3JzaGlwIG9yIGF1dGhlbnRpY2F0aW9uLiBQcm90b2NvbC9wbGF5ZXIgY2hhbmdlcyBiZWxvbmcgaW4gYGxpYi9kb21haW4vcmVwbGF5X2FyY2hpdmUuZGFydGA7IGFjdGl2ZSBjYXB0dXJlIG9yY2hlc3RyYXRpb24gYmVsb25ncyBpbiBgQXBwQ29udHJvbGxlcmAgYW5kIGBMb2NhbFN0b3JlYDsgdmlld2VyIGJlaGF2aW9yIGJlbG9uZ3MgaW4gYGxpYi9mZWF0dXJlcy9yZXBsYXkvYC4gQ2xpcGJvYXJkIGFjY2VzcyBtdXN0IGNvbnRpbnVlIHRocm91Z2ggYFRleHRDbGlwYm9hcmRgLiBTZWUgW2BSRVBMQVlfQVJDSElWRVMubWRgXShSRVBMQVlfQVJDSElWRVMubWQpLgo="
         run: |
-          if ! grep -q '^## Full Replay Archive development rules$' docs/DEVELOPMENT.md; then
-            cat >> docs/DEVELOPMENT.md <<'EOF'
-
-## Full Replay Archive development rules
-
-Both replay systems are spectator-only. Move Replay continues to use defensive copies from bounded Undo history and must never call player mutation methods from its viewer controls.
-
-Full Replay Archive is a separate portable protocol. Changes must preserve explicit format/versioning, encoded-size bounds, strict opening `GameState` validation, deterministic event ordering and action legality, replay-time injection for timed rules, the hard 4,096-event capture bound, complete versus incomplete capture semantics, corruption-safe persistence, and spectator-only imported archives that never replace `AppController.game`.
-
-Portable replay text must never mutate trusted statistics, achievements, streaks, Daily history, or per-mode records. JSON validity must not be described as authorship or authentication. Protocol/player changes belong in `lib/domain/replay_archive.dart`; active capture orchestration belongs in `AppController` and `LocalStore`; viewer behavior belongs in `lib/features/replay/`. Clipboard access must continue through `TextClipboard`. See [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md).
-EOF
-          fi
+          if ! grep -q '^## Full Replay Archive development rules$' docs/DEVELOPMENT.md; then printf '\n' >> docs/DEVELOPMENT.md; echo "$BLOCK_B64" | base64 --decode >> docs/DEVELOPMENT.md; fi
           git add docs/DEVELOPMENT.md
           git commit -m "docs: define replay archive development rules"
-
       - name: Update FAQ
+        env:
+          BLOCK_B64: "IyMgV2hhdCBpcyBGdWxsIFJlcGxheSBBcmNoaXZlPwoKRnVsbCBSZXBsYXkgQXJjaGl2ZSBpcyB0aGUgcG9ydGFibGUgc3BlY3RhdG9yIHJlcGxheSBzeXN0ZW0uIEEgbmV3bHkgc3RhcnRlZCBzZXNzaW9uIHJlY29yZHMgYSBib3VuZGVkIGRldGVybWluaXN0aWMgYWN0aW9uIHN0cmVhbSBmcm9tIGl0cyBvcGVuaW5nIHN0YXRlLiBBIGNvbXBsZXRlIGNhcHR1cmUgY2FuIGJlIGNvcGllZCBhcyB2ZXJzaW9uZWQgSlNPTiBhbmQgb3BlbmVkIGxhdGVyIHdpdGhvdXQgcmVwbGFjaW5nIHRoZSBjdXJyZW50IGdhbWUuCgpJdCBkaWZmZXJzIGZyb20gTW92ZSBSZXBsYXk6IE1vdmUgUmVwbGF5IHJldXNlcyB0aGUgbGF0ZXN0IHJldGFpbmVkIFVuZG8gc25hcHNob3RzIGFuZCBjYW4gc3RhcnQgYWZ0ZXIgbW92ZSB6ZXJvLCB3aGlsZSBGdWxsIFJlcGxheSBBcmNoaXZlIGNhbiByZXByZXNlbnQgdGhlIHdob2xlIG5ld2x5IHJlY29yZGVkIHNlc3Npb24gZXZlbiBhZnRlciBvbGQgVW5kbyBzbmFwc2hvdHMgaGF2ZSBmYWxsZW4gb3V0IG9mIHRoZSA1MC1zbmFwc2hvdCBVbmRvIHdpbmRvdy4KCiMjIENhbiBhbiBpbXBvcnRlZCBGdWxsIFJlcGxheSBBcmNoaXZlIGNoYW5nZSBteSBzY29yZSBvciByZWNvcmRzPwoKTm8uIE9wZW5pbmcgYW4gYXJjaGl2ZSBidWlsZHMgc3BlY3RhdG9yIGZyYW1lcyBpbiBtZW1vcnkuIEl0IGRvZXMgbm90IGluc3RhbGwgYSBnYW1lLCBpbXBvcnQgc3RhdGlzdGljcywgdW5sb2NrIGFjaGlldmVtZW50cywgY2hhbmdlIHN0cmVha3MsIHdyaXRlIERhaWx5IGhpc3RvcnksIG9yIGltcHJvdmUgcGVyLW1vZGUgcmVjb3Jkcy4KCiMjIFdoeSBpcyBDb3B5IGZ1bGwgcmVwbGF5IGRpc2FibGVkPwoKUG9ydGFibGUgZnVsbC1zZXNzaW9uIGV4cG9ydCByZXF1aXJlcyBhIGNhcHR1cmUgdGhhdCBiZWdhbiB3aXRoIHRoZSBzZXNzaW9uIGFuZCBkaWQgbm90IGV4Y2VlZCB0aGUgc2FmZXR5IGxpbWl0LiBMZWdhY3ksIHJlc3RvcmVkLCBvciBHYW1lIEJhY2t1cCBwcm9ncmVzcyBkb2VzIG5vdCBjb250YWluIGVhcmxpZXIgdW5yZWNvcmRlZCBhY3Rpb25zLCBzbyBpdCBpcyBtYXJrZWQgaW5jb21wbGV0ZS4gQSBzZXNzaW9uIHRoYXQgZXhjZWVkcyA0LDA5NiByZWNvcmRlZCBldmVudHMgaXMgbWFya2VkIG92ZXJmbG93ZWQuIEluIGVpdGhlciBjYXNlIHRoZSBnYW1lIHJlbWFpbnMgcGxheWFibGUsIGJ1dCB0aGUgYXBwIHdpbGwgbm90IG1pc2xhYmVsIHBhcnRpYWwgaGlzdG9yeSBhcyBhIGNvbXBsZXRlIHJlcGxheS4KCiMjIEFyZSBGdWxsIFJlcGxheSBBcmNoaXZlcyBzaWduZWQgb3IgcHJvb2YgdGhhdCBzb21lb25lIGFjaGlldmVkIGEgc2NvcmU/CgpOby4gVGhlIGFyY2hpdmUgaXMgdmFsaWRhdGVkIGZvciBzdHJ1Y3R1cmUgYW5kIGRldGVybWluaXN0aWMgc2VsZi1jb25zaXN0ZW5jeSwgYnV0IEpTT04gaXMgZWRpdGFibGUuIEl0IGlzIG5vdCBhIGRpZ2l0YWwgc2lnbmF0dXJlLCBpZGVudGl0eSBwcm9vZiwgYW50aS1jaGVhdCByZWNvcmQsIG9yIHRydXN0ZWQgbGVhZGVyYm9hcmQgc3VibWlzc2lvbi4KCiMjIFdoYXQgaW5mb3JtYXRpb24gY2FuIGEgcmVwbGF5IGFyY2hpdmUgcmV2ZWFsPwoKQSBzaGFyZWQgYXJjaGl2ZSBjYW4gZXhwb3NlIGdhbWUgY29uZmlndXJhdGlvbiwgc2VlZCBhbmQgUk5HIHN0YXRlLCBvcGVuaW5nIGJvYXJkLCBtb3ZlLCBVbmRvLCBjb250aW51ZSBhbmQgc3RhdHVzIGFjdGlvbnMsIGFjdGlvbiB0aW1pbmcsIGFuZCB0aGUgcmVjb25zdHJ1Y3RlZCBzY29yZSBhbmQgYm9hcmQgc2VxdWVuY2UuIFRoZSBwcm9qZWN0IGRvZXMgbm90IHVwbG9hZCB0aGF0IGRhdGEgYXV0b21hdGljYWxseTsgY2xpcGJvYXJkIG9yIG1hbnVhbCBzaGFyaW5nIGlzIGFuIGV4cGxpY2l0IHVzZXIgYWN0aW9uLgo="
         run: |
-          if ! grep -q '^## What is Full Replay Archive?$' docs/FAQ.md; then
-            cat >> docs/FAQ.md <<'EOF'
-
-## What is Full Replay Archive?
-
-Full Replay Archive is the portable spectator replay system. A newly started session records a bounded deterministic action stream from its opening state. A complete capture can be copied as versioned JSON and opened later without replacing the current game.
-
-It differs from Move Replay: Move Replay reuses the latest retained Undo snapshots and can start after move zero, while Full Replay Archive can represent the whole newly recorded session even after old Undo snapshots have fallen out of the 50-snapshot Undo window.
-
-## Can an imported Full Replay Archive change my score or records?
-
-No. Opening an archive builds spectator frames in memory. It does not install a game, import statistics, unlock achievements, change streaks, write Daily history, or improve per-mode records.
-
-## Why is Copy full replay disabled?
-
-Portable full-session export requires a capture that began with the session and did not exceed the safety limit. Legacy, restored, or Game Backup progress does not contain earlier unrecorded actions, so it is marked incomplete. A session that exceeds 4,096 recorded events is marked overflowed. In either case the game remains playable, but the app will not mislabel partial history as a complete replay.
-
-## Are Full Replay Archives signed or proof that someone achieved a score?
-
-No. The archive is validated for structure and deterministic self-consistency, but JSON is editable. It is not a digital signature, identity proof, anti-cheat record, or trusted leaderboard submission.
-
-## What information can a replay archive reveal?
-
-A shared archive can expose game configuration, seed and RNG state, opening board, move, Undo, continue and status actions, action timing, and the reconstructed score and board sequence. The project does not upload that data automatically; clipboard or manual sharing is an explicit user action.
-EOF
-          fi
+          if ! grep -q '^## What is Full Replay Archive?$' docs/FAQ.md; then printf '\n' >> docs/FAQ.md; echo "$BLOCK_B64" | base64 --decode >> docs/FAQ.md; fi
           git add docs/FAQ.md
           git commit -m "docs: answer full replay archive questions"
-
       - name: Update troubleshooting
+        env:
+          BLOCK_B64: "IyMgQ29weSBmdWxsIHJlcGxheSBpcyBkaXNhYmxlZAoKQSBwb3J0YWJsZSBmdWxsLXNlc3Npb24gcmVwbGF5IGlzIGF2YWlsYWJsZSBvbmx5IHdoZW4gY2FwdHVyZSBzdGFydGVkIHdpdGggdGhlIGN1cnJlbnQgZ2FtZSBhbmQgaGFzIG5vdCBvdmVyZmxvd2VkIGl0cyA0LDA5Ni1ldmVudCBib3VuZC4gTGVnYWN5IHNhdmVzIGFuZCBHYW1lIEJhY2t1cCBpbXBvcnRzIGRvIG5vdCBjb250YWluIG1pc3NpbmcgZWFybGllciBhY3Rpb25zLCBzbyB0aGVpciByZXBsYXkgY2FwdHVyZSBpcyBpbnRlbnRpb25hbGx5IGluY29tcGxldGUuIFN0YXJ0IGEgbmV3IGxvY2FsIGdhbWUgdG8gY3JlYXRlIGEgY29tcGxldGUgY2FwdHVyZSBmcm9tIG1vdmUgemVyby4KCklmIHRoZSBjdXJyZW50IHNlc3Npb24gZXhjZWVkZWQgNCwwOTYgcmVwbGF5IGV2ZW50cywgbm9ybWFsIGdhbWVwbGF5IGNvbnRpbnVlcyBidXQgZXhwb3J0IHN0YXlzIGRpc2FibGVkIHJhdGhlciB0aGFuIHByb2R1Y2luZyBhbiBpbmNvbXBsZXRlIGFyY2hpdmUgbGFiZWxlZCBhcyBjb21wbGV0ZS4KCiMjIEZ1bGwgUmVwbGF5IEFyY2hpdmUgaW1wb3J0IGlzIHJlamVjdGVkCgpBIHJlcGxheSBhcmNoaXZlIG11c3QgYmUgdmFsaWQgSlNPTiB3aXRoIGZvcm1hdCBgbm92YTIwNDguZnVsbFJlcGxheWAsIHZlcnNpb24gYDFgLCBhIHZhbGlkIGV4cG9ydCB0aW1lc3RhbXAsIGEgY29tcGxldGUgbm9uLW92ZXJmbG93ZWQgY2FwdHVyZSwgbm8gbW9yZSB0aGFuIDQsMDk2IGV2ZW50cywgYW5kIGEgdmFsaWQgYEdhbWVTdGF0ZWAgb3BlbmluZyBzdGF0ZS4gRXZlbnQgdGltZXMgbXVzdCBiZSBvcmRlcmVkIGFuZCBib3VuZGVkOyBtb3ZlLCBVbmRvLCB3aW4tY29udGludWF0aW9uLCBhbmQgc3RhdHVzLXJlZnJlc2ggYWN0aW9ucyBtdXN0IGJlIGxlZ2FsIHdoZW4gcmVjb25zdHJ1Y3RlZC4KCkEgQ2hhbGxlbmdlIENvZGUgb3IgR2FtZSBCYWNrdXAgaXMgYSBkaWZmZXJlbnQgcG9ydGFibGUgZm9ybWF0IGFuZCBjYW5ub3QgYmUgb3BlbmVkIGFzIGEgcmVwbGF5IGFyY2hpdmUuIFNlZSBbYFJFUExBWV9BUkNISVZFUy5tZGBdKFJFUExBWV9BUkNISVZFUy5tZCkuCgojIyBPcGVuaW5nIGEgcmVwbGF5IGRpZCBub3QgY3JlYXRlIGEgcGxheWFibGUgZ2FtZQoKVGhhdCBpcyBpbnRlbnRpb25hbC4gUG9ydGFibGUgcmVwbGF5IGltcG9ydCBpcyBzcGVjdGF0b3Itb25seS4gVXNlIENoYWxsZW5nZSBDb2RlcyB0byBzdGFydCBhIGZyZXNoIHNoYXJlZCBjb25maWd1cmF0aW9uIG9yIEdhbWUgQmFja3VwIHRvIHJlc3RvcmUgZWRpdGFibGUgcHJvZ3Jlc3MsIHdoaWNoIGJlY29tZXMgdW5yYW5rZWQuCgojIyBBIHRpbWVkIHJlcGxheSBkaXZlcmdlcyBmcm9tIHRoZSBvcmlnaW5hbCBzdGF0dXMKClZlcnNpb24gMSByZWNvcmRzIGVsYXBzZWQgZXZlbnQgdGltaW5nIGFuZCBzdXBwbGllcyBpdCB0byB0aGUgZW5naW5lIGR1cmluZyByZWNvbnN0cnVjdGlvbi4gSWYgYSBkZXZlbG9wbWVudCBjaGFuZ2UgY2F1c2VzIGRpdmVyZ2VuY2UsIGluc3BlY3QgYEdhbWVFbmdpbmUubW92ZSguLi4sIG5vdzopYCwgYHJlZnJlc2hTdGF0dXMoLi4uLCBub3c6KWAsIHJlcGxheSBldmVudCBvcmRlcmluZywgYW5kIGNhcHR1cmUgcGVyc2lzdGVuY2UuIERvIG5vdCBmaXggcmVwbGF5IGJ5IHVzaW5nIHRoZSB2aWV3ZXIncyBjdXJyZW50IGNsb2NrLgo="
         run: |
-          if ! grep -q '^## Copy full replay is disabled$' docs/TROUBLESHOOTING.md; then
-            cat >> docs/TROUBLESHOOTING.md <<'EOF'
-
-## Copy full replay is disabled
-
-A portable full-session replay is available only when capture started with the current game and has not overflowed its 4,096-event bound. Legacy saves and Game Backup imports do not contain missing earlier actions, so their replay capture is intentionally incomplete. Start a new local game to create a complete capture from move zero.
-
-If the current session exceeded 4,096 replay events, normal gameplay continues but export stays disabled rather than producing an incomplete archive labeled as complete.
-
-## Full Replay Archive import is rejected
-
-A replay archive must be valid JSON with format `nova2048.fullReplay`, version `1`, a valid export timestamp, a complete non-overflowed capture, no more than 4,096 events, and a valid `GameState` opening state. Event times must be ordered and bounded; move, Undo, win-continuation, and status-refresh actions must be legal when reconstructed.
-
-A Challenge Code or Game Backup is a different portable format and cannot be opened as a replay archive. See [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md).
-
-## Opening a replay did not create a playable game
-
-That is intentional. Portable replay import is spectator-only. Use Challenge Codes to start a fresh shared configuration or Game Backup to restore editable progress, which becomes unranked.
-
-## A timed replay diverges from the original status
-
-Version 1 records elapsed event timing and supplies it to the engine during reconstruction. If a development change causes divergence, inspect `GameEngine.move(..., now:)`, `refreshStatus(..., now:)`, replay event ordering, and capture persistence. Do not fix replay by using the viewer's current clock.
-EOF
-          fi
+          if ! grep -q '^## Copy full replay is disabled$' docs/TROUBLESHOOTING.md; then printf '\n' >> docs/TROUBLESHOOTING.md; echo "$BLOCK_B64" | base64 --decode >> docs/TROUBLESHOOTING.md; fi
           git add docs/TROUBLESHOOTING.md
           git commit -m "docs: add full replay archive troubleshooting"
-
       - name: Remove helper and push
         run: |
           git rm .github/workflows/phase19-docs-safe-user.yml
