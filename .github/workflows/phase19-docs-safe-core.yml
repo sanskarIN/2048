@@ -16,85 +16,41 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Configure commit identity
         run: |
           git config user.name "Sanskar"
           git config user.email "sanskarin@outlook.in"
-
       - name: Update README
+        env:
+          BLOCK_B64: "IyMgRnVsbCBSZXBsYXkgQXJjaGl2ZQoKQSBuZXdseSBzdGFydGVkIGxvY2FsIGdhbWUgcmVjb3JkcyBhIGJvdW5kZWQgZGV0ZXJtaW5pc3RpYyByZXBsYXkgYWN0aW9uIHN0cmVhbSBmcm9tIGl0cyBvcGVuaW5nIHN0YXRlLiBDb21wbGV0ZSBjYXB0dXJlcyBjYW4gYmUgY29waWVkIGFzIHZlcnNpb25lZCBgbm92YTIwNDguZnVsbFJlcGxheWAgSlNPTiBhbmQgb3BlbmVkIGxhdGVyIGZyb20gY2xpcGJvYXJkIG9yIG1hbnVhbCB0ZXh0IGluIHNwZWN0YXRvciBtb2RlLiBSZWNvcmRlZCBhY3Rpb25zIGluY2x1ZGUgdmFsaWQgbW92ZXMsIFVuZG8sIGV4cGxpY2l0IGNvbnRpbnVlLWFmdGVyLXdpbiwgYW5kIHRpbWVkIHN0YXR1cyB0cmFuc2l0aW9ucy4gUmVwbGF5IHJlY29uc3RydWN0aW9uIHN1cHBsaWVzIHRoZSByZWNvcmRlZCBldmVudCB0aW1lIHRvIHRoZSBlbmdpbmUgc28gdGltZWQgbW9kZXMgZG8gbm90IGRlcGVuZCBvbiB0aGUgc3BlY3RhdG9yIGRldmljZSBjbG9jay4KCkZ1bGwgcmVwbGF5IGNhcHR1cmUgaXMgY2FwcGVkIGF0ICoqNCwwOTYgZXZlbnRzKiouIFdoZW4gdGhhdCBzYWZldHkgYm91bmQgaXMgcmVhY2hlZCB0aGUgbm9ybWFsIGdhbWUgY29udGludWVzLCBidXQgcG9ydGFibGUgZnVsbC1zZXNzaW9uIGV4cG9ydCBpcyBkaXNhYmxlZCByYXRoZXIgdGhhbiBzaWxlbnRseSBjbGFpbWluZyBhIHRydW5jYXRlZCBhcmNoaXZlIGlzIGNvbXBsZXRlLiBMZWdhY3ksIHJlc3RvcmVkLCBhbmQgR2FtZSBCYWNrdXAgc2Vzc2lvbnMgdGhhdCBkaWQgbm90IHN0YXJ0IHdpdGggZnVsbCBjYXB0dXJlIHJlbWFpbiBwbGF5YWJsZSBidXQgYXJlIG1hcmtlZCBpbmNvbXBsZXRlIGZvciBmdWxsLXNlc3Npb24gZXhwb3J0LgoKSW1wb3J0ZWQgcmVwbGF5IGFyY2hpdmVzIG5ldmVyIHJlcGxhY2UgdGhlIGxpdmUgZ2FtZSBhbmQgY2Fubm90IGltcG9ydCBzdGF0aXN0aWNzLCBhY2hpZXZlbWVudHMsIHN0cmVha3MsIERhaWx5IHJlc3VsdHMsIHBlci1tb2RlIHJlY29yZHMsIHNldHRpbmdzLCBvciB0cnVzdGVkIHByb2dyZXNzLiBUaGUgSlNPTiBpcyB1c2VyLWVkaXRhYmxlOiBzdHJpY3QgdmFsaWRhdGlvbiBwcm92ZXMgZGV0ZXJtaW5pc3RpYyBzZWxmLWNvbnNpc3RlbmN5LCBub3QgYXV0aG9yc2hpcCBvciBhbnRpLWNoZWF0IGF1dGhlbnRpY2l0eS4gU2VlIFtgZG9jcy9SRVBMQVlfQVJDSElWRVMubWRgXShkb2NzL1JFUExBWV9BUkNISVZFUy5tZCkuCg=="
         run: |
           python3 -c "from pathlib import Path; p=Path('README.md'); t=p.read_text(); old='a read-only bounded Move Replay, an isolated deterministic Auto Play / AI Demonstration sandbox,'; new='a read-only bounded Move Replay, portable spectator-only Full Replay Archives, an isolated deterministic Auto Play / AI Demonstration sandbox,'; p.write_text(t.replace(old,new,1) if old in t else t)"
-          if ! grep -q '^## Full Replay Archive$' README.md; then
-            cat >> README.md <<'EOF'
-
-## Full Replay Archive
-
-A newly started local game records a bounded deterministic replay action stream from its opening state. Complete captures can be copied as versioned `nova2048.fullReplay` JSON and opened later from clipboard or manual text in spectator mode. Recorded actions include valid moves, Undo, explicit continue-after-win, and timed status transitions. Replay reconstruction supplies the recorded event time to the engine so timed modes do not depend on the spectator device clock.
-
-Full replay capture is capped at **4,096 events**. When that safety bound is reached the normal game continues, but portable full-session export is disabled rather than silently claiming a truncated archive is complete. Legacy, restored, and Game Backup sessions that did not start with full capture remain playable but are marked incomplete for full-session export.
-
-Imported replay archives never replace the live game and cannot import statistics, achievements, streaks, Daily results, per-mode records, settings, or trusted progress. The JSON is user-editable: strict validation proves deterministic self-consistency, not authorship or anti-cheat authenticity. See [`docs/REPLAY_ARCHIVES.md`](docs/REPLAY_ARCHIVES.md).
-EOF
-          fi
+          if ! grep -q '^## Full Replay Archive$' README.md; then printf '\n' >> README.md; echo "$BLOCK_B64" | base64 --decode >> README.md; fi
           git add README.md
           git commit -m "docs: add full replay archives to project overview"
-
       - name: Update architecture
+        env:
+          BLOCK_B64: "IyMgRnVsbCBSZXBsYXkgQXJjaGl2ZSBib3VuZGFyeQoKYGxpYi9kb21haW4vcmVwbGF5X2FyY2hpdmUuZGFydGAgb3ducyB0aGUgdmVyc2lvbmVkIGZ1bGwtc2Vzc2lvbiBldmVudCBtb2RlbCwgcG9ydGFibGUgSlNPTiBjb2RlYywgZGV0ZXJtaW5pc3RpYyByZWNvbnN0cnVjdGlvbiBwbGF5ZXIsIGV2ZW50L3RpbWUgdmFsaWRhdGlvbiwgYW5kIHNwZWN0YXRvci1zdGF0ZSBlcXVpdmFsZW5jZSBjaGVja3MuIGBBcHBDb250cm9sbGVyYCBvd25zIGFjdGl2ZSBjYXB0dXJlIG9yY2hlc3RyYXRpb24gYW5kIGBMb2NhbFN0b3JlYCBvd25zIHRoZSBwcm9qZWN0IGtleSBgbm92YS5yZXBsYXlfY2FwdHVyZS52MWAuCgpBIGZyZXNoIGBBcHBDb250cm9sbGVyLm5ld0dhbWUoKWAgY3JlYXRlcyBgUmVwbGF5Q2FwdHVyZS5zdGFydChnYW1lKWAuIFZhbGlkIG1vdmVzLCBVbmRvLCBjb250aW51ZS1hZnRlci13aW4sIGFuZCBzdGF0dXMtb25seSB0aW1lZCB0cmFuc2l0aW9ucyBhcHBlbmQgY29tcGFjdCBldmVudHMgd2l0aCBlbGFwc2VkIG1pbGxpc2Vjb25kcy4gQSBzdG9yZWQgY2FwdHVyZSBtdXN0IGJlbG9uZyB0byB0aGUgY3VycmVudCBzZXNzaW9uIGFuZCByZWNvbnN0cnVjdCBjb25zaXN0ZW50bHkgYmVmb3JlIGl0IGlzIHRydXN0ZWQgYXMgdGhlIGFjdGl2ZSBjb21wbGV0ZSBjYXB0dXJlLiBJZiByZXBsYXkgbWV0YWRhdGEgaXMgbWlzc2luZywgbWFsZm9ybWVkLCBvciBtaXNtYXRjaGVkIHdoaWxlIHRoZSBjdXJyZW50IGdhbWUgaXRzZWxmIGlzIHZhbGlkLCB0aGUgZ2FtZSBpcyBwcmVzZXJ2ZWQgYW5kIHJlcGxheSBjYXB0dXJlIGZhbGxzIGJhY2sgdG8gYW4gaW5jb21wbGV0ZSBsb2NhbCBjYXB0dXJlIGluc3RlYWQgb2YgaW52ZW50aW5nIGhpc3RvcnkuCgpQb3J0YWJsZSBleHBvcnQgcmVxdWlyZXMgYHN0YXJ0c0F0U2Vzc2lvblN0YXJ0ID09IHRydWVgIGFuZCBgb3ZlcmZsb3dlZCA9PSBmYWxzZWAuIFRoZSBhY3Rpb24gbGlzdCBpcyBjYXBwZWQgYXQgNCwwOTYgZXZlbnRzOyBvdmVyZmxvdyBkaXNhYmxlcyBjb21wbGV0ZSBleHBvcnQgd2hpbGUgZ2FtZXBsYXkgY29udGludWVzLiBHYW1lIEJhY2t1cCBpbXBvcnRzIGFyZSBpbmNvbXBsZXRlIGJ5IGRlc2lnbiBiZWNhdXNlIHNlbmRlci1zaWRlIGVhcmxpZXIgYWN0aW9ucyBhcmUgdW5hdmFpbGFibGUuCgpPcGVuaW5nIGFuIGFyY2hpdmUgY29uc3RydWN0cyBkZWZlbnNpdmUgc3BlY3RhdG9yIGZyYW1lcyBvbmx5LiBJdCBuZXZlciBpbnN0YWxscyB0aGUgaW1wb3J0ZWQgcmVwbGF5IGFzIGBBcHBDb250cm9sbGVyLmdhbWVgIGFuZCBjYW5ub3QgdXBkYXRlIHNhdmVzLCBhY2hpZXZlbWVudHMsIHN0cmVha3MsIERhaWx5IGhpc3RvcnksIG9yIHBlci1tb2RlIHJlY29yZHMuIEJlY2F1c2UgSlNPTiBpcyBlZGl0YWJsZSwgdGhlIGZvcm1hdCBwcm92aWRlcyBkZXRlcm1pbmlzdGljIHZhbGlkYXRpb24sIG5vdCBwcm9vZiBvZiBhdXRob3JzaGlwLiBTZWUgW2BSRVBMQVlfQVJDSElWRVMubWRgXShSRVBMQVlfQVJDSElWRVMubWQpLgo="
         run: |
-          python3 -c "from pathlib import Path; p=Path('docs/ARCHITECTURE.md'); t=p.read_text(); old='Replay deliberately adds **no new persistence format or key**. It reads already-validated bounded Undo history and the current saved game, then creates defensive display copies through `ReplayTimeline`.'; new='Bounded **Move Replay** adds no persistence key. It reads already-validated bounded Undo history and the current saved game, then creates defensive display copies through `ReplayTimeline`. **Full Replay Archive** is separate and uses the project-owned `nova.replay_capture.v1` key for the active bounded deterministic action capture. Portable archive text is not stored as imported player progress.'; p.write_text(t.replace(old,new,1) if old in t else t)"
-          if ! grep -q '^## Full Replay Archive boundary$' docs/ARCHITECTURE.md; then
-            cat >> docs/ARCHITECTURE.md <<'EOF'
-
-## Full Replay Archive boundary
-
-`lib/domain/replay_archive.dart` owns the versioned full-session event model, portable JSON codec, deterministic reconstruction player, event/time validation, and spectator-state equivalence checks. `AppController` owns active capture orchestration and `LocalStore` owns the project key `nova.replay_capture.v1`.
-
-A fresh `AppController.newGame()` creates `ReplayCapture.start(game)`. Valid moves, Undo, continue-after-win, and status-only timed transitions append compact events with elapsed milliseconds. A stored capture must belong to the current session and reconstruct consistently before it is trusted as the active complete capture. If replay metadata is missing, malformed, or mismatched while the current game itself is valid, the game is preserved and replay capture falls back to an incomplete local capture instead of inventing history.
-
-Portable export requires `startsAtSessionStart == true` and `overflowed == false`. The action list is capped at 4,096 events; overflow disables complete export while gameplay continues. Game Backup imports are incomplete by design because sender-side earlier actions are unavailable.
-
-Opening an archive constructs defensive spectator frames only. It never installs the imported replay as `AppController.game` and cannot update saves, achievements, streaks, Daily history, or per-mode records. Because JSON is editable, the format provides deterministic validation, not proof of authorship. See [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md).
-EOF
-          fi
+          python3 -c "from pathlib import Path; p=Path('docs/ARCHITECTURE.md'); t=p.read_text(); old='Replay deliberately adds **no new persistence format or key**. It reads already-validated bounded Undo history and the current saved game, then creates defensive display copies through `ReplayTimeline`.'; new='Bounded **Move Replay** adds no persistence key. It reads already-validated bounded Undo history and the current saved game, then creates defensive display copies through `ReplayTimeline`. **Full Replay Archive** is separate and uses the project-owned `nova.replay_capture.v1` key for the active bounded deterministic action capture.'; p.write_text(t.replace(old,new,1) if old in t else t)"
+          if ! grep -q '^## Full Replay Archive boundary$' docs/ARCHITECTURE.md; then printf '\n' >> docs/ARCHITECTURE.md; echo "$BLOCK_B64" | base64 --decode >> docs/ARCHITECTURE.md; fi
           git add docs/ARCHITECTURE.md
           git commit -m "docs: define full replay archive architecture"
-
       - name: Update data storage
+        env:
+          BLOCK_B64: "IyMgRnVsbC1zZXNzaW9uIHJlcGxheSBjYXB0dXJlCgpUaGUgYWN0aXZlIGZ1bGwtc2Vzc2lvbiByZXBsYXkgY2FwdHVyZSB1c2VzIHRoZSBwcm9qZWN0LW93bmVkIFNoYXJlZFByZWZlcmVuY2VzIGtleSBgbm92YS5yZXBsYXlfY2FwdHVyZS52MWAuIEl0IHN0b3JlcyBhIGNvcGllZCBpbml0aWFsIGdhbWUgc3RhdGUsIGBzdGFydHNBdFNlc3Npb25TdGFydGAsIGBvdmVyZmxvd2VkYCwgYW5kIGF0IG1vc3QgNCwwOTYgb3JkZXJlZCByZXBsYXkgZXZlbnRzLiBFdmVudHMgcmVjb3JkIGVsYXBzZWQgbWlsbGlzZWNvbmRzIHBsdXMgdGhlIGFjdGlvbiBraW5kIGFuZCwgZm9yIG1vdmVzLCBkaXJlY3Rpb24uCgpMZWdhY3kgb3IgcmVzdG9yZWQgc2Vzc2lvbnMgY2FuIHJlY2VpdmUgYW4gaW5jb21wbGV0ZSBjYXB0dXJlIHNvIHRoZSBhcHAgcmVtYWlucyBzYWZlIHdpdGhvdXQgaW52ZW50aW5nIG1pc3NpbmcgZWFybGllciBhY3Rpb25zLiBBIEdhbWUgQmFja3VwIGltcG9ydCBhbHdheXMgcmVjZWl2ZXMgYW4gaW5jb21wbGV0ZSBjYXB0dXJlLiBJbmNvbXBsZXRlIG9yIG92ZXJmbG93ZWQgY2FwdHVyZXMgY2Fubm90IGJlIGVuY29kZWQgYXMgcG9ydGFibGUgZnVsbC1zZXNzaW9uIGFyY2hpdmVzLgoKUmVwbGF5IGNhcHR1cmUgYmVsb25ncyB0byB0aGUgY3VycmVudCBnYW1lIGxpZmVjeWNsZS4gQ29ycnVwdCBjdXJyZW50LWdhbWUgcmVjb3ZlcnksIFJlc2V0IEN1cnJlbnQgR2FtZSwgYW5kIENsZWFyIEFsbCByZW1vdmUgaXQuIE1hbGZvcm1lZCBjYXB0dXJlIHBlcnNpc3RlbmNlIGlzIHJlbW92ZWQgc2FmZWx5LiBPcGVuaW5nIGltcG9ydGVkIHBvcnRhYmxlIHJlcGxheSB0ZXh0IGlzIGEgc2VwYXJhdGUgc3BlY3RhdG9yLW9ubHkgaW4tbWVtb3J5IG9wZXJhdGlvbiBhbmQgZG9lcyBub3QgaW5zdGFsbCBleHRlcm5hbCByZXBsYXkgZGF0YSBhcyB0cnVzdGVkIGN1cnJlbnQtZ2FtZSBwcm9ncmVzcy4K"
         run: |
-          if ! grep -q 'nova.replay_capture.v1' docs/DATA_STORAGE.md; then
-            cat >> docs/DATA_STORAGE.md <<'EOF'
-
-## Full-session replay capture
-
-The active full-session replay capture uses the project-owned SharedPreferences key `nova.replay_capture.v1`. It stores a copied initial game state, `startsAtSessionStart`, `overflowed`, and at most 4,096 ordered replay events. Events record elapsed milliseconds plus the action kind and, for moves, direction.
-
-Legacy or restored sessions can receive an incomplete capture so the app remains safe without inventing missing earlier actions. A Game Backup import always receives an incomplete capture. Incomplete or overflowed captures cannot be encoded as portable full-session archives.
-
-Replay capture belongs to the current game lifecycle. Corrupt current-game recovery, Reset Current Game, and Clear All remove it. Malformed capture persistence is removed safely. Opening imported portable replay text is a separate spectator-only in-memory operation and does not install external replay data as trusted current-game progress.
-EOF
-          fi
-          python3 -c "from pathlib import Path; p=Path('docs/DATA_STORAGE.md'); t=p.read_text(); t=t.replace('`clearAll()` removes only the seven project-owned keys listed above.','`clearAll()` removes the eight project-owned keys, including the replay-capture key.'); p.write_text(t)"
+          python3 -c "from pathlib import Path; p=Path('docs/DATA_STORAGE.md'); t=p.read_text().replace('`clearAll()` removes only the seven project-owned keys listed above.','`clearAll()` removes the eight project-owned keys, including the replay-capture key.'); p.write_text(t)"
+          if ! grep -q '^## Full-session replay capture$' docs/DATA_STORAGE.md; then printf '\n' >> docs/DATA_STORAGE.md; echo "$BLOCK_B64" | base64 --decode >> docs/DATA_STORAGE.md; fi
           git add docs/DATA_STORAGE.md
           git commit -m "docs: document replay capture persistence"
-
       - name: Update privacy
+        env:
+          BLOCK_B64: "IyMgRnVsbCBSZXBsYXkgQXJjaGl2ZSBwcml2YWN5CgpGdWxsIFJlcGxheSBBcmNoaXZlIHJlY29yZHMgYSBib3VuZGVkIGxvY2FsIGFjdGlvbiBzZXF1ZW5jZSBmb3IgbmV3bHkgc3RhcnRlZCBzZXNzaW9ucy4gVGhlIGFjdGl2ZSBjYXB0dXJlIHN0b3JlcyB0aGUgdmFsaWRhdGVkIG9wZW5pbmcgZ2FtZSBzdGF0ZSBwbHVzIG1vdmUsIFVuZG8sIGNvbnRpbnVlLCBhbmQgc3RhdHVzIGV2ZW50cyB3aXRoIGVsYXBzZWQgYWN0aW9uIHRpbWluZy4gSXQgaXMgbG9jYWwgcHJvamVjdCBkYXRhIGFuZCBpcyBub3QgdXBsb2FkZWQsIHN5bmNocm9uaXplZCwgYW5hbHl6ZWQsIG9yIHNlbnQgdG8gYSByZW1vdGUgQUkgc2VydmljZS4KClNlbGVjdGluZyAqKkNvcHkgZnVsbCByZXBsYXkqKiB3cml0ZXMgYSBjb21wbGV0ZSBhcmNoaXZlIHRvIHRoZSBzeXN0ZW0gY2xpcGJvYXJkIG9ubHkgYWZ0ZXIgZXhwbGljaXQgdXNlciBhY3Rpb24uICoqT3BlbiBmcm9tIGNsaXBib2FyZCoqIHJlYWRzIGNsaXBib2FyZCB0ZXh0IG9ubHkgYWZ0ZXIgZXhwbGljaXQgYWN0aW9uOyBtYW51YWwgdGV4dCBlbnRyeSBpcyBhbHNvIGF2YWlsYWJsZS4gVGhlIGFwcCBkb2VzIG5vdCBtb25pdG9yIHRoZSBjbGlwYm9hcmQgaW4gdGhlIGJhY2tncm91bmQuIFBsYXRmb3JtIGNsaXBib2FyZCBoaXN0b3J5IGFuZCBzeW5jaHJvbml6YXRpb24gYXJlIGNvbnRyb2xsZWQgYnkgdGhlIG9wZXJhdGluZyBzeXN0ZW0gb3IgYnJvd3Nlci4KCkEgc2hhcmVkIHJlcGxheSBjYW4gcmV2ZWFsIGdhbWUgY29uZmlndXJhdGlvbiwgc2VlZCBhbmQgUk5HIHN0YXRlLCBvcGVuaW5nIGJvYXJkLCBtb3ZlIGRpcmVjdGlvbnMsIHRpbWluZywgYW5kIHJlY29uc3RydWN0ZWQgc2NvcmUgYW5kIGJvYXJkIGV2b2x1dGlvbi4gVGhlIEpTT04gaXMgbm90IGVuY3J5cHRlZCBvciBzaWduZWQuIE9wZW5pbmcgYSByZXBsYXkgaXMgc3BlY3RhdG9yLW9ubHkgYW5kIGNhbm5vdCBpbXBvcnQgbGlmZXRpbWUgc3RhdGlzdGljcywgYWNoaWV2ZW1lbnRzLCBzdHJlYWtzLCBEYWlseSBoaXN0b3J5LCBzZXR0aW5ncywgb3IgcGVyLW1vZGUgcmVjb3Jkcy4gU3RydWN0dXJhbCBhbmQgZGV0ZXJtaW5pc3RpYyB2YWxpZGl0eSBpcyBub3QgcHJvb2Ygb2YgYXV0aG9yc2hpcC4K"
         run: |
-          if ! grep -q '^## Full Replay Archive privacy$' docs/PRIVACY.md; then
-            cat >> docs/PRIVACY.md <<'EOF'
-
-## Full Replay Archive privacy
-
-Full Replay Archive records a bounded local action sequence for newly started sessions. The active capture stores the validated opening game state plus move, Undo, continue, and status events with elapsed action timing. It is local project data and is not uploaded, synchronized, analyzed, or sent to a remote AI service.
-
-Selecting **Copy full replay** writes a complete archive to the system clipboard only after explicit user action. **Open from clipboard** reads clipboard text only after explicit action; manual text entry is also available. The app does not monitor the clipboard in the background. Platform clipboard history and synchronization are controlled by the operating system or browser.
-
-A shared replay can reveal game configuration, seed and RNG state, opening board, move directions, timing, and reconstructed score and board evolution. The JSON is not encrypted or signed. Opening a replay is spectator-only and cannot import lifetime statistics, achievements, streaks, Daily history, settings, or per-mode records. Structural and deterministic validity is not proof of authorship.
-EOF
-          fi
+          if ! grep -q '^## Full Replay Archive privacy$' docs/PRIVACY.md; then printf '\n' >> docs/PRIVACY.md; echo "$BLOCK_B64" | base64 --decode >> docs/PRIVACY.md; fi
           git add docs/PRIVACY.md
           git commit -m "docs: document full replay archive privacy"
-
       - name: Remove helper and push
         run: |
           git rm .github/workflows/phase19-docs-safe-core.yml
