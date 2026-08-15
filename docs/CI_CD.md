@@ -218,3 +218,10 @@ A new permanent workflow should:
 8. be documented here if it becomes part of the permanent project process.
 
 One-time migration or repair workflows should be deleted after successful use rather than accumulating as inactive maintenance debt.
+
+
+## Phase 17 current-source workflow evidence
+
+Current runtime source commit `d33d65840aff67c4e9bf69ad203f46b85146093c` was verified by permanent CI run `31867788776` and Platform Builds run `31867788753`. CI passed formatting (74 files, 0 changed), static analysis, all **144/144 tests**, Web release compilation, and the Web WASM dry run. The native matrix passed Android APK, Linux, Windows, macOS, and unsigned iOS release builds.
+
+This current-source rerun was not created to substitute documentation for testing: the `lib/**` source-documentation clarification intentionally exercised the normal maintained workflow triggers after the final runtime parser correction. The results therefore apply to the corrected runtime tree.
