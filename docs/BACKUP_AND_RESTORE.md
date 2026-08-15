@@ -1,6 +1,6 @@
 # Current Game Backup and Restore
 
-2048 Nova supports a portable, clipboard-based backup for the **current game only**. The feature is deliberately narrow: it lets a player carry or preserve one game state without importing lifetime records or treating externally supplied data as trusted ranked progress.
+2048 Nova supports a portable backup for the **current game only** through either the clipboard or an explicit user-selected `.nova2048` / `.json` file. Both transports carry the same versioned JSON envelope. The feature is deliberately narrow: it lets a player carry or preserve one game state without importing lifetime records or treating externally supplied data as trusted ranked progress.
 
 This is distinct from [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md). A Challenge Code shares only a fresh-game configuration and deterministic seed; Game Backup shares actual board/session progress.
 
