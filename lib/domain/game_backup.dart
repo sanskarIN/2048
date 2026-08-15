@@ -14,6 +14,14 @@ class GameBackup {
   static const version = 1;
   static const maxEncodedLength = 128 * 1024;
 
+  /// Conservative byte bound used before decoding file-based imports.
+  ///
+  /// The validated text protocol itself is capped by [maxEncodedLength]
+  /// characters. UTF-8 can use up to four bytes per Unicode scalar value, so
+  /// file input is bounded before allocation and then checked again by
+  /// [decode]. Normal backups are much smaller than this ceiling.
+  static const maxFileBytes = maxEncodedLength * 4;
+
   static String encode(GameState state, {DateTime? exportedAt}) {
     return jsonEncode({
       'format': format,
