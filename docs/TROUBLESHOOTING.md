@@ -315,3 +315,23 @@ For security-sensitive reports, follow [`../SECURITY.md`](../SECURITY.md) rather
 Open **Settings → Language** and select English or हिन्दी explicitly to distinguish an app preference issue from the platform's System default locale. If a stored language value is invalid, 2048 Nova falls back safely to System default.
 
 If a specific label remains English while Hindi is selected, report the screen and exact label: the localization layer intentionally falls back to the English source string rather than crashing when a translation key is missing. For clipped/wrapped Hindi text, include device/platform, display size, text-scale setting, and a screenshot when possible.
+
+## Copy full replay is disabled
+
+A portable full-session replay is available only when capture started with the current game and has not overflowed its 4,096-event bound. Legacy saves and Game Backup imports do not contain missing earlier actions, so their replay capture is intentionally incomplete. Start a new local game to create a complete capture from move zero.
+
+If the current session exceeded 4,096 replay events, normal gameplay continues but export stays disabled rather than producing an incomplete archive labeled as complete.
+
+## Full Replay Archive import is rejected
+
+A replay archive must be valid JSON with format `nova2048.fullReplay`, version `1`, a valid export timestamp, a complete non-overflowed capture, no more than 4,096 events, and a valid `GameState` opening state. Event times must be ordered and bounded; move, Undo, win-continuation, and status-refresh actions must be legal when reconstructed.
+
+A Challenge Code or Game Backup is a different portable format and cannot be opened as a replay archive. See [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md).
+
+## Opening a replay did not create a playable game
+
+That is intentional. Portable replay import is spectator-only. Use Challenge Codes to start a fresh shared configuration or Game Backup to restore editable progress, which becomes unranked.
+
+## A timed replay diverges from the original status
+
+Version 1 records elapsed event timing and supplies it to the engine during reconstruction. If a development change causes divergence, inspect `GameEngine.move(..., now:)`, `refreshStatus(..., now:)`, replay event ordering, and capture persistence. Do not fix replay by using the viewer's current clock.
