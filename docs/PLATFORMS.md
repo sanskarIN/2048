@@ -330,3 +330,9 @@ The latest hosted native-build evidence is Platform Builds run `31869794809` on 
 The later final CI commit `b114255b6f510f0e7ba8d0516e9a30eebf4451b8` changes only a test import and does not alter runtime application source, so this matrix covers the accepted Phase 18 runtime tree. It supersedes the Phase 17 matrix as the latest hosted native compilation evidence.
 
 Hosted builds demonstrate compilation/package success only; physical-device behavior, expectimax responsiveness on representative slower devices, accessibility/focus, signed iOS distribution, signing/provisioning, and store qualification remain manual release requirements.
+
+## Full Replay Archive platform behavior
+
+Full Replay Archive uses Flutter clipboard access through the existing `TextClipboard` abstraction. **Copy full replay** writes only after explicit action; **Open from clipboard** reads only after explicit action; manual text entry remains available when clipboard access is restricted. Browser and OS clipboard permission, history, cross-device synchronization, and maximum practical clipboard sizes differ by environment and therefore remain manual platform checks.
+
+Replay reconstruction itself is local Dart and Flutter logic and requires no project server. Hosted compilation can verify that the runtime source builds for configured targets, but it cannot establish real-device responsiveness for long valid captures, platform clipboard UX, screen-reader behavior, or timer cleanup after lifecycle transitions. Those checks remain in `RELEASE_CHECKLIST.md`.
