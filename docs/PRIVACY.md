@@ -40,7 +40,7 @@ Challenge Code text is plain and not encrypted. Its checksum is only for acciden
 
 See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md).
 
-## Portable Game Backup and clipboard data
+## Portable Game Backup, clipboard, and selected files
 
 Game Backup is an explicit user action. Export creates plain JSON text for the **current game only** and writes that text to the system clipboard.
 
