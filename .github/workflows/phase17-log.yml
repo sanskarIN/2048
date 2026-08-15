@@ -1,0 +1,340 @@
+name: Phase 17 changelog and work log
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/phase17-log.yml
+
+permissions:
+  contents: write
+
+jobs:
+  phase17-log:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure commit identity
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+
+      - name: Update release-facing changelog
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('CHANGELOG.md')
+          text = path.read_text()
+          sentinel = 'Trusted local **per-mode records**'
+          if sentinel in text:
+              raise SystemExit('Phase 17 changelog entries already exist')
+
+          added = '''### Added\n- Trusted local **per-mode records** for best score and highest tile, with best-score board-size/target metadata, backward-compatible persistence, and localized expandable Statistics cards.\n- Ten focused Phase 17 regression tests covering per-mode serialization/migration, ranked tracking/reset behavior, imported-backup isolation, and English/Hindi Statistics presentation.\n'''
+          changed = '''### Changed\n- Statistics reset now clears historical per-mode records while rebuilding only the observable baseline for a ranked active session; an imported unranked session rebuilds none.\n- Ranked legacy current games can seed missing per-mode records during startup repair without inventing records for historical games that are no longer observable.\n'''
+          security = '''### Security\n- Portable/editable Game Backup progress is excluded from per-mode record updates across import, continued moves, restart restoration, and statistics reset.\n- Persisted per-mode record values are sanitized/bounded before use, and unknown future mode keys are ignored.\n'''
+
+          if text.count('### Added\n') < 1 or text.count('### Changed\n') < 1 or text.count('### Security\n') < 1:
+              raise SystemExit('Expected changelog sections not found')
+          text = text.replace('### Added\n', added, 1)
+          text = text.replace('### Changed\n', changed, 1)
+          text = text.replace('### Security\n', security, 1)
+          path.write_text(text)
+          PY
+          git add CHANGELOG.md
+          git commit -m "docs: add Phase 17 per-mode records to changelog"
+
+      - name: Append detailed Phase 17 work log
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('what_changed.md')
+          text = path.read_text()
+          heading = '# Phase 17 — Trusted per-mode records'
+          if heading in text:
+              raise SystemExit('Phase 17 work log already exists')
+
+          entry = r'''
+
+# Phase 17 — Trusted per-mode records
+
+Date: **2026-08-15**
+
+## Starting point
+
+Phase 17 started from the completed Phase 16 English/Hindi localization release-candidate state:
+
+```text
+Version: 0.9.0+1
+Previous final automated gate: 134/134 tests
+Previous final CI: 31806785165
+Previous native matrix: 31804713200
+Stable 1.0.0: not yet promoted
+```
+
+The release roadmap still contained an optional mode-specific-record expansion. This phase implemented the portion that can be measured and migrated honestly from trusted local gameplay without introducing accounts, cloud synchronization, analytics, or a new trust system.
+
+## Scope selected for Phase 17
+
+Implemented trusted local records per `GameMode`:
+
+- best score;
+- highest tile;
+- board size associated with the stored best score;
+- target tile associated with the stored best score.
+
+The feature deliberately does **not** invent historical records for completed games that are no longer observable. It also does not claim an exact historical fewest-winning-moves record because old persisted statistics do not contain enough information to reconstruct that fact safely.
+
+## Persisted record model
+
+`lib/app/state/app_controller.dart` now contains `ModeRecord` and a `PlayerStats.modeRecords` map keyed by `GameMode`.
+
+The serialized statistics payload can now include:
+
+```json
+"modeRecords": {
+  "classic": {
+    "bestScore": 16384,
+    "highestTile": 2048,
+    "bestScoreBoardSize": 4,
+    "bestScoreTarget": 2048
+  }
+}
+```
+
+Validation rules were kept consistent with the existing statistics/save parser:
+
+- scores must be finite, integral, and non-negative;
+- highest-tile and target values must be valid powers of two within application bounds;
+- stored best-score board size must remain between 3 and 8;
+- unknown/future mode keys are ignored;
+- malformed record objects are skipped/sanitized;
+- empty records are not serialized;
+- statistics payloads written before Phase 17 remain valid because `modeRecords` is optional.
+
+No new preference key, database, runtime dependency, account, network request, or cloud service was added.
+
+## Trusted update boundary
+
+`AppController` is the record-policy boundary.
+
+A locally started ranked game can update its mode record:
+
+- when a new game is created and its generated board establishes an observable highest-tile baseline;
+- after a successful ranked move raises score or tile progress;
+- when timed/challenge status is refreshed and trusted progress must be persisted;
+- during startup repair when a valid ranked current game predates the new `modeRecords` statistics field;
+- during Reset Statistics when an active ranked session must remain represented consistently.
+
+Undo does not reduce a historical maximum. This follows the existing global-best behavior: reaching a best and then undoing does not erase the fact that the best was already reached.
+
+## Imported Game Backup isolation
+
+The existing persistent `_currentGameUnranked` boundary now also protects per-mode records.
+
+A portable/editable Game Backup:
+
+- does not seed a mode record at import time;
+- cannot improve a mode record through continued moves;
+- remains excluded after app restart because the unranked marker is restored before ranked repair logic runs;
+- does not recreate a record when Statistics is reset while that imported board is active.
+
+A locally started deterministic seeded game is still ranked. Challenge Codes continue to start fresh configuration-only local games and do not use the portable-progress import path.
+
+## Statistics reset behavior
+
+`resetStats()` now resets `PlayerStats`, including `modeRecords`.
+
+If a ranked active game exists, the controller rebuilds only a minimal observable baseline for that active session:
+
+- one current game counted;
+- current score/global best baseline;
+- current highest tile;
+- current mode record derived from the active board/configuration;
+- already-counted win state retained when applicable.
+
+Historical records for other modes remain cleared.
+
+If the active board is an imported unranked backup, no aggregate or per-mode progress is reconstructed from it.
+
+## Localized Statistics UI
+
+`lib/features/statistics/statistics_screen.dart` now appends expandable mode-record cards after the existing global statistics.
+
+Each mode with trusted progress can show:
+
+- localized mode name;
+- localized board-size metadata when available;
+- localized target metadata when available;
+- best score;
+- highest tile.
+
+The UI intentionally reuses the Phase 16 localization layer rather than adding duplicate strings:
+
+- `NovaLocalizations.modeName(...)`;
+- `NovaLocalizations.boardSize(...)`;
+- `NovaLocalizations.targetTile(...)`;
+- existing `Best score` / `Highest tile` English/Hindi translations.
+
+This preserves the offline localization and accessibility architecture.
+
+## Focused regression tests added
+
+Ten tests were added across four new files:
+
+```text
+test/mode_record_serialization_test.dart     3 tests
+test/mode_record_tracking_test.dart          3 tests
+test/mode_record_unranked_test.dart          2 tests
+test/statistics_mode_records_test.dart       2 tests
+```
+
+Coverage includes:
+
+1. per-mode record JSON round trip;
+2. malformed/unknown record sanitization;
+3. backward compatibility with legacy statistics payloads;
+4. ranked move progress updating and persisting the correct mode record;
+5. startup migration from an observable legacy ranked current game;
+6. Reset Statistics preserving only an active ranked mode baseline;
+7. imported-backup exclusion through import, continued move, and reset;
+8. locally started seeded-game ranking behavior;
+9. English expandable Statistics record presentation;
+10. Hindi mode/configuration/record-label presentation through the production localization layer.
+
+The permanent Format Dart workflow subsequently produced:
+
+```text
+15b735811fa32b51def5d5ee991aa1e89ed8ae6d
+style: format Dart sources and tests
+```
+
+## Transparent intermediate automation issue
+
+The first one-time source-commit helper run failed before committing production source:
+
+```text
+Workflow: Phase 17 source commits
+Run: 31866878358
+Result: FAILURE
+Cause: dart: command not found
+```
+
+The lightweight helper used an Ubuntu runner that did not include Dart on `PATH`. Its Python source edit had only occurred in the ephemeral checkout; the job stopped before the source commit and therefore did not leave a half-written production commit.
+
+The helper was corrected to leave formatting to the repository's maintained Flutter Format Dart/CI workflows instead of assuming an SDK on the lightweight helper runner.
+
+Corrected helper:
+
+```text
+Run: 31866913732
+Result: SUCCESS
+```
+
+## Parser correction found during source audit
+
+After the first model/tracking push, the committed file was explicitly re-opened instead of assuming the generated patch was complete. The audit showed that the intended `modeRecords` deserialization block was not present in the final `PlayerStats.fromJson` body even though serialization/tracking code was present.
+
+That omission was corrected immediately in:
+
+```text
+341f2ad5d5b252f75e52e05ed7aede8a8aa38fbb
+fix: restore per-mode record deserialization
+```
+
+A later final source audit confirmed that the parser now:
+
+- reads only current `GameMode.values` keys;
+- normalizes string-keyed maps defensively;
+- validates records through `ModeRecord.fromJson`;
+- retains only records with actual progress.
+
+The intermediate mistake remains recorded here rather than being hidden.
+
+## Phase 17 source/test commits
+
+Representative production and regression commits:
+
+```text
+97880d90daafa5b45812c263e89d3e1f68106556  feat: add persisted per-mode record model
+7e264da32c3154c18318d80e7ca5c2d41e4f6d82  feat: track trusted per-mode progress
+752bf15074ff43dd614d5e6888f8ec16f29560d7  feat: show per-mode records in statistics
+341f2ad5d5b252f75e52e05ed7aede8a8aa38fbb  fix: restore per-mode record deserialization
+09124d22f584b92a57f747a2288c63c9551610cf  test: cover per-mode record serialization
+dc92109ad1ea6f75859db26d5e87768e6936a739  test: cover trusted per-mode record tracking
+f55e913a5dbd30f586a120716b586e430d589b95  test: keep imported backups out of mode records
+c381dd1582845b26ab9dcd96c9d1874eb9e3d52f  test: cover localized per-mode statistics UI
+15b735811fa32b51def5d5ee991aa1e89ed8ae6d  style: format Dart sources and tests
+```
+
+Temporary helper setup/correction/removal commits are also retained in normal Git history because they reflect real repository operations. No empty/no-op commit was created solely to inflate the count.
+
+## Phase 17 documentation work
+
+Added:
+
+```text
+docs/MODE_RECORDS.md
+```
+
+Updated or extended:
+
+```text
+README.md
+ROADMAP.md
+CHANGELOG.md
+SECURITY.md
+docs/README.md
+docs/ARCHITECTURE.md
+docs/BACKUP_AND_RESTORE.md
+docs/DATA_STORAGE.md
+docs/PRIVACY.md
+docs/TESTING.md
+docs/USER_GUIDE.md
+what_changed.md
+```
+
+The documentation now states the exact migration, reset, privacy, trust, imported-backup isolation, and non-goal boundaries instead of describing per-mode records as a generic leaderboard feature.
+
+## Phase 17 documentation commits
+
+```text
+d331fe1e6499d721152255cfd1404daad5424b87  docs: document per-mode record trust model
+2dbf3935cf4cacd784ef0db6db746b4715128894  docs: index per-mode records documentation
+9b60eae4c25859c699eefc6427f12eaa8f280e21  docs: advance roadmap with per-mode records
+5931bbcf4c51ac1ce15a9ae343941ae953086585  docs: add per-mode records to project overview
+5bd5d0d42e2407f8436b0d5d82f27f9a03ba9d80  docs: describe per-mode record persistence
+9e2b129fa6a71c645aad9599ac5feebeff95f344  docs: define per-mode record architecture
+593d218efab446e9d564ad66cfe5b809182b8f9f  docs: explain per-mode records to players
+a6ba8e69934eb2e32a43ddba9936c0c0dd0659c7  docs: record per-mode statistics privacy
+6cdfda38d21fcd268b3610c0e8559a87f032feeb  docs: extend backup trust boundary to mode records
+bb5cf29df327391aeff1de8d2ebade13ed60b81c  docs: define per-mode record integrity boundary
+58b63917cc6a4a26d0fbf7daffa97af651b302b8  docs: describe Phase 17 record regression coverage
+```
+
+## Verification state before the final Phase 17 gate
+
+Several intermediate CI runs were superseded/cancelled by main-branch concurrency while the source, tests, formatter commit, and documentation commits were still arriving. For example, CI run `31867018829` for the localized Statistics test commit was cancelled after newer main commits superseded it. This is not treated as a passing gate or as a code failure.
+
+The final Phase 17 passing test count and maintained CI run are intentionally recorded only after the repository stops moving and the permanent CI workflow completes against the final candidate source state.
+
+## Manual boundaries remain unchanged
+
+Phase 17 does not convert automated CI into physical-device release qualification. Stable `1.0.0` still requires the manual checks already listed in `ROADMAP.md` and `docs/RELEASE_CHECKLIST.md`, including representative real-device lifecycle, accessibility, clipboard/platform-handler, long-session, splash/icon, signing/provisioning, and store-metadata review.
+'''
+          path.write_text(text + entry)
+          PY
+          git add what_changed.md
+          git commit -m "docs: record complete Phase 17 implementation work"
+
+      - name: Remove helper and push
+        run: |
+          git rm .github/workflows/phase17-log.yml
+          git commit -m "chore: remove Phase 17 changelog helper"
+          git pull --rebase origin main
+          git push origin HEAD:main
