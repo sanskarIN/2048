@@ -366,4 +366,20 @@ const hindiTranslations = <String, String>{
       'मुख्य गेमप्ले, Challenge Codes, Game Backup सत्यापन, Move Replay, Full Replay Archive, Auto Play Demo और भाषा बदलना प्रोजेक्ट सर्वर के बिना काम करते हैं। कोई अकाउंट, एनालिटिक्स, विज्ञापन ट्रैकर, रिमोट AI सेवा, क्लाउड सिंक्रोनाइज़ेशन या ऑनलाइन अनुवाद सेवा जरूरी नहीं है। क्लिपबोर्ड टेक्स्ट केवल तब पढ़ा या लिखा जाता है जब आप संबंधित Challenge Code, Game Backup या Full Replay Archive क्रिया चुनते हैं।',
   'Release candidate 0.9 includes ten game modes, deterministic save and Undo integrity, Daily Challenges, offline shareable seeded Challenge Codes, English/Hindi localization with a persisted language setting, statistics and achievements, seven palettes, accessibility controls, heuristic hints, keyboard shortcuts, an isolated Auto Play Demo with Heuristic and bounded Expectimax strategies, deterministic solver benchmarks, read-only bounded Move Replay, portable spectator-only Full Replay Archives with bounded deterministic action capture, validated portable current-game backup with persistent unranked restore policy, and cross-platform release-build verification.':
       'रिलीज़ कैंडिडेट 0.9 में दस गेम मोड, निर्धारक सेव और Undo अखंडता, Daily Challenges, ऑफलाइन साझा किए जा सकने वाले seeded Challenge Codes, सहेजी गई भाषा सेटिंग के साथ अंग्रेज़ी/हिन्दी स्थानीयकरण, आँकड़े और उपलब्धियाँ, सात पैलेट, एक्सेसिबिलिटी नियंत्रण, heuristic hints, कीबोर्ड शॉर्टकट, Heuristic और सीमित Expectimax रणनीतियों वाला अलग Auto Play Demo, निर्धारक solver benchmarks, केवल-पढ़ने योग्य सीमित Move Replay, सीमित निर्धारक क्रिया-कैप्चर वाले पोर्टेबल केवल-दर्शक Full Replay Archives, स्थायी unranked restore नीति वाला सत्यापित current-game backup और क्रॉस-प्लेटफ़ॉर्म release-build सत्यापन शामिल हैं।',
+  'Export copies one validated JSON backup to the clipboard or a .nova2048 file. It contains the current game only — never settings, lifetime statistics, achievements, Daily history, or Undo history.':
+      'एक सत्यापित JSON बैकअप क्लिपबोर्ड या .nova2048 फ़ाइल में एक्सपोर्ट किया जा सकता है। इसमें केवल वर्तमान गेम होता है — सेटिंग्स, जीवनकाल आँकड़े, उपलब्धियाँ, डेली हिस्ट्री या अनडू हिस्ट्री कभी नहीं।',
+  'Imported backups are deliberately restored as unranked sessions. Clipboard and file imports use the same strict validation and trust policy.':
+      'इम्पोर्ट किए गए बैकअप जानबूझकर अनरैंक्ड सेशन के रूप में रिस्टोर होते हैं। क्लिपबोर्ड और फ़ाइल इम्पोर्ट एक ही सख्त सत्यापन और ट्रस्ट नीति का उपयोग करते हैं।',
+  'No current game is available to export. You can still import a valid 2048 Nova game backup from the clipboard or a .nova2048 file.':
+      'एक्सपोर्ट करने के लिए कोई वर्तमान गेम उपलब्ध नहीं है। आप फिर भी क्लिपबोर्ड या .nova2048 फ़ाइल से वैध 2048 नोवा गेम बैकअप इम्पोर्ट कर सकते है।',
+  'Save backup file': 'बैकअप फ़ाइल सेव करें',
+  'Import backup file': 'बैकअप फ़ाइल इम्पोर्ट करें',
+  '• File size is bounded before UTF-8 and JSON decoding.':
+      '• UTF-8 और JSON डिकोडिंग से पहले फ़ाइल आकार सीमित किया जाता है।',
+  'Game backup file saved.': 'गेम बैकअप फ़ाइल सेव हो गई।',
+  'Backup file export cancelled.': 'बैकअप फ़ाइल एक्सपोर्ट रद्द किया गया।',
+  'Could not save backup file.': 'बैकअप फ़ाइल सेव नहीं की जा सकी।',
+  'Could not open backup file.': 'बैकअप फ़ाइल खोली नहीं जा सकी।',
+  'Backup file is too large.': 'बैकअप फ़ाइल बहुत बड़ी है।',
+  'Backup file is not valid UTF-8 text.': 'बैकअप फ़ाइल वैध UTF-8 टेक्स्ट नहीं है।',
 };
