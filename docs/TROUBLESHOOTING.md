@@ -350,3 +350,9 @@ If **Save backup file** or **Import backup file** does not complete:
 8. if the chooser itself fails, clipboard Game Backup remains a separate transport for the same validated envelope.
 
 A rejected file should never replace the current game. Report reproducible platform/plugin failures with OS, target, action, and whether cancellation or validation feedback appeared.
+
+## A Challenge Code QR will not scan
+
+First use the selectable/copyable `NOVA1...` text as the reliable fallback. For optical scanning, keep the full white QR area visible, avoid covering/cropping it, increase practical screen brightness if needed, reduce glare, and give the external camera/scanner enough distance to focus. The surrounding app theme may be dark, but the QR itself intentionally remains black on white.
+
+2048 Nova does not contain an in-app scanner, so camera/scanner compatibility belongs to the receiving device/application. If scanned text is produced but 2048 Nova rejects it, use the normal validation message: the text must still satisfy prefix, checksum, payload, version, configuration, seed, and supported-mode checks.
