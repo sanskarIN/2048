@@ -36,6 +36,19 @@ void main() {
     expect(l10n.text('Game backup is empty.'), 'गेम बैकअप खाली है।');
   });
 
+  test('Hindi catalog translates advanced solver controls', () {
+    const l10n = NovaLocalizations(Locale('hi'));
+
+    expect(
+      l10n.text('Deterministic local solver demonstration'),
+      'निर्धारक स्थानीय सॉल्वर प्रदर्शन',
+    );
+    expect(l10n.text('Strategy'), 'रणनीति');
+    expect(l10n.text('Search nodes'), 'खोज नोड');
+    expect(l10n.text('Heuristic'), 'ह्यूरिस्टिक');
+    expect(l10n.text('Expectimax'), 'एक्सपेक्टिमैक्स');
+  });
+
   test('English is identity and missing Hindi strings fall back safely', () {
     const english = NovaLocalizations(Locale('en'));
     const hindi = NovaLocalizations(Locale('hi'));
