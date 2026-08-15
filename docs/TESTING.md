@@ -557,3 +557,9 @@ Web WASM dry run: PASS
 ```
 
 The native plugin matrix on the same source is `31875447417` and passed Android, Linux, Windows, macOS, and unsigned iOS. This supersedes the Android-failed matrix `31875177571`.
+
+## Phase 21 Challenge Code QR coverage
+
+Phase 21 adds five focused tests over the Phase 20 total of 189, bringing the source suite definition to **194 tests** before the final maintained gate. Coverage includes exact canonical text handed to the project QR wrapper, white-background rendering/semantic labeling, a 260-logical-pixel maximum, narrow-layout containment, Hindi generated-QR UI, and Hindi QR trust/accessibility catalog copy.
+
+Automated rendering/widget checks do not prove optical scan reliability. Stable qualification still requires representative real screens and external camera/scanner apps across brightness, glare, density, theme, orientation, and text-scale conditions.
