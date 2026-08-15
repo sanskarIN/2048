@@ -246,3 +246,17 @@ A green hosted gate proves the tested archive code parses and reconstructs the c
 Because Phase 20 adds `file_picker` and macOS sandbox entitlements, its final acceptance requires both the normal CI gate and the configured native Platform Builds workflow on the completed runtime tree. The normal CI covers dependency resolution, formatting, analyzer, 189 tests, Web release, and Web WASM dry-run compatibility. Platform Builds provides Android/Linux/Windows/macOS/unsigned-iOS compilation evidence.
 
 Neither workflow performs interactive system picker qualification. Save/Open/cancel/document-provider/browser-download behavior remains a manual release boundary.
+
+## Phase 20 final CI and Android plugin repair
+
+Accepted current-source automation:
+
+```text
+CI: 31875447398 / job 94990368739 - SUCCESS
+Platform Builds: 31875447417 - SUCCESS
+Source: 188e81c607eca76516018be8c668eab41b777cc1
+```
+
+The first native run `31875177571` was intentionally not accepted because Android job `94989728523` failed generated plugin registration for `FilePickerPlugin`. The host was migrated to AGP-9 built-in Kotlin in `188e81c607eca76516018be8c668eab41b777cc1`, after which Android job `94990368847` passed together with Linux `94990368919`, Windows `94990368886`, and macOS/unsigned-iOS `94990368933`.
+
+CI on the repaired source passed 91-file formatting, analyzer, 189 tests, Web release, and WASM dry run. Hosted automation still does not exercise an interactive system file chooser.
