@@ -103,6 +103,7 @@ The repository's GitHub Actions workflows compile and test source code. Project 
 
 Runtime package use beyond Flutter is intentionally limited to:
 
+- `file_picker` for explicit user-selected Game Backup file save/open transport;
 - `shared_preferences` for small local project state;
 - `url_launcher` for explicit external browser/email handoff.
 
