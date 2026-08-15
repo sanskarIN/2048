@@ -5,6 +5,10 @@ All notable changes to this project are documented here.
 ## [Unreleased]
 
 ### Added
+- Bounded deterministic **Expectimax** strategy for the isolated Auto Play Demo, including real 90%/10% 2/4 chance-node modeling, explicit depth/node limits, deterministic tie behavior, and non-mutating search.
+- Selectable Heuristic/Expectimax Auto Play strategy controls with visible expectimax search-node diagnostics; strategy switching pauses playback without resetting sandbox board/RNG state.
+- Reusable deterministic solver benchmark library plus `dart run tool/solver_benchmark.dart` CLI for fixed-seed Heuristic/Expectimax regression comparisons.
+- Advanced solver unit, benchmark, strategy-isolation, widget, and Hindi localization regression coverage.
 - Trusted local **per-mode records** for best score and highest tile, with best-score board-size/target metadata, backward-compatible persistence, and localized expandable Statistics cards.
 - Ten focused Phase 17 regression tests covering per-mode serialization/migration, ranked tracking/reset behavior, imported-backup isolation, and English/Hindi Statistics presentation.
 - Offline English/Hindi localization framework with System default, English, and हिन्दी language selection, persisted settings, English fallback, localized critical error paths, and Hindi board accessibility semantics.
@@ -41,6 +45,8 @@ All notable changes to this project are documented here.
 - Friendly copy fallback when an approved external destination cannot be opened by the platform.
 
 ### Changed
+- Normal player Hint deliberately remains the fast read-only heuristic; bounded Expectimax is available only inside the isolated Auto Play sandbox.
+- In-app Guide/About and English/Hindi solver copy now distinguish Heuristic, Expectimax, sandbox isolation, and benchmark/resource-limit boundaries.
 - Statistics reset now clears historical per-mode records while rebuilding only the observable baseline for a ranked active session; an imported unranked session rebuilds none.
 - Ranked legacy current games can seed missing per-mode records during startup repair without inventing records for historical games that are no longer observable.
 - Home, modes, gameplay controls/dialogs, Daily Challenge, statistics, achievements, Challenge Codes, Game Backup, Move Replay, Auto Play Demo, Guide, About, Support, splash semantics, and external-link fallbacks now use the shared localization layer.
