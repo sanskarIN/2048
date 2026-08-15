@@ -160,3 +160,7 @@ Web release: passed
 The runtime localization source was also compiled successfully by Platform Builds run `31804713200` on commit `5048486775b0c9702583f348bfc5be71219e83ae` for Android, Linux, Windows, macOS, and unsigned iOS.
 
 These automated results do not replace real English/Hindi font, layout, screen-reader, focus, clipboard, lifecycle, or store-metadata qualification.
+
+## Phase 21 QR localization
+
+English/Hindi localization covers the QR sharing heading, semantic label, render-error fallback, trust disclosure, Guide accessibility/privacy copy, and About release-highlight text. The QR payload itself is the canonical language-neutral `NOVA1...` code and must not be translated or modified by the localization layer.
