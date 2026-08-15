@@ -335,3 +335,18 @@ That is intentional. Portable replay import is spectator-only. Use Challenge Cod
 ## A timed replay diverges from the original status
 
 Version 1 records elapsed event timing and supplies it to the engine during reconstruction. If a development change causes divergence, inspect `GameEngine.move(..., now:)`, `refreshStatus(..., now:)`, replay event ordering, and capture persistence. Do not fix replay by using the viewer's current clock.
+
+## Backup file will not save or open
+
+If **Save backup file** or **Import backup file** does not complete:
+
+1. confirm the platform file dialog/browser download was not cancelled;
+2. try a local user-writable/user-readable location offered by the picker;
+3. use a `.nova2048` or `.json` file;
+4. confirm the file is valid UTF-8 text and below the 512 KiB pre-decode file limit;
+5. remember that the embedded JSON still has the stricter 128 Ki-character Game Backup protocol limit;
+6. on Web, check browser download/file-input permissions and download blocking;
+7. on macOS, use the user-selected picker flow rather than trying to grant arbitrary folder access;
+8. if the chooser itself fails, clipboard Game Backup remains a separate transport for the same validated envelope.
+
+A rejected file should never replace the current game. Report reproducible platform/plugin failures with OS, target, action, and whether cancellation or validation feedback appeared.
