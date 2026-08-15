@@ -28,7 +28,7 @@ The repository is currently on the **`0.9.0+1` release-candidate line**. Automat
 - Touch/swipe, Arrow Keys, and W/A/S/D movement plus H for Hint, U for Undo, P/Escape for Pause, and R for Restart on keyboard platforms.
 - Save/resume with schema-versioned local state, structural validation, startup challenge reconciliation, and corruption-safe self-healing.
 - Persistent Undo history with deterministic RNG restoration, stale-session filtering, lifetime-best-score preservation, and a 50-snapshot bound.
-- **Game Backup** for copying/restoring one current game as validated JSON through the clipboard.
+- **Game Backup** for copying/restoring one current game as validated JSON through the clipboard or explicit user-selected `.nova2048` / `.json` files, with byte-bounded file reads before UTF-8/JSON validation.
 - Portable imported games are always **unranked**, remain unranked after restart, clear unrelated Undo history, and cannot mutate lifetime statistics, achievements, streaks, or Daily results.
 - Read-only **Move Replay** built from the current game and validated retained Undo snapshots, with scrub, first/previous/next/latest navigation, play/pause, 1/2/4-frame-per-second playback, defensive copies, and explicit disclosure when bounded history begins after move zero.
 - Deterministic non-automatic heuristic hints that evaluate empty cells, merges, corner strategy, monotonicity, and board smoothness without consuming game RNG.
