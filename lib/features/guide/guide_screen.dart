@@ -44,7 +44,7 @@ class GuideScreen extends StatelessWidget {
       ),
       (
         'Game Backup',
-        'Home can open Game Backup to copy one validated current-game JSON backup to the clipboard or restore a valid backup after an explicit confirmation. Portable backup excludes settings, lifetime statistics, achievements, Daily history, and old Undo history. Every imported game is deliberately marked unranked, stays unranked after restart, and cannot change lifetime records, achievements, streaks, or Daily results. Imported play can still save and create new Undo snapshots for that restored session.',
+        'Home can open Game Backup to copy one validated current-game JSON backup to the clipboard, save the same backup as a .nova2048 file, or restore a valid backup from either transport after explicit confirmation. Portable backup excludes settings, lifetime statistics, achievements, Daily history, and old Undo history. Every imported game is deliberately marked unranked, stays unranked after restart, and cannot change lifetime records, achievements, streaks, or Daily results. Imported play can still save and create new Undo snapshots for that restored session.',
       ),
       (
         'Move Replay',
