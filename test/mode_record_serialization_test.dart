@@ -5,7 +5,7 @@ import 'package:nova_2048/domain/game_types.dart';
 void main() {
   test('per-mode records round trip through PlayerStats JSON', () {
     final stats = PlayerStats();
-    final record = stats.recordFor(GameMode.target)
+    stats.recordFor(GameMode.target)
       ..bestScore = 16384
       ..highestTile = 4096
       ..bestScoreBoardSize = 5
