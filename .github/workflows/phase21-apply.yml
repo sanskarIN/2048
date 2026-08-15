@@ -24,17 +24,14 @@ jobs:
       - name: Apply and test Phase 21 changes
         run: python3 tool/phase21_apply.py
       - name: Push generated commits
-        run: |
-          git checkout -- analysis_options.yaml || true
-          git pull --rebase origin main
-          git push origin main
+        run: git push origin main
       - name: Remove temporary Phase 21 tools
         run: |
-          git pull --rebase origin main
+          git reset --hard HEAD
           git rm tool/phase21_apply.py .github/workflows/phase21-apply.yml
           git config user.name "Sanskar"
           git config user.email "sanskarin@outlook.in"
           git commit -m "chore: remove Phase 21 implementation tools"
           git push origin main
 
-# Retry after correcting the QR payload assertion and discarding Flutter's unrelated analysis-options migration before sync.
+# Direct fast-forward sync: focused tests pass before push; generated workspace noise is discarded only after the source commits are published.
