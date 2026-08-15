@@ -84,6 +84,13 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
     setState(() {});
   }
 
+  void _changeStrategy(AutoplayStrategy? value) {
+    if (value == null || value == _session.strategy) return;
+    _stopTimer();
+    _session.setStrategy(value);
+    setState(() {});
+  }
+
   void _stopTimer() {
     _timer?.cancel();
     _timer = null;
@@ -116,13 +123,13 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          l10n.text('Deterministic heuristic AI demonstration'),
+                          l10n.text('Deterministic local solver demonstration'),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 8),
                         Text(
                           l10n.text(
-                            'This local Auto Play demonstration uses the same read-only heuristic as Hint. It is not machine learning and does not claim optimal play. It runs in an isolated sandbox and never changes your saved game, lifetime statistics, achievements, or Daily Challenge history.',
+                            'Choose the fast heuristic or a bounded expectimax search. Both run only inside this isolated deterministic sandbox, never change your saved game, statistics, achievements, or Daily history, and never consume the live game RNG. Normal Hint remains the fast heuristic and is not replaced by expectimax.',
                           ),
                         ),
                       ],
@@ -151,6 +158,17 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                       value: direction == null
                           ? '—'
                           : l10n.directionName(direction),
+                    ),
+                    _Metric(
+                      label: l10n.text('Strategy'),
+                      value: _strategyLabel(_session.strategy, l10n),
+                    ),
+                    _Metric(
+                      label: l10n.text('Search nodes'),
+                      value: _session.strategy == AutoplayStrategy.expectimax &&
+                              _session.lastDecisionNodes > 0
+                          ? '${_session.lastDecisionNodes}'
+                          : '—',
                     ),
                   ],
                 ),
@@ -203,6 +221,17 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                         icon: const Icon(Icons.restart_alt_rounded),
                         label: Text(l10n.text('Reset seed')),
                       ),
+                      DropdownButton<AutoplayStrategy>(
+                        value: _session.strategy,
+                        onChanged: _changeStrategy,
+                        items: [
+                          for (final strategy in AutoplayStrategy.values)
+                            DropdownMenuItem(
+                              value: strategy,
+                              child: Text(_strategyLabel(strategy, l10n)),
+                            ),
+                        ],
+                      ),
                       DropdownButton<Duration>(
                         value: _interval,
                         onChanged: _changeSpeed,
@@ -224,8 +253,8 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                           'The sandbox has no legal move remaining. Reset the seed to replay the same deterministic demonstration.',
                         )
                       : l10n.isHindi
-                          ? 'सीड: ${_session.seed} · एंडलेस 4×4 सैंडबॉक्स · सुझाव गेम RNG का उपयोग नहीं करते।'
-                          : 'Seed: ${_session.seed} · Endless 4×4 sandbox · recommendations do not consume the game RNG.',
+                          ? 'सीड: ${_session.seed} · एंडलेस 4×4 सैंडबॉक्स · ${_strategyLabel(_session.strategy, l10n)} · रणनीति बदलने पर सैंडबॉक्स रुकता है लेकिन बोर्ड या RNG रीसेट नहीं होता।'
+                          : 'Seed: ${_session.seed} · Endless 4×4 sandbox · ${_strategyLabel(_session.strategy, l10n)} · changing strategy pauses the sandbox without resetting its board or RNG.',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
@@ -234,6 +263,18 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  static String _strategyLabel(
+    AutoplayStrategy strategy,
+    NovaLocalizations l10n,
+  ) {
+    return l10n.text(
+      switch (strategy) {
+        AutoplayStrategy.heuristic => 'Heuristic',
+        AutoplayStrategy.expectimax => 'Expectimax',
+      },
     );
   }
 
