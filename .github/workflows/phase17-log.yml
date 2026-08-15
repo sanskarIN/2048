@@ -27,17 +27,14 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-
           path = Path('CHANGELOG.md')
           text = path.read_text()
           sentinel = 'Trusted local **per-mode records**'
           if sentinel in text:
               raise SystemExit('Phase 17 changelog entries already exist')
-
           added = '''### Added\n- Trusted local **per-mode records** for best score and highest tile, with best-score board-size/target metadata, backward-compatible persistence, and localized expandable Statistics cards.\n- Ten focused Phase 17 regression tests covering per-mode serialization/migration, ranked tracking/reset behavior, imported-backup isolation, and English/Hindi Statistics presentation.\n'''
           changed = '''### Changed\n- Statistics reset now clears historical per-mode records while rebuilding only the observable baseline for a ranked active session; an imported unranked session rebuilds none.\n- Ranked legacy current games can seed missing per-mode records during startup repair without inventing records for historical games that are no longer observable.\n'''
           security = '''### Security\n- Portable/editable Game Backup progress is excluded from per-mode record updates across import, continued moves, restart restoration, and statistics reset.\n- Persisted per-mode record values are sanitized/bounded before use, and unknown future mode keys are ignored.\n'''
-
           if text.count('### Added\n') < 1 or text.count('### Changed\n') < 1 or text.count('### Security\n') < 1:
               raise SystemExit('Expected changelog sections not found')
           text = text.replace('### Added\n', added, 1)
@@ -49,284 +46,19 @@ jobs:
           git commit -m "docs: add Phase 17 per-mode records to changelog"
 
       - name: Append detailed Phase 17 work log
+        env:
+          PHASE17_LOG_B64: CgojIFBoYXNlIDE3IOKAlCBUcnVzdGVkIHBlci1tb2RlIHJlY29yZHMKCkRhdGU6ICoqMjAyNi0wOC0xNSoqCgojIyBTdGFydGluZyBwb2ludAoKUGhhc2UgMTcgc3RhcnRlZCBmcm9tIHRoZSBjb21wbGV0ZWQgUGhhc2UgMTYgRW5nbGlzaC9IaW5kaSBsb2NhbGl6YXRpb24gcmVsZWFzZS1jYW5kaWRhdGUgc3RhdGU6CgpgYGB0ZXh0ClZlcnNpb246IDAuOS4wKzEKUHJldmlvdXMgZmluYWwgYXV0b21hdGVkIGdhdGU6IDEzNC8xMzQgdGVzdHMKUHJldmlvdXMgZmluYWwgQ0k6IDMxODA2Nzg1MTY1ClByZXZpb3VzIG5hdGl2ZSBtYXRyaXg6IDMxODA0NzEzMjAwClN0YWJsZSAxLjAuMDogbm90IHlldCBwcm9tb3RlZApgYGAKClRoZSByZWxlYXNlIHJvYWRtYXAgc3RpbGwgY29udGFpbmVkIGFuIG9wdGlvbmFsIG1vZGUtc3BlY2lmaWMtcmVjb3JkIGV4cGFuc2lvbi4gVGhpcyBwaGFzZSBpbXBsZW1lbnRlZCB0aGUgcG9ydGlvbiB0aGF0IGNhbiBiZSBtZWFzdXJlZCBhbmQgbWlncmF0ZWQgaG9uZXN0bHkgZnJvbSB0cnVzdGVkIGxvY2FsIGdhbWVwbGF5IHdpdGhvdXQgaW50cm9kdWNpbmcgYWNjb3VudHMsIGNsb3VkIHN5bmNocm9uaXphdGlvbiwgYW5hbHl0aWNzLCBvciBhIG5ldyB0cnVzdCBzeXN0ZW0uCgojIyBTY29wZSBzZWxlY3RlZCBmb3IgUGhhc2UgMTcKCkltcGxlbWVudGVkIHRydXN0ZWQgbG9jYWwgcmVjb3JkcyBwZXIgYEdhbWVNb2RlYDoKCi0gYmVzdCBzY29yZTsKLSBoaWdoZXN0IHRpbGU7Ci0gYm9hcmQgc2l6ZSBhc3NvY2lhdGVkIHdpdGggdGhlIHN0b3JlZCBiZXN0IHNjb3JlOwotIHRhcmdldCB0aWxlIGFzc29jaWF0ZWQgd2l0aCB0aGUgc3RvcmVkIGJlc3Qgc2NvcmUuCgpUaGUgZmVhdHVyZSBkZWxpYmVyYXRlbHkgZG9lcyAqKm5vdCoqIGludmVudCBoaXN0b3JpY2FsIHJlY29yZHMgZm9yIGNvbXBsZXRlZCBnYW1lcyB0aGF0IGFyZSBubyBsb25nZXIgb2JzZXJ2YWJsZS4gSXQgYWxzbyBkb2VzIG5vdCBjbGFpbSBhbiBleGFjdCBoaXN0b3JpY2FsIGZld2VzdC13aW5uaW5nLW1vdmVzIHJlY29yZCBiZWNhdXNlIG9sZCBwZXJzaXN0ZWQgc3RhdGlzdGljcyBkbyBub3QgY29udGFpbiBlbm91Z2ggaW5mb3JtYXRpb24gdG8gcmVjb25zdHJ1Y3QgdGhhdCBmYWN0IHNhZmVseS4KCiMjIFBlcnNpc3RlZCByZWNvcmQgbW9kZWwKCmBsaWIvYXBwL3N0YXRlL2FwcF9jb250cm9sbGVyLmRhcnRgIG5vdyBjb250YWlucyBgTW9kZVJlY29yZGAgYW5kIGEgYFBsYXllclN0YXRzLm1vZGVSZWNvcmRzYCBtYXAga2V5ZWQgYnkgYEdhbWVNb2RlYC4KClRoZSBzZXJpYWxpemVkIHN0YXRpc3RpY3MgcGF5bG9hZCBjYW4gbm93IGluY2x1ZGU6CgpgYGBqc29uCiJtb2RlUmVjb3JkcyI6IHsKICAiY2xhc3NpYyI6IHsKICAgICJiZXN0U2NvcmUiOiAxNjM4NCwKICAgICJoaWdoZXN0VGlsZSI6IDIwNDgsCiAgICAiYmVzdFNjb3JlQm9hcmRTaXplIjogNCwKICAgICJiZXN0U2NvcmVUYXJnZXQiOiAyMDQ4CiAgfQp9CmBgYAoKVmFsaWRhdGlvbiBydWxlcyB3ZXJlIGtlcHQgY29uc2lzdGVudCB3aXRoIHRoZSBleGlzdGluZyBzdGF0aXN0aWNzL3NhdmUgcGFyc2VyOgoKLSBzY29yZXMgbXVzdCBiZSBmaW5pdGUsIGludGVncmFsLCBhbmQgbm9uLW5lZ2F0aXZlOwotIGhpZ2hlc3QtdGlsZSBhbmQgdGFyZ2V0IHZhbHVlcyBtdXN0IGJlIHZhbGlkIHBvd2VycyBvZiB0d28gd2l0aGluIGFwcGxpY2F0aW9uIGJvdW5kczsKLSBzdG9yZWQgYmVzdC1zY29yZSBib2FyZCBzaXplIG11c3QgcmVtYWluIGJldHdlZW4gMyBhbmQgODsKLSB1bmtub3duL2Z1dHVyZSBtb2RlIGtleXMgYXJlIGlnbm9yZWQ7Ci0gbWFsZm9ybWVkIHJlY29yZCBvYmplY3RzIGFyZSBza2lwcGVkL3Nhbml0aXplZDsKLSBlbXB0eSByZWNvcmRzIGFyZSBub3Qgc2VyaWFsaXplZDsKLSBzdGF0aXN0aWNzIHBheWxvYWRzIHdyaXR0ZW4gYmVmb3JlIFBoYXNlIDE3IHJlbWFpbiB2YWxpZCBiZWNhdXNlIGBtb2RlUmVjb3Jkc2AgaXMgb3B0aW9uYWwuCgpObyBuZXcgcHJlZmVyZW5jZSBrZXksIGRhdGFiYXNlLCBydW50aW1lIGRlcGVuZGVuY3ksIGFjY291bnQsIG5ldHdvcmsgcmVxdWVzdCwgb3IgY2xvdWQgc2VydmljZSB3YXMgYWRkZWQuCgojIyBUcnVzdGVkIHVwZGF0ZSBib3VuZGFyeQoKYEFwcENvbnRyb2xsZXJgIGlzIHRoZSByZWNvcmQtcG9saWN5IGJvdW5kYXJ5LgoKQSBsb2NhbGx5IHN0YXJ0ZWQgcmFua2VkIGdhbWUgY2FuIHVwZGF0ZSBpdHMgbW9kZSByZWNvcmQ6CgotIHdoZW4gYSBuZXcgZ2FtZSBpcyBjcmVhdGVkIGFuZCBpdHMgZ2VuZXJhdGVkIGJvYXJkIGVzdGFibGlzaGVzIGFuIG9ic2VydmFibGUgaGlnaGVzdC10aWxlIGJhc2VsaW5lOwotIGFmdGVyIGEgc3VjY2Vzc2Z1bCByYW5rZWQgbW92ZSByYWlzZXMgc2NvcmUgb3IgdGlsZSBwcm9ncmVzczsKLSB3aGVuIHRpbWVkL2NoYWxsZW5nZSBzdGF0dXMgaXMgcmVmcmVzaGVkIGFuZCB0cnVzdGVkIHByb2dyZXNzIG11c3QgYmUgcGVyc2lzdGVkOwotIGR1cmluZyBzdGFydHVwIHJlcGFpciB3aGVuIGEgdmFsaWQgcmFua2VkIGN1cnJlbnQgZ2FtZSBwcmVkYXRlcyB0aGUgbmV3IGBtb2RlUmVjb3Jkc2Agc3RhdGlzdGljcyBmaWVsZDsKLSBkdXJpbmcgUmVzZXQgU3RhdGlzdGljcyB3aGVuIGFuIGFjdGl2ZSByYW5rZWQgc2Vzc2lvbiBtdXN0IHJlbWFpbiByZXByZXNlbnRlZCBjb25zaXN0ZW50bHkuCgpVbmRvIGRvZXMgbm90IHJlZHVjZSBhIGhpc3RvcmljYWwgbWF4aW11bS4gVGhpcyBmb2xsb3dzIHRoZSBleGlzdGluZyBnbG9iYWwtYmVzdCBiZWhhdmlvcjogcmVhY2hpbmcgYSBiZXN0IGFuZCB0aGVuIHVuZG9pbmcgZG9lcyBub3QgZXJhc2UgdGhlIGZhY3QgdGhhdCB0aGUgYmVzdCB3YXMgYWxyZWFkeSByZWFjaGVkLgoKIyMgSW1wb3J0ZWQgR2FtZSBCYWNrdXAgaXNvbGF0aW9uCgpUaGUgZXhpc3RpbmcgcGVyc2lzdGVudCBgX2N1cnJlbnRHYW1lVW5yYW5rZWRgIGJvdW5kYXJ5IG5vdyBhbHNvIHByb3RlY3RzIHBlci1tb2RlIHJlY29yZHMuCgpBIHBvcnRhYmxlL2VkaXRhYmxlIEdhbWUgQmFja3VwOgoKLSBkb2VzIG5vdCBzZWVkIGEgbW9kZSByZWNvcmQgYXQgaW1wb3J0IHRpbWU7Ci0gY2Fubm90IGltcHJvdmUgYSBtb2RlIHJlY29yZCB0aHJvdWdoIGNvbnRpbnVlZCBtb3ZlczsKLSByZW1haW5zIGV4Y2x1ZGVkIGFmdGVyIGFwcCByZXN0YXJ0IGJlY2F1c2UgdGhlIHVucmFua2VkIG1hcmtlciBpcyByZXN0b3JlZCBiZWZvcmUgcmFua2VkIHJlcGFpciBsb2dpYyBydW5zOwotIGRvZXMgbm90IHJlY3JlYXRlIGEgcmVjb3JkIHdoZW4gU3RhdGlzdGljcyBpcyByZXNldCB3aGlsZSB0aGF0IGltcG9ydGVkIGJvYXJkIGlzIGFjdGl2ZS4KCkEgbG9jYWxseSBzdGFydGVkIGRldGVybWluaXN0aWMgc2VlZGVkIGdhbWUgaXMgc3RpbGwgcmFua2VkLiBDaGFsbGVuZ2UgQ29kZXMgY29udGludWUgdG8gc3RhcnQgZnJlc2ggY29uZmlndXJhdGlvbi1vbmx5IGxvY2FsIGdhbWVzIGFuZCBkbyBub3QgdXNlIHRoZSBwb3J0YWJsZS1wcm9ncmVzcyBpbXBvcnQgcGF0aC4KCiMjIFN0YXRpc3RpY3MgcmVzZXQgYmVoYXZpb3IKCmByZXNldFN0YXRzKClgIG5vdyByZXNldHMgYFBsYXllclN0YXRzYCwgaW5jbHVkaW5nIGBtb2RlUmVjb3Jkc2AuCgpJZiBhIHJhbmtlZCBhY3RpdmUgZ2FtZSBleGlzdHMsIHRoZSBjb250cm9sbGVyIHJlYnVpbGRzIG9ubHkgYSBtaW5pbWFsIG9ic2VydmFibGUgYmFzZWxpbmUgZm9yIHRoYXQgYWN0aXZlIHNlc3Npb246CgotIG9uZSBjdXJyZW50IGdhbWUgY291bnRlZDsKLSBjdXJyZW50IHNjb3JlL2dsb2JhbCBiZXN0IGJhc2VsaW5lOwotIGN1cnJlbnQgaGlnaGVzdCB0aWxlOwotIGN1cnJlbnQgbW9kZSByZWNvcmQgZGVyaXZlZCBmcm9tIHRoZSBhY3RpdmUgYm9hcmQvY29uZmlndXJhdGlvbjsKLSBhbHJlYWR5LWNvdW50ZWQgd2luIHN0YXRlIHJldGFpbmVkIHdoZW4gYXBwbGljYWJsZS4KCkhpc3RvcmljYWwgcmVjb3JkcyBmb3Igb3RoZXIgbW9kZXMgcmVtYWluIGNsZWFyZWQuCgpJZiB0aGUgYWN0aXZlIGJvYXJkIGlzIGFuIGltcG9ydGVkIHVucmFua2VkIGJhY2t1cCwgbm8gYWdncmVnYXRlIG9yIHBlci1tb2RlIHByb2dyZXNzIGlzIHJlY29uc3RydWN0ZWQgZnJvbSBpdC4KCiMjIExvY2FsaXplZCBTdGF0aXN0aWNzIFVJCgpgbGliL2ZlYXR1cmVzL3N0YXRpc3RpY3Mvc3RhdGlzdGljc19zY3JlZW4uZGFydGAgbm93IGFwcGVuZHMgZXhwYW5kYWJsZSBtb2RlLXJlY29yZCBjYXJkcyBhZnRlciB0aGUgZXhpc3RpbmcgZ2xvYmFsIHN0YXRpc3RpY3MuCgpFYWNoIG1vZGUgd2l0aCB0cnVzdGVkIHByb2dyZXNzIGNhbiBzaG93OgoKLSBsb2NhbGl6ZWQgbW9kZSBuYW1lOwotIGxvY2FsaXplZCBib2FyZC1zaXplIG1ldGFkYXRhIHdoZW4gYXZhaWxhYmxlOwotIGxvY2FsaXplZCB0YXJnZXQgbWV0YWRhdGEgd2hlbiBhdmFpbGFibGU7Ci0gYmVzdCBzY29yZTsKLSBoaWdoZXN0IHRpbGUuCgpUaGUgVUkgaW50ZW50aW9uYWxseSByZXVzZXMgdGhlIFBoYXNlIDE2IGxvY2FsaXphdGlvbiBsYXllciByYXRoZXIgdGhhbiBhZGRpbmcgZHVwbGljYXRlIHN0cmluZ3M6CgotIGBOb3ZhTG9jYWxpemF0aW9ucy5tb2RlTmFtZSguLi4pYDsKLSBgTm92YUxvY2FsaXphdGlvbnMuYm9hcmRTaXplKC4uLilgOwotIGBOb3ZhTG9jYWxpemF0aW9ucy50YXJnZXRUaWxlKC4uLilgOwotIGV4aXN0aW5nIGBCZXN0IHNjb3JlYCAvIGBIaWdoZXN0IHRpbGVgIEVuZ2xpc2gvSGluZGkgdHJhbnNsYXRpb25zLgoKVGhpcyBwcmVzZXJ2ZXMgdGhlIG9mZmxpbmUgbG9jYWxpemF0aW9uIGFuZCBhY2Nlc3NpYmlsaXR5IGFyY2hpdGVjdHVyZS4KCiMjIEZvY3VzZWQgcmVncmVzc2lvbiB0ZXN0cyBhZGRlZAoKVGVuIHRlc3RzIHdlcmUgYWRkZWQgYWNyb3NzIGZvdXIgbmV3IGZpbGVzOgoKYGBgdGV4dAp0ZXN0L21vZGVfcmVjb3JkX3NlcmlhbGl6YXRpb25fdGVzdC5kYXJ0ICAgICAzIHRlc3RzCnRlc3QvbW9kZV9yZWNvcmRfdHJhY2tpbmdfdGVzdC5kYXJ0ICAgICAgICAgIDMgdGVzdHMKdGVzdC9tb2RlX3JlY29yZF91bnJhbmtlZF90ZXN0LmRhcnQgICAgICAgICAgMiB0ZXN0cwp0ZXN0L3N0YXRpc3RpY3NfbW9kZV9yZWNvcmRzX3Rlc3QuZGFydCAgICAgICAyIHRlc3RzCmBgYAoKQ292ZXJhZ2UgaW5jbHVkZXM6CgoxLiBwZXItbW9kZSByZWNvcmQgSlNPTiByb3VuZCB0cmlwOwoyLiBtYWxmb3JtZWQvdW5rbm93biByZWNvcmQgc2FuaXRpemF0aW9uOwozLiBiYWNrd2FyZCBjb21wYXRpYmlsaXR5IHdpdGggbGVnYWN5IHN0YXRpc3RpY3MgcGF5bG9hZHM7CjQuIHJhbmtlZCBtb3ZlIHByb2dyZXNzIHVwZGF0aW5nIGFuZCBwZXJzaXN0aW5nIHRoZSBjb3JyZWN0IG1vZGUgcmVjb3JkOwo1LiBzdGFydHVwIG1pZ3JhdGlvbiBmcm9tIGFuIG9ic2VydmFibGUgbGVnYWN5IHJhbmtlZCBjdXJyZW50IGdhbWU7CjYuIFJlc2V0IFN0YXRpc3RpY3MgcHJlc2VydmluZyBvbmx5IGFuIGFjdGl2ZSByYW5rZWQgbW9kZSBiYXNlbGluZTsKNy4gaW1wb3J0ZWQtYmFja3VwIGV4Y2x1c2lvbiB0aHJvdWdoIGltcG9ydCwgY29udGludWVkIG1vdmUsIGFuZCByZXNldDsKOC4gbG9jYWxseSBzdGFydGVkIHNlZWRlZC1nYW1lIHJhbmtpbmcgYmVoYXZpb3I7CjkuIEVuZ2xpc2ggZXhwYW5kYWJsZSBTdGF0aXN0aWNzIHJlY29yZCBwcmVzZW50YXRpb247CjEwLiBIaW5kaSBtb2RlL2NvbmZpZ3VyYXRpb24vcmVjb3JkLWxhYmVsIHByZXNlbnRhdGlvbiB0aHJvdWdoIHRoZSBwcm9kdWN0aW9uIGxvY2FsaXphdGlvbiBsYXllci4KClRoZSBwZXJtYW5lbnQgRm9ybWF0IERhcnQgd29ya2Zsb3cgc3Vic2VxdWVudGx5IHByb2R1Y2VkOgoKYGBgdGV4dAoxNWI3MzU4MTFmYTMyYjUxZGVmNWQ1ZWU5OTFhYTFlODllZDhhZTZkCnN0eWxlOiBmb3JtYXQgRGFydCBzb3VyY2VzIGFuZCB0ZXN0cwpgYGAKCiMjIFRyYW5zcGFyZW50IGludGVybWVkaWF0ZSBhdXRvbWF0aW9uIGlzc3VlcwoKVGhlIGZpcnN0IG9uZS10aW1lIHNvdXJjZS1jb21taXQgaGVscGVyIHJ1biBmYWlsZWQgYmVmb3JlIGNvbW1pdHRpbmcgcHJvZHVjdGlvbiBzb3VyY2U6CgpgYGB0ZXh0CldvcmtmbG93OiBQaGFzZSAxNyBzb3VyY2UgY29tbWl0cwpSdW46IDMxODY2ODc4MzU4ClJlc3VsdDogRkFJTFVSRQpDYXVzZTogZGFydDogY29tbWFuZCBub3QgZm91bmQKYGBgCgpUaGUgbGlnaHR3ZWlnaHQgaGVscGVyIHVzZWQgYW4gVWJ1bnR1IHJ1bm5lciB0aGF0IGRpZCBub3QgaW5jbHVkZSBEYXJ0IG9uIGBQQVRIYC4gSXRzIFB5dGhvbiBzb3VyY2UgZWRpdCBoYWQgb25seSBvY2N1cnJlZCBpbiB0aGUgZXBoZW1lcmFsIGNoZWNrb3V0OyB0aGUgam9iIHN0b3BwZWQgYmVmb3JlIHRoZSBzb3VyY2UgY29tbWl0IGFuZCB0aGVyZWZvcmUgZGlkIG5vdCBsZWF2ZSBhIGhhbGYtd3JpdHRlbiBwcm9kdWN0aW9uIGNvbW1pdC4KClRoZSBoZWxwZXIgd2FzIGNvcnJlY3RlZCB0byBsZWF2ZSBmb3JtYXR0aW5nIHRvIHRoZSByZXBvc2l0b3J5J3MgbWFpbnRhaW5lZCBGbHV0dGVyIEZvcm1hdCBEYXJ0L0NJIHdvcmtmbG93cyBpbnN0ZWFkIG9mIGFzc3VtaW5nIGFuIFNESyBvbiB0aGUgbGlnaHR3ZWlnaHQgaGVscGVyIHJ1bm5lci4KCkNvcnJlY3RlZCBoZWxwZXI6CgpgYGB0ZXh0ClJ1bjogMzE4NjY5MTM3MzIKUmVzdWx0OiBTVUNDRVNTCmBgYAoKQSBsYXRlciBjaGFuZ2Vsb2cvd29yay1sb2cgaGVscGVyIGRlZmluaXRpb24gaW5pdGlhbGx5IGZhaWxlZCB3b3JrZmxvdyBwYXJzaW5nIGJlZm9yZSBhbnkgam9iIHJhbjoKCmBgYHRleHQKV29ya2Zsb3c6IFBoYXNlIDE3IGNoYW5nZWxvZyBhbmQgd29yayBsb2cKUnVuOiAzMTg2NzIwNjA2NQpSZXN1bHQ6IEZBSUxVUkUKQ2F1c2U6IGludmFsaWQgd29ya2Zsb3cgWUFNTCBjYXVzZWQgYnkgYW4gdW5pbmRlbnRlZCBlbWJlZGRlZCBtdWx0aWxpbmUgbG9nIHBheWxvYWQKYGBgCgpUaGF0IGhlbHBlciBmYWlsdXJlIG1hZGUgbm8gY2hhbmdlbG9nIG9yIHdvcmstbG9nIGNvbW1pdC4gVGhlIGRlZmluaXRpb24gd2FzIGNvcnJlY3RlZCB0byBjYXJyeSB0aGUgbG9uZyBsb2cgcGF5bG9hZCBhcyBCYXNlNjQgYW5kIGRlY29kZSBpdCBpbnNpZGUgdGhlIHJ1bm5lciwgYXZvaWRpbmcgWUFNTCBpbmRlbnRhdGlvbiBhbWJpZ3VpdHkuCgojIyBQYXJzZXIgY29ycmVjdGlvbiBmb3VuZCBkdXJpbmcgc291cmNlIGF1ZGl0CgpBZnRlciB0aGUgZmlyc3QgbW9kZWwvdHJhY2tpbmcgcHVzaCwgdGhlIGNvbW1pdHRlZCBmaWxlIHdhcyBleHBsaWNpdGx5IHJlLW9wZW5lZCBpbnN0ZWFkIG9mIGFzc3VtaW5nIHRoZSBnZW5lcmF0ZWQgcGF0Y2ggd2FzIGNvbXBsZXRlLiBUaGUgYXVkaXQgc2hvd2VkIHRoYXQgdGhlIGludGVuZGVkIGBtb2RlUmVjb3Jkc2AgZGVzZXJpYWxpemF0aW9uIGJsb2NrIHdhcyBub3QgcHJlc2VudCBpbiB0aGUgZmluYWwgYFBsYXllclN0YXRzLmZyb21Kc29uYCBib2R5IGV2ZW4gdGhvdWdoIHNlcmlhbGl6YXRpb24vdHJhY2tpbmcgY29kZSB3YXMgcHJlc2VudC4KClRoYXQgb21pc3Npb24gd2FzIGNvcnJlY3RlZCBpbW1lZGlhdGVseSBpbjoKCmBgYHRleHQKMzQxZjJhZDVkNWIyNTJmNzVlNTJlMDVlZDdhZWRlOGE4YWEzOGZiYgpmaXg6IHJlc3RvcmUgcGVyLW1vZGUgcmVjb3JkIGRlc2VyaWFsaXphdGlvbgpgYGAKCkEgbGF0ZXIgZmluYWwgc291cmNlIGF1ZGl0IGNvbmZpcm1lZCB0aGF0IHRoZSBwYXJzZXIgbm93OgoKLSByZWFkcyBvbmx5IGN1cnJlbnQgYEdhbWVNb2RlLnZhbHVlc2Aga2V5czsKLSBub3JtYWxpemVzIHN0cmluZy1rZXllZCBtYXBzIGRlZmVuc2l2ZWx5OwotIHZhbGlkYXRlcyByZWNvcmRzIHRocm91Z2ggYE1vZGVSZWNvcmQuZnJvbUpzb25gOwotIHJldGFpbnMgb25seSByZWNvcmRzIHdpdGggYWN0dWFsIHByb2dyZXNzLgoKVGhlIGludGVybWVkaWF0ZSBtaXN0YWtlIHJlbWFpbnMgcmVjb3JkZWQgaGVyZSByYXRoZXIgdGhhbiBiZWluZyBoaWRkZW4uCgojIyBQaGFzZSAxNyBzb3VyY2UvdGVzdCBjb21taXRzCgpSZXByZXNlbnRhdGl2ZSBwcm9kdWN0aW9uIGFuZCByZWdyZXNzaW9uIGNvbW1pdHM6CgpgYGB0ZXh0Cjk3ODgwZDkwZGFhZmE1YjQ1ODEyYzI2M2U4OWQzZTFmNjgxMDY1NTYgIGZlYXQ6IGFkZCBwZXJzaXN0ZWQgcGVyLW1vZGUgcmVjb3JkIG1vZGVsCjdlMjY0ZGEzMmMzMTU0YzE4MzE4ZDgwZTdjYTVjMmQ0MWU0ZjZkODIgIGZlYXQ6IHRyYWNrIHRydXN0ZWQgcGVyLW1vZGUgcHJvZ3Jlc3MKNzUyYmYxNTA3NGZmNDNkZDYxNGQ1ZTY4ODhmOGVjMTZmMjk1NjBkNyAgZmVhdDogc2hvdyBwZXItbW9kZSByZWNvcmRzIGluIHN0YXRpc3RpY3MKMzQxZjJhZDVkNWIyNTJmNzVlNTJlMDVlZDdhZWRlOGE4YWEzOGZiYiAgZml4OiByZXN0b3JlIHBlci1tb2RlIHJlY29yZCBkZXNlcmlhbGl6YXRpb24KMDkxMjRkMjJmNTg0YjkyYTU3Zjc0N2EyMjg4YzYzYzk1NTE2MTBjZiAgdGVzdDogY292ZXIgcGVyLW1vZGUgcmVjb3JkIHNlcmlhbGl6YXRpb24KZGM5MjEwOWFkMWVhNmY3NTg1OWRiMjZkNWU4Nzc2OGU2OTM2YTczOSAgdGVzdDogY292ZXIgdHJ1c3RlZCBwZXItbW9kZSByZWNvcmQgdHJhY2tpbmcKZjU1ZTkxM2E1ZGJkMzBmNTg2YTEyMDcxNmI1ODZlNDMwZDU4OWI5NSAgdGVzdDoga2VlcCBpbXBvcnRlZCBiYWNrdXBzIG91dCBvZiBtb2RlIHJlY29yZHMKYzM4MWRkMTU4Mjg0NWIyNmFiOWRjZDk2YzlkMTg3NGViOWUzZDUyZiAgdGVzdDogY292ZXIgbG9jYWxpemVkIHBlci1tb2RlIHN0YXRpc3RpY3MgVUkKMTViNzM1ODExZmEzMmI1MWRlZjVkNWVlOTkxYWExZTg5ZWQ4YWU2ZCAgc3R5bGU6IGZvcm1hdCBEYXJ0IHNvdXJjZXMgYW5kIHRlc3RzCmBgYAoKVGVtcG9yYXJ5IGhlbHBlciBzZXR1cC9jb3JyZWN0aW9uL3JlbW92YWwgY29tbWl0cyBhcmUgYWxzbyByZXRhaW5lZCBpbiBub3JtYWwgR2l0IGhpc3RvcnkgYmVjYXVzZSB0aGV5IHJlZmxlY3QgcmVhbCByZXBvc2l0b3J5IG9wZXJhdGlvbnMuIE5vIGVtcHR5L25vLW9wIGNvbW1pdCB3YXMgY3JlYXRlZCBzb2xlbHkgdG8gaW5mbGF0ZSB0aGUgY291bnQuCgojIyBQaGFzZSAxNyBkb2N1bWVudGF0aW9uIHdvcmsKCkFkZGVkOgoKYGBgdGV4dApkb2NzL01PREVfUkVDT1JEUy5tZApgYGAKClVwZGF0ZWQgb3IgZXh0ZW5kZWQ6CgpgYGB0ZXh0ClJFQURNRS5tZApST0FETUFQLm1kCkNIQU5HRUxPRy5tZApTRUNVUklUWS5tZApkb2NzL1JFQURNRS5tZApkb2NzL0FSQ0hJVEVDVFVSRS5tZApkb2NzL0JBQ0tVUF9BTkRfUkVTVE9SRS5tZApkb2NzL0RBVEFfU1RPUkFHRS5tZApkb2NzL1BSSVZBQ1kubWQKZG9jcy9URVNUSU5HLm1kCmRvY3MvVVNFUl9HVUlERS5tZAp3aGF0X2NoYW5nZWQubWQKYGBgCgpUaGUgZG9jdW1lbnRhdGlvbiBub3cgc3RhdGVzIHRoZSBleGFjdCBtaWdyYXRpb24sIHJlc2V0LCBwcml2YWN5LCB0cnVzdCwgaW1wb3J0ZWQtYmFja3VwIGlzb2xhdGlvbiwgYW5kIG5vbi1nb2FsIGJvdW5kYXJpZXMgaW5zdGVhZCBvZiBkZXNjcmliaW5nIHBlci1tb2RlIHJlY29yZHMgYXMgYSBnZW5lcmljIGxlYWRlcmJvYXJkIGZlYXR1cmUuCgojIyBQaGFzZSAxNyBkb2N1bWVudGF0aW9uIGNvbW1pdHMKCmBgYHRleHQKZDMzMWZlMWU2NDk5ZDcyMTE1MjI1NWNmZDE0MDRkYWFkNTQyNGI4NyAgZG9jczogZG9jdW1lbnQgcGVyLW1vZGUgcmVjb3JkIHRydXN0IG1vZGVsCjJkYmYzOTM1Y2Y0Y2FjZDc4NGVmMGRiNmRiNzQ2YjQ3MTUxMjg4OTQgIGRvY3M6IGluZGV4IHBlci1tb2RlIHJlY29yZHMgZG9jdW1lbnRhdGlvbgo5YjYwZWFlNGMyNTg1OWM2OTllZWZjNjQyN2YxMmVhYThmMjgwZTIxICBkb2NzOiBhZHZhbmNlIHJvYWRtYXAgd2l0aCBwZXItbW9kZSByZWNvcmRzCjU5MzFiYmNmNGM1MWFjMWNlMTVhOWFlMzQzOTQxYWU5NTMwODY1ODUgIGRvY3M6IGFkZCBwZXItbW9kZSByZWNvcmRzIHRvIHByb2plY3Qgb3ZlcnZpZXcKNWJkNWQwZDQyZTI0MDdmODQzNmIwZDVkODJmMjdmOWEwM2JhOWQ4MCAgZG9jczogZGVzY3JpYmUgcGVyLW1vZGUgcmVjb3JkIHBlcnNpc3RlbmNlCjllMmIxMjlmYTZhNzFjNjQ1YWFkOTU5OWFjNWZlZWJlZmY5NWYzNDQgIGRvY3M6IGRlZmluZSBwZXItbW9kZSByZWNvcmQgYXJjaGl0ZWN0dXJlCjU5M2QyMThlZmFiNDQ2ZTlkNTY0YWQ2NmNmZTViODA5MTgyYjhmOWYgIGRvY3M6IGV4cGxhaW4gcGVyLW1vZGUgcmVjb3JkcyB0byBwbGF5ZXJzCmE2YmE4ZTY5OTM0ZWIyZTMyYTQzZGRiYTk5MzZjMGMwZGQwNjU5YzcgIGRvY3M6IHJlY29yZCBwZXItbW9kZSBzdGF0aXN0aWNzIHByaXZhY3kKNmNkZmRhMzhkMjFmY2QyNjhiMzYxMGMwZTg1NTlhODdmMDMyZmVlYiAgZG9jczogZXh0ZW5kIGJhY2t1cCB0cnVzdCBib3VuZGFyeSB0byBtb2RlIHJlY29yZHMKYmI1Y2YyOWRmMzI3MzkxYWVmZjFkZThkMmViYWRlMTNlZDYwYjgxYyAgZG9jczogZGVmaW5lIHBlci1tb2RlIHJlY29yZCBpbnRlZ3JpdHkgYm91bmRhcnkKNThiNjM5MTdjYzZhNGEyNmQwZmJmN2RhZmZhOTdhZjY1MWIzMDJiOCAgZG9jczogZGVzY3JpYmUgUGhhc2UgMTcgcmVjb3JkIHJlZ3Jlc3Npb24gY292ZXJhZ2UKYGBgCgojIyBWZXJpZmljYXRpb24gc3RhdGUgYmVmb3JlIHRoZSBmaW5hbCBQaGFzZSAxNyBnYXRlCgpTZXZlcmFsIGludGVybWVkaWF0ZSBDSSBydW5zIHdlcmUgc3VwZXJzZWRlZC9jYW5jZWxsZWQgYnkgbWFpbi1icmFuY2ggY29uY3VycmVuY3kgd2hpbGUgdGhlIHNvdXJjZSwgdGVzdHMsIGZvcm1hdHRlciBjb21taXQsIGFuZCBkb2N1bWVudGF0aW9uIGNvbW1pdHMgd2VyZSBzdGlsbCBhcnJpdmluZy4gRm9yIGV4YW1wbGUsIENJIHJ1biBgMzE4NjcwMTg4MjlgIGZvciB0aGUgbG9jYWxpemVkIFN0YXRpc3RpY3MgdGVzdCBjb21taXQgd2FzIGNhbmNlbGxlZCBhZnRlciBuZXdlciBtYWluIGNvbW1pdHMgc3VwZXJzZWRlZCBpdC4gVGhpcyBpcyBub3QgdHJlYXRlZCBhcyBhIHBhc3NpbmcgZ2F0ZSBvciBhcyBhIGNvZGUgZmFpbHVyZS4KClRoZSBmaW5hbCBQaGFzZSAxNyBwYXNzaW5nIHRlc3QgY291bnQgYW5kIG1haW50YWluZWQgQ0kgcnVuIGFyZSBpbnRlbnRpb25hbGx5IHJlY29yZGVkIG9ubHkgYWZ0ZXIgdGhlIHJlcG9zaXRvcnkgc3RvcHMgbW92aW5nIGFuZCB0aGUgcGVybWFuZW50IENJIHdvcmtmbG93IGNvbXBsZXRlcyBhZ2FpbnN0IHRoZSBmaW5hbCBjYW5kaWRhdGUgc291cmNlIHN0YXRlLgoKIyMgTWFudWFsIGJvdW5kYXJpZXMgcmVtYWluIHVuY2hhbmdlZAoKUGhhc2UgMTcgZG9lcyBub3QgY29udmVydCBhdXRvbWF0ZWQgQ0kgaW50byBwaHlzaWNhbC1kZXZpY2UgcmVsZWFzZSBxdWFsaWZpY2F0aW9uLiBTdGFibGUgYDEuMC4wYCBzdGlsbCByZXF1aXJlcyB0aGUgbWFudWFsIGNoZWNrcyBhbHJlYWR5IGxpc3RlZCBpbiBgUk9BRE1BUC5tZGAgYW5kIGBkb2NzL1JFTEVBU0VfQ0hFQ0tMSVNULm1kYCwgaW5jbHVkaW5nIHJlcHJlc2VudGF0aXZlIHJlYWwtZGV2aWNlIGxpZmVjeWNsZSwgYWNjZXNzaWJpbGl0eSwgY2xpcGJvYXJkL3BsYXRmb3JtLWhhbmRsZXIsIGxvbmctc2Vzc2lvbiwgc3BsYXNoL2ljb24sIHNpZ25pbmcvcHJvdmlzaW9uaW5nLCBhbmQgc3RvcmUtbWV0YWRhdGEgcmV2aWV3Lgo=
         run: |
           python - <<'PY'
+          import base64
+          import os
           from pathlib import Path
-
           path = Path('what_changed.md')
           text = path.read_text()
           heading = '# Phase 17 — Trusted per-mode records'
           if heading in text:
               raise SystemExit('Phase 17 work log already exists')
-
-          entry = r'''
-
-# Phase 17 — Trusted per-mode records
-
-Date: **2026-08-15**
-
-## Starting point
-
-Phase 17 started from the completed Phase 16 English/Hindi localization release-candidate state:
-
-```text
-Version: 0.9.0+1
-Previous final automated gate: 134/134 tests
-Previous final CI: 31806785165
-Previous native matrix: 31804713200
-Stable 1.0.0: not yet promoted
-```
-
-The release roadmap still contained an optional mode-specific-record expansion. This phase implemented the portion that can be measured and migrated honestly from trusted local gameplay without introducing accounts, cloud synchronization, analytics, or a new trust system.
-
-## Scope selected for Phase 17
-
-Implemented trusted local records per `GameMode`:
-
-- best score;
-- highest tile;
-- board size associated with the stored best score;
-- target tile associated with the stored best score.
-
-The feature deliberately does **not** invent historical records for completed games that are no longer observable. It also does not claim an exact historical fewest-winning-moves record because old persisted statistics do not contain enough information to reconstruct that fact safely.
-
-## Persisted record model
-
-`lib/app/state/app_controller.dart` now contains `ModeRecord` and a `PlayerStats.modeRecords` map keyed by `GameMode`.
-
-The serialized statistics payload can now include:
-
-```json
-"modeRecords": {
-  "classic": {
-    "bestScore": 16384,
-    "highestTile": 2048,
-    "bestScoreBoardSize": 4,
-    "bestScoreTarget": 2048
-  }
-}
-```
-
-Validation rules were kept consistent with the existing statistics/save parser:
-
-- scores must be finite, integral, and non-negative;
-- highest-tile and target values must be valid powers of two within application bounds;
-- stored best-score board size must remain between 3 and 8;
-- unknown/future mode keys are ignored;
-- malformed record objects are skipped/sanitized;
-- empty records are not serialized;
-- statistics payloads written before Phase 17 remain valid because `modeRecords` is optional.
-
-No new preference key, database, runtime dependency, account, network request, or cloud service was added.
-
-## Trusted update boundary
-
-`AppController` is the record-policy boundary.
-
-A locally started ranked game can update its mode record:
-
-- when a new game is created and its generated board establishes an observable highest-tile baseline;
-- after a successful ranked move raises score or tile progress;
-- when timed/challenge status is refreshed and trusted progress must be persisted;
-- during startup repair when a valid ranked current game predates the new `modeRecords` statistics field;
-- during Reset Statistics when an active ranked session must remain represented consistently.
-
-Undo does not reduce a historical maximum. This follows the existing global-best behavior: reaching a best and then undoing does not erase the fact that the best was already reached.
-
-## Imported Game Backup isolation
-
-The existing persistent `_currentGameUnranked` boundary now also protects per-mode records.
-
-A portable/editable Game Backup:
-
-- does not seed a mode record at import time;
-- cannot improve a mode record through continued moves;
-- remains excluded after app restart because the unranked marker is restored before ranked repair logic runs;
-- does not recreate a record when Statistics is reset while that imported board is active.
-
-A locally started deterministic seeded game is still ranked. Challenge Codes continue to start fresh configuration-only local games and do not use the portable-progress import path.
-
-## Statistics reset behavior
-
-`resetStats()` now resets `PlayerStats`, including `modeRecords`.
-
-If a ranked active game exists, the controller rebuilds only a minimal observable baseline for that active session:
-
-- one current game counted;
-- current score/global best baseline;
-- current highest tile;
-- current mode record derived from the active board/configuration;
-- already-counted win state retained when applicable.
-
-Historical records for other modes remain cleared.
-
-If the active board is an imported unranked backup, no aggregate or per-mode progress is reconstructed from it.
-
-## Localized Statistics UI
-
-`lib/features/statistics/statistics_screen.dart` now appends expandable mode-record cards after the existing global statistics.
-
-Each mode with trusted progress can show:
-
-- localized mode name;
-- localized board-size metadata when available;
-- localized target metadata when available;
-- best score;
-- highest tile.
-
-The UI intentionally reuses the Phase 16 localization layer rather than adding duplicate strings:
-
-- `NovaLocalizations.modeName(...)`;
-- `NovaLocalizations.boardSize(...)`;
-- `NovaLocalizations.targetTile(...)`;
-- existing `Best score` / `Highest tile` English/Hindi translations.
-
-This preserves the offline localization and accessibility architecture.
-
-## Focused regression tests added
-
-Ten tests were added across four new files:
-
-```text
-test/mode_record_serialization_test.dart     3 tests
-test/mode_record_tracking_test.dart          3 tests
-test/mode_record_unranked_test.dart          2 tests
-test/statistics_mode_records_test.dart       2 tests
-```
-
-Coverage includes:
-
-1. per-mode record JSON round trip;
-2. malformed/unknown record sanitization;
-3. backward compatibility with legacy statistics payloads;
-4. ranked move progress updating and persisting the correct mode record;
-5. startup migration from an observable legacy ranked current game;
-6. Reset Statistics preserving only an active ranked mode baseline;
-7. imported-backup exclusion through import, continued move, and reset;
-8. locally started seeded-game ranking behavior;
-9. English expandable Statistics record presentation;
-10. Hindi mode/configuration/record-label presentation through the production localization layer.
-
-The permanent Format Dart workflow subsequently produced:
-
-```text
-15b735811fa32b51def5d5ee991aa1e89ed8ae6d
-style: format Dart sources and tests
-```
-
-## Transparent intermediate automation issue
-
-The first one-time source-commit helper run failed before committing production source:
-
-```text
-Workflow: Phase 17 source commits
-Run: 31866878358
-Result: FAILURE
-Cause: dart: command not found
-```
-
-The lightweight helper used an Ubuntu runner that did not include Dart on `PATH`. Its Python source edit had only occurred in the ephemeral checkout; the job stopped before the source commit and therefore did not leave a half-written production commit.
-
-The helper was corrected to leave formatting to the repository's maintained Flutter Format Dart/CI workflows instead of assuming an SDK on the lightweight helper runner.
-
-Corrected helper:
-
-```text
-Run: 31866913732
-Result: SUCCESS
-```
-
-## Parser correction found during source audit
-
-After the first model/tracking push, the committed file was explicitly re-opened instead of assuming the generated patch was complete. The audit showed that the intended `modeRecords` deserialization block was not present in the final `PlayerStats.fromJson` body even though serialization/tracking code was present.
-
-That omission was corrected immediately in:
-
-```text
-341f2ad5d5b252f75e52e05ed7aede8a8aa38fbb
-fix: restore per-mode record deserialization
-```
-
-A later final source audit confirmed that the parser now:
-
-- reads only current `GameMode.values` keys;
-- normalizes string-keyed maps defensively;
-- validates records through `ModeRecord.fromJson`;
-- retains only records with actual progress.
-
-The intermediate mistake remains recorded here rather than being hidden.
-
-## Phase 17 source/test commits
-
-Representative production and regression commits:
-
-```text
-97880d90daafa5b45812c263e89d3e1f68106556  feat: add persisted per-mode record model
-7e264da32c3154c18318d80e7ca5c2d41e4f6d82  feat: track trusted per-mode progress
-752bf15074ff43dd614d5e6888f8ec16f29560d7  feat: show per-mode records in statistics
-341f2ad5d5b252f75e52e05ed7aede8a8aa38fbb  fix: restore per-mode record deserialization
-09124d22f584b92a57f747a2288c63c9551610cf  test: cover per-mode record serialization
-dc92109ad1ea6f75859db26d5e87768e6936a739  test: cover trusted per-mode record tracking
-f55e913a5dbd30f586a120716b586e430d589b95  test: keep imported backups out of mode records
-c381dd1582845b26ab9dcd96c9d1874eb9e3d52f  test: cover localized per-mode statistics UI
-15b735811fa32b51def5d5ee991aa1e89ed8ae6d  style: format Dart sources and tests
-```
-
-Temporary helper setup/correction/removal commits are also retained in normal Git history because they reflect real repository operations. No empty/no-op commit was created solely to inflate the count.
-
-## Phase 17 documentation work
-
-Added:
-
-```text
-docs/MODE_RECORDS.md
-```
-
-Updated or extended:
-
-```text
-README.md
-ROADMAP.md
-CHANGELOG.md
-SECURITY.md
-docs/README.md
-docs/ARCHITECTURE.md
-docs/BACKUP_AND_RESTORE.md
-docs/DATA_STORAGE.md
-docs/PRIVACY.md
-docs/TESTING.md
-docs/USER_GUIDE.md
-what_changed.md
-```
-
-The documentation now states the exact migration, reset, privacy, trust, imported-backup isolation, and non-goal boundaries instead of describing per-mode records as a generic leaderboard feature.
-
-## Phase 17 documentation commits
-
-```text
-d331fe1e6499d721152255cfd1404daad5424b87  docs: document per-mode record trust model
-2dbf3935cf4cacd784ef0db6db746b4715128894  docs: index per-mode records documentation
-9b60eae4c25859c699eefc6427f12eaa8f280e21  docs: advance roadmap with per-mode records
-5931bbcf4c51ac1ce15a9ae343941ae953086585  docs: add per-mode records to project overview
-5bd5d0d42e2407f8436b0d5d82f27f9a03ba9d80  docs: describe per-mode record persistence
-9e2b129fa6a71c645aad9599ac5feebeff95f344  docs: define per-mode record architecture
-593d218efab446e9d564ad66cfe5b809182b8f9f  docs: explain per-mode records to players
-a6ba8e69934eb2e32a43ddba9936c0c0dd0659c7  docs: record per-mode statistics privacy
-6cdfda38d21fcd268b3610c0e8559a87f032feeb  docs: extend backup trust boundary to mode records
-bb5cf29df327391aeff1de8d2ebade13ed60b81c  docs: define per-mode record integrity boundary
-58b63917cc6a4a26d0fbf7daffa97af651b302b8  docs: describe Phase 17 record regression coverage
-```
-
-## Verification state before the final Phase 17 gate
-
-Several intermediate CI runs were superseded/cancelled by main-branch concurrency while the source, tests, formatter commit, and documentation commits were still arriving. For example, CI run `31867018829` for the localized Statistics test commit was cancelled after newer main commits superseded it. This is not treated as a passing gate or as a code failure.
-
-The final Phase 17 passing test count and maintained CI run are intentionally recorded only after the repository stops moving and the permanent CI workflow completes against the final candidate source state.
-
-## Manual boundaries remain unchanged
-
-Phase 17 does not convert automated CI into physical-device release qualification. Stable `1.0.0` still requires the manual checks already listed in `ROADMAP.md` and `docs/RELEASE_CHECKLIST.md`, including representative real-device lifecycle, accessibility, clipboard/platform-handler, long-session, splash/icon, signing/provisioning, and store-metadata review.
-'''
+          entry = base64.b64decode(os.environ['PHASE17_LOG_B64']).decode('utf-8')
           path.write_text(text + entry)
           PY
           git add what_changed.md
