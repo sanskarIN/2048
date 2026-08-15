@@ -144,3 +144,10 @@ Automated tests do not replace real platform clipboard/security behavior, depend
 ## Localization security boundary
 
 Localization is static application data plus a validated local preference. No remote translation endpoint, locale-specific executable code, or downloaded language pack is used. Unknown persisted language values fall back to System default and cannot select arbitrary assets, URLs, or code paths.
+
+
+## Per-mode record integrity
+
+Per-mode records are convenience statistics, not cryptographic achievements. They are accepted only from the application's trusted local-session path; imported Game Backup progress is persistently marked unranked and cannot update them. Stored record fields are parsed defensively and bounded before use, and unknown future mode keys are ignored.
+
+This boundary prevents the supported portable/editable backup format from directly inflating local mode records. It is not an anti-cheat or tamper-proof system: users with direct control of application storage can modify local preferences. Any future competitive/online ranking design would require a separate authenticated threat model rather than reusing these local records as proof.
