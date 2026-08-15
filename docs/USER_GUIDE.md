@@ -347,3 +347,12 @@ Open **Settings → Language** and choose **System default**, **English**, or **
 System default follows English or Hindi when the device reports one of those supported locales; unsupported system locales fall back to English. Clearing all 2048 Nova local data also restores the language setting to System default.
 
 Machine-readable Challenge Code/backup data, URLs, email addresses, seeds, and tile numbers are not translated. Hindi mode localizes player-facing controls, status text, error paths, and positional board semantics while preserving game rules and deterministic behavior.
+
+
+## Per-mode records
+
+Open **Statistics** to see the existing overall totals followed by an expandable card for every mode that has trusted local progress. A mode card shows its best score and highest tile. When a best score has configuration metadata, the card also shows the board size and target associated with that score.
+
+Mode records are local to this installation and work fully offline. Normal games you start inside 2048 Nova can improve them. A Game Backup that you import is labeled unranked and cannot improve overall or per-mode records, even if you keep playing that imported board.
+
+Choosing **Reset statistics** removes historical mode records. If a ranked game is still active, its current observable progress becomes the fresh baseline for only that mode. If the active board came from an imported backup, no mode record is recreated from it.
