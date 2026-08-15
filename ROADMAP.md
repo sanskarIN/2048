@@ -9,7 +9,7 @@ Completed in the current release-candidate line:
 - Offline shareable seeded **Challenge Codes** with a versioned `NOVA1` format, deterministic config/seed round trip, corruption checksum, strict input validation, manual/clipboard entry, decoded preview, replacement protection, and no account/cloud requirement.
 - Daily Challenge isolation from arbitrary Challenge Codes so date-derived seed/history semantics remain separate.
 - Deterministic heuristic hints with focused regression coverage.
-- Isolated deterministic **Auto Play Demo** with pause/resume, single-step control, speed selection, seed reset, and strict separation from player saves/statistics/achievements/Daily history.
+- Isolated deterministic **Auto Play Demo** with pause/resume, single-step control, speed selection, seed reset, selectable Heuristic/bounded-Expectimax strategies, visible search-node diagnostics, a deterministic benchmark suite/CLI, and strict separation from player saves/statistics/achievements/Daily history.
 - Read-only **Move Replay** built from validated bounded Undo snapshots, with timeline scrubbing, first/previous/next/latest navigation, play/pause, speed selection, defensive copies, and no live-game mutation path.
 - Versioned **Game Backup** for copying/restoring one current game through the clipboard with strict input validation, explicit replacement confirmation, Undo isolation, and persistent unranked-import policy.
 - Imported-backup trust isolation so portable/editable data cannot inflate lifetime statistics, achievements, streaks, Daily history, global best-score records, or per-mode records.
@@ -27,6 +27,7 @@ Remaining release qualification before `1.0.0`:
 - Representative touch, orientation, keyboard, focus, and responsive-layout checks on real target environments.
 - VoiceOver, TalkBack, Narrator/browser-screen-reader checks on representative platforms, including Hindi semantics, pronunciation, large-text wrapping, language switching, and expanded per-mode Statistics cards.
 - Long-session and real-device Daily/timed/move-limit/Undo/win-continue testing.
+- Representative Auto Play Heuristic/Expectimax strategy switching, pause behavior, performance/responsiveness, localization, and accessibility checks on real targets.
 - Real-platform Challenge Code generate/copy/paste/manual-entry/validation/replacement/determinism/accessibility checks using actual clipboard/browser handlers.
 - Real-platform Move Replay scrub/play/pause/navigation-away/accessibility checks.
 - Real-platform Game Backup copy/import/cancel/restore/restart/Undo checks using actual clipboard handlers.
@@ -52,7 +53,7 @@ These are intentionally non-blocking and must not destabilize core gameplay:
 - A separate full-session replay export/import format beyond the current bounded Undo-backed viewer.
 - Optional file-based backup import/export in addition to the implemented clipboard backup, with the same strict validation/unranked policy.
 - Optional QR rendering/scanning or OS share-sheet convenience for the already-implemented Challenge Code text format, only if cross-platform/privacy/accessibility costs are justified.
-- Optional expectimax or another advanced solver behind the already-isolated Auto Play Demo boundary, plus a benchmark suite.
+- Optional deeper/adaptive or alternative solver strategies only if they preserve the existing Auto Play sandbox, deterministic benchmark coverage, explicit resource limits, and normal Hint behavior.
 - Golden/visual-regression matrices for major breakpoints and themes.
 - Additional trustworthy mode-specific metadata beyond the implemented best-score/highest-tile records, only when it can be migrated and measured without inventing historical facts.
 - Richer platform-aware sound/haptic effects using only compatible/licensed resources.
