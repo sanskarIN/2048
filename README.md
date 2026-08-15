@@ -373,3 +373,11 @@ The Statistics screen now keeps a trusted local best score and highest tile for 
 Per-mode records are offline-only and follow the same ranking boundary as the rest of 2048 Nova: normal locally started games, including deterministic seeded games, can update records; editable Game Backup imports remain unranked and cannot update them. Reset Statistics clears historical mode records and, when a ranked game is active, rebuilds only that active mode's observable baseline.
 
 See [`docs/MODE_RECORDS.md`](docs/MODE_RECORDS.md) for persistence, migration, reset, trust, and test details.
+
+## Full Replay Archive
+
+A newly started local game records a bounded deterministic replay action stream from its opening state. Complete captures can be copied as versioned `nova2048.fullReplay` JSON and opened later from clipboard or manual text in spectator mode. Recorded actions include valid moves, Undo, explicit continue-after-win, and timed status transitions. Replay reconstruction supplies the recorded event time to the engine so timed modes do not depend on the spectator device clock.
+
+Full replay capture is capped at **4,096 events**. When that safety bound is reached the normal game continues, but portable full-session export is disabled rather than silently claiming a truncated archive is complete. Legacy, restored, and Game Backup sessions that did not start with full capture remain playable but are marked incomplete for full-session export.
+
+Imported replay archives never replace the live game and cannot import statistics, achievements, streaks, Daily results, per-mode records, settings, or trusted progress. The JSON is user-editable: strict validation proves deterministic self-consistency, not authorship or anti-cheat authenticity. See [`docs/REPLAY_ARCHIVES.md`](docs/REPLAY_ARCHIVES.md).
