@@ -5,6 +5,11 @@ All notable changes to this project are documented here.
 ## [Unreleased]
 
 ### Added
+- Portable spectator-only **Full Replay Archives** using versioned `nova2048.fullReplay` JSON, deterministic action reconstruction, explicit clipboard/manual open, and a hard 4,096-event capture bound.
+- Full-session replay action capture for newly started local games, including valid moves, Undo, continue-after-win, and timed status-only transitions with recorded elapsed time.
+- Full Replay Archive viewer with scrub/step/play-pause/first/latest controls, 1/2/4-frame-per-second playback, imported spectator-state labeling, and English/Hindi controls/trust messaging.
+- Replay-capture persistence and safe recovery under `nova.replay_capture.v1`, including complete/incomplete/overflowed state and Game Backup incomplete-capture policy.
+- Twenty-two focused Phase 19 protocol, persistence, controller, widget, navigation, and localization tests.
 - Bounded deterministic **Expectimax** strategy for the isolated Auto Play Demo, including real 90%/10% 2/4 chance-node modeling, explicit depth/node limits, deterministic tie behavior, and non-mutating search.
 - Selectable Heuristic/Expectimax Auto Play strategy controls with visible expectimax search-node diagnostics; strategy switching pauses playback without resetting sandbox board/RNG state.
 - Reusable deterministic solver benchmark library plus `dart run tool/solver_benchmark.dart` CLI for fixed-seed Heuristic/Expectimax regression comparisons.
@@ -45,6 +50,9 @@ All notable changes to this project are documented here.
 - Friendly copy fallback when an approved external destination cannot be opened by the platform.
 
 ### Changed
+- `GameEngine.move` accepts an optional event time so deterministic replay reconstruction can reproduce timed status rules without spectator wall-clock dependence.
+- Move Replay now links to Full Replay Archive, including from its no-live-game state so received spectator archives can be opened without creating or replacing player progress.
+- Game Backup imports receive incomplete replay capture because sender-side earlier actions are not present; they are never mislabeled as complete full-session histories.
 - Normal player Hint deliberately remains the fast read-only heuristic; bounded Expectimax is available only inside the isolated Auto Play sandbox.
 - In-app Guide/About and English/Hindi solver copy now distinguish Heuristic, Expectimax, sandbox isolation, and benchmark/resource-limit boundaries.
 - Statistics reset now clears historical per-mode records while rebuilding only the observable baseline for a ranked active session; an imported unranked session rebuilds none.
@@ -106,6 +114,7 @@ All notable changes to this project are documented here.
 - Duplicate Daily Challenge records for the same date are merged into one strongest consistent record, preventing duplicate-history inflation.
 
 ### Verification
+- Phase 19 first clean replay gate: CI `31871817119` on `4a16608c9f8e94de529ef79ca5d213a81b66baae` passed formatting (88 files, 0 changes), analysis, **183/183 tests**, Web release, and Web WASM dry run.
 
 - Phase 18 final gate: CI `31869835223` on `b114255b6f510f0e7ba8d0516e9a30eebf4451b8` passed formatting (80 files / 0 changes), analysis, **161/161 tests**, Web release, and the Web WASM dry run under Flutter 3.47.0 / Dart 3.13.0.
 - Phase 18 native matrix: Platform Builds `31869794809` on runtime `e324882fc861e9e4221020aabb00515c7366a6f7` passed Android APK, Linux, Windows, macOS, and unsigned iOS release builds.
