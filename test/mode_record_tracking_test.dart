@@ -34,8 +34,7 @@ void main() {
 
     final restored = AppController(store: LocalStore());
     await restored.initialize();
-    final restoredRecord =
-        restored.stats.existingRecordFor(GameMode.classic);
+    final restoredRecord = restored.stats.existingRecordFor(GameMode.classic);
     expect(restoredRecord, isNotNull);
     expect(restoredRecord!.bestScore, 4);
     expect(restoredRecord.highestTile, 4);
