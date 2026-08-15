@@ -1,6 +1,6 @@
 # 2048 Nova Documentation
 
-This directory is the user, technical, development, platform, and release documentation set for 2048 Nova. The application is a Flutter/Dart, offline-first 2048 implementation with deterministic game rules, validated local persistence, multiple modes, English/Hindi localization, accessibility controls, read-only Replay, an isolated heuristic Auto Play Demo, portable current-game backup/restore, and offline shareable seeded challenge codes.
+This directory is the user, technical, development, platform, and release documentation set for 2048 Nova. The application is a Flutter/Dart, offline-first 2048 implementation with deterministic game rules, validated local persistence, multiple modes, trusted per-mode records, English/Hindi localization, accessibility controls, read-only Replay, an isolated heuristic Auto Play Demo, portable current-game backup/restore, and offline shareable seeded challenge codes.
 
 ## Start here
 
@@ -12,6 +12,7 @@ This directory is the user, technical, development, platform, and release docume
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Layer boundaries, state flow, persistence responsibilities, trust boundaries, and feature architecture. |
 | [`GAME_ENGINE.md`](GAME_ENGINE.md) | Exact move/merge/spawn rules, deterministic RNG, terminal-state behavior, and invariants. |
 | [`GAME_MODES.md`](GAME_MODES.md) | All supported game modes, board sizes, targets, timers, move limits, and Daily Challenge behavior. |
+| [`MODE_RECORDS.md`](MODE_RECORDS.md) | Trusted local per-mode best score/highest-tile records, migration, reset behavior, and imported-backup isolation. |
 | [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md) | Shareable seeded challenge format, deterministic behavior, validation, checksum, and trust model. |
 | [`LOCALIZATION.md`](LOCALIZATION.md) | English/Hindi locale architecture, persisted language selection, fallback rules, contributor guidance, privacy, and accessibility boundaries. |
 | [`DATA_STORAGE.md`](DATA_STORAGE.md) | Local storage keys, save schemas, bounded collections, corruption recovery, and reset behavior. |
@@ -53,6 +54,7 @@ A feature should not be documented as ranked/trusted when its source policy make
 - **Auto Play sandbox:** `lib/domain/autoplay_session.dart`.
 - **Local persistence:** `lib/data/local_store.dart`.
 - **Player session/ranking/settings orchestration:** `lib/app/state/app_controller.dart`.
+- **Per-mode record presentation:** `lib/features/statistics/statistics_screen.dart`.
 - **Application routes/localization delegates:** `lib/app/nova_app.dart`.
 - **Current package/version:** `pubspec.yaml`.
 - **Automated quality gates:** `.github/workflows/`.
