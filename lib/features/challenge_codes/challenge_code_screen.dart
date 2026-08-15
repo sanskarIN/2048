@@ -8,6 +8,8 @@ import '../../shared/game_replacement_guard.dart';
 import '../../shared/nova_scaffold.dart';
 import '../../shared/text_clipboard.dart';
 
+import 'challenge_code_qr.dart';
+
 class ChallengeCodeScreen extends StatefulWidget {
   const ChallengeCodeScreen({
     super.key,
@@ -139,6 +141,28 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
                         _generatedCode!,
                         style: const TextStyle(fontFamily: 'monospace'),
                       ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      l10n.text('Scan to share'),
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    ChallengeCodeQr(
+                      code: _generatedCode!,
+                      semanticsLabel: l10n.text(
+                        'QR code containing this challenge code',
+                      ),
+                      errorLabel: l10n.text('Unable to render QR code.'),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.text(
+                        'The QR code contains the same plain NOVA1 text shown above. It does not add identity, authentication, or cloud transfer.',
+                      ),
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: 8),
                     OutlinedButton.icon(
