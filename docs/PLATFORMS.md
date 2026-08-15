@@ -344,3 +344,20 @@ Game Backup file transport is configured for Android, iOS, Web, Windows, macOS, 
 macOS Debug/Profile and Release entitlements enable `com.apple.security.files.user-selected.read-write`. This grants access to files chosen by the user, not arbitrary filesystem traversal.
 
 Web uses the browser's download/file-input behavior; native targets use their platform picker/document-provider behavior. Hosted release builds verify compilation/integration only. Real Save/Open/cancel/round-trip checks remain required on representative targets before stable `1.0.0`.
+
+## Phase 20 final native matrix
+
+`file_picker 11.0.2`, the macOS user-selected read/write entitlement, and the AGP-9 built-in-Kotlin host setting are compiled in the accepted runtime source `188e81c607eca76516018be8c668eab41b777cc1`.
+
+```text
+Platform Builds run: 31875447417
+Android release APK: PASS - job 94990368847
+Linux release: PASS - job 94990368919
+Windows release: PASS - job 94990368886
+macOS release: PASS - job 94990368933
+unsigned iOS release: PASS - job 94990368933
+```
+
+The prior run `31875177571` failed Android plugin registration while all other configured native targets passed. Enabling `android.builtInKotlin=true` fixed the AGP-9 host/plugin integration, and the full fresh matrix above is the accepted evidence.
+
+Interactive picker/document-provider/browser behavior remains a real-environment release check rather than a hosted-compilation claim.
