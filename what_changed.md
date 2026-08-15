@@ -2970,3 +2970,100 @@ The final Phase 17 passing test count and maintained CI run are intentionally re
 ## Manual boundaries remain unchanged
 
 Phase 17 does not convert automated CI into physical-device release qualification. Stable `1.0.0` still requires the manual checks already listed in `ROADMAP.md` and `docs/RELEASE_CHECKLIST.md`, including representative real-device lifecycle, accessibility, clipboard/platform-handler, long-session, splash/icon, signing/provisioning, and store-metadata review.
+
+## Final Phase 17 maintained acceptance gate
+
+The first stabilized Phase 17 candidate was intentionally passed through the permanent `CI` workflow instead of being declared complete from source inspection alone.
+
+### Acceptance attempt 1 — analyzer caught an unused test local
+
+```text
+Commit: f86e9499280310a431370a7f0fe9e275a3da0ec6
+CI run: 31867316152
+Formatting: PASS
+Static analysis: FAIL
+Tests: not run
+Web build: not run
+```
+
+The analyzer identified an unused local variable in `test/mode_record_serialization_test.dart`. This was a test-code quality defect rather than a production failure. It was corrected in:
+
+```text
+f42a8ab18edd4661a066419de0daa84a2ce22f85
+test: remove unused per-mode record local
+```
+
+### Acceptance attempt 2 — widget tests exposed a wrong expectation
+
+CI was rerun on the analyzer-clean candidate:
+
+```text
+Commit: f42a8ab18edd4661a066419de0daa84a2ce22f85
+CI run: 31867370893
+Formatting: PASS — 74 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: 142 passed, 2 failed
+Web build: skipped after test failure
+```
+
+Both failures were in `test/statistics_mode_records_test.dart`.
+
+The production Statistics card deliberately renders configuration metadata as one subtitle:
+
+```text
+4 × 4 board • Target tile: 2048
+```
+
+and in Hindi:
+
+```text
+4 × 4 बोर्ड • लक्ष्य टाइल: 2048
+```
+
+The tests had searched for board size and target as two separate `Text` widgets. The source UI and localization helper contract were re-opened and checked; production behavior was correct, so the tests—not the UI—were corrected in:
+
+```text
+c443f9fde0cc243269be57515772378c06284e86
+test: match combined mode record metadata
+```
+
+### Acceptance attempt 3 — authoritative green gate
+
+The permanent maintained CI workflow then completed successfully against that exact source/test commit:
+
+```text
+Commit: c443f9fde0cc243269be57515772378c06284e86
+CI workflow run: 31867499047
+CI job: 94970781061
+Result: SUCCESS
+Runner: ubuntu-24.04
+
+Flutter 3.47.0 stable
+Dart 3.13.0
+DevTools 2.60.0
+
+Dependency resolution: PASS
+Formatting: PASS — 74 files, 0 changed
+Static analysis: PASS — No issues found
+Automated regression tests: PASS — 144/144
+Flutter Web release build: PASS — build/web produced
+Flutter Web WASM dry run: PASS
+```
+
+The final test total moved from 134 in Phase 16 to 144 in Phase 17, exactly matching the ten focused new per-mode-record tests.
+
+The Web compiler emitted a non-fatal Cupertino icon-font availability warning while still completing the release build and producing `build/web`. It is recorded as a warning rather than misrepresented as a failed build.
+
+### Phase 17 qualification status
+
+Phase 17's trusted per-mode record implementation is now accepted by the maintained automated gate.
+
+This does **not** promote the project to stable `1.0.0`. Remaining release blockers are still manual/real-environment qualification items already listed in `ROADMAP.md` and `docs/RELEASE_CHECKLIST.md`, including physical Android/iOS lifecycle/gameplay checks, representative accessibility checks, real clipboard/platform-handler behavior, long-session checks, native branding review, distribution signing/provisioning, and store metadata.
+
+No fresh Phase 17 native build matrix was claimed. The previously recorded Phase 16 native matrix remains the latest Android/Linux/Windows/macOS/unsigned-iOS hosted native evidence until a newer native matrix is explicitly executed and recorded.
+
+A focused permanent verification record is available at:
+
+```text
+docs/PHASE_17_VERIFICATION.md
+```
