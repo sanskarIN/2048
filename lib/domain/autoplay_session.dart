@@ -8,9 +8,14 @@ enum AutoplayStrategy { heuristic, expectimax }
 /// An isolated deterministic autoplay session used by the Solver Demo.
 ///
 /// This type intentionally does not depend on app persistence, statistics,
-/// achievements, or Flutter widgets. Resetting the session recreates the
-/// seeded engine so the same seed produces the same starting board and move
-/// sequence for a given deterministic strategy.
+/// achievements, or Flutter widgets. The heuristic strategy delegates to the
+/// same fast read-only engine hint used by normal gameplay; expectimax is
+/// exposed only here and never replaces the normal Hint path. Both strategies
+/// operate on this sandbox's state, and expectimax evaluates copied boards
+/// without consuming the sandbox RNG until the selected real move is applied.
+/// Resetting the session recreates the seeded engine so the same seed produces
+/// the same starting board and move sequence for a given deterministic
+/// strategy.
 class AutoplaySession {
   AutoplaySession({
     this.seed = 2048,
