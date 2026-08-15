@@ -2,6 +2,45 @@
 
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
+## Phase 18 — Bounded Expectimax and solver benchmarks
+
+Date: **2026-08-15**
+
+Final maintained automated evidence:
+
+```text
+Final CI commit: b114255b6f510f0e7ba8d0516e9a30eebf4451b8
+CI run: 31869835223
+CI job: 94976646621
+Result: SUCCESS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS — 80 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 161/161
+Web release: PASS
+Web WASM dry run: PASS
+
+Runtime native commit: e324882fc861e9e4221020aabb00515c7366a6f7
+Platform Builds run: 31869794809
+Result: SUCCESS
+Android APK: PASS — job 94976574376
+Linux: PASS — job 94976574317
+Windows: PASS — job 94976574323
+macOS: PASS — job 94976574495
+unsigned iOS: PASS — job 94976574495
+```
+
+The later final CI commit changes only a test import, so the runtime application tree covered by the native matrix is unchanged. Phase 18 adds 17 focused tests to the Phase 17 total of 144. Normal Hint remains heuristic-only; bounded Expectimax and deterministic benchmarking remain isolated from trusted player state.
+
+Transparent acceptance failures are retained: CI `31869526679` caught one duplicate Hindi map key and eight benchmark-CLI `avoid_print` lints; CI `31869794852` later caught a missing `AppLanguage` import in the Hindi solver widget test. Both were corrected before the final 161-test green gate.
+
+The Web build continued to emit the existing non-fatal Cupertino icon-font availability warning while successfully producing `build/web`. Hosted compilation does not replace physical-device/accessibility/performance/signing/store qualification.
+
+Focused details: [`PHASE_18_VERIFICATION.md`](PHASE_18_VERIFICATION.md).
+
+
 ## Phase 17 — Current-source CI and native matrix
 
 Date: **2026-08-15**
@@ -67,7 +106,7 @@ Acceptance history is intentionally retained:
 - CI `31867370893` passed formatting/analysis but finished 142 passed / 2 failed because the Statistics widget tests searched for board-size and target metadata as separate `Text` widgets even though production intentionally renders one combined subtitle. Commit `c443f9fde0cc243269be57515772378c06284e86` aligned the tests with the production component contract.
 - CI `31867499047` passed all 144 tests and the Web/WASM build gate.
 
-The Web build emitted a non-fatal Cupertino icon-font availability warning but still produced `build/web`. This automated result does not replace physical-device, assistive-technology, signing/provisioning, or store-metadata qualification. The newer current-source Phase 17 native matrix recorded above supersedes the Phase 16 matrix as the latest hosted multi-platform build evidence.
+The Web build emitted a non-fatal Cupertino icon-font availability warning but still produced `build/web`. This automated result does not replace physical-device, assistive-technology, signing/provisioning, or store-metadata qualification. The Phase 17 current-source matrix superseded Phase 16 at that time; the newer Phase 18 matrix recorded above is now the latest hosted multi-platform build evidence.
 
 Focused details: [`PHASE_17_VERIFICATION.md`](PHASE_17_VERIFICATION.md).
 
