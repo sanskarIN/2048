@@ -92,3 +92,5 @@ For current release confidence, consult in this order:
 
 - [`FILE_BACKUPS.md`](FILE_BACKUPS.md) — `.nova2048` / `.json` Game Backup file transport, byte bounds, platform behavior, macOS sandbox scope, trust model, dependency boundary, tests, and manual qualification.
 - [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md) — shared clipboard/file backup envelope and persistent unranked restore policy.
+
+Phase 20 verification: [`PHASE_20_VERIFICATION.md`](PHASE_20_VERIFICATION.md) records file-backup implementation scope, transparent CI/native failures, the AGP-9 built-in-Kotlin repair, final 189-test CI, the fully green cross-platform native matrix, and remaining real-environment release boundaries.
