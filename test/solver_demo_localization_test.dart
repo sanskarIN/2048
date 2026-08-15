@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nova_2048/app/nova_app.dart';
 import 'package:nova_2048/app/state/app_controller.dart';
+import 'package:nova_2048/core/localization/nova_localizations.dart';
 import 'package:nova_2048/data/local_store.dart';
-import 'package:nova_2048/domain/game_types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
