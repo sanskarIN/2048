@@ -3129,3 +3129,125 @@ macOS and unsigned iOS release
 ```
 
 This supersedes the Phase 16 native matrix as the latest hosted multi-platform compilation evidence and covers the final Phase 17 per-mode-record deserializer/tracking/UI runtime source. It still does not replace physical-device gameplay/lifecycle testing, assistive-technology testing, signing/provisioning, or store metadata/review. Stable `1.0.0` therefore remains intentionally unpromoted.
+
+
+# Phase 18 — Bounded Expectimax and deterministic solver benchmarks
+
+Date: **2026-08-15**
+
+## Starting state
+
+Phase 18 started after Phase 17 had a current-source 144/144 CI gate and a green Android/Linux/Windows/macOS/unsigned-iOS hosted native matrix. The roadmap still listed an optional advanced expectimax solver plus benchmark suite behind the already-isolated Auto Play boundary.
+
+## Scope implemented
+
+Phase 18 adds an advanced deterministic search strategy without changing trusted player gameplay:
+
+- `lib/domain/expectimax_solver.dart` — bounded deterministic expectimax search;
+- `AutoplayStrategy.heuristic` / `AutoplayStrategy.expectimax`;
+- strategy-aware `AutoplaySession` diagnostics;
+- Heuristic/Expectimax selector in Auto Play Demo;
+- visible expectimax explored-node diagnostics;
+- `lib/domain/solver_benchmark.dart` reusable seeded benchmark runner;
+- `tool/solver_benchmark.dart` deterministic CLI harness;
+- Hindi solver controls plus updated in-app Guide/About content;
+- focused unit/widget/localization regression tests;
+- complete solver/benchmark documentation.
+
+Normal `GameEngine.hint()` remains the original fast `HintSolver` path. Expectimax is deliberately sandbox-only.
+
+## Expectimax search model
+
+The search alternates player and chance nodes. Player nodes select the highest-value legal move. Chance nodes enumerate every empty cell and both supported spawn values using the game probabilities: tile 2 at 90% and tile 4 at 10%. Search uses copied boards only and does not consume RNG while evaluating hypothetical outcomes.
+
+Default resource bounds are:
+
+```text
+searchDepth = 2
+maxNodes = 50000
+```
+
+When the node budget is exhausted, search falls back to deterministic board evaluation. This prevents an unbounded tree from becoming an invisible device-performance cost.
+
+## Auto Play strategy behavior
+
+Heuristic remains the default. Changing to/from Expectimax:
+
+- pauses automatic playback;
+- preserves sandbox board, score, moves, and RNG state;
+- clears only prior decision diagnostics;
+- never touches `AppController` trusted player state.
+
+Reset Seed recreates the deterministic opening while retaining the selected strategy.
+
+## Benchmark design
+
+`SolverBenchmark.run()` accepts a strategy, deterministic seed list, and positive per-seed move budget. It returns immutable per-seed results plus aggregate score/move/peak-tile/search-node metrics. The CLI defaults to seeds `2048`, `4096`, `8192`, `20260815` and 200 moves per seed.
+
+The harness is for reproducible regression comparison, not a claim that one strategy is globally optimal.
+
+## Focused Phase 18 tests added before final acceptance
+
+```text
+test/expectimax_solver_test.dart        6 tests
+test/autoplay_strategy_test.dart        5 tests
+test/solver_benchmark_test.dart         3 tests
+test/solver_demo_screen_test.dart       +1 strategy-selection test
+test/localization_test.dart             +1 solver-catalog test
+test/solver_demo_localization_test.dart 1 Hindi UI test
+```
+
+That is 17 focused additions over the Phase 17 total of 144, for an expected complete total of **161 tests** before final CI confirmation.
+
+## Transparent first analyzer failure
+
+The first full Phase 18 source gate reached formatting successfully but static analysis stopped the candidate before tests:
+
+```text
+CI run: 31869526679
+Commit: 959f8a230484b0cbdf0e028eabbbe4847ef51d41
+Formatting: PASS — 79 files, 0 changed
+Static analysis: FAIL — 9 issues
+Tests: skipped
+Web build: skipped
+```
+
+The issues were:
+
+1. a duplicate Hindi `Strategy` key introduced when the solver-specific translation block added a key already used by the How-to-Play strategy section;
+2. eight `avoid_print` findings in the command-line benchmark harness.
+
+Corrections:
+
+- the benchmark CLI now uses `dart:io` `stdout.writeln` instead of `print`;
+- the duplicate added `Strategy` entry was removed while keeping the existing Hindi `रणनीति` translation as the single source for both Guide and Solver UI.
+
+These defects and the failing run are retained here rather than being hidden. No test/Web success is claimed from that run.
+
+## Major Phase 18 commits
+
+```text
+9c0031de9b2185076a81cbe2b1a7f5f53bccc7de  feat: add bounded deterministic expectimax solver
+f1bd44c59cf6c8ac3f2e5e4a327405664b5275ba  feat: add selectable autoplay solver strategies
+36f467c5d0154b8d88a23d123c73eeb78504f821  test: cover bounded expectimax recommendations
+c57dde0766fae40d9c6bd88c5b6c941f5cd7bcca  test: cover expectimax autoplay strategy isolation
+bec975c05b1911e9570a5946b787e1dce52cb0b3  feat: add deterministic solver benchmark harness
+d406b850b44a80f3be1c6f8e9c8acd6fd0e5fa3c  feat: expose expectimax strategy in solver demo
+5f4c8d0d7f2a4242fec65721516f7f97e72d6766  test: cover solver demo strategy selection
+3274373f129fd7694803fd6fd90035a180557837  feat: add reusable deterministic solver benchmark suite
+decf3cdb32d5c4842f27a4c2255780ed1ab0b6a6  refactor: use reusable solver benchmark suite
+1e8e198fa499e7ef0a29982319c8433b4dcc6ed2  test: cover deterministic solver benchmark suite
+8cee4e0cc1bb91b40b114709bf5dd5ae007ba396  fix: use stdout for solver benchmark output
+98b26714e1354f7a76d57230bee2805352ef5cd0  docs: explain solver strategies in in-app guide
+2e693af2fa3e80e54390a3756d2f8b90a2821e34  docs: add expectimax to in-app release highlights
+aa23cbb1419d0dbaebabf8243ecda6d7e9c6eb0a  test: cover Hindi advanced solver translations
+9cb2f3734ca89b238eafabaf98da2c5fee66da45  test: cover Hindi expectimax solver demo UI
+11112fe91fed0d85bc9d90289965e8bd6ea479a0  docs: document expectimax solver and benchmark suite
+959f8a230484b0cbdf0e028eabbbe4847ef51d41  docs: document heuristic and expectimax solver boundary
+```
+
+Additional small localization-helper/fix commits remain in Git history because they reflect real repository operations. Empty commits were not created solely to increase the count.
+
+## Acceptance status at this point
+
+Phase 18 is not marked accepted by this entry alone. The final permanent CI and current-source native matrix are recorded only after all source/tests/documentation stop moving and the maintained workflows complete against the final candidate. Stable `1.0.0` remains separately blocked on the documented physical-device/accessibility/signing/store qualification.
