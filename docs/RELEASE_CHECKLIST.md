@@ -199,3 +199,11 @@ Hosted compilation is evidence of build compatibility, not completion of these i
 Before stable `1.0.0`, verify generated Challenge Code QR behavior on representative Android, iOS, Web, Windows, macOS, and Linux displays where practical. Check that the displayed QR decodes to the exact visible `NOVA1` text using external camera/scanner apps, remains readable under light/dark surrounding themes and practical brightness/glare conditions, does not overflow narrow layouts or clip adjacent large text, exposes understandable screen-reader semantics, and never requests camera permission.
 
 Also confirm that QR-scanned text still goes through ordinary Challenge Code validation/replacement protection and that users can always fall back to selectable/copyable/manual text. Do not mark QR display as authentication or as an in-app scanning capability.
+
+## Phase 21 automated acceptance and remaining manual checks
+
+Automated Phase 21 acceptance is complete on source `2678e65824ca088c4ba93342bc8737fc18ec7708`: CI `31877515001` passed formatting, analysis, 194/194 tests, Web release, and WASM dry run; Platform Builds `31877514960` passed Android, Linux, Windows, macOS, and unsigned iOS.
+
+Before stable `1.0.0`, manually verify the QR on representative physical/real displays using external camera/scanner applications. Confirm exact `NOVA1` text recovery, practical scan reliability across brightness/glare/density/orientation, fixed black-on-white QR presentation inside light/dark themes, large-text/narrow-layout behavior, screen-reader semantics, and the selectable/copyable/manual text fallback. Confirm 2048 Nova requests no camera permission for rendering and that scanned text still enters the ordinary Challenge Code validation/replacement flow.
+
+All earlier physical-device lifecycle/gameplay, clipboard/platform handler, Game Backup file/document provider, replay, accessibility, native branding, signing/provisioning/notarization, and store/package review checks remain required. Automated completion does not authorize a stable-release promotion by itself.
