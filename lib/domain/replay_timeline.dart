@@ -26,9 +26,7 @@ class ReplayTimeline {
     }
 
     final retainedMoves = byMove.keys.toList()..sort();
-    final frames = <GameState>[
-      for (final move in retainedMoves) byMove[move]!,
-    ];
+    final frames = <GameState>[for (final move in retainedMoves) byMove[move]!];
 
     if (frames.isEmpty || !_sameFrame(frames.last, current)) {
       frames.add(current.copy());

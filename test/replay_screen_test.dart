@@ -39,23 +39,11 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final store = LocalStore();
     await store.saveGame(
-      frame(
-        moves: 2,
-        score: 8,
-        rng: 3,
-        merges: 1,
-        firstRow: [4, 4, 2, 0],
-      ),
+      frame(moves: 2, score: 8, rng: 3, merges: 1, firstRow: [4, 4, 2, 0]),
     );
     await store.saveUndoHistory([
       frame(moves: 0, score: 0, rng: 1, firstRow: [2, 2, 0, 0]),
-      frame(
-        moves: 1,
-        score: 4,
-        rng: 2,
-        merges: 1,
-        firstRow: [4, 2, 0, 0],
-      ),
+      frame(moves: 1, score: 4, rng: 2, merges: 1, firstRow: [4, 2, 0, 0]),
     ]);
     final controller = AppController(store: store);
     await controller.initialize();
@@ -99,8 +87,9 @@ void main() {
     expect(controller.game!.rngState, liveRng);
   });
 
-  testWidgets('replay playback pauses without advancing in background',
-      (tester) async {
+  testWidgets('replay playback pauses without advancing in background', (
+    tester,
+  ) async {
     final controller = await controllerWithReplay();
     await tester.pumpWidget(NovaApp(controller: controller));
     await tester.pumpAndSettle();
@@ -124,8 +113,9 @@ void main() {
     expect(_visibleMove(tester), pausedMove);
   });
 
-  testWidgets('replay route handles missing game with an empty state',
-      (tester) async {
+  testWidgets('replay route handles missing game with an empty state', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     final controller = AppController(store: LocalStore());
     await controller.initialize();

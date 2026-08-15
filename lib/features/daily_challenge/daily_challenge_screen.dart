@@ -17,7 +17,8 @@ class DailyChallengeScreen extends StatelessWidget {
     final config = GameConfig.preset(GameMode.daily);
     final seed = config.seed!;
     final record = controller.dailyRecordFor(seed);
-    final currentIsToday = controller.game?.config.mode == GameMode.daily &&
+    final currentIsToday =
+        controller.game?.config.mode == GameMode.daily &&
         controller.game?.config.seed == seed &&
         controller.game?.status != GameStatus.lost;
 
@@ -56,8 +57,8 @@ class DailyChallengeScreen extends StatelessWidget {
                         record.won
                             ? 'Status: Target reached'
                             : record.completed
-                                ? 'Status: Completed'
-                                : 'Status: In progress',
+                            ? 'Status: Completed'
+                            : 'Status: In progress',
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -73,20 +74,20 @@ class DailyChallengeScreen extends StatelessWidget {
                       currentIsToday
                           ? Icons.play_arrow_rounded
                           : record?.completed == true
-                              ? Icons.replay_rounded
-                              : record == null
-                                  ? Icons.calendar_today_rounded
-                                  : Icons.restart_alt_rounded,
+                          ? Icons.replay_rounded
+                          : record == null
+                          ? Icons.calendar_today_rounded
+                          : Icons.restart_alt_rounded,
                     ),
                     label: Text(
                       l10n.text(
                         currentIsToday
                             ? 'Continue today’s challenge'
                             : record?.completed == true
-                                ? 'Replay today’s challenge'
-                                : record == null
-                                    ? 'Start today’s challenge'
-                                    : 'Restart today’s challenge',
+                            ? 'Replay today’s challenge'
+                            : record == null
+                            ? 'Start today’s challenge'
+                            : 'Restart today’s challenge',
                       ),
                     ),
                   ),
@@ -115,8 +116,8 @@ class DailyChallengeScreen extends StatelessWidget {
                     item.won
                         ? Icons.emoji_events_rounded
                         : item.completed
-                            ? Icons.check_circle_outline_rounded
-                            : Icons.timelapse_rounded,
+                        ? Icons.check_circle_outline_rounded
+                        : Icons.timelapse_rounded,
                   ),
                   title: Text(_formatSeed(item.seed)),
                   subtitle: Text(
@@ -129,8 +130,8 @@ class DailyChallengeScreen extends StatelessWidget {
                       item.won
                           ? 'Won'
                           : item.completed
-                              ? 'Done'
-                              : 'Open',
+                          ? 'Done'
+                          : 'Open',
                     ),
                   ),
                 ),

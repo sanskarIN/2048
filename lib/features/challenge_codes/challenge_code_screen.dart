@@ -25,16 +25,7 @@ class ChallengeCodeScreen extends StatefulWidget {
 }
 
 class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
-  static const _targetOptions = [
-    128,
-    256,
-    512,
-    1024,
-    2048,
-    4096,
-    8192,
-    16384,
-  ];
+  static const _targetOptions = [128, 256, 512, 1024, 2048, 4096, 8192, 16384];
 
   final TextEditingController _inputController = TextEditingController();
   GameMode _mode = GameMode.classic;
@@ -347,17 +338,17 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
   }
 
   static String _modeLabel(GameMode mode) => switch (mode) {
-        GameMode.classic => 'Classic 4×4',
-        GameMode.quick => 'Quick 3×3',
-        GameMode.extended => 'Extended 5×5',
-        GameMode.challenge => 'Challenge 6×6',
-        GameMode.endless => 'Endless',
-        GameMode.target => 'Target',
-        GameMode.timeChallenge => 'Time Challenge',
-        GameMode.moveLimit => 'Move Limit',
-        GameMode.zen => 'Zen',
-        GameMode.daily => 'Daily Challenge',
-      };
+    GameMode.classic => 'Classic 4×4',
+    GameMode.quick => 'Quick 3×3',
+    GameMode.extended => 'Extended 5×5',
+    GameMode.challenge => 'Challenge 6×6',
+    GameMode.endless => 'Endless',
+    GameMode.target => 'Target',
+    GameMode.timeChallenge => 'Time Challenge',
+    GameMode.moveLimit => 'Move Limit',
+    GameMode.zen => 'Zen',
+    GameMode.daily => 'Daily Challenge',
+  };
 }
 
 class _ConfigPreview extends StatelessWidget {
@@ -371,7 +362,7 @@ class _ConfigPreview extends StatelessWidget {
     final entries = <(String, String)>[
       (
         l10n.text('Mode'),
-        l10n.text(_ChallengeCodeScreenState._modeLabel(config.mode))
+        l10n.text(_ChallengeCodeScreenState._modeLabel(config.mode)),
       ),
       (l10n.text('Board'), '${config.size}×${config.size}'),
       (l10n.text('Target'), '${config.target}'),

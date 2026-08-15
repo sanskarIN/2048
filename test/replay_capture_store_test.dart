@@ -6,11 +6,7 @@ import 'package:nova_2048/domain/replay_archive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  const config = GameConfig(
-    mode: GameMode.classic,
-    size: 4,
-    seed: 99,
-  );
+  const config = GameConfig(mode: GameMode.classic, size: 4, seed: 99);
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});

@@ -17,7 +17,8 @@ void main() {
     final exponent = moves.clamp(0, 4).toInt();
     return GameState(
       config: config,
-      board: board ??
+      board:
+          board ??
           [
             [2 << exponent, 0, 0, 0],
             [0, 0, 0, 0],
@@ -58,32 +59,34 @@ void main() {
     expect(frames.last.score, 12);
   });
 
-  test('duplicate move snapshots collapse and current frame is authoritative',
-      () {
-    final current = state(
-      moves: 2,
-      score: 8,
-      merges: 1,
-      board: [
-        [4, 4, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-      ],
-    );
+  test(
+    'duplicate move snapshots collapse and current frame is authoritative',
+    () {
+      final current = state(
+        moves: 2,
+        score: 8,
+        merges: 1,
+        board: [
+          [4, 4, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+        ],
+      );
 
-    final frames = ReplayTimeline.build(
-      current: current,
-      history: [
-        state(moves: 0, score: 0),
-        state(moves: 1, score: 4, merges: 1),
-        current.copy(),
-      ],
-    );
+      final frames = ReplayTimeline.build(
+        current: current,
+        history: [
+          state(moves: 0, score: 0),
+          state(moves: 1, score: 4, merges: 1),
+          current.copy(),
+        ],
+      );
 
-    expect(frames.map((frame) => frame.moves), [0, 1, 2]);
-    expect(frames.last.board, current.board);
-  });
+      expect(frames.map((frame) => frame.moves), [0, 1, 2]);
+      expect(frames.last.board, current.board);
+    },
+  );
 
   test('returned frames are defensive copies', () {
     final first = state(moves: 0, score: 0);

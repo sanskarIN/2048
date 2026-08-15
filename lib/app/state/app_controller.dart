@@ -31,15 +31,15 @@ class AppSettings {
   bool confirmRestart;
 
   Map<String, Object?> toJson() => {
-        'themeMode': themeMode.name,
-        'language': language.storageValue,
-        'palette': palette.name,
-        'highContrast': highContrast,
-        'reducedMotion': reducedMotion,
-        'soundEnabled': soundEnabled,
-        'hapticsEnabled': hapticsEnabled,
-        'confirmRestart': confirmRestart,
-      };
+    'themeMode': themeMode.name,
+    'language': language.storageValue,
+    'palette': palette.name,
+    'highContrast': highContrast,
+    'reducedMotion': reducedMotion,
+    'soundEnabled': soundEnabled,
+    'hapticsEnabled': hapticsEnabled,
+    'confirmRestart': confirmRestart,
+  };
 
   factory AppSettings.fromJson(Map<String, Object?> json) {
     final themeName = json['themeMode'];
@@ -84,11 +84,11 @@ class ModeRecord {
   bool get hasProgress => bestScore > 0 || highestTile > 0;
 
   Map<String, Object?> toJson() => {
-        'bestScore': bestScore,
-        'highestTile': highestTile,
-        'bestScoreBoardSize': bestScoreBoardSize,
-        'bestScoreTarget': bestScoreTarget,
-      };
+    'bestScore': bestScore,
+    'highestTile': highestTile,
+    'bestScoreBoardSize': bestScoreBoardSize,
+    'bestScoreTarget': bestScoreTarget,
+  };
 
   factory ModeRecord.fromJson(Map<String, Object?> json) {
     final bestScore = PlayerStats._nonNegativeInt(json['bestScore']);
@@ -135,26 +135,27 @@ class PlayerStats {
   ModeRecord? existingRecordFor(GameMode mode) => modeRecords[mode];
 
   Map<String, Object?> toJson() => {
-        'gamesPlayed': gamesPlayed,
-        'gamesWon': gamesWon,
-        'bestScore': bestScore,
-        'highestTile': highestTile,
-        'totalMoves': totalMoves,
-        'totalMerges': totalMerges,
-        'currentStreak': currentStreak,
-        'bestStreak': bestStreak,
-        'modeRecords': {
-          for (final entry in modeRecords.entries)
-            if (entry.value.hasProgress) entry.key.name: entry.value.toJson(),
-        },
-      };
+    'gamesPlayed': gamesPlayed,
+    'gamesWon': gamesWon,
+    'bestScore': bestScore,
+    'highestTile': highestTile,
+    'totalMoves': totalMoves,
+    'totalMerges': totalMerges,
+    'currentStreak': currentStreak,
+    'bestStreak': bestStreak,
+    'modeRecords': {
+      for (final entry in modeRecords.entries)
+        if (entry.value.hasProgress) entry.key.name: entry.value.toJson(),
+    },
+  };
 
   factory PlayerStats.fromJson(Map<String, Object?> json) {
     final stats = PlayerStats();
     stats.gamesPlayed = _nonNegativeInt(json['gamesPlayed']);
     final parsedWins = _nonNegativeInt(json['gamesWon']);
-    stats.gamesWon =
-        parsedWins > stats.gamesPlayed ? stats.gamesPlayed : parsedWins;
+    stats.gamesWon = parsedWins > stats.gamesPlayed
+        ? stats.gamesPlayed
+        : parsedWins;
     stats.bestScore = _nonNegativeInt(json['bestScore']);
     stats.highestTile = _validTileOrZero(json['highestTile']);
     stats.totalMoves = _nonNegativeInt(json['totalMoves']);
@@ -380,7 +381,8 @@ class AppController extends ChangeNotifier {
         await store.saveUndoHistory(_undo);
       }
       _sessionCounted = !_currentGameUnranked;
-      _winCounted = _currentGameUnranked ||
+      _winCounted =
+          _currentGameUnranked ||
           current.hasAcknowledgedWin ||
           current.status == GameStatus.won;
       final previousStatus = current.status;
@@ -438,8 +440,9 @@ class AppController extends ChangeNotifier {
       }
       _undo.add(snapshot);
       if (_undo.length > 50) _undo.removeAt(0);
-      (_replayCapture ??= ReplayCapture.incomplete(snapshot))
-          .appendMove(direction, now);
+      (_replayCapture ??= ReplayCapture.incomplete(
+        snapshot,
+      )).appendMove(direction, now);
       if (!_currentGameUnranked) {
         stats.totalMoves += 1;
         stats.totalMerges += outcome.merges;
@@ -547,8 +550,9 @@ class AppController extends ChangeNotifier {
   Future<void> importGameBackup(GameState imported) async {
     if (_moveInProgress) return;
     final restored = imported.copy();
-    restored.bestScore =
-        restored.score > stats.bestScore ? restored.score : stats.bestScore;
+    restored.bestScore = restored.score > stats.bestScore
+        ? restored.score
+        : stats.bestScore;
     _engine = GameEngine(config: restored.config);
     _engine!.refreshStatus(restored);
     game = restored;
@@ -606,8 +610,9 @@ class AppController extends ChangeNotifier {
     if (current != null && _currentGameUnranked) {
       current.bestScore = current.score;
       for (final snapshot in _undo) {
-        snapshot.bestScore =
-            snapshot.score > current.score ? snapshot.score : current.score;
+        snapshot.bestScore = snapshot.score > current.score
+            ? snapshot.score
+            : current.score;
       }
       _sessionCounted = false;
       _winCounted = true;
@@ -620,14 +625,16 @@ class AppController extends ChangeNotifier {
     if (current != null) {
       current.bestScore = current.score;
       for (final snapshot in _undo) {
-        snapshot.bestScore =
-            snapshot.score > current.score ? snapshot.score : current.score;
+        snapshot.bestScore = snapshot.score > current.score
+            ? snapshot.score
+            : current.score;
       }
       stats.gamesPlayed = 1;
       stats.bestScore = current.score;
       stats.highestTile = current.highestTile;
       _updateModeRecord(current);
-      final alreadyWon = _winCounted ||
+      final alreadyWon =
+          _winCounted ||
           current.status == GameStatus.won ||
           current.hasAcknowledgedWin;
       if (alreadyWon) {
@@ -781,8 +788,9 @@ class AppController extends ChangeNotifier {
   void _restoreAchievements(Map<String, Object?> raw) {
     for (final achievement in achievements) {
       final value = raw[achievement.id];
-      achievement.unlockedAt =
-          value is String ? DateTime.tryParse(value) : null;
+      achievement.unlockedAt = value is String
+          ? DateTime.tryParse(value)
+          : null;
     }
   }
 

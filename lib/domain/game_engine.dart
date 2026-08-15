@@ -17,10 +17,11 @@ class MoveOutcome {
 
 class GameEngine {
   GameEngine({required this.config, RandomSource? random})
-      : random = random ??
-            SeededRandomSource(
-              config.seed ?? DateTime.now().microsecondsSinceEpoch,
-            );
+    : random =
+          random ??
+          SeededRandomSource(
+            config.seed ?? DateTime.now().microsecondsSinceEpoch,
+          );
 
   final GameConfig config;
   final RandomSource random;
@@ -41,11 +42,7 @@ class GameEngine {
     return state;
   }
 
-  MoveOutcome move(
-    GameState state,
-    Direction direction, {
-    DateTime? now,
-  }) {
+  MoveOutcome move(GameState state, Direction direction, {DateTime? now}) {
     refreshStatus(state, now: now);
     if (state.status != GameStatus.playing) {
       return const MoveOutcome(changed: false, scoreGain: 0, merges: 0);
@@ -75,11 +72,7 @@ class GameEngine {
     state.totalMerges += mergeCount;
     spawnTile(state);
     refreshStatus(state, now: now);
-    return MoveOutcome(
-      changed: true,
-      scoreGain: scoreGain,
-      merges: mergeCount,
-    );
+    return MoveOutcome(changed: true, scoreGain: scoreGain, merges: mergeCount);
   }
 
   void spawnTile(GameState state) {
@@ -137,8 +130,9 @@ class GameEngine {
 
     final timeLimit = config.timeLimitSeconds;
     if (timeLimit != null) {
-      final elapsed =
-          (now ?? DateTime.now()).difference(state.startedAt).inSeconds;
+      final elapsed = (now ?? DateTime.now())
+          .difference(state.startedAt)
+          .inSeconds;
       if (elapsed >= timeLimit && !reachedTarget) {
         state.status = GameStatus.lost;
         return;
@@ -177,20 +171,16 @@ class GameEngine {
     return _LineResult(output, scoreGain, merges);
   }
 
-  List<int> _readLine(
-    List<List<int>> board,
-    int index,
-    Direction direction,
-  ) {
+  List<int> _readLine(List<List<int>> board, int index, Direction direction) {
     return switch (direction) {
       Direction.left => [...board[index]],
       Direction.right => board[index].reversed.toList(),
       Direction.up => [
-          for (var row = 0; row < config.size; row++) board[row][index],
-        ],
+        for (var row = 0; row < config.size; row++) board[row][index],
+      ],
       Direction.down => [
-          for (var row = config.size - 1; row >= 0; row--) board[row][index],
-        ],
+        for (var row = config.size - 1; row >= 0; row--) board[row][index],
+      ],
     };
   }
 

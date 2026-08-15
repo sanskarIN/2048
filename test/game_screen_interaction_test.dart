@@ -28,24 +28,16 @@ void main() {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: AppScope(
-        controller: controller,
-        child: child,
-      ),
+      home: AppScope(controller: controller, child: child),
     );
   }
 
   Future<AppController> pumpGame(WidgetTester tester) async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
-    await controller.newGame(
-      const GameConfig(mode: GameMode.classic, size: 4),
-    );
+    await controller.newGame(const GameConfig(mode: GameMode.classic, size: 4));
     await tester.pumpWidget(
-      localizedHarness(
-        controller: controller,
-        child: const GameScreen(),
-      ),
+      localizedHarness(controller: controller, child: const GameScreen()),
     );
     await tester.pump();
     return controller;
@@ -61,8 +53,9 @@ void main() {
     expect(find.text('Resume'), findsOneWidget);
   });
 
-  testWidgets('H keyboard shortcut presents a deterministic hint',
-      (tester) async {
+  testWidgets('H keyboard shortcut presents a deterministic hint', (
+    tester,
+  ) async {
     await pumpGame(tester);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.keyH);
@@ -72,8 +65,9 @@ void main() {
     expect(find.textContaining('Try '), findsOneWidget);
   });
 
-  testWidgets('game over dialog cannot be dismissed with route back',
-      (tester) async {
+  testWidgets('game over dialog cannot be dismissed with route back', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
     controller.game = GameState(
@@ -88,10 +82,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      localizedHarness(
-        controller: controller,
-        child: const GameScreen(),
-      ),
+      localizedHarness(controller: controller, child: const GameScreen()),
     );
     await tester.pumpAndSettle();
     expect(find.text('Game over'), findsOneWidget);

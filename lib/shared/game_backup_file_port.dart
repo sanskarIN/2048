@@ -6,10 +6,7 @@ import 'package:flutter/foundation.dart';
 enum BackupFileSaveOutcome { saved, cancelled }
 
 class BackupFileDocument {
-  const BackupFileDocument({
-    required this.name,
-    required this.text,
-  });
+  const BackupFileDocument({required this.name, required this.text});
 
   final String name;
   final String text;

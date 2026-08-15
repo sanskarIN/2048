@@ -34,21 +34,42 @@ class GameConfig {
 
   static GameConfig preset(GameMode mode, {int? target}) {
     return switch (mode) {
-      GameMode.quick =>
-        const GameConfig(mode: GameMode.quick, size: 3, target: 512),
+      GameMode.quick => const GameConfig(
+        mode: GameMode.quick,
+        size: 3,
+        target: 512,
+      ),
       GameMode.extended => const GameConfig(mode: GameMode.extended, size: 5),
-      GameMode.challenge =>
-        const GameConfig(mode: GameMode.challenge, size: 6, target: 4096),
-      GameMode.endless =>
-        const GameConfig(mode: GameMode.endless, size: 4, target: 2048),
-      GameMode.target =>
-        GameConfig(mode: GameMode.target, size: 4, target: target ?? 4096),
+      GameMode.challenge => const GameConfig(
+        mode: GameMode.challenge,
+        size: 6,
+        target: 4096,
+      ),
+      GameMode.endless => const GameConfig(
+        mode: GameMode.endless,
+        size: 4,
+        target: 2048,
+      ),
+      GameMode.target => GameConfig(
+        mode: GameMode.target,
+        size: 4,
+        target: target ?? 4096,
+      ),
       GameMode.timeChallenge => const GameConfig(
-          mode: GameMode.timeChallenge, size: 4, timeLimitSeconds: 180),
-      GameMode.moveLimit =>
-        const GameConfig(mode: GameMode.moveLimit, size: 4, moveLimit: 250),
-      GameMode.daily =>
-        GameConfig(mode: GameMode.daily, size: 4, seed: _dailySeed()),
+        mode: GameMode.timeChallenge,
+        size: 4,
+        timeLimitSeconds: 180,
+      ),
+      GameMode.moveLimit => const GameConfig(
+        mode: GameMode.moveLimit,
+        size: 4,
+        moveLimit: 250,
+      ),
+      GameMode.daily => GameConfig(
+        mode: GameMode.daily,
+        size: 4,
+        seed: _dailySeed(),
+      ),
       GameMode.zen => const GameConfig(mode: GameMode.zen, size: 4),
       GameMode.classic => const GameConfig(mode: GameMode.classic, size: 4),
     };
@@ -60,13 +81,13 @@ class GameConfig {
   }
 
   Map<String, Object?> toJson() => {
-        'mode': mode.name,
-        'size': size,
-        'target': target,
-        'moveLimit': moveLimit,
-        'timeLimitSeconds': timeLimitSeconds,
-        'seed': seed,
-      };
+    'mode': mode.name,
+    'size': size,
+    'target': target,
+    'moveLimit': moveLimit,
+    'timeLimitSeconds': timeLimitSeconds,
+    'seed': seed,
+  };
 
   factory GameConfig.fromJson(Map<String, Object?> json) {
     final rawMode = json['mode'];
@@ -86,11 +107,16 @@ class GameConfig {
     }
 
     final size = _requiredInt(json['size'], fallback: 4, label: 'board size');
-    final target =
-        _requiredInt(json['target'], fallback: 2048, label: 'target tile');
+    final target = _requiredInt(
+      json['target'],
+      fallback: 2048,
+      label: 'target tile',
+    );
     final moveLimit = _optionalInt(json['moveLimit'], 'move limit');
-    final timeLimitSeconds =
-        _optionalInt(json['timeLimitSeconds'], 'time limit');
+    final timeLimitSeconds = _optionalInt(
+      json['timeLimitSeconds'],
+      'time limit',
+    );
     final seed = _optionalInt(json['seed'], 'random seed');
 
     if (size < 3 || size > 8) {

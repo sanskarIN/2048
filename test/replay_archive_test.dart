@@ -7,11 +7,7 @@ import 'package:nova_2048/domain/game_types.dart';
 import 'package:nova_2048/domain/replay_archive.dart';
 
 void main() {
-  const config = GameConfig(
-    mode: GameMode.classic,
-    size: 4,
-    seed: 2048,
-  );
+  const config = GameConfig(mode: GameMode.classic, size: 4, seed: 2048);
 
   test('full replay round trip reconstructs deterministic move sequence', () {
     final engine = GameEngine(config: config);
@@ -37,8 +33,10 @@ void main() {
 
     expect(frames.length, 6);
     expect(ReplayArchivePlayer.equivalent(frames.last, current), isTrue);
-    expect(decoded.events.map((event) => event.kind),
-        everyElement(ReplayEventKind.move));
+    expect(
+      decoded.events.map((event) => event.kind),
+      everyElement(ReplayEventKind.move),
+    );
   });
 
   test('replay undo returns reconstructed state to the earlier frame', () {
@@ -142,14 +140,8 @@ void main() {
     final initial = engine.createGame();
     final json = ReplayCapture.start(initial).toJson();
     json['events'] = [
-      {
-        'kind': 'statusRefresh',
-        'elapsedMilliseconds': 1000,
-      },
-      {
-        'kind': 'statusRefresh',
-        'elapsedMilliseconds': 500,
-      },
+      {'kind': 'statusRefresh', 'elapsedMilliseconds': 1000},
+      {'kind': 'statusRefresh', 'elapsedMilliseconds': 500},
     ];
     final outOfOrder = ReplayCapture.fromJson(json);
     expect(
@@ -199,8 +191,10 @@ void main() {
       throwsA(isA<FormatException>()),
     );
 
-    final oversized =
-        List.filled(ReplayArchive.maxEncodedLength + 1, 'x').join();
+    final oversized = List.filled(
+      ReplayArchive.maxEncodedLength + 1,
+      'x',
+    ).join();
     expect(
       () => ReplayArchive.decode(oversized),
       throwsA(isA<FormatException>()),
@@ -211,10 +205,7 @@ void main() {
     final initial = GameEngine(config: config).createGame();
     final malformed = ReplayCapture.start(initial).toJson();
     malformed['events'] = [
-      {
-        'kind': 'move',
-        'elapsedMilliseconds': 1,
-      },
+      {'kind': 'move', 'elapsedMilliseconds': 1},
     ];
     expect(
       () => ReplayCapture.fromJson(malformed),
@@ -224,10 +215,7 @@ void main() {
     final tooMany = ReplayCapture.start(initial).toJson();
     tooMany['events'] = List.generate(
       ReplayCapture.maxEvents + 1,
-      (_) => {
-        'kind': 'undo',
-        'elapsedMilliseconds': 1,
-      },
+      (_) => {'kind': 'undo', 'elapsedMilliseconds': 1},
     );
     expect(
       () => ReplayCapture.fromJson(tooMany),

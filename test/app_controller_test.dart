@@ -71,18 +71,20 @@ void main() {
     expect(stats.bestStreak, 4);
   });
 
-  test('malformed achievement timestamps do not break initialization',
-      () async {
-    SharedPreferences.setMockInitialValues({
-      'nova.achievements.v1':
-          '{"first_merge":42,"tile_128":"not-a-date","tile_256":true}',
-    });
+  test(
+    'malformed achievement timestamps do not break initialization',
+    () async {
+      SharedPreferences.setMockInitialValues({
+        'nova.achievements.v1':
+            '{"first_merge":42,"tile_128":"not-a-date","tile_256":true}',
+      });
 
-    final controller = AppController(store: LocalStore());
-    await controller.initialize();
+      final controller = AppController(store: LocalStore());
+      await controller.initialize();
 
-    expect(controller.achievements.every((item) => !item.unlocked), isTrue);
-  });
+      expect(controller.achievements.every((item) => !item.unlocked), isTrue);
+    },
+  );
 
   test('stale undo snapshots from another session are discarded', () async {
     const config = GameConfig(mode: GameMode.classic, size: 4);
@@ -139,9 +141,7 @@ void main() {
   test('concurrent move requests are serialized', () async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
-    await controller.newGame(
-      const GameConfig(mode: GameMode.classic, size: 4),
-    );
+    await controller.newGame(const GameConfig(mode: GameMode.classic, size: 4));
     final direction = controller.hint();
     expect(direction, isNotNull);
 
@@ -217,9 +217,7 @@ void main() {
   test('clear all restores in-memory defaults', () async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
-    await controller.newGame(
-      const GameConfig(mode: GameMode.classic, size: 4),
-    );
+    await controller.newGame(const GameConfig(mode: GameMode.classic, size: 4));
     await controller.updateSettings(
       (settings) => settings.palette = NovaPalette.sunset,
     );

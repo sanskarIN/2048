@@ -40,10 +40,7 @@ void main() {
   test('rejects invalid dimensions', () {
     expect(
       () => GameState.fromJson({
-        'config': const GameConfig(
-          mode: GameMode.classic,
-          size: 4,
-        ).toJson(),
+        'config': const GameConfig(mode: GameMode.classic, size: 4).toJson(),
         'board': [
           [2, 0],
         ],
@@ -56,10 +53,7 @@ void main() {
     expect(
       () => GameState.fromJson({
         'schema': GameState.schemaVersion + 1,
-        'config': const GameConfig(
-          mode: GameMode.classic,
-          size: 4,
-        ).toJson(),
+        'config': const GameConfig(mode: GameMode.classic, size: 4).toJson(),
         'board': List.generate(4, (_) => List.filled(4, 0)),
       }),
       throwsFormatException,
@@ -70,10 +64,7 @@ void main() {
     expect(
       () => GameState.fromJson({
         'schema': '1',
-        'config': const GameConfig(
-          mode: GameMode.classic,
-          size: 4,
-        ).toJson(),
+        'config': const GameConfig(mode: GameMode.classic, size: 4).toJson(),
         'board': List.generate(4, (_) => List.filled(4, 0)),
       }),
       throwsFormatException,
@@ -116,10 +107,7 @@ void main() {
     expect(
       () => GameState.fromJson({
         'schema': GameState.schemaVersion,
-        'config': const GameConfig(
-          mode: GameMode.classic,
-          size: 4,
-        ).toJson(),
+        'config': const GameConfig(mode: GameMode.classic, size: 4).toJson(),
         'board': [
           [3, 0, 0, 0],
           [0, 0, 0, 0],
@@ -133,11 +121,7 @@ void main() {
     expect(
       () => GameState.fromJson({
         'schema': GameState.schemaVersion,
-        'config': {
-          'mode': GameMode.classic.name,
-          'size': 1000,
-          'target': 2048,
-        },
+        'config': {'mode': GameMode.classic.name, 'size': 1000, 'target': 2048},
         'board': const [],
       }),
       throwsFormatException,

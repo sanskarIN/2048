@@ -41,9 +41,7 @@ void main() {
     await tester.pumpWidget(
       localizedTestApp(
         locale: locale,
-        routes: {
-          '/game': (_) => const Scaffold(body: Text('Challenge game')),
-        },
+        routes: {'/game': (_) => const Scaffold(body: Text('Challenge game'))},
         home: AppScope(
           controller: controller,
           child: ChallengeCodeScreen(
@@ -58,28 +56,20 @@ void main() {
 
   Future<void> tapVisible(WidgetTester tester, Finder finder) async {
     final scrollable = find.byType(Scrollable).first;
-    await tester.scrollUntilVisible(
-      finder,
-      220,
-      scrollable: scrollable,
-    );
+    await tester.scrollUntilVisible(finder, 220, scrollable: scrollable);
     await tester.pump();
     await tester.tap(finder);
     await tester.pump();
   }
 
-  testWidgets('generates and copies a deterministic challenge code',
-      (tester) async {
+  testWidgets('generates and copies a deterministic challenge code', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     final clipboard = _MemoryClipboard();
     await controller.initialize();
 
-    await pumpScreen(
-      tester,
-      controller,
-      clipboard,
-      seedFactory: () => 24680,
-    );
+    await pumpScreen(tester, controller, clipboard, seedFactory: () => 24680);
     await tapVisible(tester, find.text('Generate new seeded code'));
 
     final expectedCode = ChallengeCode.encode(
@@ -100,8 +90,9 @@ void main() {
     expect(config.seed, 24680);
   });
 
-  testWidgets('generated Challenge Code QR is localized in Hindi',
-      (tester) async {
+  testWidgets('generated Challenge Code QR is localized in Hindi', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     final clipboard = _MemoryClipboard();
     await controller.initialize();
@@ -121,8 +112,9 @@ void main() {
     expect(controller.game, isNull);
   });
 
-  testWidgets('pastes validates and starts the same seeded challenge',
-      (tester) async {
+  testWidgets('pastes validates and starts the same seeded challenge', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     final clipboard = _MemoryClipboard();
     await controller.initialize();
@@ -148,8 +140,9 @@ void main() {
     expect(find.text('Challenge game'), findsOneWidget);
   });
 
-  testWidgets('invalid pasted code is rejected without creating a game',
-      (tester) async {
+  testWidgets('invalid pasted code is rejected without creating a game', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     final clipboard = _MemoryClipboard()..text = 'not-a-challenge-code';
     await controller.initialize();
@@ -162,8 +155,9 @@ void main() {
     expect(find.text('Start this challenge'), findsNothing);
   });
 
-  testWidgets('replacement cancellation preserves the current game',
-      (tester) async {
+  testWidgets('replacement cancellation preserves the current game', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     final clipboard = _MemoryClipboard();
     await controller.initialize();
@@ -172,10 +166,7 @@ void main() {
     );
     final before = controller.game!.toJson();
     clipboard.text = ChallengeCode.encode(
-      ChallengeCode.withSeed(
-        GameConfig.preset(GameMode.extended),
-        1234,
-      ),
+      ChallengeCode.withSeed(GameConfig.preset(GameMode.extended), 1234),
     );
 
     await pumpScreen(tester, controller, clipboard);

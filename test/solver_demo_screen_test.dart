@@ -7,52 +7,56 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   testWidgets(
-      'auto play demo steps and resets without touching player statistics',
-      (tester) async {
-    SharedPreferences.setMockInitialValues({});
-    final controller = AppController(store: LocalStore());
-    await controller.initialize();
+    'auto play demo steps and resets without touching player statistics',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final controller = AppController(store: LocalStore());
+      await controller.initialize();
 
-    await tester.pumpWidget(NovaApp(controller: controller));
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(NovaApp(controller: controller));
+      await tester.pumpAndSettle();
 
-    final initialGames = controller.stats.gamesPlayed;
-    final initialMoves = controller.stats.totalMoves;
-    final initialBest = controller.stats.bestScore;
+      final initialGames = controller.stats.gamesPlayed;
+      final initialMoves = controller.stats.totalMoves;
+      final initialBest = controller.stats.bestScore;
 
-    await tester.tap(find.text('Auto Play Demo'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.text('Auto Play Demo'));
+      await tester.pumpAndSettle();
 
-    expect(
-        find.text('Deterministic local solver demonstration'), findsOneWidget);
-    expect(find.text('Strategy: Heuristic'), findsOneWidget);
-    expect(find.text('Demo moves: 0'), findsOneWidget);
+      expect(
+        find.text('Deterministic local solver demonstration'),
+        findsOneWidget,
+      );
+      expect(find.text('Strategy: Heuristic'), findsOneWidget);
+      expect(find.text('Demo moves: 0'), findsOneWidget);
 
-    await tester.scrollUntilVisible(
-      find.text('Step'),
-      250,
-      scrollable: find.byType(Scrollable).last,
-    );
-    await tester.tap(find.text('Step'));
-    await tester.pump();
+      await tester.scrollUntilVisible(
+        find.text('Step'),
+        250,
+        scrollable: find.byType(Scrollable).last,
+      );
+      await tester.tap(find.text('Step'));
+      await tester.pump();
 
-    expect(find.text('Demo moves: 1'), findsOneWidget);
-    expect(controller.stats.gamesPlayed, initialGames);
-    expect(controller.stats.totalMoves, initialMoves);
-    expect(controller.stats.bestScore, initialBest);
-    expect(controller.game, isNull);
+      expect(find.text('Demo moves: 1'), findsOneWidget);
+      expect(controller.stats.gamesPlayed, initialGames);
+      expect(controller.stats.totalMoves, initialMoves);
+      expect(controller.stats.bestScore, initialBest);
+      expect(controller.game, isNull);
 
-    await tester.tap(find.text('Reset seed'));
-    await tester.pump();
+      await tester.tap(find.text('Reset seed'));
+      await tester.pump();
 
-    expect(find.text('Demo moves: 0'), findsOneWidget);
-    expect(controller.stats.gamesPlayed, initialGames);
-    expect(controller.stats.totalMoves, initialMoves);
-    expect(controller.stats.bestScore, initialBest);
-  });
+      expect(find.text('Demo moves: 0'), findsOneWidget);
+      expect(controller.stats.gamesPlayed, initialGames);
+      expect(controller.stats.totalMoves, initialMoves);
+      expect(controller.stats.bestScore, initialBest);
+    },
+  );
 
-  testWidgets('auto play speed can change and pause stops background moves',
-      (tester) async {
+  testWidgets('auto play speed can change and pause stops background moves', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     final controller = AppController(store: LocalStore());
     await controller.initialize();
@@ -91,8 +95,9 @@ void main() {
     expect(_visibleMoveCount(tester), pausedMoves);
   });
 
-  testWidgets('expectimax can be selected without touching trusted app state',
-      (tester) async {
+  testWidgets('expectimax can be selected without touching trusted app state', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     final controller = AppController(store: LocalStore());
     await controller.initialize();

@@ -33,13 +33,12 @@ void main() {
     );
   }
 
-  testWidgets('active recoverable game asks before replacement',
-      (tester) async {
+  testWidgets('active recoverable game asks before replacement', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
-    await controller.newGame(
-      const GameConfig(mode: GameMode.classic, size: 4),
-    );
+    await controller.newGame(const GameConfig(mode: GameMode.classic, size: 4));
     bool? result;
 
     await tester.pumpWidget(harness(controller, (value) => result = value));
@@ -53,8 +52,9 @@ void main() {
     expect(result, isFalse);
   });
 
-  testWidgets('lost game may be replaced without a confirmation dialog',
-      (tester) async {
+  testWidgets('lost game may be replaced without a confirmation dialog', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
     controller.game = GameState(

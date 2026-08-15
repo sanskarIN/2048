@@ -4,8 +4,11 @@ import '../../core/localization/nova_localizations.dart';
 import '../../core/theme/nova_theme.dart';
 
 class GameBoard extends StatelessWidget {
-  const GameBoard(
-      {required this.board, required this.reducedMotion, super.key});
+  const GameBoard({
+    required this.board,
+    required this.reducedMotion,
+    super.key,
+  });
 
   final List<List<int>> board;
   final bool reducedMotion;
@@ -81,8 +84,8 @@ class _Tile extends StatelessWidget {
     final fontSize = digits <= 4
         ? 28.0
         : digits <= 6
-            ? 22.0
-            : 16.0;
+        ? 22.0
+        : 16.0;
     final systemReducedMotion = MediaQuery.disableAnimationsOf(context);
     final animationDuration = reducedMotion || systemReducedMotion
         ? Duration.zero
@@ -92,11 +95,11 @@ class _Tile extends StatelessWidget {
         : 'Row ${row + 1}, column ${col + 1}';
     final semanticLabel = value == 0
         ? l10n.isHindi
-            ? '$position, खाली'
-            : '$position, empty'
+              ? '$position, खाली'
+              : '$position, empty'
         : l10n.isHindi
-            ? '$position, टाइल $value'
-            : '$position, tile $value';
+        ? '$position, टाइल $value'
+        : '$position, tile $value';
     return Semantics(
       container: true,
       excludeSemantics: true,

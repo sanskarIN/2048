@@ -11,8 +11,9 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('Hindi solver demo exposes localized strategy controls',
-      (tester) async {
+  testWidgets('Hindi solver demo exposes localized strategy controls', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
     await controller.updateSettings(

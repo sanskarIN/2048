@@ -30,10 +30,7 @@ void main() {
 
     await tester.pumpWidget(
       localizedTestApp(
-        home: AppScope(
-          controller: controller,
-          child: const HomeScreen(),
-        ),
+        home: AppScope(controller: controller, child: const HomeScreen()),
       ),
     );
 

@@ -69,8 +69,8 @@ class AchievementsScreen extends StatelessWidget {
                         Text(
                           item.unlocked
                               ? l10n.isHindi
-                                  ? '${l10n.text('Unlocked')} ${_date(item.unlockedAt!)}'
-                                  : 'Unlocked ${_date(item.unlockedAt!)}'
+                                    ? '${l10n.text('Unlocked')} ${_date(item.unlockedAt!)}'
+                                    : 'Unlocked ${_date(item.unlockedAt!)}'
                               : '$progress / ${item.threshold}',
                           style: Theme.of(context).textTheme.labelMedium,
                         ),
@@ -99,8 +99,9 @@ class AchievementsScreen extends StatelessWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.text('Reset achievements?')),
-        content:
-            Text(l10n.text('All local achievement unlocks will be cleared.')),
+        content: Text(
+          l10n.text('All local achievement unlocks will be cleared.'),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),

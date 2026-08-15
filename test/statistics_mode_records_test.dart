@@ -17,9 +17,7 @@ void main() {
   Future<AppController> controllerWithClassicRecord() async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
-    await controller.newGame(
-      const GameConfig(mode: GameMode.classic, size: 4),
-    );
+    await controller.newGame(const GameConfig(mode: GameMode.classic, size: 4));
     controller.game!.board
       ..[0] = [2, 2, 0, 0]
       ..[1] = [0, 0, 0, 0]
@@ -36,26 +34,21 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
   }
 
-  testWidgets('statistics exposes ranked mode records and metadata',
-      (tester) async {
+  testWidgets('statistics exposes ranked mode records and metadata', (
+    tester,
+  ) async {
     await useTallViewport(tester);
     final controller = await controllerWithClassicRecord();
 
     await tester.pumpWidget(
       localizedTestApp(
-        home: AppScope(
-          controller: controller,
-          child: const StatisticsScreen(),
-        ),
+        home: AppScope(controller: controller, child: const StatisticsScreen()),
       ),
     );
     await tester.pumpAndSettle();
 
     expect(find.text('Classic'), findsOneWidget);
-    expect(
-      find.text('4 × 4 board • Target tile: 2048'),
-      findsOneWidget,
-    );
+    expect(find.text('4 × 4 board • Target tile: 2048'), findsOneWidget);
 
     await tester.tap(find.text('Classic'));
     await tester.pumpAndSettle();
@@ -65,27 +58,22 @@ void main() {
     expect(find.text('4'), findsWidgets);
   });
 
-  testWidgets('per-mode statistics reuse the Hindi localization layer',
-      (tester) async {
+  testWidgets('per-mode statistics reuse the Hindi localization layer', (
+    tester,
+  ) async {
     await useTallViewport(tester);
     final controller = await controllerWithClassicRecord();
 
     await tester.pumpWidget(
       localizedTestApp(
         locale: const Locale('hi'),
-        home: AppScope(
-          controller: controller,
-          child: const StatisticsScreen(),
-        ),
+        home: AppScope(controller: controller, child: const StatisticsScreen()),
       ),
     );
     await tester.pumpAndSettle();
 
     expect(find.text('क्लासिक'), findsOneWidget);
-    expect(
-      find.text('4 × 4 बोर्ड • लक्ष्य टाइल: 2048'),
-      findsOneWidget,
-    );
+    expect(find.text('4 × 4 बोर्ड • लक्ष्य टाइल: 2048'), findsOneWidget);
 
     await tester.tap(find.text('क्लासिक'));
     await tester.pumpAndSettle();

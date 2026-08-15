@@ -21,8 +21,9 @@ class ChallengeCodeQr extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final availableWidth =
-            constraints.hasBoundedWidth ? constraints.maxWidth : 260.0;
+        final availableWidth = constraints.hasBoundedWidth
+            ? constraints.maxWidth
+            : 260.0;
         final size = availableWidth.clamp(1.0, 260.0).toDouble();
         return Center(
           child: RepaintBoundary(

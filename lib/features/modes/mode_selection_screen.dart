@@ -9,16 +9,7 @@ import '../../shared/nova_scaffold.dart';
 class ModeSelectionScreen extends StatelessWidget {
   const ModeSelectionScreen({super.key});
 
-  static const _targetOptions = [
-    128,
-    256,
-    512,
-    1024,
-    2048,
-    4096,
-    8192,
-    16384,
-  ];
+  static const _targetOptions = [128, 256, 512, 1024, 2048, 4096, 8192, 16384];
 
   @override
   Widget build(BuildContext context) {
@@ -89,9 +80,7 @@ class ModeSelectionScreen extends StatelessWidget {
       if (target == null || !context.mounted) return;
     }
 
-    await AppScope.of(context).newGame(
-      GameConfig.preset(mode, target: target),
-    );
+    await AppScope.of(context).newGame(GameConfig.preset(mode, target: target));
     if (context.mounted) {
       Navigator.pushReplacementNamed(context, '/game');
     }

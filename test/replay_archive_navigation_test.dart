@@ -13,8 +13,9 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('Move Replay exposes Full Replay Archive even without a game',
-      (tester) async {
+  testWidgets('Move Replay exposes Full Replay Archive even without a game', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
 

@@ -43,14 +43,14 @@ class DailyRecord {
   }
 
   Map<String, Object?> toJson() => {
-        'seed': seed,
-        'score': score,
-        'moves': moves,
-        'highestTile': highestTile,
-        'completed': completed,
-        'won': won,
-        'updatedAt': updatedAt.toIso8601String(),
-      };
+    'seed': seed,
+    'score': score,
+    'moves': moves,
+    'highestTile': highestTile,
+    'completed': completed,
+    'won': won,
+    'updatedAt': updatedAt.toIso8601String(),
+  };
 
   factory DailyRecord.fromJson(Map<String, Object?> json) {
     final seed = _requiredNonNegativeInt(json['seed'], 'daily seed');
@@ -59,8 +59,10 @@ class DailyRecord {
     }
     final score = _optionalNonNegativeInt(json['score'], 'daily score');
     final moves = _optionalNonNegativeInt(json['moves'], 'daily moves');
-    final highestTile =
-        _optionalNonNegativeInt(json['highestTile'], 'daily highest tile');
+    final highestTile = _optionalNonNegativeInt(
+      json['highestTile'],
+      'daily highest tile',
+    );
     if (!_isValidTile(highestTile)) {
       throw const FormatException('Invalid daily highest tile');
     }

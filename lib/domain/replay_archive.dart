@@ -4,12 +4,7 @@ import 'game_engine.dart';
 import 'game_state.dart';
 import 'game_types.dart';
 
-enum ReplayEventKind {
-  move,
-  undo,
-  continueAfterWin,
-  statusRefresh,
-}
+enum ReplayEventKind { move, undo, continueAfterWin, statusRefresh }
 
 class ReplayEvent {
   const ReplayEvent({
@@ -25,10 +20,10 @@ class ReplayEvent {
   final Direction? direction;
 
   Map<String, Object?> toJson() => {
-        'kind': kind.name,
-        'elapsedMilliseconds': elapsedMilliseconds,
-        if (direction != null) 'direction': direction!.name,
-      };
+    'kind': kind.name,
+    'elapsedMilliseconds': elapsedMilliseconds,
+    if (direction != null) 'direction': direction!.name,
+  };
 
   factory ReplayEvent.fromJson(Map<String, Object?> json) {
     final rawKind = json['kind'];
@@ -99,8 +94,8 @@ class ReplayCapture {
     required this.startsAtSessionStart,
     this.overflowed = false,
     Iterable<ReplayEvent> events = const [],
-  })  : initialState = initialState.copy(),
-        events = List<ReplayEvent>.from(events) {
+  }) : initialState = initialState.copy(),
+       events = List<ReplayEvent>.from(events) {
     _validateHeader();
     if (this.events.length > maxEvents) {
       throw const FormatException('Replay event limit exceeded');
@@ -109,15 +104,11 @@ class ReplayCapture {
 
   static const maxEvents = 4096;
 
-  factory ReplayCapture.start(GameState state) => ReplayCapture(
-        initialState: state,
-        startsAtSessionStart: true,
-      );
+  factory ReplayCapture.start(GameState state) =>
+      ReplayCapture(initialState: state, startsAtSessionStart: true);
 
-  factory ReplayCapture.incomplete(GameState state) => ReplayCapture(
-        initialState: state,
-        startsAtSessionStart: false,
-      );
+  factory ReplayCapture.incomplete(GameState state) =>
+      ReplayCapture(initialState: state, startsAtSessionStart: false);
 
   final GameState initialState;
   final bool startsAtSessionStart;
@@ -139,40 +130,40 @@ class ReplayCapture {
   }
 
   bool appendMove(Direction direction, DateTime at) => _append(
-        ReplayEvent(
-          kind: ReplayEventKind.move,
-          elapsedMilliseconds: _elapsedAt(at),
-          direction: direction,
-        ),
-      );
+    ReplayEvent(
+      kind: ReplayEventKind.move,
+      elapsedMilliseconds: _elapsedAt(at),
+      direction: direction,
+    ),
+  );
 
   bool appendUndo(DateTime at) => _append(
-        ReplayEvent(
-          kind: ReplayEventKind.undo,
-          elapsedMilliseconds: _elapsedAt(at),
-        ),
-      );
+    ReplayEvent(
+      kind: ReplayEventKind.undo,
+      elapsedMilliseconds: _elapsedAt(at),
+    ),
+  );
 
   bool appendContinueAfterWin(DateTime at) => _append(
-        ReplayEvent(
-          kind: ReplayEventKind.continueAfterWin,
-          elapsedMilliseconds: _elapsedAt(at),
-        ),
-      );
+    ReplayEvent(
+      kind: ReplayEventKind.continueAfterWin,
+      elapsedMilliseconds: _elapsedAt(at),
+    ),
+  );
 
   bool appendStatusRefresh(DateTime at) => _append(
-        ReplayEvent(
-          kind: ReplayEventKind.statusRefresh,
-          elapsedMilliseconds: _elapsedAt(at),
-        ),
-      );
+    ReplayEvent(
+      kind: ReplayEventKind.statusRefresh,
+      elapsedMilliseconds: _elapsedAt(at),
+    ),
+  );
 
   Map<String, Object?> toJson() => {
-        'initialState': initialState.toJson(),
-        'startsAtSessionStart': startsAtSessionStart,
-        'overflowed': overflowed,
-        'events': events.map((event) => event.toJson()).toList(),
-      };
+    'initialState': initialState.toJson(),
+    'startsAtSessionStart': startsAtSessionStart,
+    'overflowed': overflowed,
+    'events': events.map((event) => event.toJson()).toList(),
+  };
 
   factory ReplayCapture.fromJson(Map<String, Object?> json) {
     final rawInitial = json['initialState'];
@@ -199,15 +190,11 @@ class ReplayCapture {
       if (item is! Map) {
         throw const FormatException('Replay event is invalid');
       }
-      events.add(
-        ReplayEvent.fromJson(Map<String, Object?>.from(item)),
-      );
+      events.add(ReplayEvent.fromJson(Map<String, Object?>.from(item)));
     }
 
     return ReplayCapture(
-      initialState: GameState.fromJson(
-        Map<String, Object?>.from(rawInitial),
-      ),
+      initialState: GameState.fromJson(Map<String, Object?>.from(rawInitial)),
       startsAtSessionStart: rawStartsAtStart,
       overflowed: rawOverflowed,
       events: events,
@@ -257,10 +244,7 @@ class ReplayArchive {
   static const version = 1;
   static const maxEncodedLength = 1000000;
 
-  static String encode(
-    ReplayCapture capture, {
-    DateTime? exportedAt,
-  }) {
+  static String encode(ReplayCapture capture, {DateTime? exportedAt}) {
     if (!capture.isFullSessionExportable) {
       throw StateError('Full replay capture is incomplete');
     }
@@ -351,11 +335,7 @@ class ReplayArchivePlayer {
       switch (event.kind) {
         case ReplayEventKind.move:
           final snapshot = current.copy();
-          final outcome = engine.move(
-            current,
-            event.direction!,
-            now: now,
-          );
+          final outcome = engine.move(current, event.direction!, now: now);
           if (!outcome.changed) {
             throw const FormatException(
               'Replay contains an invalid recorded move',
@@ -365,9 +345,7 @@ class ReplayArchivePlayer {
           break;
         case ReplayEventKind.undo:
           if (undo.isEmpty) {
-            throw const FormatException(
-              'Replay contains an invalid undo',
-            );
+            throw const FormatException('Replay contains an invalid undo');
           }
           current = undo.removeLast();
           engine = GameEngine(config: current.config);

@@ -68,10 +68,7 @@ void main() {
 
     test('rejects checksum tampering', () {
       final code = ChallengeCode.encode(
-        ChallengeCode.withSeed(
-          GameConfig.preset(GameMode.quick),
-          77,
-        ),
+        ChallengeCode.withSeed(GameConfig.preset(GameMode.quick), 77),
       );
       final parts = code.split('.');
       final replacement = parts.last == '00000000' ? '00000001' : '00000000';
@@ -92,8 +89,10 @@ void main() {
     });
 
     test('rejects oversized input before payload parsing', () {
-      final oversized =
-          List.filled(ChallengeCode.maxCodeLength + 1, 'A').join();
+      final oversized = List.filled(
+        ChallengeCode.maxCodeLength + 1,
+        'A',
+      ).join();
       expect(() => ChallengeCode.decode(oversized), throwsFormatException);
     });
 

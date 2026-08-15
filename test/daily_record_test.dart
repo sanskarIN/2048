@@ -94,10 +94,7 @@ void main() {
       throwsFormatException,
     );
     expect(
-      () => DailyRecord.fromJson({
-        'seed': 20260814,
-        'updatedAt': 'not-a-date',
-      }),
+      () => DailyRecord.fromJson({'seed': 20260814, 'updatedAt': 'not-a-date'}),
       throwsFormatException,
     );
   });

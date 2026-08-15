@@ -14,9 +14,7 @@ void main() {
     final store = LocalStore();
     final controller = AppController(store: store);
     await controller.initialize();
-    await controller.newGame(
-      const GameConfig(mode: GameMode.classic, size: 4),
-    );
+    await controller.newGame(const GameConfig(mode: GameMode.classic, size: 4));
 
     controller.game!.board
       ..[0] = [2, 2, 0, 0]
@@ -41,11 +39,7 @@ void main() {
   });
 
   test('legacy ranked current game seeds its mode record on restore', () async {
-    const config = GameConfig(
-      mode: GameMode.target,
-      size: 4,
-      target: 4096,
-    );
+    const config = GameConfig(mode: GameMode.target, size: 4, target: 4096);
     final store = LocalStore();
     await store.saveStats({
       'gamesPlayed': 1,
@@ -89,9 +83,7 @@ void main() {
   test('statistics reset keeps only the ranked active mode baseline', () async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
-    await controller.newGame(
-      const GameConfig(mode: GameMode.classic, size: 4),
-    );
+    await controller.newGame(const GameConfig(mode: GameMode.classic, size: 4));
     controller.game!.board
       ..[0] = [2, 2, 0, 0]
       ..[1] = [0, 0, 0, 0]

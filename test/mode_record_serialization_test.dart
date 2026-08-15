@@ -36,10 +36,7 @@ void main() {
           'bestScoreBoardSize': 3,
           'bestScoreTarget': 512,
         },
-        'futureMode': {
-          'bestScore': 999999,
-          'highestTile': 8192,
-        },
+        'futureMode': {'bestScore': 999999, 'highestTile': 8192},
       },
     });
 

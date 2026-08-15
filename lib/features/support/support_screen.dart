@@ -55,10 +55,8 @@ class SupportScreen extends StatelessWidget {
               leading: const Icon(Icons.support_agent_rounded),
               title: Text(l10n.text('Email support')),
               subtitle: const Text(ProjectInfo.supportEmail),
-              onTap: () => openExternal(
-                context,
-                'mailto:${ProjectInfo.supportEmail}',
-              ),
+              onTap: () =>
+                  openExternal(context, 'mailto:${ProjectInfo.supportEmail}'),
             ),
           ),
           Card(
@@ -76,8 +74,9 @@ class SupportScreen extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.bug_report_outlined),
               title: Text(l10n.text('Report a bug on GitHub')),
-              subtitle:
-                  Text(l10n.text('Open the repository bug report template')),
+              subtitle: Text(
+                l10n.text('Open the repository bug report template'),
+              ),
               onTap: () => openExternal(context, ProjectInfo.bugReport),
             ),
           ),

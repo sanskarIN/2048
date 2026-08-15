@@ -18,10 +18,12 @@ class StatisticsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final stats = AppScope.of(context).stats;
-    final averageMoves =
-        stats.gamesPlayed == 0 ? 0.0 : stats.totalMoves / stats.gamesPlayed;
-    final averageMerges =
-        stats.gamesPlayed == 0 ? 0.0 : stats.totalMerges / stats.gamesPlayed;
+    final averageMoves = stats.gamesPlayed == 0
+        ? 0.0
+        : stats.totalMoves / stats.gamesPlayed;
+    final averageMerges = stats.gamesPlayed == 0
+        ? 0.0
+        : stats.totalMerges / stats.gamesPlayed;
     final values = [
       ('Games played', '${stats.gamesPlayed}'),
       ('Games won', '${stats.gamesWon}'),

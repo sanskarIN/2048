@@ -27,18 +27,15 @@ class _FakeClipboard implements TextClipboard {
 }
 
 void main() {
-  const config = GameConfig(
-    mode: GameMode.classic,
-    size: 4,
-    seed: 8080,
-  );
+  const config = GameConfig(mode: GameMode.classic, size: 4, seed: 8080);
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('complete current capture can be copied as valid archive',
-      (tester) async {
+  testWidgets('complete current capture can be copied as valid archive', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
     await controller.newGame(config);
@@ -47,7 +44,9 @@ void main() {
     await _pumpScreen(tester, controller, clipboard);
 
     expect(
-        find.text('Complete full-session capture available'), findsOneWidget);
+      find.text('Complete full-session capture available'),
+      findsOneWidget,
+    );
     await tester.tap(find.text('Copy full replay'));
     await tester.pumpAndSettle();
 
@@ -64,46 +63,50 @@ void main() {
   });
 
   testWidgets(
-      'imported replay stays spectator-only and leaves live state intact',
-      (tester) async {
-    final controller = AppController(store: LocalStore());
-    await controller.initialize();
-    await controller.newGame(config);
-    final before = controller.game!.copy();
-    final statsBefore = controller.stats.toJson();
+    'imported replay stays spectator-only and leaves live state intact',
+    (tester) async {
+      final controller = AppController(store: LocalStore());
+      await controller.initialize();
+      await controller.newGame(config);
+      final before = controller.game!.copy();
+      final statsBefore = controller.stats.toJson();
 
-    const importedConfig = GameConfig(
-      mode: GameMode.classic,
-      size: 4,
-      seed: 9090,
-    );
-    final engine = GameEngine(config: importedConfig);
-    final importedInitial = engine.createGame();
-    final importedCurrent = importedInitial.copy();
-    final capture = ReplayCapture.start(importedInitial);
-    final direction = engine.hint(importedCurrent)!;
-    final at = importedInitial.startedAt.add(const Duration(seconds: 1));
-    expect(engine.move(importedCurrent, direction, now: at).changed, isTrue);
-    capture.appendMove(direction, at);
-    final clipboard = _FakeClipboard(
-      ReplayArchive.encode(capture, exportedAt: DateTime.utc(2026, 8, 15)),
-    );
+      const importedConfig = GameConfig(
+        mode: GameMode.classic,
+        size: 4,
+        seed: 9090,
+      );
+      final engine = GameEngine(config: importedConfig);
+      final importedInitial = engine.createGame();
+      final importedCurrent = importedInitial.copy();
+      final capture = ReplayCapture.start(importedInitial);
+      final direction = engine.hint(importedCurrent)!;
+      final at = importedInitial.startedAt.add(const Duration(seconds: 1));
+      expect(engine.move(importedCurrent, direction, now: at).changed, isTrue);
+      capture.appendMove(direction, at);
+      final clipboard = _FakeClipboard(
+        ReplayArchive.encode(capture, exportedAt: DateTime.utc(2026, 8, 15)),
+      );
 
-    await _pumpScreen(tester, controller, clipboard);
-    await tester.tap(find.text('Open from clipboard'));
-    await tester.pumpAndSettle();
+      await _pumpScreen(tester, controller, clipboard);
+      await tester.tap(find.text('Open from clipboard'));
+      await tester.pumpAndSettle();
 
-    expect(
-      find.text('Imported spectator replay — live player state is untouched.'),
-      findsOneWidget,
-    );
-    expect(ReplayArchivePlayer.equivalent(controller.game!, before), isTrue);
-    expect(controller.stats.toJson(), statsBefore);
-    expect(find.text('Return to current replay'), findsOneWidget);
-  });
+      expect(
+        find.text(
+          'Imported spectator replay — live player state is untouched.',
+        ),
+        findsOneWidget,
+      );
+      expect(ReplayArchivePlayer.equivalent(controller.game!, before), isTrue);
+      expect(controller.stats.toJson(), statsBefore);
+      expect(find.text('Return to current replay'), findsOneWidget);
+    },
+  );
 
-  testWidgets('invalid clipboard archive is rejected without changing game',
-      (tester) async {
+  testWidgets('invalid clipboard archive is rejected without changing game', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
     await controller.newGame(config);
@@ -118,8 +121,9 @@ void main() {
     expect(ReplayArchivePlayer.equivalent(controller.game!, before), isTrue);
   });
 
-  testWidgets('Hindi mode localizes full replay archive controls',
-      (tester) async {
+  testWidgets('Hindi mode localizes full replay archive controls', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
     await controller.updateSettings(

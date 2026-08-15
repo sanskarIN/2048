@@ -103,7 +103,8 @@ class ChallengeCode {
     }
     if (config.seed == null) {
       throw const FormatException(
-          'Challenge code requires a deterministic seed');
+        'Challenge code requires a deterministic seed',
+      );
     }
     // Reuse the strict persisted configuration parser as the single source of
     // truth for all bounds and type-independent invariants.

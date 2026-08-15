@@ -6,8 +6,9 @@ import 'package:nova_2048/data/local_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('splash transitions to home and renders navigation',
-      (tester) async {
+  testWidgets('splash transitions to home and renders navigation', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     final controller = AppController(store: LocalStore());
     await controller.initialize();

@@ -22,11 +22,7 @@ void main() {
           [0, 0, 0, 0],
           [0, 0, 0, 0],
         ],
-        config: const GameConfig(
-          mode: GameMode.endless,
-          size: 4,
-          target: 2048,
-        ),
+        config: const GameConfig(mode: GameMode.endless, size: 4, target: 2048),
         score: 99999,
         moves: 200,
         totalMerges: 100,

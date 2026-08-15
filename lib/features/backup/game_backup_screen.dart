@@ -116,19 +116,35 @@ class GameBackupScreen extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 8),
-                  Text(l10n.text(
-                      '• Backup format and version must match 2048 Nova.')),
-                  Text(l10n
-                      .text('• Embedded game state is strictly validated.')),
-                  Text(l10n.text(
-                      '• File size is bounded before UTF-8 and JSON decoding.')),
+                  Text(
+                    l10n.text(
+                      '• Backup format and version must match 2048 Nova.',
+                    ),
+                  ),
+                  Text(
+                    l10n.text('• Embedded game state is strictly validated.'),
+                  ),
+                  Text(
+                    l10n.text(
+                      '• File size is bounded before UTF-8 and JSON decoding.',
+                    ),
+                  ),
                   Text(l10n.text('• Oversized or malformed text is rejected.')),
-                  Text(l10n.text(
-                      '• Import always requires an explicit confirmation.')),
-                  Text(l10n.text(
-                      '• The current game is replaced and Undo is cleared.')),
-                  Text(l10n.text(
-                      '• Imported sessions stay unranked after app restart.')),
+                  Text(
+                    l10n.text(
+                      '• Import always requires an explicit confirmation.',
+                    ),
+                  ),
+                  Text(
+                    l10n.text(
+                      '• The current game is replaced and Undo is cleared.',
+                    ),
+                  ),
+                  Text(
+                    l10n.text(
+                      '• Imported sessions stay unranked after app restart.',
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -169,9 +185,8 @@ class GameBackupScreen extends StatelessWidget {
         BackupFileSaveOutcome.saved => 'Game backup file saved.',
         BackupFileSaveOutcome.cancelled => 'Backup file export cancelled.',
       };
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.text(message))),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.text(message))));
     } on Object {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -208,7 +223,8 @@ class GameBackupScreen extends StatelessWidget {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(context.l10n.text('Could not open backup file.'))),
+          content: Text(context.l10n.text('Could not open backup file.')),
+        ),
       );
       return;
     }
@@ -229,13 +245,15 @@ class GameBackupScreen extends StatelessWidget {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(context.l10n.text('Backup rejected as invalid.'))),
+          content: Text(context.l10n.text('Backup rejected as invalid.')),
+        ),
       );
       return;
     }
 
     if (!context.mounted) return;
-    final approved = await showDialog<bool>(
+    final approved =
+        await showDialog<bool>(
           context: context,
           barrierDismissible: false,
           builder: (dialogContext) => _ImportPreviewDialog(state: restored),
@@ -279,8 +297,10 @@ class _CurrentGameCard extends StatelessWidget {
           runSpacing: 10,
           children: [
             _Fact(l10n.text('Mode'), l10n.modeName(state.config.mode)),
-            _Fact(l10n.text('Board'),
-                '${state.config.size}×${state.config.size}'),
+            _Fact(
+              l10n.text('Board'),
+              '${state.config.size}×${state.config.size}',
+            ),
             _Fact(l10n.text('Score'), '${state.score}'),
             _Fact(l10n.text('Moves'), '${state.moves}'),
             _Fact(l10n.text('Highest'), '${state.highestTile}'),
@@ -316,8 +336,10 @@ class _ImportPreviewDialog extends StatelessWidget {
               runSpacing: 8,
               children: [
                 _Fact(l10n.text('Mode'), l10n.modeName(state.config.mode)),
-                _Fact(l10n.text('Board'),
-                    '${state.config.size}×${state.config.size}'),
+                _Fact(
+                  l10n.text('Board'),
+                  '${state.config.size}×${state.config.size}',
+                ),
                 _Fact(l10n.text('Score'), '${state.score}'),
                 _Fact(l10n.text('Moves'), '${state.moves}'),
                 _Fact(l10n.text('Highest'), '${state.highestTile}'),
@@ -365,7 +387,7 @@ String _suggestedBackupFileName(DateTime now) {
 }
 
 String _statusLabel(GameState state) => switch (state.status) {
-      GameStatus.playing => 'Playing',
-      GameStatus.won => 'Won',
-      GameStatus.lost => 'Lost',
-    };
+  GameStatus.playing => 'Playing',
+  GameStatus.won => 'Won',
+  GameStatus.lost => 'Lost',
+};

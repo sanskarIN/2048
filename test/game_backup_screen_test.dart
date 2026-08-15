@@ -84,10 +84,7 @@ void main() {
         },
         home: AppScope(
           controller: controller,
-          child: GameBackupScreen(
-            clipboard: clipboard,
-            filePort: filePort,
-          ),
+          child: GameBackupScreen(clipboard: clipboard, filePort: filePort),
         ),
       ),
     );
@@ -95,27 +92,24 @@ void main() {
   }
 
   GameState backupState() => GameState(
-        config: const GameConfig(
-          mode: GameMode.classic,
-          size: 4,
-          seed: 2026,
-        ),
-        board: [
-          [2, 2, 0, 0],
-          [0, 0, 0, 0],
-          [0, 0, 0, 0],
-          [0, 0, 0, 0],
-        ],
-        score: 32,
-        bestScore: 9999,
-        moves: 6,
-        totalMerges: 3,
-        rngState: 88,
-        startedAt: DateTime.utc(2026, 8, 14, 10),
-      );
+    config: const GameConfig(mode: GameMode.classic, size: 4, seed: 2026),
+    board: [
+      [2, 2, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+    ],
+    score: 32,
+    bestScore: 9999,
+    moves: 6,
+    totalMerges: 3,
+    rngState: 88,
+    startedAt: DateTime.utc(2026, 8, 14, 10),
+  );
 
-  testWidgets('export copies a decodable current-game-only backup',
-      (tester) async {
+  testWidgets('export copies a decodable current-game-only backup', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     final clipboard = _MemoryClipboard();
     await controller.initialize();
@@ -136,8 +130,9 @@ void main() {
     );
   });
 
-  testWidgets('file export writes a decodable backup with safe extension',
-      (tester) async {
+  testWidgets('file export writes a decodable backup with safe extension', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     final clipboard = _MemoryClipboard();
     final files = _MemoryFilePort();
@@ -146,12 +141,7 @@ void main() {
       const GameConfig(mode: GameMode.classic, size: 4, seed: 42),
     );
 
-    await pumpBackupScreen(
-      tester,
-      controller,
-      clipboard,
-      filePort: files,
-    );
+    await pumpBackupScreen(tester, controller, clipboard, filePort: files);
     await tapPageAction(tester, find.text('Save backup file'));
     await pumpUi(tester);
 
@@ -163,8 +153,9 @@ void main() {
     expect(find.text('Game backup file saved.'), findsOneWidget);
   });
 
-  testWidgets('cancelled file export is reported without mutating the game',
-      (tester) async {
+  testWidgets('cancelled file export is reported without mutating the game', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     final clipboard = _MemoryClipboard();
     final files = _MemoryFilePort()
@@ -175,12 +166,7 @@ void main() {
     );
     final before = controller.game!.toJson();
 
-    await pumpBackupScreen(
-      tester,
-      controller,
-      clipboard,
-      filePort: files,
-    );
+    await pumpBackupScreen(tester, controller, clipboard, filePort: files);
     await tapPageAction(tester, find.text('Save backup file'));
     await pumpUi(tester);
 
@@ -188,8 +174,9 @@ void main() {
     expect(find.text('Backup file export cancelled.'), findsOneWidget);
   });
 
-  testWidgets('valid import requires confirmation and becomes unranked',
-      (tester) async {
+  testWidgets('valid import requires confirmation and becomes unranked', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     final clipboard = _MemoryClipboard();
     await controller.initialize();
@@ -218,8 +205,9 @@ void main() {
     expect(find.text('Game destination'), findsOneWidget);
   });
 
-  testWidgets('valid file import uses the same unranked confirmation path',
-      (tester) async {
+  testWidgets('valid file import uses the same unranked confirmation path', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     final clipboard = _MemoryClipboard();
     final files = _MemoryFilePort()
@@ -233,12 +221,7 @@ void main() {
     await controller.initialize();
     controller.stats.bestScore = 128;
 
-    await pumpBackupScreen(
-      tester,
-      controller,
-      clipboard,
-      filePort: files,
-    );
+    await pumpBackupScreen(tester, controller, clipboard, filePort: files);
     await tapPageAction(tester, find.text('Import backup file'));
     await pumpUi(tester);
 
@@ -255,8 +238,9 @@ void main() {
     expect(find.text('Game destination'), findsOneWidget);
   });
 
-  testWidgets('cancelled import leaves an existing ranked game untouched',
-      (tester) async {
+  testWidgets('cancelled import leaves an existing ranked game untouched', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     final clipboard = _MemoryClipboard();
     await controller.initialize();
@@ -279,8 +263,9 @@ void main() {
     expect(controller.game!.toJson(), before);
   });
 
-  testWidgets('cancelled file selection leaves ranked game untouched',
-      (tester) async {
+  testWidgets('cancelled file selection leaves ranked game untouched', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     final clipboard = _MemoryClipboard();
     final files = _MemoryFilePort();
@@ -290,12 +275,7 @@ void main() {
     );
     final before = controller.game!.toJson();
 
-    await pumpBackupScreen(
-      tester,
-      controller,
-      clipboard,
-      filePort: files,
-    );
+    await pumpBackupScreen(tester, controller, clipboard, filePort: files);
     await tapPageAction(tester, find.text('Import backup file'));
     await pumpUi(tester);
 
@@ -304,8 +284,9 @@ void main() {
     expect(find.text('Restore unranked backup?'), findsNothing);
   });
 
-  testWidgets('invalid clipboard text is rejected without replacing the game',
-      (tester) async {
+  testWidgets('invalid clipboard text is rejected without replacing the game', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     final clipboard = _MemoryClipboard()..text = '{invalid';
     await controller.initialize();
@@ -318,20 +299,16 @@ void main() {
     expect(find.textContaining('Backup rejected:'), findsOneWidget);
   });
 
-  testWidgets('oversized file is rejected before restore confirmation',
-      (tester) async {
+  testWidgets('oversized file is rejected before restore confirmation', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     final clipboard = _MemoryClipboard();
     final files = _MemoryFilePort()
       ..openError = const FormatException('Backup file is too large.');
     await controller.initialize();
 
-    await pumpBackupScreen(
-      tester,
-      controller,
-      clipboard,
-      filePort: files,
-    );
+    await pumpBackupScreen(tester, controller, clipboard, filePort: files);
     await tapPageAction(tester, find.text('Import backup file'));
     await pumpUi(tester);
 

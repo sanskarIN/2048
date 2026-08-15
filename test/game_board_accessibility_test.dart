@@ -5,8 +5,9 @@ import 'package:nova_2048/features/game/game_board.dart';
 import 'support/localized_test_app.dart';
 
 void main() {
-  testWidgets('board exposes size and positional tile semantics',
-      (tester) async {
+  testWidgets('board exposes size and positional tile semantics', (
+    tester,
+  ) async {
     final semantics = tester.ensureSemantics();
     try {
       await tester.pumpWidget(

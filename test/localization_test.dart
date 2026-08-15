@@ -14,14 +14,16 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  test('language parser accepts supported values and rejects malformed input',
-      () {
-    expect(AppLanguageX.parse('system'), AppLanguage.system);
-    expect(AppLanguageX.parse('english'), AppLanguage.english);
-    expect(AppLanguageX.parse('hindi'), AppLanguage.hindi);
-    expect(AppLanguageX.parse('unknown'), AppLanguage.system);
-    expect(AppLanguageX.parse(42), AppLanguage.system);
-  });
+  test(
+    'language parser accepts supported values and rejects malformed input',
+    () {
+      expect(AppLanguageX.parse('system'), AppLanguage.system);
+      expect(AppLanguageX.parse('english'), AppLanguage.english);
+      expect(AppLanguageX.parse('hindi'), AppLanguage.hindi);
+      expect(AppLanguageX.parse('unknown'), AppLanguage.system);
+      expect(AppLanguageX.parse(42), AppLanguage.system);
+    },
+  );
 
   test('Hindi catalog translates critical product surfaces', () {
     const l10n = NovaLocalizations(Locale('hi'));
@@ -55,7 +57,9 @@ void main() {
 
     expect(english.text('New Game'), 'New Game');
     expect(
-        hindi.text('Untranslated future string'), 'Untranslated future string');
+      hindi.text('Untranslated future string'),
+      'Untranslated future string',
+    );
   });
 
   test('localized mode direction and achievement helpers use stable IDs', () {
@@ -71,26 +75,29 @@ void main() {
     );
   });
 
-  test('language preference persists and malformed data falls back to system',
-      () async {
-    final controller = AppController(store: LocalStore());
-    await controller.initialize();
-    await controller.updateSettings(
-      (settings) => settings.language = AppLanguage.hindi,
-    );
+  test(
+    'language preference persists and malformed data falls back to system',
+    () async {
+      final controller = AppController(store: LocalStore());
+      await controller.initialize();
+      await controller.updateSettings(
+        (settings) => settings.language = AppLanguage.hindi,
+      );
 
-    final restored = AppController(store: LocalStore());
-    await restored.initialize();
-    expect(restored.settings.language, AppLanguage.hindi);
+      final restored = AppController(store: LocalStore());
+      await restored.initialize();
+      expect(restored.settings.language, AppLanguage.hindi);
 
-    final malformed = AppSettings.fromJson({'language': 7});
-    final unsupported = AppSettings.fromJson({'language': 'esperanto'});
-    expect(malformed.language, AppLanguage.system);
-    expect(unsupported.language, AppLanguage.system);
-  });
+      final malformed = AppSettings.fromJson({'language': 7});
+      final unsupported = AppSettings.fromJson({'language': 'esperanto'});
+      expect(malformed.language, AppLanguage.system);
+      expect(unsupported.language, AppLanguage.system);
+    },
+  );
 
-  testWidgets('Hindi preference renders localized Home and Settings UI',
-      (tester) async {
+  testWidgets('Hindi preference renders localized Home and Settings UI', (
+    tester,
+  ) async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
     await controller.updateSettings(
@@ -114,8 +121,9 @@ void main() {
     expect(find.text('हिन्दी'), findsOneWidget);
   });
 
-  testWidgets('Hindi board semantics include localized position and value',
-      (tester) async {
+  testWidgets('Hindi board semantics include localized position and value', (
+    tester,
+  ) async {
     final semantics = tester.ensureSemantics();
     try {
       await tester.pumpWidget(
@@ -148,10 +156,7 @@ void main() {
       );
 
       expect(find.bySemanticsLabel('4 बाय 4 गेम बोर्ड'), findsOneWidget);
-      expect(
-        find.bySemanticsLabel('पंक्ति 1, कॉलम 1, टाइल 2'),
-        findsOneWidget,
-      );
+      expect(find.bySemanticsLabel('पंक्ति 1, कॉलम 1, टाइल 2'), findsOneWidget);
       expect(find.bySemanticsLabel('पंक्ति 1, कॉलम 2, खाली'), findsOneWidget);
     } finally {
       semantics.dispose();

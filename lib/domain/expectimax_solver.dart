@@ -30,8 +30,8 @@ class ExpectimaxSolver {
     required this.size,
     this.searchDepth = 2,
     this.maxNodes = 50000,
-  })  : assert(searchDepth >= 1),
-        assert(maxNodes >= 1);
+  }) : assert(searchDepth >= 1),
+       assert(maxNodes >= 1);
 
   final int size;
   final int searchDepth;
@@ -47,12 +47,9 @@ class ExpectimaxSolver {
       final simulation = _simulate(board, direction);
       if (!simulation.changed) continue;
 
-      final value = simulation.mergeScore * 3.0 +
-          _chanceValue(
-            simulation.board,
-            searchDepth - 1,
-            context,
-          ) +
+      final value =
+          simulation.mergeScore * 3.0 +
+          _chanceValue(simulation.board, searchDepth - 1, context) +
           _directionBias(direction);
       if (value > bestValue) {
         bestValue = value;
@@ -127,7 +124,8 @@ class ExpectimaxSolver {
       if (!simulation.changed) continue;
       foundMove = true;
 
-      final value = simulation.mergeScore * 3.0 +
+      final value =
+          simulation.mergeScore * 3.0 +
           _chanceValue(simulation.board, depth - 1, context) +
           _directionBias(direction);
       if (value > best) best = value;
@@ -181,12 +179,12 @@ class ExpectimaxSolver {
           highestCol = col;
         }
         if (col + 1 < size && board[row][col + 1] != 0) {
-          smoothnessPenalty +=
-              (exponent - _exponent(board[row][col + 1])).abs();
+          smoothnessPenalty += (exponent - _exponent(board[row][col + 1]))
+              .abs();
         }
         if (row + 1 < size && board[row + 1][col] != 0) {
-          smoothnessPenalty +=
-              (exponent - _exponent(board[row + 1][col])).abs();
+          smoothnessPenalty += (exponent - _exponent(board[row + 1][col]))
+              .abs();
         }
       }
     }
@@ -200,7 +198,8 @@ class ExpectimaxSolver {
       ]);
     }
 
-    final inCorner = highest > 0 &&
+    final inCorner =
+        highest > 0 &&
         (highestRow == 0 || highestRow == size - 1) &&
         (highestCol == 0 || highestCol == size - 1);
     final cornerReward = inCorner ? _exponent(highest) * 140.0 : 0.0;
@@ -228,11 +227,11 @@ class ExpectimaxSolver {
   }
 
   double _directionBias(Direction direction) => switch (direction) {
-        Direction.down => 0.004,
-        Direction.left => 0.003,
-        Direction.right => 0.002,
-        Direction.up => 0.001,
-      };
+    Direction.down => 0.004,
+    Direction.left => 0.003,
+    Direction.right => 0.002,
+    Direction.up => 0.001,
+  };
 
   double _exponent(int value) => math.log(value) / math.ln2;
 
@@ -256,20 +255,14 @@ class ExpectimaxSolver {
     return _CollapsedLine(output, mergeScore);
   }
 
-  List<int> _readLine(
-    List<List<int>> board,
-    int index,
-    Direction direction,
-  ) {
+  List<int> _readLine(List<List<int>> board, int index, Direction direction) {
     return switch (direction) {
       Direction.left => [...board[index]],
       Direction.right => board[index].reversed.toList(),
-      Direction.up => [
-          for (var row = 0; row < size; row++) board[row][index],
-        ],
+      Direction.up => [for (var row = 0; row < size; row++) board[row][index]],
       Direction.down => [
-          for (var row = size - 1; row >= 0; row--) board[row][index],
-        ],
+        for (var row = size - 1; row >= 0; row--) board[row][index],
+      ],
     };
   }
 
@@ -307,8 +300,8 @@ class ExpectimaxSolver {
   }
 
   List<List<int>> _copyBoard(List<List<int>> board) => [
-        for (final row in board) [...row],
-      ];
+    for (final row in board) [...row],
+  ];
 
   void _validateBoard(List<List<int>> board) {
     if (size < 2 || board.length != size) {

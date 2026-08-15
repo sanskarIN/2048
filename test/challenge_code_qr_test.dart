@@ -29,8 +29,9 @@ void main() {
     const code = 'NOVA1.exact-portable-code.89abcdef';
     await tester.pumpWidget(app(width: 400, code: code));
 
-    final wrapper =
-        tester.widget<ChallengeCodeQr>(find.byType(ChallengeCodeQr));
+    final wrapper = tester.widget<ChallengeCodeQr>(
+      find.byType(ChallengeCodeQr),
+    );
     expect(wrapper.code, code);
 
     final qr = tester.widget<QrImageView>(find.byType(QrImageView));
@@ -38,8 +39,9 @@ void main() {
     expect(qr.semanticsLabel, 'Challenge code QR');
   });
 
-  testWidgets('caps QR rendering at a scan-friendly 260 logical pixels',
-      (tester) async {
+  testWidgets('caps QR rendering at a scan-friendly 260 logical pixels', (
+    tester,
+  ) async {
     await tester.pumpWidget(app(width: 600));
 
     expect(tester.getSize(find.byType(QrImageView)).width, 260);

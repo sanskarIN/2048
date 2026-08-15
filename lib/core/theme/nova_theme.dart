@@ -1,25 +1,17 @@
 import 'package:flutter/material.dart';
 
-enum NovaPalette {
-  classic,
-  midnight,
-  neon,
-  ocean,
-  forest,
-  sunset,
-  monochrome,
-}
+enum NovaPalette { classic, midnight, neon, ocean, forest, sunset, monochrome }
 
 extension NovaPaletteLabel on NovaPalette {
   String get label => switch (this) {
-        NovaPalette.classic => 'Classic Nova',
-        NovaPalette.midnight => 'Midnight',
-        NovaPalette.neon => 'Neon',
-        NovaPalette.ocean => 'Ocean',
-        NovaPalette.forest => 'Forest',
-        NovaPalette.sunset => 'Sunset',
-        NovaPalette.monochrome => 'Monochrome',
-      };
+    NovaPalette.classic => 'Classic Nova',
+    NovaPalette.midnight => 'Midnight',
+    NovaPalette.neon => 'Neon',
+    NovaPalette.ocean => 'Ocean',
+    NovaPalette.forest => 'Forest',
+    NovaPalette.sunset => 'Sunset',
+    NovaPalette.monochrome => 'Monochrome',
+  };
 }
 
 abstract final class NovaTheme {
@@ -43,9 +35,10 @@ abstract final class NovaTheme {
 
   static Color _seed(NovaPalette palette, Brightness brightness) {
     return switch (palette) {
-      NovaPalette.classic => brightness == Brightness.dark
-          ? const Color(0xFF8C7BFF)
-          : const Color(0xFF6C4DFF),
+      NovaPalette.classic =>
+        brightness == Brightness.dark
+            ? const Color(0xFF8C7BFF)
+            : const Color(0xFF6C4DFF),
       NovaPalette.midnight => const Color(0xFF455A9E),
       NovaPalette.neon => const Color(0xFF00A884),
       NovaPalette.ocean => const Color(0xFF0077B6),

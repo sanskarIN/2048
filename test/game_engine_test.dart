@@ -86,11 +86,15 @@ void main() {
         [0, 0, 0, 0],
         [0, 0, 0, 0],
       ]);
-      final before =
-          game.board.expand((row) => row).where((value) => value != 0).length;
+      final before = game.board
+          .expand((row) => row)
+          .where((value) => value != 0)
+          .length;
       final result = engine.move(game, Direction.left);
-      final after =
-          game.board.expand((row) => row).where((value) => value != 0).length;
+      final after = game.board
+          .expand((row) => row)
+          .where((value) => value != 0)
+          .length;
       expect(result.changed, isFalse);
       expect(after, before);
     });
@@ -195,8 +199,10 @@ void main() {
         timeLimitSeconds: 60,
       );
       final started = DateTime.utc(2026, 8, 14, 10);
-      final engine =
-          GameEngine(config: timed, random: SequenceRandomSource([0]));
+      final engine = GameEngine(
+        config: timed,
+        random: SequenceRandomSource([0]),
+      );
       final game = GameState(
         board: [
           [2, 0, 0, 0],
@@ -207,10 +213,7 @@ void main() {
         config: timed,
         startedAt: started,
       );
-      engine.refreshStatus(
-        game,
-        now: started.add(const Duration(seconds: 60)),
-      );
+      engine.refreshStatus(game, now: started.add(const Duration(seconds: 60)));
       expect(game.status, GameStatus.lost);
     });
 

@@ -10,25 +10,25 @@ void main() {
   final exportedAt = DateTime.utc(2026, 8, 14, 10);
 
   GameState state() => GameState(
-        config: const GameConfig(
-          mode: GameMode.classic,
-          size: 4,
-          target: 2048,
-          seed: 42,
-        ),
-        board: [
-          [2, 4, 8, 16],
-          [32, 64, 0, 0],
-          [0, 0, 0, 0],
-          [0, 0, 0, 0],
-        ],
-        score: 120,
-        bestScore: 256,
-        moves: 12,
-        totalMerges: 7,
-        rngState: 123456,
-        startedAt: startedAt,
-      );
+    config: const GameConfig(
+      mode: GameMode.classic,
+      size: 4,
+      target: 2048,
+      seed: 42,
+    ),
+    board: [
+      [2, 4, 8, 16],
+      [32, 64, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+    ],
+    score: 120,
+    bestScore: 256,
+    moves: 12,
+    totalMerges: 7,
+    rngState: 123456,
+    startedAt: startedAt,
+  );
 
   test('backup round trip preserves the current game', () {
     final source = state();
