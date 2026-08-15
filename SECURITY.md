@@ -84,7 +84,7 @@ Clipboard text and user-selected backup files are untrusted input. File import f
 
 Import requires explicit confirmation and always creates an **unranked** current-game session. External backup content cannot import lifetime statistics, achievements, settings, Daily history, or old Undo data and cannot choose its own ranked status.
 
-Portable backup JSON is not encrypted, signed, or authenticated. Users should treat copied backup text as ordinary clipboard data and share it only intentionally.
+Portable backup JSON is not encrypted, signed, or authenticated. A `.nova2048` extension, filename, local path, or document-provider location is not proof of authenticity. Users should treat copied or saved backup data as editable portable game state and share it only intentionally.
 
 ### Clipboard boundary
 
