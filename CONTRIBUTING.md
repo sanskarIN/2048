@@ -247,3 +247,7 @@ Changes to file backup transport must preserve these additional rules:
 - add widget/domain tests and run the native build matrix for plugin/configuration changes.
 
 See [`docs/FILE_BACKUPS.md`](docs/FILE_BACKUPS.md).
+
+## Challenge Code QR changes
+
+Changes to QR rendering should keep the canonical Challenge Code protocol in project domain code, preserve selectable text as a non-visual fallback, avoid introducing camera/network permissions without explicit design review, and include focused widget/localization regressions. Dependency or rendering changes must pass the full CI gate and configured native build matrix before they are described as release-candidate ready.
