@@ -2,6 +2,41 @@
 
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
+## Phase 17 — Trusted per-mode records
+
+Date: **2026-08-15**
+
+Authoritative maintained gate:
+
+```text
+Commit: c443f9fde0cc243269be57515772378c06284e86
+CI workflow run: 31867499047
+CI job: 94970781061
+Result: SUCCESS
+Runner: ubuntu-24.04
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS — 74 files, 0 changed
+Static analysis: PASS — No issues found
+Automated tests: PASS — 144/144
+Flutter Web release build: PASS
+Flutter Web WASM dry run: PASS
+```
+
+Phase 17 added ten focused tests on top of the Phase 16 total of 134. Coverage includes per-mode record serialization/backward compatibility, ranked migration/tracking/reset behavior, imported-backup exclusion, locally seeded ranking behavior, and English/Hindi Statistics UI.
+
+Acceptance history is intentionally retained:
+
+- CI `31867316152` failed static analysis because `mode_record_serialization_test.dart` contained an unused local variable. Commit `f42a8ab18edd4661a066419de0daa84a2ce22f85` removed it.
+- CI `31867370893` passed formatting/analysis but finished 142 passed / 2 failed because the Statistics widget tests searched for board-size and target metadata as separate `Text` widgets even though production intentionally renders one combined subtitle. Commit `c443f9fde0cc243269be57515772378c06284e86` aligned the tests with the production component contract.
+- CI `31867499047` passed all 144 tests and the Web/WASM build gate.
+
+The Web build emitted a non-fatal Cupertino icon-font availability warning but still produced `build/web`. This automated result does not replace physical-device, assistive-technology, signing/provisioning, or store-metadata qualification. The previously recorded Phase 16 native build matrix remains the latest native multi-platform evidence until a newer matrix is run.
+
+Focused details: [`PHASE_17_VERIFICATION.md`](PHASE_17_VERIFICATION.md).
+
+
 ## Phase 16 — Offline English/Hindi localization
 
 ### Final permanent quality gate
