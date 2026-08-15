@@ -191,3 +191,15 @@ test/challenge_code_screen_test.dart
 The current schema version is `1`. A future incompatible format must increment its version and add an explicit migration/compatibility decision. Unsupported versions fail closed rather than being interpreted as the current schema.
 
 The current code format is intentionally separate from the Game Backup JSON format. The two features solve different problems and should not be merged merely because both are portable text.
+
+## Offline QR rendering
+
+The QR is a **presentation of the existing portable text**, not a second protocol. `ChallengeCodeQr` passes the exact generated string into `QrImageView` with automatic QR version selection, black data/eye modules, a white background, and a maximum 260 logical-pixel render size while respecting narrower constraints.
+
+The app implements rendering only. It does not include a camera/scanning package or request camera permission. Scanning, when desired, is performed by another device/application and yields ordinary `NOVA1...` text that must still pass the same decoder/validation path before a challenge can start.
+
+A QR image does not make a Challenge Code trusted. The FNV-1a checksum remains accidental-corruption detection only; neither the text nor QR proves authorship, identity, fairness, or authenticity.
+
+Accessibility keeps the selectable text alongside the QR, provides a localized semantic label for the QR, and never makes visual scanning the only sharing route. Real-device qualification must still cover glare/brightness, screen density, large text, dark theme surrounding layout, screen readers, and device-to-device scanning with representative external camera/scanner apps.
+
+Phase 21 focused automated coverage lives in `test/challenge_code_qr_test.dart`, `test/challenge_code_screen_test.dart`, and `test/challenge_code_qr_localization_test.dart`.
