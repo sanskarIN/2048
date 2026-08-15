@@ -203,3 +203,9 @@ Before stable distribution, verify on representative target platforms:
 Phase 17 extends the existing imported-backup trust boundary to per-mode records. Importing a valid backup does not create or improve a mode best score/highest tile, continuing to play that imported board still does not update a mode record, and Reset Statistics does not rebuild a mode baseline from the unranked imported state.
 
 This is intentional because backup JSON is portable and editable. Its board/score can be useful for restoration without being treated as authenticated evidence for trusted local records. A fresh locally started game, including a locally started seeded configuration, returns to the normal ranked record path.
+
+## Interaction with Full Replay Archive
+
+A Game Backup restores current progress but does not contain the sender's earlier action history. Therefore `AppController.importGameBackup()` creates an **incomplete** local replay capture for the restored board. The imported game remains playable and unranked and can continue saving and Undo normally, but it cannot be exported later as though 2048 Nova had captured the sender's complete session from move zero.
+
+Starting a fresh local game after backup restore creates a new complete replay capture for that new session. Opening a portable Full Replay Archive is different again: it is spectator-only and never installs current-game progress at all.
