@@ -316,3 +316,11 @@ dart run tool/solver_benchmark.dart 500
 ```
 
 The benchmark is a regression/performance-comparison aid, not proof of globally optimal 2048 play. See [`SOLVER_BENCHMARKS.md`](SOLVER_BENCHMARKS.md).
+
+## Full Replay Archive development rules
+
+Both replay systems are spectator-only. Move Replay continues to use defensive copies from bounded Undo history and must never call player mutation methods from its viewer controls.
+
+Full Replay Archive is a separate portable protocol. Changes must preserve explicit format/versioning, encoded-size bounds, strict opening `GameState` validation, deterministic event ordering and action legality, replay-time injection for timed rules, the hard 4,096-event capture bound, complete versus incomplete capture semantics, corruption-safe persistence, and spectator-only imported archives that never replace `AppController.game`.
+
+Portable replay text must never mutate trusted statistics, achievements, streaks, Daily history, or per-mode records. JSON validity must not be described as authorship or authentication. Protocol/player changes belong in `lib/domain/replay_archive.dart`; active capture orchestration belongs in `AppController` and `LocalStore`; viewer behavior belongs in `lib/features/replay/`. Clipboard access must continue through `TextClipboard`. See [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md).
