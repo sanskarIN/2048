@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:nova_2048/domain/autoplay_session.dart';
 import 'package:nova_2048/domain/solver_benchmark.dart';
 
@@ -9,10 +11,10 @@ void main(List<String> args) {
       ? _defaultMoveBudget
       : int.tryParse(args.first) ?? _defaultMoveBudget;
 
-  print('2048 Nova solver benchmark');
-  print('Move budget per seed: $moveBudget');
-  print('Seeds: ${_defaultSeeds.join(', ')}');
-  print('');
+  stdout.writeln('2048 Nova solver benchmark');
+  stdout.writeln('Move budget per seed: $moveBudget');
+  stdout.writeln('Seeds: ${_defaultSeeds.join(', ')}');
+  stdout.writeln();
 
   for (final strategy in AutoplayStrategy.values) {
     final summary = SolverBenchmark.run(
@@ -21,9 +23,9 @@ void main(List<String> args) {
       moveBudget: moveBudget,
     );
 
-    print('Strategy: ${strategy.name}');
+    stdout.writeln('Strategy: ${strategy.name}');
     for (final result in summary.cases) {
-      print(
+      stdout.writeln(
         '  seed=${result.seed} '
         'score=${result.score} '
         'moves=${result.moves} '
@@ -31,12 +33,12 @@ void main(List<String> args) {
         'nodes=${result.exploredNodes}',
       );
     }
-    print(
+    stdout.writeln(
       '  averageScore=${summary.averageScore.toStringAsFixed(1)} '
       'averageMoves=${summary.averageMoves.toStringAsFixed(1)} '
       'peakTile=${summary.peakTile} '
       'averageDecisionNodes=${summary.averageDecisionNodes.toStringAsFixed(1)}',
     );
-    print('');
+    stdout.writeln();
   }
 }
