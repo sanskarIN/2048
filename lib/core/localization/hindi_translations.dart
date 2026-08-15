@@ -289,29 +289,44 @@ const hindiTranslations = <String, String>{
       'रिलीज़ कैंडिडेट 0.9 में दस गेम मोड, निर्धारक सेव और अनडू अखंडता, डेली चैलेंज, ऑफलाइन साझा सीडेड चैलेंज कोड, सेव भाषा सेटिंग सहित English/हिन्दी लोकलाइज़ेशन, आँकड़े और उपलब्धियाँ, सात पैलेट, एक्सेसिबिलिटी कंट्रोल, ह्यूरिस्टिक संकेत, कीबोर्ड शॉर्टकट, ह्यूरिस्टिक और सीमित एक्सपेक्टिमैक्स रणनीतियों वाला अलग ऑटो प्ले डेमो, निर्धारक सॉल्वर बेंचमार्क, रीड-ओनली मूव रिप्ले, स्थायी अनरैंक्ड रिस्टोर नीति वाला सत्यापित पोर्टेबल वर्तमान-गेम बैकअप और क्रॉस-प्लेटफ़ॉर्म रिलीज़-बिल्ड सत्यापन शामिल हैं।',
   'Full Replay Archive': 'पूर्ण रिप्ले आर्काइव',
   'Open Full Replay Archive': 'पूर्ण रिप्ले आर्काइव खोलें',
-  'Full-session replay copied to clipboard.': 'पूर्ण-सेशन रिप्ले क्लिपबोर्ड पर कॉपी हो गया।',
-  'Clipboard does not contain a replay archive.': 'क्लिपबोर्ड में रिप्ले आर्काइव नहीं है।',
+  'Full-session replay copied to clipboard.':
+      'पूर्ण-सेशन रिप्ले क्लिपबोर्ड पर कॉपी हो गया।',
+  'Clipboard does not contain a replay archive.':
+      'क्लिपबोर्ड में रिप्ले आर्काइव नहीं है।',
   'Open replay archive text': 'रिप्ले आर्काइव टेक्स्ट खोलें',
-  'Paste a 2048 Nova full-session replay JSON archive.': '2048 Nova का पूर्ण-सेशन रिप्ले JSON आर्काइव पेस्ट करें।',
+  'Paste a 2048 Nova full-session replay JSON archive.':
+      '2048 Nova का पूर्ण-सेशन रिप्ले JSON आर्काइव पेस्ट करें।',
   'Open Replay': 'रिप्ले खोलें',
-  'Replay archive opened in spectator mode. Your current game was not changed.': 'रिप्ले आर्काइव दर्शक मोड में खुला। आपका वर्तमान गेम नहीं बदला गया।',
-  'Replay archive was rejected as invalid.': 'रिप्ले आर्काइव अमान्य होने के कारण अस्वीकार किया गया।',
+  'Replay archive opened in spectator mode. Your current game was not changed.':
+      'रिप्ले आर्काइव दर्शक मोड में खुला। आपका वर्तमान गेम नहीं बदला गया।',
+  'Replay archive was rejected as invalid.':
+      'रिप्ले आर्काइव अमान्य होने के कारण अस्वीकार किया गया।',
   'Copy full replay': 'पूर्ण रिप्ले कॉपी करें',
   'Open from clipboard': 'क्लिपबोर्ड से खोलें',
   'Enter replay text': 'रिप्ले टेक्स्ट दर्ज करें',
   'Return to current replay': 'वर्तमान रिप्ले पर लौटें',
   'No full-session capture yet': 'अभी पूर्ण-सेशन कैप्चर नहीं है',
-  'Replay capture reached its safety limit': 'रिप्ले कैप्चर सुरक्षा सीमा तक पहुँच गया',
+  'Replay capture reached its safety limit':
+      'रिप्ले कैप्चर सुरक्षा सीमा तक पहुँच गया',
   'Complete full-session capture available': 'पूर्ण-सेशन कैप्चर उपलब्ध है',
-  'Current replay began after the session started': 'वर्तमान रिप्ले सेशन शुरू होने के बाद आरंभ हुआ',
-  'Start a new game to record a portable full-session spectator replay.': 'पोर्टेबल पूर्ण-सेशन दर्शक रिप्ले रिकॉर्ड करने के लिए नया गेम शुरू करें।',
-  'This replay exceeded the 4,096-event safety limit, so export is disabled rather than silently producing an incomplete archive.': 'यह रिप्ले 4,096-इवेंट सुरक्षा सीमा से आगे चला गया, इसलिए अधूरा आर्काइव चुपचाप बनाने के बजाय एक्सपोर्ट बंद कर दिया गया है।',
-  'The archive stores a validated starting state plus deterministic replay actions. Exported or imported replay data is spectator-only and cannot change player records.': 'आर्काइव सत्यापित शुरुआती स्थिति और निर्धारक रिप्ले क्रियाएँ रखता है। एक्सपोर्ट या इम्पोर्ट किया गया रिप्ले डेटा केवल दर्शक के लिए है और खिलाड़ी रिकॉर्ड नहीं बदल सकता।',
-  'Legacy or restored progress does not contain the earlier actions needed for a true full-session archive. Start a new game to create a complete portable replay.': 'पुरानी या रिस्टोर की गई प्रगति में असली पूर्ण-सेशन आर्काइव के लिए जरूरी पुरानी क्रियाएँ नहीं होतीं। पूरा पोर्टेबल रिप्ले बनाने के लिए नया गेम शुरू करें।',
-  'Opening an archive never replaces the live game, imports statistics, or creates trusted progress.': 'आर्काइव खोलना लाइव गेम को कभी नहीं बदलता, आँकड़े इम्पोर्ट नहीं करता और विश्वसनीय प्रगति नहीं बनाता।',
-  'No imported replay frames are available.': 'कोई इम्पोर्ट किया गया रिप्ले फ्रेम उपलब्ध नहीं है।',
-  'A complete current full-session replay is not available.': 'वर्तमान पूर्ण-सेशन रिप्ले पूरा उपलब्ध नहीं है।',
-  'Imported spectator replay — live player state is untouched.': 'इम्पोर्ट किया गया दर्शक रिप्ले — लाइव खिलाड़ी स्थिति अपरिवर्तित है।',
+  'Current replay began after the session started':
+      'वर्तमान रिप्ले सेशन शुरू होने के बाद आरंभ हुआ',
+  'Start a new game to record a portable full-session spectator replay.':
+      'पोर्टेबल पूर्ण-सेशन दर्शक रिप्ले रिकॉर्ड करने के लिए नया गेम शुरू करें।',
+  'This replay exceeded the 4,096-event safety limit, so export is disabled rather than silently producing an incomplete archive.':
+      'यह रिप्ले 4,096-इवेंट सुरक्षा सीमा से आगे चला गया, इसलिए अधूरा आर्काइव चुपचाप बनाने के बजाय एक्सपोर्ट बंद कर दिया गया है।',
+  'The archive stores a validated starting state plus deterministic replay actions. Exported or imported replay data is spectator-only and cannot change player records.':
+      'आर्काइव सत्यापित शुरुआती स्थिति और निर्धारक रिप्ले क्रियाएँ रखता है। एक्सपोर्ट या इम्पोर्ट किया गया रिप्ले डेटा केवल दर्शक के लिए है और खिलाड़ी रिकॉर्ड नहीं बदल सकता।',
+  'Legacy or restored progress does not contain the earlier actions needed for a true full-session archive. Start a new game to create a complete portable replay.':
+      'पुरानी या रिस्टोर की गई प्रगति में असली पूर्ण-सेशन आर्काइव के लिए जरूरी पुरानी क्रियाएँ नहीं होतीं। पूरा पोर्टेबल रिप्ले बनाने के लिए नया गेम शुरू करें।',
+  'Opening an archive never replaces the live game, imports statistics, or creates trusted progress.':
+      'आर्काइव खोलना लाइव गेम को कभी नहीं बदलता, आँकड़े इम्पोर्ट नहीं करता और विश्वसनीय प्रगति नहीं बनाता।',
+  'No imported replay frames are available.':
+      'कोई इम्पोर्ट किया गया रिप्ले फ्रेम उपलब्ध नहीं है।',
+  'A complete current full-session replay is not available.':
+      'वर्तमान पूर्ण-सेशन रिप्ले पूरा उपलब्ध नहीं है।',
+  'Imported spectator replay — live player state is untouched.':
+      'इम्पोर्ट किया गया दर्शक रिप्ले — लाइव खिलाड़ी स्थिति अपरिवर्तित है।',
   'Current full-session spectator replay': 'वर्तमान पूर्ण-सेशन दर्शक रिप्ले',
   'Replay archive is empty': 'रिप्ले आर्काइव खाली है',
   'Replay archive is too large': 'रिप्ले आर्काइव बहुत बड़ा है',
@@ -328,16 +343,21 @@ const hindiTranslations = <String, String>{
   'Replay move direction is invalid': 'रिप्ले चाल दिशा अमान्य है',
   'Replay move direction is unsupported': 'रिप्ले चाल दिशा असमर्थित है',
   'Replay move direction is missing': 'रिप्ले चाल दिशा गायब है',
-  'Replay direction is only valid for moves': 'रिप्ले दिशा केवल चाल इवेंट के लिए मान्य है',
+  'Replay direction is only valid for moves':
+      'रिप्ले दिशा केवल चाल इवेंट के लिए मान्य है',
   'Replay event limit exceeded': 'रिप्ले इवेंट सीमा पार हो गई',
   'Replay initial state is missing': 'रिप्ले की शुरुआती स्थिति गायब है',
   'Replay capture flags are invalid': 'रिप्ले कैप्चर फ़्लैग अमान्य हैं',
   'Replay events are invalid': 'रिप्ले इवेंट अमान्य हैं',
   'Replay event is invalid': 'रिप्ले इवेंट अमान्य है',
-  'Full replay must begin at the session start': 'पूर्ण रिप्ले सेशन की शुरुआत से शुरू होना चाहिए',
+  'Full replay must begin at the session start':
+      'पूर्ण रिप्ले सेशन की शुरुआत से शुरू होना चाहिए',
   'Replay event times are out of order': 'रिप्ले इवेंट समय क्रम से बाहर हैं',
-  'Replay contains an invalid recorded move': 'रिप्ले में अमान्य रिकॉर्ड की गई चाल है',
+  'Replay contains an invalid recorded move':
+      'रिप्ले में अमान्य रिकॉर्ड की गई चाल है',
   'Replay contains an invalid undo': 'रिप्ले में अमान्य अनडू है',
-  'Replay contains an invalid win continuation': 'रिप्ले में अमान्य जीत-जारी क्रिया है',
-  'Replay contains a redundant status refresh': 'रिप्ले में अनावश्यक स्थिति रिफ्रेश है',
+  'Replay contains an invalid win continuation':
+      'रिप्ले में अमान्य जीत-जारी क्रिया है',
+  'Replay contains a redundant status refresh':
+      'रिप्ले में अनावश्यक स्थिति रिफ्रेश है',
 };

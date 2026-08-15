@@ -71,7 +71,8 @@ void main() {
     expect(capture.events[0].kind, ReplayEventKind.move);
     expect(capture.events[1].kind, ReplayEventKind.undo);
     final frames = ReplayArchivePlayer.build(capture);
-    expect(ReplayArchivePlayer.equivalent(frames.last, controller.game!), isTrue);
+    expect(
+        ReplayArchivePlayer.equivalent(frames.last, controller.game!), isTrue);
   });
 
   test('portable game backup progress receives incomplete replay capture',
@@ -88,6 +89,7 @@ void main() {
     expect(controller.replayCapture, isNotNull);
     expect(controller.replayCapture!.startsAtSessionStart, isFalse);
     expect(controller.replayCapture!.isFullSessionExportable, isFalse);
-    expect(() => ReplayArchive.encode(controller.replayCapture!), throwsStateError);
+    expect(() => ReplayArchive.encode(controller.replayCapture!),
+        throwsStateError);
   });
 }

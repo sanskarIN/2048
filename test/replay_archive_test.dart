@@ -199,7 +199,8 @@ void main() {
       throwsA(isA<FormatException>()),
     );
 
-    final oversized = List.filled(ReplayArchive.maxEncodedLength + 1, 'x').join();
+    final oversized =
+        List.filled(ReplayArchive.maxEncodedLength + 1, 'x').join();
     expect(
       () => ReplayArchive.decode(oversized),
       throwsA(isA<FormatException>()),
