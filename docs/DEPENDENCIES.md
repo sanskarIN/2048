@@ -54,7 +54,22 @@ Why it is used:
 - the shared link helper validates supported secure destinations before launch;
 - launch failure can offer a copy fallback rather than crashing.
 
-## Features that add no runtime package
+## file_picker
+
+Pinned at **11.0.2** for Phase 20. It is used only by `SystemGameBackupFilePort` to open explicit user-selected save/open flows for Game Backup on the configured Flutter targets. The package does not own the backup schema, JSON validation, ranking policy, persistence, or networking.
+
+The integration is wrapped behind the project-owned `GameBackupFilePort` interface so widget tests can inject a fake and domain code remains plugin-independent. File input is byte-bounded before strict UTF-8 decoding, then passed through the existing `GameBackup` validator.
+
+Why it is used:
+
+- Flutter core does not expose one uniform cross-platform Save/Open document API for all configured targets;
+- the project needs Android/iOS/Web/Windows/macOS/Linux user-selected file transport;
+- it preserves explicit chooser interaction rather than adding broad filesystem scanning;
+- version 11.0.2 is pinned in `pubspec.yaml`/`pubspec.lock` for reproducible release-candidate builds.
+
+It is not an analytics, cloud-storage, account, or networking dependency.
+
+## Features that add no additional runtime package
 
 ### Challenge Codes
 
