@@ -25,6 +25,7 @@ jobs:
         run: python3 tool/phase21_apply.py
       - name: Push generated commits
         run: |
+          git checkout -- analysis_options.yaml || true
           git pull --rebase origin main
           git push origin main
       - name: Remove temporary Phase 21 tools
@@ -36,4 +37,4 @@ jobs:
           git commit -m "chore: remove Phase 21 implementation tools"
           git push origin main
 
-# Retry after correcting the QR payload assertion to use the project-owned widget.
+# Retry after correcting the QR payload assertion and discarding Flutter's unrelated analysis-options migration before sync.
