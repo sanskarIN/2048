@@ -361,3 +361,9 @@ unsigned iOS release: PASS - job 94990368933
 The prior run `31875177571` failed Android plugin registration while all other configured native targets passed. Enabling `android.builtInKotlin=true` fixed the AGP-9 host/plugin integration, and the full fresh matrix above is the accepted evidence.
 
 Interactive picker/document-provider/browser behavior remains a real-environment release check rather than a hosted-compilation claim.
+
+## Phase 21 QR platform behavior
+
+Challenge Code QR rendering is a Flutter presentation feature and requires no target-specific camera permission or scanner integration. The same canonical text is rendered on every configured target, with a fixed black-on-white QR surface inside the surrounding themed UI.
+
+Hosted compilation can verify that the dependency and widget compile across configured targets, but it cannot verify physical screen optical scan quality. Real-device/browser qualification remains required for device-to-device scanning, density/brightness/glare, accessibility, and narrow-layout behavior.
