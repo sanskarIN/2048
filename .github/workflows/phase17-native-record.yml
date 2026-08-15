@@ -1,0 +1,119 @@
+name: Phase 17 current-source verification docs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/phase17-native-record.yml
+
+permissions:
+  contents: write
+
+jobs:
+  record-current-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure commit identity
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+
+      - name: Update canonical verification
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('docs/VERIFICATION.md')
+          text = path.read_text()
+          sentinel = '31867788753'
+          if sentinel not in text:
+              marker = '## Phase 17 — Trusted per-mode records'
+              if marker not in text:
+                  raise SystemExit('Phase 17 verification marker not found')
+              section = '''## Phase 17 — Current-source CI and native matrix\n\nDate: **2026-08-15**\n\nA final `lib/**` source-documentation commit was used to qualify the complete current runtime tree after the Phase 17 parser correction. This closes the gap where an earlier native matrix predated that parser fix.\n\n```text\nCommit: d33d65840aff67c4e9bf69ad203f46b85146093c\nCI run: 31867788776\nCI job: 94971490776\nResult: SUCCESS\nFlutter: 3.47.0 stable\nDart: 3.13.0\nDevTools: 2.60.0\nFormatting: PASS — 74 files, 0 changed\nStatic analysis: PASS — No issues found\nTests: PASS — 144/144\nWeb release: PASS\nWeb WASM dry run: PASS\n```\n\nFresh hosted native matrix:\n\n```text\nPlatform Builds run: 31867788753\nResult: SUCCESS\nAndroid release APK: PASS — job 94971490848\nLinux release: PASS — job 94971490809\nWindows release: PASS — job 94971490788\nmacOS release: PASS — job 94971490875\nunsigned iOS release: PASS — job 94971490875\n```\n\nThis evidence covers the runtime tree containing the final per-mode-record deserializer, trusted update policy, Statistics presentation, and all 144 tests. Hosted compilation remains separate from physical-device, accessibility, signing/provisioning, and store qualification.\n\n'''
+              text = text.replace(marker, section + marker, 1)
+              path.write_text(text)
+          PY
+          git add docs/VERIFICATION.md
+          git commit -m "docs: record Phase 17 current-source verification"
+
+      - name: Update platform documentation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('docs/PLATFORMS.md')
+          text = path.read_text()
+          if '31867788753' not in text:
+              text += '''\n\n## Phase 17 current-source hosted build matrix\n\nThe latest hosted native-build evidence is Platform Builds run `31867788753` on commit `d33d65840aff67c4e9bf69ad203f46b85146093c`. All configured native targets completed successfully: Android release APK (`94971490848`), Linux release (`94971490809`), Windows release (`94971490788`), macOS release and unsigned iOS release (`94971490875`).\n\nThis run was intentionally triggered after the final Phase 17 per-mode-record parser correction so it verifies the complete current runtime source rather than an earlier partial Phase 17 snapshot. These hosted builds demonstrate compile/package success only; physical-device behavior, signed iOS distribution, accessibility, lifecycle, and store qualification remain manual release requirements.\n'''
+              path.write_text(text)
+          PY
+          git add docs/PLATFORMS.md
+          git commit -m "docs: record Phase 17 native build matrix"
+
+      - name: Update CI documentation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('docs/CI_CD.md')
+          text = path.read_text()
+          if '31867788776' not in text:
+              text += '''\n\n## Phase 17 current-source workflow evidence\n\nCurrent runtime source commit `d33d65840aff67c4e9bf69ad203f46b85146093c` was verified by permanent CI run `31867788776` and Platform Builds run `31867788753`. CI passed formatting (74 files, 0 changed), static analysis, all **144/144 tests**, Web release compilation, and the Web WASM dry run. The native matrix passed Android APK, Linux, Windows, macOS, and unsigned iOS release builds.\n\nThis current-source rerun was not created to substitute documentation for testing: the `lib/**` source-documentation clarification intentionally exercised the normal maintained workflow triggers after the final runtime parser correction. The results therefore apply to the corrected runtime tree.\n'''
+              path.write_text(text)
+          PY
+          git add docs/CI_CD.md
+          git commit -m "docs: record Phase 17 maintained workflow evidence"
+
+      - name: Update testing evidence
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('docs/TESTING.md')
+          text = path.read_text()
+          if '31867788776' not in text:
+              text += '''\n\n## Phase 17 current-source regression rerun\n\nPermanent CI run `31867788776` reran the complete suite on current runtime commit `d33d65840aff67c4e9bf69ad203f46b85146093c` after the final per-mode-record parser correction and source trust-boundary documentation. Result: formatting clean, analyzer clean, **144/144 tests passed**, Web release build passed, and the Web WASM dry run passed.\n\nThe test count is unchanged from feature acceptance because this final source commit adds maintainer documentation only; the purpose of the rerun is to prove that the current corrected runtime tree—not an earlier Phase 17 snapshot—remains green.\n'''
+              path.write_text(text)
+          PY
+          git add docs/TESTING.md
+          git commit -m "docs: record Phase 17 current-source regression rerun"
+
+      - name: Update changelog verification
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('CHANGELOG.md')
+          text = path.read_text()
+          if '31867788753' not in text:
+              marker = '### Verification\n\n'
+              if marker not in text:
+                  raise SystemExit('Verification changelog marker not found')
+              bullets = '- Phase 17 current-source gate: CI `31867788776` on `d33d65840aff67c4e9bf69ad203f46b85146093c` passed formatting, analysis, **144/144 tests**, Web release, and the Web WASM dry run.\n- Phase 17 current-source native matrix: Platform Builds `31867788753` passed Android APK, Linux, Windows, macOS, and unsigned iOS release builds on the corrected runtime tree.\n'
+              text = text.replace(marker, marker + bullets, 1)
+              path.write_text(text)
+          PY
+          git add CHANGELOG.md
+          git commit -m "docs: add current-source Phase 17 build evidence"
+
+      - name: Finalize what changed log
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('what_changed.md')
+          text = path.read_text()
+          heading = '## Phase 17 final current-source native matrix'
+          if heading not in text:
+              text += '''\n\n## Phase 17 final current-source native matrix\n\nA final audit found that Phase 17 already had successful hosted native-build evidence on commit `752bf15074ff43dd614d5e6888f8ec16f29560d7`, but that matrix predated the later parser correction in `341f2ad5d5b252f75e52e05ed7aede8a8aa38fbb`. Because the parser correction had been pushed by a one-time `GITHUB_TOKEN` helper, it did not trigger a new Platform Builds run.\n\nThe evidence gap was closed without an empty/no-op commit. `lib/features/statistics/statistics_screen.dart` received maintainer-facing source documentation clarifying that the Statistics screen is read-only with respect to ranking, that `AppController` owns the imported-backup trust policy, and that board/target metadata is intentionally presented as one record context.\n\n```text\nd33d65840aff67c4e9bf69ad203f46b85146093c\ndocs: clarify statistics record trust boundary in source\n```\n\nBecause this is a real `lib/**` source change, the maintained push triggers verified the complete corrected runtime tree.\n\n### Current-source CI\n\n```text\nCommit: d33d65840aff67c4e9bf69ad203f46b85146093c\nCI workflow run: 31867788776\nCI job: 94971490776\nResult: SUCCESS\nRunner: ubuntu-24.04\nFlutter: 3.47.0 stable\nDart: 3.13.0\nDevTools: 2.60.0\nDependency resolution: PASS\nFormatting: PASS — 74 files, 0 changed\nStatic analysis: PASS — No issues found\nAutomated tests: PASS — 144/144\nFlutter Web release build: PASS — build/web produced\nFlutter Web WASM dry run: PASS\n```\n\nThe Web compiler again emitted the existing non-fatal Cupertino icon-font availability warning but completed successfully and produced `build/web`. A source search did not find a direct `CupertinoIcons` usage, so no speculative dependency/source change was made solely to silence a successful-build warning.\n\n### Current-source hosted native matrix\n\n```text\nPlatform Builds workflow run: 31867788753\nCommit: d33d65840aff67c4e9bf69ad203f46b85146093c\nResult: SUCCESS\n\nAndroid release APK\n  Job: 94971490848\n  flutter build apk --release: PASS\n\nLinux release\n  Job: 94971490809\n  flutter build linux --release: PASS\n\nWindows release\n  Job: 94971490788\n  flutter build windows --release: PASS\n\nmacOS and unsigned iOS release\n  Job: 94971490875\n  macOS release build: PASS\n  unsigned iOS release build: PASS\n```\n\nThis supersedes the Phase 16 native matrix as the latest hosted multi-platform compilation evidence and covers the final Phase 17 per-mode-record deserializer/tracking/UI runtime source. It still does not replace physical-device gameplay/lifecycle testing, assistive-technology testing, signing/provisioning, or store metadata/review. Stable `1.0.0` therefore remains intentionally unpromoted.\n'''
+              path.write_text(text)
+          PY
+          git add what_changed.md
+          git commit -m "docs: finalize Phase 17 current-source build log"
+
+      - name: Remove temporary helper and push
+        run: |
+          git rm .github/workflows/phase17-native-record.yml
+          git commit -m "chore: remove Phase 17 native record helper"
+          git pull --rebase origin main
+          git push origin HEAD:main
