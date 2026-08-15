@@ -361,6 +361,7 @@ class AppController extends ChangeNotifier {
       final previousStreak = stats.currentStreak;
       _engine!.refreshStatus(current);
       if (!_currentGameUnranked) {
+        if (_updateModeRecord(current)) repairedSession = true;
         _applyTerminalStats(current);
       }
       if (current.status != previousStatus) {
@@ -386,6 +387,7 @@ class AppController extends ChangeNotifier {
     _sessionCounted = true;
     _winCounted = false;
     stats.gamesPlayed += 1;
+    _updateModeRecord(game!);
     _updateDailyRecord(game!);
     await _persist();
     notifyListeners();
@@ -414,6 +416,7 @@ class AppController extends ChangeNotifier {
         stats.highestTile = current.highestTile > stats.highestTile
             ? current.highestTile
             : stats.highestTile;
+        _updateModeRecord(current);
         _applyTerminalStats(current);
         _updateDailyRecord(current);
         _unlockAchievements();
@@ -472,6 +475,7 @@ class AppController extends ChangeNotifier {
     engine.refreshStatus(current);
     if (before != current.status) {
       if (!_currentGameUnranked) {
+        _updateModeRecord(current);
         _applyTerminalStats(current);
         _updateDailyRecord(current);
         _unlockAchievements();
@@ -572,6 +576,7 @@ class AppController extends ChangeNotifier {
       stats.gamesPlayed = 1;
       stats.bestScore = current.score;
       stats.highestTile = current.highestTile;
+      _updateModeRecord(current);
       final alreadyWon = _winCounted ||
           current.status == GameStatus.won ||
           current.hasAcknowledgedWin;
@@ -626,6 +631,40 @@ class AppController extends ChangeNotifier {
         snapshot.moves <= current.moves &&
         snapshot.score <= current.score &&
         snapshot.totalMerges <= current.totalMerges;
+  }
+
+  bool _updateModeRecord(GameState state) {
+    final mode = state.config.mode;
+    final existing = stats.existingRecordFor(mode);
+    final record = existing ?? ModeRecord();
+    var changed = false;
+
+    if (state.score > record.bestScore) {
+      record.bestScore = state.score;
+      record.bestScoreBoardSize = state.config.size;
+      record.bestScoreTarget = state.config.target;
+      changed = true;
+    } else if (state.score > 0 && state.score == record.bestScore) {
+      if (record.bestScoreBoardSize == null) {
+        record.bestScoreBoardSize = state.config.size;
+        changed = true;
+      }
+      if (record.bestScoreTarget == null) {
+        record.bestScoreTarget = state.config.target;
+        changed = true;
+      }
+    }
+
+    if (state.highestTile > record.highestTile) {
+      record.highestTile = state.highestTile;
+      changed = true;
+    }
+
+    if (existing == null && record.hasProgress) {
+      stats.modeRecords[mode] = record;
+      changed = true;
+    }
+    return changed;
   }
 
   void _applyTerminalStats(GameState state) {
