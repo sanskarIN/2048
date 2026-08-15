@@ -151,3 +151,11 @@ Localization is static application data plus a validated local preference. No re
 Per-mode records are convenience statistics, not cryptographic achievements. They are accepted only from the application's trusted local-session path; imported Game Backup progress is persistently marked unranked and cannot update them. Stored record fields are parsed defensively and bounded before use, and unknown future mode keys are ignored.
 
 This boundary prevents the supported portable/editable backup format from directly inflating local mode records. It is not an anti-cheat or tamper-proof system: users with direct control of application storage can modify local preferences. Any future competitive/online ranking design would require a separate authenticated threat model rather than reusing these local records as proof.
+
+## Full Replay Archive input boundary
+
+Portable Full Replay Archive JSON is untrusted user-editable input. The decoder enforces a maximum encoded length, exact format and version, export timestamp, strict opening `GameState`, complete and non-overflowed capture flags, a maximum of 4,096 events, event type, direction and time validation, nondecreasing elapsed time, and deterministic action reconstruction. Invalid moves, impossible Undo, invalid continue-after-win, and redundant or invalid status-refresh actions fail closed.
+
+Replay import is spectator-only and does not call the current-game import path. A structurally valid replay cannot assert trusted lifetime statistics, achievements, streaks, Daily history, or per-mode records. The format is not encrypted, signed, or authenticated; deterministic consistency does not establish player identity or anti-cheat authenticity.
+
+Full Replay Archive uses the same explicit `TextClipboard` boundary as Challenge Codes and Game Backup. Copy and open actions read or write clipboard text only after user action. The platform may independently retain or synchronize clipboard history, so replay text should be treated as shareable gameplay data rather than a secret-storage mechanism.
