@@ -12,7 +12,7 @@ Made by the Sanskar
 
 ## Overview
 
-2048 Nova preserves the familiar 2048 rules while adding a modern cross-platform interface, deterministic game engine, multiple board sizes and challenge modes, save/resume, robust Undo, offline shareable seeded Challenge Codes, portable current-game backup/restore, read-only Move Replay, heuristic hints, an isolated Auto Play demonstration, statistics, achievements, theme palettes, accessibility controls, Daily Challenge, and open-source project tooling.
+2048 Nova preserves the familiar 2048 rules while adding a modern cross-platform interface, deterministic game engine, multiple board sizes and challenge modes, save/resume, robust Undo, offline shareable seeded Challenge Codes, portable current-game backup/restore, read-only Move Replay, heuristic hints, an isolated Auto Play demonstration with heuristic and bounded expectimax strategies, deterministic solver benchmarks, statistics, achievements, theme palettes, accessibility controls, Daily Challenge, and open-source project tooling.
 
 The normal game is offline-first. It does not require an account, subscription, analytics service, advertising tracker, cloud-sync backend, remote AI model, or permanent internet connection. Internet access is only needed when a player deliberately opens an external destination such as GitHub, LinkedIn, email, or Buy Me a Coffee.
 
@@ -32,7 +32,7 @@ The repository is currently on the **`0.9.0+1` release-candidate line**. Automat
 - Portable imported games are always **unranked**, remain unranked after restart, clear unrelated Undo history, and cannot mutate lifetime statistics, achievements, streaks, or Daily results.
 - Read-only **Move Replay** built from the current game and validated retained Undo snapshots, with scrub, first/previous/next/latest navigation, play/pause, 1/2/4-frame-per-second playback, defensive copies, and explicit disclosure when bounded history begins after move zero.
 - Deterministic non-automatic heuristic hints that evaluate empty cells, merges, corner strategy, monotonicity, and board smoothness without consuming game RNG.
-- Optional **Auto Play Demo** with pause/resume, single-step control, speed selection, deterministic seed reset, and demo-only metrics. It uses an isolated heuristic sandbox and never writes player saves, lifetime statistics, achievements, or Daily history.
+- Optional **Auto Play Demo** with pause/resume, single-step control, speed selection, deterministic seed reset, Heuristic/Expectimax strategy selection, visible expectimax search-node diagnostics, and demo-only metrics. Both strategies run in the isolated sandbox and never write player saves, lifetime statistics, achievements, or Daily history.
 - Statistics including games, wins, win rate, best score, highest tile, total moves/merges, averages, and streaks.
 - Local achievements with progress and unlock dates.
 - Date-seeded offline Daily Challenge with deduplicated local history, sticky completion/win state, and best-result preservation across replays.
@@ -56,6 +56,7 @@ The complete documentation map is [`docs/README.md`](docs/README.md). Important 
 | All game modes | [`docs/GAME_MODES.md`](docs/GAME_MODES.md) |
 | Challenge Codes | [`docs/CHALLENGE_CODES.md`](docs/CHALLENGE_CODES.md) |
 | Hint + Auto Play | [`docs/HINT_SOLVER.md`](docs/HINT_SOLVER.md) |
+| Solver strategies + benchmarks | [`docs/SOLVER_BENCHMARKS.md`](docs/SOLVER_BENCHMARKS.md) |
 | Local storage/data | [`docs/DATA_STORAGE.md`](docs/DATA_STORAGE.md) |
 | Backup and restore | [`docs/BACKUP_AND_RESTORE.md`](docs/BACKUP_AND_RESTORE.md) |
 | Accessibility | [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md) |
@@ -170,9 +171,9 @@ Replay is spectator-only: scrubbing or playing it cannot move the live board, ch
 
 Hints are computed locally from copied board data. Every legal direction is simulated without spawning a tile. The solver ranks candidates using mobility/empty cells, immediate merge value, highest-tile corner placement, monotonicity, smoothness, and deterministic tie-breaking.
 
-Requesting a normal hint does not change score, moves, board state, Undo history, statistics, achievements, or the next deterministic spawn. The optional Auto Play Demo reuses this heuristic inside its own seeded in-memory Endless sandbox, where automatic demo moves remain separate from the player's game and records.
+Requesting a normal hint does not change score, moves, board state, Undo history, statistics, achievements, or the next deterministic spawn. The optional Auto Play Demo keeps Heuristic as its fast default and also offers a bounded deterministic Expectimax strategy. Expectimax models every empty-cell 2/4 spawn using the game's 90%/10% probabilities, uses explicit search-depth/node limits, and never consumes the live game RNG while evaluating candidates. Both strategies stay inside the seeded in-memory Endless sandbox, where automatic demo moves remain separate from the player's game and records.
 
-See [`docs/HINT_SOLVER.md`](docs/HINT_SOLVER.md).
+A reusable seeded benchmark suite and CLI compare the strategies reproducibly without touching player data. See [`docs/HINT_SOLVER.md`](docs/HINT_SOLVER.md) and [`docs/SOLVER_BENCHMARKS.md`](docs/SOLVER_BENCHMARKS.md).
 
 ## Architecture
 
