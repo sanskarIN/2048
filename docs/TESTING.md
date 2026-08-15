@@ -563,3 +563,26 @@ The native plugin matrix on the same source is `31875447417` and passed Android,
 Phase 21 adds five focused tests over the Phase 20 total of 189, bringing the source suite definition to **194 tests** before the final maintained gate. Coverage includes exact canonical text handed to the project QR wrapper, white-background rendering/semantic labeling, a 260-logical-pixel maximum, narrow-layout containment, Hindi generated-QR UI, and Hindi QR trust/accessibility catalog copy.
 
 Automated rendering/widget checks do not prove optical scan reliability. Stable qualification still requires representative real screens and external camera/scanner apps across brightness, glare, density, theme, orientation, and text-scale conditions.
+
+## Phase 21 final maintained gate
+
+The final Phase 21 runtime candidate is `2678e65824ca088c4ba93342bc8737fc18ec7708`.
+
+```text
+CI run: 31877515001
+CI job: 94995319221
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS — 94 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 194/194
+Web release: PASS
+Web WASM dry run: PASS
+```
+
+Five Phase 21 regressions were added over the Phase 20 total of 189: Hindi generated-QR screen behavior, exact QR payload handoff, the 260-logical-pixel maximum, narrow-layout containment, and Hindi QR trust/accessibility catalog coverage. Existing Challenge Code codec, replacement, clipboard/manual-entry, deterministic-seed, malformed-input, Daily-isolation, persistence, replay, backup, solver, accessibility, and localization tests remain part of the 194-test gate.
+
+The earlier final-source CI `31877417527` is retained as a formatting failure, not a behavioral pass. It reported 32 files requiring Dart 3.13 canonical formatting. Maintained formatter run `31877417558` normalized that tree before the final accepted CI.
+
+Automated widget tests verify payload/constraints/semantics but do not prove optical scan performance. Real screens and external camera/scanner apps remain a manual release requirement.
