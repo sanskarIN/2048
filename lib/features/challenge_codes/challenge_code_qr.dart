@@ -5,6 +5,8 @@ import 'package:qr_flutter/qr_flutter.dart';
 ///
 /// This widget is presentation-only. It does not parse the code, request camera
 /// access, contact a network service, or change Challenge Code trust semantics.
+/// Text obtained by any external scanner must re-enter through the normal
+/// Challenge Code decoder; this visual layer never validates or trusts it.
 class ChallengeCodeQr extends StatelessWidget {
   const ChallengeCodeQr({
     super.key,
