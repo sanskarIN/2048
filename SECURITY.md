@@ -159,3 +159,9 @@ Portable Full Replay Archive JSON is untrusted user-editable input. The decoder 
 Replay import is spectator-only and does not call the current-game import path. A structurally valid replay cannot assert trusted lifetime statistics, achievements, streaks, Daily history, or per-mode records. The format is not encrypted, signed, or authenticated; deterministic consistency does not establish player identity or anti-cheat authenticity.
 
 Full Replay Archive uses the same explicit `TextClipboard` boundary as Challenge Codes and Game Backup. Copy and open actions read or write clipboard text only after user action. The platform may independently retain or synchronize clipboard history, so replay text should be treated as shareable gameplay data rather than a secret-storage mechanism.
+
+## File picker boundary
+
+Phase 20 pins `file_picker 11.0.2` for explicit Game Backup file selection/save transport. The plugin does not decide whether a backup is valid or ranked. The project applies size limits and UTF-8 decoding at `GameBackupFilePort`, domain validation at `GameBackup.decode()`, confirmation in the UI, and the permanent unranked policy in `AppController.importGameBackup()`.
+
+macOS grants only `com.apple.security.files.user-selected.read-write` for files selected by the user. 2048 Nova does not intentionally enumerate arbitrary directories, retain recent-file paths, or add a cloud-storage/network SDK for backup transfer.
