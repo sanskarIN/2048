@@ -6,7 +6,7 @@ Completed in the current release-candidate line:
 
 - Deterministic core engine, save/resume, bounded Undo, and persisted RNG integrity.
 - Ten configured game modes, including Daily Challenge and challenge limits.
-- Offline shareable seeded **Challenge Codes** with a versioned `NOVA1` format, deterministic config/seed round trip, corruption checksum, strict input validation, manual/clipboard entry, decoded preview, replacement protection, and no account/cloud requirement.
+- Offline shareable seeded **Challenge Codes** with a versioned `NOVA1` format, deterministic config/seed round trip, corruption checksum, strict input validation, manual/clipboard entry, decoded preview, replacement protection, local high-contrast QR rendering of the exact code text, and no account/cloud/camera requirement.
 - Daily Challenge isolation from arbitrary Challenge Codes so date-derived seed/history semantics remain separate.
 - Deterministic heuristic hints with focused regression coverage.
 - Isolated deterministic **Auto Play Demo** with pause/resume, single-step control, speed selection, seed reset, selectable Heuristic/bounded-Expectimax strategies, visible search-node diagnostics, a deterministic benchmark suite/CLI, and strict separation from player saves/statistics/achievements/Daily history.
@@ -29,7 +29,7 @@ Remaining release qualification before `1.0.0`:
 - VoiceOver, TalkBack, Narrator/browser-screen-reader checks on representative platforms, including Hindi semantics, pronunciation, large-text wrapping, language switching, expanded per-mode Statistics cards, and Full Replay Archive controls/status text.
 - Long-session and real-device Daily/timed/move-limit/Undo/win-continue testing.
 - Representative Auto Play Heuristic/Expectimax strategy switching, pause behavior, performance/responsiveness, localization, and accessibility checks on real targets.
-- Real-platform Challenge Code generate/copy/paste/manual-entry/validation/replacement/determinism/accessibility checks using actual clipboard/browser handlers.
+- Real-platform Challenge Code generate/QR-display/device-to-device scan/copy/paste/manual-entry/validation/replacement/determinism/accessibility checks using actual screens, external camera/scanner apps, and clipboard/browser handlers.
 - Real-platform Move Replay scrub/play/pause/navigation-away/accessibility checks.
 - Real-platform Full Replay Archive copy/open/manual-entry/import/scrub/play/pause/navigation-away/4,096-event-boundary/accessibility checks, including long replay responsiveness on slower devices.
 - Real-platform Game Backup clipboard copy/import plus file Save/Open/cancel/round-trip/oversize/non-UTF-8/restore/restart/Undo checks using actual clipboard, browser download/file-input, native picker, document-provider, and macOS sandbox handlers.
@@ -52,7 +52,7 @@ Promote the release candidate only when:
 These are intentionally non-blocking and must not destabilize core gameplay:
 
 - Additional languages beyond the implemented English/Hindi framework, only with complete translation, layout, persistence, and accessibility qualification.
-- Optional QR rendering/scanning or OS share-sheet convenience for the already-implemented Challenge Code text format, only if cross-platform/privacy/accessibility costs are justified.
+- Optional **in-app QR scanning** or OS share-sheet convenience for the already-implemented Challenge Code text/QR format, only if camera permissions, cross-platform maintenance, privacy, and accessibility costs are justified. Local QR rendering itself is already implemented.
 - Optional deeper/adaptive or alternative solver strategies only if they preserve the existing Auto Play sandbox, deterministic benchmark coverage, explicit resource limits, and normal Hint behavior.
 - Golden/visual-regression matrices for major breakpoints and themes.
 - Additional trustworthy mode-specific metadata beyond the implemented best-score/highest-tile records, only when it can be migrated and measured without inventing historical facts.
