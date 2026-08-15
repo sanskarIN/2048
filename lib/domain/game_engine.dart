@@ -41,8 +41,12 @@ class GameEngine {
     return state;
   }
 
-  MoveOutcome move(GameState state, Direction direction) {
-    refreshStatus(state);
+  MoveOutcome move(
+    GameState state,
+    Direction direction, {
+    DateTime? now,
+  }) {
+    refreshStatus(state, now: now);
     if (state.status != GameStatus.playing) {
       return const MoveOutcome(changed: false, scoreGain: 0, merges: 0);
     }
@@ -61,7 +65,7 @@ class GameEngine {
 
     final changed = before != _signature(state.board);
     if (!changed) {
-      refreshStatus(state);
+      refreshStatus(state, now: now);
       return const MoveOutcome(changed: false, scoreGain: 0, merges: 0);
     }
 
@@ -70,7 +74,7 @@ class GameEngine {
     state.moves += 1;
     state.totalMerges += mergeCount;
     spawnTile(state);
-    refreshStatus(state);
+    refreshStatus(state, now: now);
     return MoveOutcome(
       changed: true,
       scoreGain: scoreGain,
