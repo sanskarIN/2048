@@ -308,3 +308,10 @@ Before calling a target stable/release-ready, complete the applicable items in [
 The application registers English (`en`) and Hindi (`hi`) for Android, iOS, Web, Windows, macOS, and Linux Flutter builds. **System default** follows a supported platform locale; unsupported locales fall back to English. Explicit English/Hindi selection overrides the system locale through `MaterialApp.locale`.
 
 Hosted compilation verifies the code path can build for configured targets, but real platform font rendering, large-text wrapping, IME/input behavior, clipboard dialogs, and screen-reader pronunciation in Hindi remain manual release checks.
+
+
+## Phase 17 current-source hosted build matrix
+
+The latest hosted native-build evidence is Platform Builds run `31867788753` on commit `d33d65840aff67c4e9bf69ad203f46b85146093c`. All configured native targets completed successfully: Android release APK (`94971490848`), Linux release (`94971490809`), Windows release (`94971490788`), macOS release and unsigned iOS release (`94971490875`).
+
+This run was intentionally triggered after the final Phase 17 per-mode-record parser correction so it verifies the complete current runtime source rather than an earlier partial Phase 17 snapshot. These hosted builds demonstrate compile/package success only; physical-device behavior, signed iOS distribution, accessibility, lifecycle, and store qualification remain manual release requirements.
