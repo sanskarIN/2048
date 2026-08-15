@@ -240,3 +240,9 @@ Intermediate analyzer failures `31869526679` and `31869794852` are retained in t
 The permanent CI gate now includes full-session replay protocol, persistence and controller capture, spectator UI and navigation, and Hindi localization tests in addition to all previous regressions. Replay archive changes remain subject to the same formatter, analyzer, full tests, and Web release sequence. Runtime `lib/**` changes also trigger the permanent native Platform Builds matrix according to its path filters.
 
 A green hosted gate proves the tested archive code parses and reconstructs the covered deterministic sequences and compiles on configured targets. It does not prove real platform clipboard behavior, long-session performance, assistive-technology quality, lifecycle timer behavior, signing, or store acceptance.
+
+## Phase 20 plugin qualification
+
+Because Phase 20 adds `file_picker` and macOS sandbox entitlements, its final acceptance requires both the normal CI gate and the configured native Platform Builds workflow on the completed runtime tree. The normal CI covers dependency resolution, formatting, analyzer, 189 tests, Web release, and Web WASM dry-run compatibility. Platform Builds provides Android/Linux/Windows/macOS/unsigned-iOS compilation evidence.
+
+Neither workflow performs interactive system picker qualification. Save/Open/cancel/document-provider/browser-download behavior remains a manual release boundary.
