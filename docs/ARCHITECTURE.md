@@ -266,3 +266,12 @@ Localization is kept under `lib/core/localization/` rather than inside game rule
 `NovaApp` registers the project delegate plus Flutter's Material, Widgets, and Cupertino localization delegates. `AppSettings.language` stores `system`, `english`, or `hindi`; malformed persisted values fall back to System default. Switching language does not recreate or reinterpret `GameState`, RNG, Undo, ranking policy, Daily history, Challenge Codes, Replay, Auto Play, or portable backup data.
 
 The architecture deliberately has no remote translation service. See [`LOCALIZATION.md`](LOCALIZATION.md).
+
+
+## Phase 17 per-mode record boundary
+
+Per-mode records remain part of controller-owned player statistics rather than the deterministic engine. `ModeRecord` and `PlayerStats.modeRecords` live in `lib/app/state/app_controller.dart`; the engine still knows nothing about lifetime records, trust, imported backups, or UI presentation.
+
+`AppController` is the policy boundary. It updates a mode record only while `_currentGameUnranked` is false, seeds a missing record from a ranked restored session, preserves maxima across Undo, rebuilds only an active ranked baseline after Reset Statistics, and deliberately bypasses record mutation for imported portable progress. `StatisticsScreen` only reads the sanitized records and presents localized mode/configuration metadata.
+
+This keeps three separate concerns explicit: deterministic game state, trusted local aggregate/record policy, and presentation. Future online/cloud/portable ranking work must not bypass this separation.
