@@ -538,3 +538,22 @@ Web WASM dry run: PASS
 ```
 
 The final current-source Phase 20 CI/native matrix is recorded separately after all source/documentation synchronization is complete. Hosted tests cannot replace real platform Save/Open dialog and document-provider behavior.
+
+## Phase 20 final current-source acceptance
+
+The final repaired Phase 20 runtime source is commit `188e81c607eca76516018be8c668eab41b777cc1`.
+
+```text
+CI run: 31875447398
+CI job: 94990368739
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS - 91 files, 0 changed
+Static analysis: PASS - No issues found
+Tests: PASS - 189/189
+Web release: PASS - build/web
+Web WASM dry run: PASS
+```
+
+The native plugin matrix on the same source is `31875447417` and passed Android, Linux, Windows, macOS, and unsigned iOS. This supersedes the Android-failed matrix `31875177571`.
