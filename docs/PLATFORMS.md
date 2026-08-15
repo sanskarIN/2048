@@ -312,6 +312,21 @@ Hosted compilation verifies the code path can build for configured targets, but 
 
 ## Phase 17 current-source hosted build matrix
 
-The latest hosted native-build evidence is Platform Builds run `31867788753` on commit `d33d65840aff67c4e9bf69ad203f46b85146093c`. All configured native targets completed successfully: Android release APK (`94971490848`), Linux release (`94971490809`), Windows release (`94971490788`), macOS release and unsigned iOS release (`94971490875`).
+The Phase 17 hosted native-build evidence was Platform Builds run `31867788753` on commit `d33d65840aff67c4e9bf69ad203f46b85146093c`. All configured native targets completed successfully: Android release APK (`94971490848`), Linux release (`94971490809`), Windows release (`94971490788`), macOS release and unsigned iOS release (`94971490875`).
 
 This run was intentionally triggered after the final Phase 17 per-mode-record parser correction so it verifies the complete current runtime source rather than an earlier partial Phase 17 snapshot. These hosted builds demonstrate compile/package success only; physical-device behavior, signed iOS distribution, accessibility, lifecycle, and store qualification remain manual release requirements.
+
+
+## Phase 18 current runtime hosted build matrix
+
+The latest hosted native-build evidence is Platform Builds run `31869794809` on runtime commit `e324882fc861e9e4221020aabb00515c7366a6f7`. All configured native targets completed successfully:
+
+- Android release APK — job `94976574376`;
+- Linux release — job `94976574317`;
+- Windows release — job `94976574323`;
+- macOS release — job `94976574495`;
+- unsigned iOS release — job `94976574495`.
+
+The later final CI commit `b114255b6f510f0e7ba8d0516e9a30eebf4451b8` changes only a test import and does not alter runtime application source, so this matrix covers the accepted Phase 18 runtime tree. It supersedes the Phase 17 matrix as the latest hosted native compilation evidence.
+
+Hosted builds demonstrate compilation/package success only; physical-device behavior, expectimax responsiveness on representative slower devices, accessibility/focus, signed iOS distribution, signing/provisioning, and store qualification remain manual release requirements.
