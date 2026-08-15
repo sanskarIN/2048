@@ -214,3 +214,14 @@ All persisted data in this document is local application state. The default app 
 The existing settings object now includes `language` with one of three validated values: `system`, `english`, or `hindi`. It does not require a new top-level SharedPreferences key or a settings schema migration.
 
 Missing, wrongly typed, or unsupported language values are interpreted as `system`. The setting contains only the user's local UI preference; no locale selection is uploaded by the project. Clearing all project data restores the default `system` preference.
+
+
+## Phase 17 per-mode statistics extension
+
+`PlayerStats` now stores an optional `modeRecords` object inside the existing statistics JSON payload. Keys are current `GameMode.name` values. Each retained record may contain `bestScore`, `highestTile`, `bestScoreBoardSize`, and `bestScoreTarget`. No new preference key or storage backend is introduced.
+
+The parser treats this as a backward-compatible optional extension: legacy statistics without `modeRecords` remain valid, unknown future mode keys are ignored, malformed record objects are skipped, numeric fields are range/type checked, tile/target values must be valid powers of two, board size must remain within 3 through 8, and empty records are omitted when serialized.
+
+A ranked restored current game can seed a missing record from its observable score/board. An imported Game Backup cannot seed or mutate records because its persistent unranked marker is restored before trusted statistics repair is applied. Reset Statistics clears historical records; a ranked active game then recreates only its current-mode baseline, while an unranked active import recreates none.
+
+See [`MODE_RECORDS.md`](MODE_RECORDS.md) for the complete trust and migration contract.
