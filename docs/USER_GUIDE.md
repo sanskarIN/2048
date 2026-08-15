@@ -356,3 +356,15 @@ Open **Statistics** to see the existing overall totals followed by an expandable
 Mode records are local to this installation and work fully offline. Normal games you start inside 2048 Nova can improve them. A Game Backup that you import is labeled unranked and cannot improve overall or per-mode records, even if you keep playing that imported board.
 
 Choosing **Reset statistics** removes historical mode records. If a ranked game is still active, its current observable progress becomes the fresh baseline for only that mode. If the active board came from an imported backup, no mode record is recreated from it.
+
+## Full Replay Archive
+
+From Move Replay you can open **Full Replay Archive** even when no live game is available, so a received portable replay can be viewed without replacing player progress.
+
+For a newly started game, the archive records the opening state plus deterministic valid moves, Undo actions, explicit continue-after-win actions, and timed status-only transitions. Choose **Copy full replay** to place a complete `nova2048.fullReplay` JSON archive on the clipboard. Use **Open from clipboard** or **Enter replay text** to view another archive.
+
+Imported archives are spectator-only. You can scrub, step, play or pause, jump to the first or latest frame, and choose 1, 2, or 4 frames per second, but the imported board never becomes your live game and cannot update statistics, achievements, streaks, Daily results, or per-mode records.
+
+Capture is capped at 4,096 events. If a session reaches the cap, gameplay continues but complete export is disabled. Legacy games or Game Backup sessions whose earlier actions were never recorded are also not falsely exported as full sessions.
+
+Replay JSON is editable and not signed, so a valid archive means the sequence reconstructs consistently, not that the app has authenticated who played it. See [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md).
