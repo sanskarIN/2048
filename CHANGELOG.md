@@ -101,6 +101,8 @@ All notable changes to this project are documented here.
 
 ### Verification
 
+- Phase 17 current-source gate: CI `31867788776` on `d33d65840aff67c4e9bf69ad203f46b85146093c` passed formatting, analysis, **144/144 tests**, Web release, and the Web WASM dry run.
+- Phase 17 current-source native matrix: Platform Builds `31867788753` passed Android APK, Linux, Windows, macOS, and unsigned iOS release builds on the corrected runtime tree.
 - Phase 17 trusted per-mode records final gate: CI run `31867499047` on commit `c443f9fde0cc243269be57515772378c06284e86` used Flutter 3.47.0 / Dart 3.13.0; formatting passed with 74 files / 0 changes, analysis reported no issues, **144/144 tests passed**, the Web release build succeeded, and the WASM dry run passed.
 - Phase 17 acceptance history remains visible: CI `31867316152` caught an unused test local during analysis, and CI `31867370893` reached 142 passed / 2 failed because localized combined metadata was incorrectly asserted as separate widgets; both test-quality defects were corrected before the final green gate.
 - Phase 16 English/Hindi localization final gate: CI run `31806785165` on commit `9dea87e73803d83c3aa0614d35f7860773dbca04` used Flutter 3.47.0 / Dart 3.13.0; formatting passed with 70 files and 0 changes, analysis reported no issues, **134/134 tests passed**, the Web release build succeeded, and the WASM dry run passed.
