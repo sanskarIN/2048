@@ -44,20 +44,19 @@ Both flows leave the live player game unchanged. Cancelling a native Save dialog
 
 ## Import workflow
 
-Select **Import from clipboard**. The application:
+Select **Import from clipboard** or **Import backup file**. Clipboard import reads text only after the explicit action. File import opens one user-selected `.nova2048` / `.json` file, rejects an oversized reported or actual byte length before full text processing, and requires strict UTF-8. Both transports then converge on the same flow:
 
-1. reads plain text from the clipboard;
-2. rejects missing or empty text;
-3. checks the maximum encoded length before JSON parsing;
-4. parses the envelope as JSON;
-5. validates the backup format and version;
-6. validates the export timestamp;
-7. requires an embedded game object;
-8. passes the embedded object through strict `GameState.fromJson()` validation;
-9. displays a non-dismissible preview/confirmation dialog;
-10. restores only after the player explicitly chooses **Restore unranked backup**.
+1. reject missing/empty or invalid input;
+2. check the maximum encoded text length before JSON parsing;
+3. parse the envelope as JSON;
+4. validate backup format and version;
+5. validate export timestamp;
+6. require an embedded game object;
+7. pass the embedded object through strict `GameState.fromJson()` validation;
+8. display a non-dismissible preview/confirmation dialog;
+9. restore only after the player explicitly chooses **Restore unranked backup**.
 
-Cancelling the dialog leaves the current ranked game untouched.
+Cancelling the picker or confirmation leaves the current ranked game untouched.
 
 ## Validation and size limit
 
