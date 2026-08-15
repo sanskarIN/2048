@@ -14,7 +14,7 @@ Accessibility is part of the 2048 Nova definition of done.
 - Interactive toolbar controls use tooltips and semantic labels where additional context is useful.
 - Terminal win/loss dialogs require an explicit action and cannot be accidentally dismissed by tapping outside or using route-back.
 - Recoverable-game replacement uses an explicit confirmation dialog rather than silently discarding the saved board.
-- Challenge Codes use standard labeled form controls, selectable generated code text, explicit validation feedback, a decoded configuration preview, and the same recoverable-game replacement confirmation used by normal new-game flows.
+- Challenge Codes use standard labeled form controls, selectable generated code text, a localized semantic label for the high-contrast QR, explicit validation feedback, a decoded configuration preview, and the same recoverable-game replacement confirmation used by normal new-game flows.
 - Game Backup uses visible descriptive buttons and a non-dismissible restore confirmation that explains the unranked policy before replacement.
 - Home distinguishes imported sessions with **Continue Unranked Backup** rather than presenting imported data as ordinary ranked progress.
 - Move Replay reuses the accessible game-board renderer, labels the replay-frame slider, exposes tooltips for first/previous/next/latest controls, and keeps playback read-only.
@@ -70,6 +70,7 @@ The Challenge Codes screen uses standard Material controls for:
 - Target tile selection when relevant;
 - generating a fresh deterministic code;
 - selectable generated code text;
+- a semantic black-on-white QR containing the same generated text;
 - copying a generated code;
 - multiline manual input;
 - explicit Paste and Validate actions;
@@ -170,3 +171,9 @@ Stable release notes must distinguish automated verification from manual screen-
 English and Hindi use the same accessibility structure. In Hindi mode the game-board container and positional tile/empty-cell semantics are localized, including row, column, and tile value. Standard Material controls receive the selected locale through Flutter's official localization delegates.
 
 Automated widget/semantics tests verify representative Hindi Home/Settings text and board labels. They do **not** prove final real assistive-technology quality. Stable release still requires Hindi checks with TalkBack, VoiceOver, representative desktop/browser screen readers, large text, narrow layouts, focus traversal, and language switching on real platforms.
+
+### Challenge Code QR accessibility
+
+The QR is never the only sharing path: the exact text remains selectable/copyable. The renderer stays black-on-white regardless of surrounding theme for scan contrast, carries a localized semantic label, caps its normal size, and shrinks inside narrower constraints instead of forcing horizontal overflow.
+
+The application does not provide in-app scanning, so no camera control or permission is introduced. Manual qualification must verify the QR and adjacent text with large text, high contrast, dark/light surrounding themes, keyboard traversal, TalkBack/VoiceOver/Narrator/browser screen readers, and real device-to-device scanning without making the visual QR the only understandable control.
