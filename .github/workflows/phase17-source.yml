@@ -1,0 +1,116 @@
+name: Phase 17 source commits
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/phase17-source.yml
+
+permissions:
+  contents: write
+
+jobs:
+  phase17-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure commit identity
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+
+      - name: Add persisted per-mode record model
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/app/state/app_controller.dart')
+          text = path.read_text()
+
+          marker = '''class PlayerStats {\n  PlayerStats();\n'''
+          replacement = '''class ModeRecord {\n  ModeRecord({\n    this.bestScore = 0,\n    this.highestTile = 0,\n    this.bestScoreBoardSize,\n    this.bestScoreTarget,\n  });\n\n  int bestScore;\n  int highestTile;\n  int? bestScoreBoardSize;\n  int? bestScoreTarget;\n\n  bool get hasProgress => bestScore > 0 || highestTile > 0;\n\n  Map<String, Object?> toJson() => {\n        'bestScore': bestScore,\n        'highestTile': highestTile,\n        'bestScoreBoardSize': bestScoreBoardSize,\n        'bestScoreTarget': bestScoreTarget,\n      };\n\n  factory ModeRecord.fromJson(Map<String, Object?> json) {\n    final bestScore = PlayerStats._nonNegativeInt(json['bestScore']);\n    final highestTile = PlayerStats._validTileOrZero(json['highestTile']);\n    final boardSize = _validBoardSizeOrNull(json['bestScoreBoardSize']);\n    final target = _validTargetOrNull(json['bestScoreTarget']);\n    return ModeRecord(\n      bestScore: bestScore,\n      highestTile: highestTile,\n      bestScoreBoardSize: bestScore > 0 ? boardSize : null,\n      bestScoreTarget: bestScore > 0 ? target : null,\n    );\n  }\n\n  static int? _validBoardSizeOrNull(Object? value) {\n    final size = PlayerStats._nonNegativeInt(value);\n    return size >= 3 && size <= 8 ? size : null;\n  }\n\n  static int? _validTargetOrNull(Object? value) {\n    final target = PlayerStats._validTileOrZero(value);\n    return target >= 4 ? target : null;\n  }\n}\n\nclass PlayerStats {\n  PlayerStats();\n'''
+          if text.count(marker) != 1:
+              raise SystemExit('PlayerStats insertion marker not found exactly once')
+          text = text.replace(marker, replacement, 1)
+
+          marker = '''  int bestStreak = 0;\n\n  double get winRate => gamesPlayed == 0 ? 0 : gamesWon / gamesPlayed;\n'''
+          replacement = '''  int bestStreak = 0;\n  final Map<GameMode, ModeRecord> modeRecords = {};\n\n  double get winRate => gamesPlayed == 0 ? 0 : gamesWon / gamesPlayed;\n\n  ModeRecord recordFor(GameMode mode) =>\n      modeRecords.putIfAbsent(mode, ModeRecord.new);\n\n  ModeRecord? existingRecordFor(GameMode mode) => modeRecords[mode];\n'''
+          if text.count(marker) != 1:
+              raise SystemExit('PlayerStats fields marker not found exactly once')
+          text = text.replace(marker, replacement, 1)
+
+          marker = '''        'currentStreak': currentStreak,\n        'bestStreak': bestStreak,\n      };\n'''
+          replacement = '''        'currentStreak': currentStreak,\n        'bestStreak': bestStreak,\n        'modeRecords': {\n          for (final entry in modeRecords.entries)\n            if (entry.value.hasProgress) entry.key.name: entry.value.toJson(),\n        },\n      };\n'''
+          if text.count(marker) != 1:
+              raise SystemExit('PlayerStats JSON marker not found exactly once')
+          text = text.replace(marker, replacement, 1)
+
+          marker = '''    if (stats.bestStreak < stats.currentStreak) {\n      stats.bestStreak = stats.currentStreak;\n    }\n    return stats;\n  }\n'''
+          replacement = '''    if (stats.bestStreak < stats.currentStreak) {\n      stats.bestStreak = stats.currentStreak;\n    }\n    final rawModeRecords = json['modeRecords'];\n    if (rawModeRecords is Map) {\n      for (final mode in GameMode.values) {\n        final rawRecord = rawModeRecords[mode.name];\n        if (rawRecord is! Map) continue;\n        final normalized = <String, Object?>{};\n        for (final entry in rawRecord.entries) {\n          final key = entry.key;\n          if (key is String) normalized[key] = entry.value;\n        }\n        final record = ModeRecord.fromJson(normalized);\n        if (record.hasProgress) stats.modeRecords[mode] = record;\n      }\n    }\n    return stats;\n  }\n'''
+          if text.count(marker) != 1:
+              raise SystemExit('PlayerStats parsing marker not found exactly once')
+          path.write_text(text)
+          PY
+          dart format lib/app/state/app_controller.dart
+          git add lib/app/state/app_controller.dart
+          git commit -m "feat: add persisted per-mode record model"
+
+      - name: Track trusted per-mode progress
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/app/state/app_controller.dart')
+          text = path.read_text()
+
+          replacements = [
+            (
+              '''      if (!_currentGameUnranked) {\n        _applyTerminalStats(current);\n      }\n''',
+              '''      if (!_currentGameUnranked) {\n        if (_updateModeRecord(current)) repairedSession = true;\n        _applyTerminalStats(current);\n      }\n''',
+            ),
+            (
+              '''    stats.gamesPlayed += 1;\n    _updateDailyRecord(game!);\n''',
+              '''    stats.gamesPlayed += 1;\n    _updateModeRecord(game!);\n    _updateDailyRecord(game!);\n''',
+            ),
+            (
+              '''        stats.highestTile = current.highestTile > stats.highestTile\n            ? current.highestTile\n            : stats.highestTile;\n        _applyTerminalStats(current);\n''',
+              '''        stats.highestTile = current.highestTile > stats.highestTile\n            ? current.highestTile\n            : stats.highestTile;\n        _updateModeRecord(current);\n        _applyTerminalStats(current);\n''',
+            ),
+            (
+              '''      if (!_currentGameUnranked) {\n        _applyTerminalStats(current);\n        _updateDailyRecord(current);\n        _unlockAchievements();\n      }\n''',
+              '''      if (!_currentGameUnranked) {\n        _updateModeRecord(current);\n        _applyTerminalStats(current);\n        _updateDailyRecord(current);\n        _unlockAchievements();\n      }\n''',
+            ),
+            (
+              '''      stats.bestScore = current.score;\n      stats.highestTile = current.highestTile;\n      final alreadyWon = _winCounted ||\n''',
+              '''      stats.bestScore = current.score;\n      stats.highestTile = current.highestTile;\n      _updateModeRecord(current);\n      final alreadyWon = _winCounted ||\n''',
+            ),
+          ]
+
+          for old, new in replacements:
+              if text.count(old) != 1:
+                  raise SystemExit(f'tracking marker not found exactly once: {old[:60]!r}')
+              text = text.replace(old, new, 1)
+
+          marker = '''  void _applyTerminalStats(GameState state) {\n'''
+          helper = '''  bool _updateModeRecord(GameState state) {\n    final mode = state.config.mode;\n    final existing = stats.existingRecordFor(mode);\n    final record = existing ?? ModeRecord();\n    var changed = false;\n\n    if (state.score > record.bestScore) {\n      record.bestScore = state.score;\n      record.bestScoreBoardSize = state.config.size;\n      record.bestScoreTarget = state.config.target;\n      changed = true;\n    } else if (state.score > 0 && state.score == record.bestScore) {\n      if (record.bestScoreBoardSize == null) {\n        record.bestScoreBoardSize = state.config.size;\n        changed = true;\n      }\n      if (record.bestScoreTarget == null) {\n        record.bestScoreTarget = state.config.target;\n        changed = true;\n      }\n    }\n\n    if (state.highestTile > record.highestTile) {\n      record.highestTile = state.highestTile;\n      changed = true;\n    }\n\n    if (existing == null && record.hasProgress) {\n      stats.modeRecords[mode] = record;\n      changed = true;\n    }\n    return changed;\n  }\n\n  void _applyTerminalStats(GameState state) {\n'''
+          if text.count(marker) != 1:
+              raise SystemExit('mode record helper marker not found exactly once')
+          text = text.replace(marker, helper, 1)
+
+          path.write_text(text)
+          PY
+          dart format lib/app/state/app_controller.dart
+          git add lib/app/state/app_controller.dart
+          git commit -m "feat: track trusted per-mode progress"
+
+      - name: Remove temporary helper and push source commits
+        run: |
+          git rm .github/workflows/phase17-source.yml
+          git commit -m "chore: remove Phase 17 source helper"
+          git pull --rebase origin main
+          git push origin HEAD:main
