@@ -94,3 +94,7 @@ For current release confidence, consult in this order:
 - [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md) — shared clipboard/file backup envelope and persistent unranked restore policy.
 
 Phase 20 verification: [`PHASE_20_VERIFICATION.md`](PHASE_20_VERIFICATION.md) records file-backup implementation scope, transparent CI/native failures, the AGP-9 built-in-Kotlin repair, final 189-test CI, the fully green cross-platform native matrix, and remaining real-environment release boundaries.
+
+## Phase 21 documentation note
+
+Challenge Code documentation now includes offline QR rendering of the exact `NOVA1` text, presentation/trust/privacy/accessibility boundaries, focused tests, and real-device scan qualification. See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md), [`ACCESSIBILITY.md`](ACCESSIBILITY.md), [`PRIVACY.md`](PRIVACY.md), [`DEPENDENCIES.md`](DEPENDENCIES.md), and the Phase 21 verification record once finalized.
