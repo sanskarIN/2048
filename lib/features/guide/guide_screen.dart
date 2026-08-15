@@ -40,7 +40,7 @@ class GuideScreen extends StatelessWidget {
       ),
       (
         'Challenge Codes',
-        'Home can open Challenge Codes to create or open an offline shared deterministic challenge. A NOVA1 code contains only a supported game configuration and random seed, so the same code produces the same opening board and random state. It never contains board progress, score, lifetime statistics, achievements, Daily history, settings, or Undo snapshots. Codes are checksummed for accidental corruption, not signed or encrypted. Daily Challenge stays separate because it already uses the UTC date as its shared seed. Starting a valid code creates a fresh normal non-Daily game and uses the normal local statistics policy.',
+        'Home can open Challenge Codes to create or open an offline shared deterministic challenge. A generated code is shown as selectable NOVA1 text and as a local black-on-white QR containing that exact same text, so another device can scan it with its own camera or scanner app. 2048 Nova does not request camera access or upload QR contents. A NOVA1 code contains only a supported game configuration and random seed, never board progress, score, lifetime statistics, achievements, Daily history, settings, or Undo snapshots. Codes are checksummed for accidental corruption, not signed, encrypted, authenticated, or proof of identity. Daily Challenge stays separate because it already uses the UTC date as its shared seed. Starting a valid code creates a fresh normal non-Daily game and uses the normal local statistics policy.',
       ),
       (
         'Game Backup',
@@ -64,7 +64,7 @@ class GuideScreen extends StatelessWidget {
       ),
       (
         'Accessibility',
-        'Use system text scaling, keyboard controls, positional semantic tile labels, high contrast, and reduced motion. Tile values are always shown as text, not color alone. Challenge Codes use labeled form controls, selectable generated text, explicit validation feedback, and a decoded configuration preview.',
+        'Use system text scaling, keyboard controls, positional semantic tile labels, high contrast, and reduced motion. Tile values are always shown as text, not color alone. Challenge Codes use labeled form controls, selectable generated text, a semantic label for the QR, explicit validation feedback, and a decoded configuration preview; the text remains available so QR scanning is never the only sharing path.',
       ),
       (
         'Language',
@@ -72,7 +72,7 @@ class GuideScreen extends StatelessWidget {
       ),
       (
         'Offline and privacy',
-        'Core gameplay, Challenge Codes, Game Backup validation, Move Replay, Full Replay Archive, Auto Play Demo, and language switching work without a project server. No account, analytics, advertising tracker, remote AI service, cloud synchronization, or online translation service is required. Clipboard text is read or written only after you choose the corresponding Challenge Code, Game Backup, or Full Replay Archive action.',
+        'Core gameplay, Challenge Code text/QR generation, Game Backup validation, Move Replay, Full Replay Archive, Auto Play Demo, and language switching work without a project server. QR rendering is local and does not request camera access. No account, analytics, advertising tracker, remote AI service, cloud synchronization, or online translation service is required. Clipboard text is read or written only after you choose the corresponding Challenge Code, Game Backup, or Full Replay Archive action.',
       ),
       (
         'FAQ',
