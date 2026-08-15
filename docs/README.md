@@ -87,3 +87,8 @@ For current release confidence, consult in this order:
 - Business: `sanskarin@outlook.in`, `sanskarin.business@gmail.com`
 - Support: `supportramsandesh@gmail.com`
 - Buy Me a Coffee: https://buymeacoffee.com/sanskarIN
+
+## Phase 20 file backup documentation
+
+- [`FILE_BACKUPS.md`](FILE_BACKUPS.md) — `.nova2048` / `.json` Game Backup file transport, byte bounds, platform behavior, macOS sandbox scope, trust model, dependency boundary, tests, and manual qualification.
+- [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md) — shared clipboard/file backup envelope and persistent unranked restore policy.
