@@ -161,3 +161,13 @@ All notable changes to this project are documented here.
 - Portable backup JSON is plain, unsigned, user-editable data and therefore can never choose its own trusted ranking status; every confirmed import is locally marked unranked.
 - Portable import cannot import or mutate lifetime statistics, achievements, streaks, Daily history, settings, or old Undo data, and cannot award a ranked terminal win.
 - No signing credentials, platform private keys, provisioning profiles, or secrets are stored in the public repository.
+
+### Phase 20 — File-based Game Backup
+
+- Added explicit user-selected Game Backup file export/import using the existing version-1 backup envelope and `.nova2048` / `.json` chooser filters.
+- Added `GameBackupFilePort` and pinned `file_picker 11.0.2` so platform transport stays isolated from domain validation and ranked-state policy.
+- Added a 512 KiB pre-decode file byte limit plus strict UTF-8 before the existing 128 Ki-character JSON protocol bound.
+- Added macOS user-selected read/write sandbox entitlement for Debug/Profile and Release.
+- File restores use the same explicit preview and persistent unranked `AppController.importGameBackup()` path as clipboard restores.
+- Added five file-flow widget regressions plus one Hindi catalog regression, bringing the first clean Phase 20 gate to 189/189 tests.
+- First clean gate: CI `31874929593` on `1cd1b4230f6200c9208709d0c76f12fd3a20fce2` passed formatting (91 files, 0 changes), analyzer, 189 tests, Web release, and WASM dry run.
