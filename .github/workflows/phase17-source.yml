@@ -56,7 +56,6 @@ jobs:
               raise SystemExit('PlayerStats parsing marker not found exactly once')
           path.write_text(text)
           PY
-          dart format lib/app/state/app_controller.dart
           git add lib/app/state/app_controller.dart
           git commit -m "feat: add persisted per-mode record model"
 
@@ -104,7 +103,6 @@ jobs:
 
           path.write_text(text)
           PY
-          dart format lib/app/state/app_controller.dart
           git add lib/app/state/app_controller.dart
           git commit -m "feat: track trusted per-mode progress"
 
