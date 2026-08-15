@@ -98,3 +98,7 @@ Phase 20 verification: [`PHASE_20_VERIFICATION.md`](PHASE_20_VERIFICATION.md) re
 ## Phase 21 documentation note
 
 Challenge Code documentation now includes offline QR rendering of the exact `NOVA1` text, presentation/trust/privacy/accessibility boundaries, focused tests, and real-device scan qualification. See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md), [`ACCESSIBILITY.md`](ACCESSIBILITY.md), [`PRIVACY.md`](PRIVACY.md), [`DEPENDENCIES.md`](DEPENDENCIES.md), and the Phase 21 verification record once finalized.
+
+## Phase 21 verification
+
+- [`PHASE_21_VERIFICATION.md`](PHASE_21_VERIFICATION.md) — focused implementation, helper-failure, formatter, 194-test CI, native-build, QR trust/privacy/accessibility, and manual optical-scan qualification evidence for offline Challenge Code QR rendering.
