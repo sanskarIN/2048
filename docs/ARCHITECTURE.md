@@ -286,3 +286,13 @@ Normal `GameEngine.hint()` still delegates to `HintSolver`; expectimax is delibe
 Expectimax player nodes choose a legal direction. Chance nodes enumerate every empty cell and both real spawn values (`2` at 90%, `4` at 10%). Search is bounded by depth and an explicit maximum explored-node count. Hypothetical boards are copies, so search does not consume the sandbox or live-game RNG. Only after `AutoplaySession` chooses one direction does its isolated seeded `GameEngine` execute the real move/spawn.
 
 Changing Auto Play strategy clears only decision diagnostics and pauses the UI timer. It does not reset the sandbox board, score, moves, or RNG. Reset Seed recreates the sandbox opening while retaining the selected strategy. The benchmark runner creates fresh seeded sandbox sessions and returns metrics only; it has no path to trusted player persistence.
+
+## Full Replay Archive boundary
+
+`lib/domain/replay_archive.dart` owns the versioned full-session event model, portable JSON codec, deterministic reconstruction player, event/time validation, and spectator-state equivalence checks. `AppController` owns active capture orchestration and `LocalStore` owns the project key `nova.replay_capture.v1`.
+
+A fresh `AppController.newGame()` creates `ReplayCapture.start(game)`. Valid moves, Undo, continue-after-win, and status-only timed transitions append compact events with elapsed milliseconds. A stored capture must belong to the current session and reconstruct consistently before it is trusted as the active complete capture. If replay metadata is missing, malformed, or mismatched while the current game itself is valid, the game is preserved and replay capture falls back to an incomplete local capture instead of inventing history.
+
+Portable export requires `startsAtSessionStart == true` and `overflowed == false`. The action list is capped at 4,096 events; overflow disables complete export while gameplay continues. Game Backup imports are incomplete by design because sender-side earlier actions are unavailable.
+
+Opening an archive constructs defensive spectator frames only. It never installs the imported replay as `AppController.game` and cannot update saves, achievements, streaks, Daily history, or per-mode records. Because JSON is editable, the format provides deterministic validation, not proof of authorship. See [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md).
