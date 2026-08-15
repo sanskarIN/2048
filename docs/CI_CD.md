@@ -234,3 +234,9 @@ Phase 18 final automated qualification uses permanent CI run `31869835223` and P
 The native workflow passed Android APK, Linux, Windows, macOS, and unsigned iOS release builds on runtime commit `e324882fc861e9e4221020aabb00515c7366a6f7`. The later CI-only commit `b114255b6f510f0e7ba8d0516e9a30eebf4451b8` fixes a missing test import and leaves runtime source unchanged.
 
 Intermediate analyzer failures `31869526679` and `31869794852` are retained in the verification/work log. The first caught a duplicate Hindi translation key and CLI `avoid_print` issues; the second caught a missing localization import in a widget test. Permanent quality gates were not weakened to bypass either issue.
+
+## Phase 19 replay archive gate scope
+
+The permanent CI gate now includes full-session replay protocol, persistence and controller capture, spectator UI and navigation, and Hindi localization tests in addition to all previous regressions. Replay archive changes remain subject to the same formatter, analyzer, full tests, and Web release sequence. Runtime `lib/**` changes also trigger the permanent native Platform Builds matrix according to its path filters.
+
+A green hosted gate proves the tested archive code parses and reconstructs the covered deterministic sequences and compiles on configured targets. It does not prove real platform clipboard behavior, long-session performance, assistive-technology quality, lifecycle timer behavior, signing, or store acceptance.
