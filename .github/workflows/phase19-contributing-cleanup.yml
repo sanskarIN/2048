@@ -1,0 +1,48 @@
+name: Phase 19 contributor guidance cleanup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/phase19-contributing-cleanup.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure commit identity
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+      - name: Add Full Replay Archive contributor rules
+        run: |
+          if ! grep -q '^## Full Replay Archive contributions$' CONTRIBUTING.md; then
+            cat >> CONTRIBUTING.md <<'EOF'
+
+## Full Replay Archive contributions
+
+Full Replay Archive is a portable spectator protocol and must remain separate from trusted player-progress import. Changes in this area must preserve the explicit `nova2048.fullReplay` format/version contract, strict opening-state and event validation, replay-time injection for timed rules, the 4,096-event capture bound, complete/incomplete/overflow semantics, and corruption-safe `nova.replay_capture.v1` persistence.
+
+Imported replay text must never be installed as `AppController.game` or used to update statistics, achievements, streaks, Daily history, settings, or per-mode records. JSON validity is deterministic self-consistency, not player identity, signing, authentication, or anti-cheat proof.
+
+Keep protocol/reconstruction logic in `lib/domain/replay_archive.dart`, active capture orchestration in `AppController`/`LocalStore`, and spectator UI in `lib/features/replay/`. Clipboard access must continue through `TextClipboard` and only after explicit user actions. Any behavior change should include focused protocol, persistence/controller, UI/navigation, and localization regressions plus corresponding updates to `docs/REPLAY_ARCHIVES.md`, `docs/TESTING.md`, release documentation, and `what_changed.md`.
+EOF
+          fi
+          git add CONTRIBUTING.md
+          if ! git diff --cached --quiet; then
+            git commit -m "docs: define full replay archive contribution rules"
+          fi
+      - name: Remove every temporary Phase 19 workflow and push
+        run: |
+          git ls-files '.github/workflows/phase19-*.yml' | xargs -r git rm
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: remove Phase 19 temporary workflows"
+          fi
+          git pull --rebase origin main
+          git push origin main
