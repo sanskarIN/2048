@@ -429,3 +429,15 @@ Automated tests do not replace manual interaction checks. Stable releases should
 - signing, provisioning, packaging, and store metadata.
 
 These manual/device/store checks are release boundaries, not hidden automated claims.
+
+
+## Phase 17 per-mode record regression coverage
+
+Phase 17 adds 10 focused tests across four files before the final maintained CI gate is recorded:
+
+- `mode_record_serialization_test.dart`: record round-trip, malformed/unknown-record handling, and legacy statistics compatibility.
+- `mode_record_tracking_test.dart`: ranked record persistence, migration from an observable legacy current game, and Reset Statistics active-mode baseline behavior.
+- `mode_record_unranked_test.dart`: imported-backup exclusion across import/move/reset plus ranked handling for locally started seeded configurations.
+- `statistics_mode_records_test.dart`: expandable per-mode Statistics presentation and reuse of English/Hindi localization for mode/configuration/record labels.
+
+The feature intentionally relies on the existing imported-game, controller, persistence, and localization suites as additional cross-coverage. The current passing total must be taken from the newest CI/verification entry rather than inferred from this section.
