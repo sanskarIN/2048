@@ -464,3 +464,14 @@ The test count is unchanged from feature acceptance because this final source co
 Phase 18 adds focused coverage for bounded Expectimax and the reusable benchmark layer on top of the Phase 17 total of 144 tests. New coverage includes deterministic/legal recommendations, terminal no-move handling, input-board immutability, explicit node-budget enforcement, larger-board support, malformed-board rejection, strategy-switch state preservation, seeded expectimax sequence reproducibility, decision diagnostics, reset behavior, deterministic benchmark summaries, heuristic zero-search-node accounting, benchmark validation, strategy-selection UI isolation, Hindi solver catalog strings, and Hindi strategy-control presentation.
 
 The final Phase 18 test total and authoritative CI/native run IDs are recorded only after the candidate source/docs stop moving and the permanent workflows complete. Intermediate analyzer/test failures remain documented in `what_changed.md` rather than being treated as passing evidence.
+
+
+## Phase 18 final maintained gate
+
+Permanent CI run `31869835223` on final test commit `b114255b6f510f0e7ba8d0516e9a30eebf4451b8` is the authoritative Phase 18 automated acceptance result. Flutter 3.47.0 / Dart 3.13.0 formatted 80 files with 0 changes, reported no analyzer issues, passed **161/161 tests**, built the Flutter Web release successfully, and passed the Web WASM dry run.
+
+Phase 18 adds exactly 17 tests over the Phase 17 total of 144. They cover bounded expectimax, deterministic strategy isolation, seeded benchmark behavior, Auto Play strategy selection, Hindi solver catalog entries, and Hindi solver UI.
+
+Two failed analyzer gates remain intentionally visible. CI `31869526679` caught a duplicate Hindi `Strategy` map key plus eight CLI `avoid_print` lints; CI `31869794852` caught a missing `AppLanguage` import in the new Hindi solver widget test. Neither failed run is counted as passing evidence. The corrections precede the final 161-test gate.
+
+The current runtime tree is additionally covered by Platform Builds `31869794809`, which passed Android, Linux, Windows, macOS, and unsigned iOS release compilation. See [`PHASE_18_VERIFICATION.md`](PHASE_18_VERIFICATION.md).
