@@ -193,3 +193,9 @@ Do not mark stable `1.0.0` ready until representative real environments verify:
 - [ ] Hindi, large text, keyboard/focus, and representative screen-reader behavior for file actions/errors/confirmation.
 
 Hosted compilation is evidence of build compatibility, not completion of these interactive checks.
+
+## Phase 21 Challenge Code QR manual gate
+
+Before stable `1.0.0`, verify generated Challenge Code QR behavior on representative Android, iOS, Web, Windows, macOS, and Linux displays where practical. Check that the displayed QR decodes to the exact visible `NOVA1` text using external camera/scanner apps, remains readable under light/dark surrounding themes and practical brightness/glare conditions, does not overflow narrow layouts or clip adjacent large text, exposes understandable screen-reader semantics, and never requests camera permission.
+
+Also confirm that QR-scanned text still goes through ordinary Challenge Code validation/replacement protection and that users can always fall back to selectable/copyable/manual text. Do not mark QR display as authentication or as an in-app scanning capability.
