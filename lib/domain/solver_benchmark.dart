@@ -27,11 +27,9 @@ class SolverBenchmarkSummary {
   final int moveBudget;
   final List<SolverBenchmarkCaseResult> cases;
 
-  int get totalScore =>
-      cases.fold(0, (total, result) => total + result.score);
+  int get totalScore => cases.fold(0, (total, result) => total + result.score);
 
-  int get totalMoves =>
-      cases.fold(0, (total, result) => total + result.moves);
+  int get totalMoves => cases.fold(0, (total, result) => total + result.moves);
 
   int get totalExploredNodes =>
       cases.fold(0, (total, result) => total + result.exploredNodes);

@@ -23,7 +23,8 @@ void main() {
     await tester.tap(find.text('Auto Play Demo'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Deterministic local solver demonstration'), findsOneWidget);
+    expect(
+        find.text('Deterministic local solver demonstration'), findsOneWidget);
     expect(find.text('Strategy: Heuristic'), findsOneWidget);
     expect(find.text('Demo moves: 0'), findsOneWidget);
 
