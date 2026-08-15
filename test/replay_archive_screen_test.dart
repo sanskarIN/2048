@@ -46,7 +46,8 @@ void main() {
 
     await _pumpScreen(tester, controller, clipboard);
 
-    expect(find.text('Complete full-session capture available'), findsOneWidget);
+    expect(
+        find.text('Complete full-session capture available'), findsOneWidget);
     await tester.tap(find.text('Copy full replay'));
     await tester.pumpAndSettle();
 
@@ -62,7 +63,8 @@ void main() {
     );
   });
 
-  testWidgets('imported replay stays spectator-only and leaves live state intact',
+  testWidgets(
+      'imported replay stays spectator-only and leaves live state intact',
       (tester) async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
@@ -116,7 +118,8 @@ void main() {
     expect(ReplayArchivePlayer.equivalent(controller.game!, before), isTrue);
   });
 
-  testWidgets('Hindi mode localizes full replay archive controls', (tester) async {
+  testWidgets('Hindi mode localizes full replay archive controls',
+      (tester) async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
     await controller.updateSettings(
