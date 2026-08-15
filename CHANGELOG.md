@@ -5,6 +5,9 @@ All notable changes to this project are documented here.
 ## [Unreleased]
 
 ### Added
+- Offline high-contrast **Challenge Code QR rendering** using pinned `qr_flutter 4.1.0`; the QR contains the exact existing `NOVA1` text and adds no camera permission, scanner, account, cloud transfer, or authentication semantics.
+- Responsive `ChallengeCodeQr` presentation with a 260-logical-pixel cap, narrow-layout containment, white background/black modules, semantic labeling, and local render-error fallback.
+- Five focused Phase 21 QR regressions covering exact payload handoff, scan contrast/semantics, narrow/wide sizing, Hindi screen copy, and Hindi trust/accessibility guidance.
 - Portable spectator-only **Full Replay Archives** using versioned `nova2048.fullReplay` JSON, deterministic action reconstruction, explicit clipboard/manual open, and a hard 4,096-event capture bound.
 - Full-session replay action capture for newly started local games, including valid moves, Undo, continue-after-win, and timed status-only transitions with recorded elapsed time.
 - Full Replay Archive viewer with scrub/step/play-pause/first/latest controls, 1/2/4-frame-per-second playback, imported spectator-state labeling, and English/Hindi controls/trust messaging.
@@ -69,7 +72,7 @@ All notable changes to this project are documented here.
 - Daily replay history preserves the strongest score/move pairing, peak tile, completion, and win state instead of allowing a weaker replay to downgrade history.
 - Daily Challenge remains intentionally separate from Challenge Codes: its UTC-date seed/history contract cannot be replaced by arbitrary portable seeded configuration text.
 - A valid Challenge Code starts a fresh normal non-Daily game through `AppController.newGame` rather than using the unranked portable-progress restore path.
-- Challenge Codes add no runtime dependency, account/cloud service, network requirement, persistence key, or record/progress import surface.
+- The Challenge Code **codec/trust model** still adds no account/cloud service, network requirement, persistence key, or record/progress import surface. Phase 21 adds only pinned `qr_flutter 4.1.0` for local presentation of the exact existing text; it does not add in-app scanning or camera permission.
 - Local persistence repairs valid portions of partially corrupt undo and Daily Challenge collections and rewrites repaired storage.
 - Statistics reset keeps an active game represented as the current session so win-rate and streak accounting remain internally consistent.
 - Challenge countdown refresh runs only for timed games rather than waking every Game screen once per second.
