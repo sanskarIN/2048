@@ -53,7 +53,7 @@ The backup intentionally excludes:
 - Undo history;
 - account/analytics data, because the default app has no such system.
 
-The application does not automatically upload or synchronize backup text.
+The application does not automatically upload or synchronize backup text and does not scan directories in the background. File access begins only after **Save backup file** or **Import backup file** is chosen. The operating system/browser may expose local or cloud-backed locations through its own picker; 2048 Nova receives only the user-selected file interaction and does not add a cloud-storage SDK.
 
 Clipboard data is managed by the operating system/platform, so users should treat a copied backup like other clipboard content. A backup is not encrypted or signed. Do not share it unless you intend to share the embedded current-game state.
 
