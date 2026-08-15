@@ -151,3 +151,27 @@ Manual before stable release:
 - [ ] Verify expectimax responsiveness on slower representative devices and confirm no UI lockup during practical single-step/Auto Play use.
 - [ ] Verify Hindi/English labels, large-text wrapping, keyboard/focus behavior, and screen-reader output for the added strategy controls/metrics.
 - [ ] Confirm long-running Auto Play remains isolated from player saves/statistics/achievements/Daily records on real targets.
+
+## Phase 19 full replay archive qualification
+
+Automated and source checks covered by the Phase 19 implementation and focused suite:
+
+- [x] Portable replay uses explicit `nova2048.fullReplay` format and version plus a pre-parse encoded-size limit.
+- [x] Fresh sessions create complete capture while legacy, restored, and Game Backup progress remains explicitly incomplete.
+- [x] Replay move, Undo, continue-after-win, and timed status-refresh events reconstruct deterministically with recorded event time.
+- [x] Malformed, unsupported, oversized, incomplete archives and invalid action sequences fail closed.
+- [x] Capture is bounded to 4,096 events and overflow disables complete export without stopping gameplay.
+- [x] Active replay capture persists locally, survives restart, is removed with the game or Clear All, and malformed persistence is repaired safely.
+- [x] Imported replay UI is spectator-only and automated widget coverage confirms the live game and statistics remain unchanged.
+- [x] Full Replay Archive controls and trust copy have Hindi localization regression coverage.
+- [x] Move Replay can navigate to the Full Replay Archive workspace even when no live game exists.
+
+Manual checks still required before `1.0.0`:
+
+- [ ] Verify large replay copy, open, and manual-entry behavior using real Android, iOS, Web, Windows, macOS, and Linux clipboard environments where supported.
+- [ ] Verify a long complete replay can scrub, step, play or pause, change speed, and leave the route without lingering timer behavior.
+- [ ] Verify the 4,096-event overflow state on a representative real target and confirm gameplay remains usable while export is disabled.
+- [ ] Verify legacy, restored, and Game Backup sessions clearly communicate incomplete full-session capture and never offer misleading complete export.
+- [ ] Verify imported spectator replay cannot alter the live game, statistics, achievements, streaks, Daily history, or per-mode records through real interaction.
+- [ ] Verify English and Hindi labels, validation feedback, large-text wrapping, keyboard and focus behavior, and screen-reader semantics for archive status, actions, and viewer controls.
+- [ ] Verify long valid archive reconstruction and playback remain responsive on representative slower devices.
