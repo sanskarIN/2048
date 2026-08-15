@@ -154,9 +154,9 @@ See [`docs/DATA_STORAGE.md`](docs/DATA_STORAGE.md).
 
 ## Game Backup
 
-Home exposes **Game Backup**. Export copies a versioned JSON envelope for the current game to the clipboard. It intentionally excludes settings, lifetime statistics, achievements, Daily history, and Undo history.
+Home exposes **Game Backup**. Export can copy a versioned JSON envelope for the current game to the clipboard or save the same envelope through an explicit user-selected `.nova2048` file. It intentionally excludes settings, lifetime statistics, achievements, Daily history, per-mode records, and old Undo history.
 
-Import is an untrusted-input boundary. The app checks maximum text size, JSON structure, format/version, timestamp, and strict embedded `GameState` validity, then requires explicit confirmation before replacement.
+Import from clipboard or file is an untrusted-input boundary. File input is byte-bounded before strict UTF-8 decode; both transports then share the same maximum text-size, JSON structure, format/version, timestamp, strict embedded `GameState`, explicit confirmation, and persistent unranked policy.
 
 Every imported game becomes **unranked**. Imported play can continue/save/Undo normally, but cannot change trusted lifetime statistics, achievements, streaks, or Daily Challenge records. An imported backup's embedded historical `bestScore` is not trusted as a lifetime record.
 
