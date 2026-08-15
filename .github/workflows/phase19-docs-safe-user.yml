@@ -1,0 +1,127 @@
+name: Phase 19 safe user docs updates
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/phase19-docs-safe-user.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure commit identity
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+
+      - name: Update user guide
+        run: |
+          if ! grep -q '^## Full Replay Archive$' docs/USER_GUIDE.md; then
+            cat >> docs/USER_GUIDE.md <<'EOF'
+
+## Full Replay Archive
+
+From Move Replay you can open **Full Replay Archive** even when no live game is available, so a received portable replay can be viewed without replacing player progress.
+
+For a newly started game, the archive records the opening state plus deterministic valid moves, Undo actions, explicit continue-after-win actions, and timed status-only transitions. Choose **Copy full replay** to place a complete `nova2048.fullReplay` JSON archive on the clipboard. Use **Open from clipboard** or **Enter replay text** to view another archive.
+
+Imported archives are spectator-only. You can scrub, step, play or pause, jump to the first or latest frame, and choose 1, 2, or 4 frames per second, but the imported board never becomes your live game and cannot update statistics, achievements, streaks, Daily results, or per-mode records.
+
+Capture is capped at 4,096 events. If a session reaches the cap, gameplay continues but complete export is disabled. Legacy games or Game Backup sessions whose earlier actions were never recorded are also not falsely exported as full sessions.
+
+Replay JSON is editable and not signed, so a valid archive means the sequence reconstructs consistently, not that the app has authenticated who played it. See [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md).
+EOF
+          fi
+          git add docs/USER_GUIDE.md
+          git commit -m "docs: add full replay archive user guide"
+
+      - name: Update development guide
+        run: |
+          if ! grep -q '^## Full Replay Archive development rules$' docs/DEVELOPMENT.md; then
+            cat >> docs/DEVELOPMENT.md <<'EOF'
+
+## Full Replay Archive development rules
+
+Both replay systems are spectator-only. Move Replay continues to use defensive copies from bounded Undo history and must never call player mutation methods from its viewer controls.
+
+Full Replay Archive is a separate portable protocol. Changes must preserve explicit format/versioning, encoded-size bounds, strict opening `GameState` validation, deterministic event ordering and action legality, replay-time injection for timed rules, the hard 4,096-event capture bound, complete versus incomplete capture semantics, corruption-safe persistence, and spectator-only imported archives that never replace `AppController.game`.
+
+Portable replay text must never mutate trusted statistics, achievements, streaks, Daily history, or per-mode records. JSON validity must not be described as authorship or authentication. Protocol/player changes belong in `lib/domain/replay_archive.dart`; active capture orchestration belongs in `AppController` and `LocalStore`; viewer behavior belongs in `lib/features/replay/`. Clipboard access must continue through `TextClipboard`. See [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md).
+EOF
+          fi
+          git add docs/DEVELOPMENT.md
+          git commit -m "docs: define replay archive development rules"
+
+      - name: Update FAQ
+        run: |
+          if ! grep -q '^## What is Full Replay Archive?$' docs/FAQ.md; then
+            cat >> docs/FAQ.md <<'EOF'
+
+## What is Full Replay Archive?
+
+Full Replay Archive is the portable spectator replay system. A newly started session records a bounded deterministic action stream from its opening state. A complete capture can be copied as versioned JSON and opened later without replacing the current game.
+
+It differs from Move Replay: Move Replay reuses the latest retained Undo snapshots and can start after move zero, while Full Replay Archive can represent the whole newly recorded session even after old Undo snapshots have fallen out of the 50-snapshot Undo window.
+
+## Can an imported Full Replay Archive change my score or records?
+
+No. Opening an archive builds spectator frames in memory. It does not install a game, import statistics, unlock achievements, change streaks, write Daily history, or improve per-mode records.
+
+## Why is Copy full replay disabled?
+
+Portable full-session export requires a capture that began with the session and did not exceed the safety limit. Legacy, restored, or Game Backup progress does not contain earlier unrecorded actions, so it is marked incomplete. A session that exceeds 4,096 recorded events is marked overflowed. In either case the game remains playable, but the app will not mislabel partial history as a complete replay.
+
+## Are Full Replay Archives signed or proof that someone achieved a score?
+
+No. The archive is validated for structure and deterministic self-consistency, but JSON is editable. It is not a digital signature, identity proof, anti-cheat record, or trusted leaderboard submission.
+
+## What information can a replay archive reveal?
+
+A shared archive can expose game configuration, seed and RNG state, opening board, move, Undo, continue and status actions, action timing, and the reconstructed score and board sequence. The project does not upload that data automatically; clipboard or manual sharing is an explicit user action.
+EOF
+          fi
+          git add docs/FAQ.md
+          git commit -m "docs: answer full replay archive questions"
+
+      - name: Update troubleshooting
+        run: |
+          if ! grep -q '^## Copy full replay is disabled$' docs/TROUBLESHOOTING.md; then
+            cat >> docs/TROUBLESHOOTING.md <<'EOF'
+
+## Copy full replay is disabled
+
+A portable full-session replay is available only when capture started with the current game and has not overflowed its 4,096-event bound. Legacy saves and Game Backup imports do not contain missing earlier actions, so their replay capture is intentionally incomplete. Start a new local game to create a complete capture from move zero.
+
+If the current session exceeded 4,096 replay events, normal gameplay continues but export stays disabled rather than producing an incomplete archive labeled as complete.
+
+## Full Replay Archive import is rejected
+
+A replay archive must be valid JSON with format `nova2048.fullReplay`, version `1`, a valid export timestamp, a complete non-overflowed capture, no more than 4,096 events, and a valid `GameState` opening state. Event times must be ordered and bounded; move, Undo, win-continuation, and status-refresh actions must be legal when reconstructed.
+
+A Challenge Code or Game Backup is a different portable format and cannot be opened as a replay archive. See [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md).
+
+## Opening a replay did not create a playable game
+
+That is intentional. Portable replay import is spectator-only. Use Challenge Codes to start a fresh shared configuration or Game Backup to restore editable progress, which becomes unranked.
+
+## A timed replay diverges from the original status
+
+Version 1 records elapsed event timing and supplies it to the engine during reconstruction. If a development change causes divergence, inspect `GameEngine.move(..., now:)`, `refreshStatus(..., now:)`, replay event ordering, and capture persistence. Do not fix replay by using the viewer's current clock.
+EOF
+          fi
+          git add docs/TROUBLESHOOTING.md
+          git commit -m "docs: add full replay archive troubleshooting"
+
+      - name: Remove helper and push
+        run: |
+          git rm .github/workflows/phase19-docs-safe-user.yml
+          git commit -m "chore: remove Phase 19 safe user docs helper"
+          git pull --rebase origin main
+          git push origin main
