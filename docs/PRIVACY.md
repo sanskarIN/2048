@@ -38,6 +38,8 @@ Selecting **Copy challenge code** writes the generated text to the system clipbo
 
 Challenge Code text is plain and not encrypted. Its checksum is only for accidental corruption detection. Share a code only through channels you choose and remember that the operating system/platform controls clipboard history and cross-device clipboard behavior.
 
+The generated code may also be rendered locally as a QR image containing the exact same plain text. Rendering does not upload the code, contact a QR service, read the camera, request camera permission, or create an additional Challenge Code history. If another device scans the screen, that external camera/scanner environment controls its own handling of the captured text.
+
 See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md).
 
 ## Portable Game Backup, clipboard, and selected files
@@ -104,10 +106,11 @@ The repository's GitHub Actions workflows compile and test source code. Project 
 Runtime package use beyond Flutter is intentionally limited to:
 
 - `file_picker` for explicit user-selected Game Backup file save/open transport;
+- `qr_flutter` for local presentation-only Challenge Code QR rendering;
 - `shared_preferences` for small local project state;
 - `url_launcher` for explicit external browser/email handoff.
 
-Challenge Codes use Dart JSON/Base64URL and Flutter's clipboard APIs through the local `TextClipboard` abstraction, so they add no third-party runtime package or network dependency.
+Challenge Code encoding/validation uses Dart JSON/Base64URL and Flutter's clipboard APIs through the local `TextClipboard` abstraction. Phase 21 additionally uses pinned `qr_flutter 4.1.0` for local rendering only; it adds no network dependency, camera permission, scanner, account, telemetry, or cloud transfer.
 
 The project does not currently include an analytics, advertising, crash-reporting, account, cloud-storage, or remote-AI runtime SDK.
 
