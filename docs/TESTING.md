@@ -441,3 +441,12 @@ Phase 17 adds 10 focused tests across four files before the final maintained CI 
 - `statistics_mode_records_test.dart`: expandable per-mode Statistics presentation and reuse of English/Hindi localization for mode/configuration/record labels.
 
 The feature intentionally relies on the existing imported-game, controller, persistence, and localization suites as additional cross-coverage. The current passing total must be taken from the newest CI/verification entry rather than inferred from this section.
+
+
+## Phase 17 final maintained gate
+
+The permanent `CI` workflow run `31867499047` on commit `c443f9fde0cc243269be57515772378c06284e86` is the authoritative Phase 17 automated acceptance result. Flutter 3.47.0 / Dart 3.13.0 formatted 74 files with 0 changes, reported no analyzer issues, passed **144/144 tests**, built the Flutter Web release successfully, and passed the Web WASM dry run.
+
+The two prior acceptance attempts remain documented rather than hidden: run `31867316152` caught an unused test local during analysis; run `31867370893` reached 142 passing / 2 failing tests because the localized Statistics widget harness incorrectly expected combined mode-record metadata to be split into separate `Text` widgets. Commits `f42a8ab18edd4661a066419de0daa84a2ce22f85` and `c443f9fde0cc243269be57515772378c06284e86` corrected those test-quality issues before the final green gate.
+
+See [`PHASE_17_VERIFICATION.md`](PHASE_17_VERIFICATION.md) for the focused acceptance record.
