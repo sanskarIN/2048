@@ -12,6 +12,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   file_picker: 11.0.2
+  qr_flutter: 4.1.0
   shared_preferences: ^2.5.3
   url_launcher: ^6.3.2
 
