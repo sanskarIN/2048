@@ -171,3 +171,11 @@ All notable changes to this project are documented here.
 - File restores use the same explicit preview and persistent unranked `AppController.importGameBackup()` path as clipboard restores.
 - Added five file-flow widget regressions plus one Hindi catalog regression, bringing the first clean Phase 20 gate to 189/189 tests.
 - First clean gate: CI `31874929593` on `1cd1b4230f6200c9208709d0c76f12fd3a20fce2` passed formatting (91 files, 0 changes), analyzer, 189 tests, Web release, and WASM dry run.
+
+#### Phase 20 final verification
+
+- Final current-source CI `31875447398` on `188e81c607eca76516018be8c668eab41b777cc1` passed formatting (91 files, 0 changes), static analysis, 189/189 tests, Web release, and Web WASM dry run on Flutter 3.47.0 / Dart 3.13.0.
+- Initial Platform Builds `31875177571` failed Android plugin registration only; Linux, Windows, macOS, and unsigned iOS passed.
+- `188e81c607eca76516018be8c668eab41b777cc1` enables AGP-9 built-in Kotlin so `file_picker` Kotlin sources remain available to Flutter plugin registration.
+- Fresh Platform Builds `31875447417` passed Android `94990368847`, Linux `94990368919`, Windows `94990368886`, macOS and unsigned iOS `94990368933`.
+- Stable `1.0.0` remains unpromoted pending the documented real-device/file-picker/accessibility/signing/store checks.
