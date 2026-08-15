@@ -73,7 +73,7 @@ Starting a code still uses the normal recoverable-game replacement confirmation 
 
 ### Portable Game Backup
 
-Clipboard backup text is untrusted input. The application checks:
+Clipboard text and user-selected backup files are untrusted input. File import first bounds the reported and actual byte length and requires strict UTF-8. The shared backup decoder then checks:
 
 - maximum input length before JSON parsing;
 - backup format;
