@@ -86,6 +86,12 @@ const hindiTranslations = <String, String>{
   'Target tile': 'लक्ष्य टाइल',
   'Generate new seeded code': 'नया सीडेड कोड बनाएँ',
   'Copy challenge code': 'चैलेंज कोड कॉपी करें',
+  'Scan to share': 'स्कैन करके साझा करें',
+  'QR code containing this challenge code':
+      'इस चैलेंज कोड वाला QR कोड',
+  'Unable to render QR code.': 'QR कोड नहीं बनाया जा सका।',
+  'The QR code contains the same plain NOVA1 text shown above. It does not add identity, authentication, or cloud transfer.':
+      'QR कोड में ऊपर दिखाया गया वही साधारण NOVA1 टेक्स्ट है। यह पहचान, प्रमाणीकरण या क्लाउड ट्रांसफर नहीं जोड़ता।',
   'Open a challenge': 'चैलेंज खोलें',
   'Paste a NOVA1 code or enter it manually. A checksum catches accidental corruption before any game is replaced.':
       'NOVA1 कोड पेस्ट करें या हाथ से दर्ज करें। किसी गेम को बदलने से पहले चेकसम आकस्मिक खराबी पकड़ता है।',
