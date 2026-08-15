@@ -42,7 +42,7 @@ See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md).
 
 ## Portable Game Backup, clipboard, and selected files
 
-Game Backup is an explicit user action. Export creates plain JSON text for the **current game only** and writes that text to the system clipboard.
+Game Backup is an explicit user action. Export creates plain JSON text for the **current game only** and can write that text to the system clipboard or to a `.nova2048` file selected through the platform/browser save flow.
 
 The backup intentionally excludes:
 
