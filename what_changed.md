@@ -3360,3 +3360,195 @@ Focused permanent evidence is recorded in:
 ```text
 docs/PHASE_18_VERIFICATION.md
 ```
+
+# Phase 19 — Portable Full-Session Replay Archives
+
+Date: **2026-08-15**
+
+## Scope and trust model
+
+Phase 19 implements the roadmap's full-session replay export/import expansion without replacing the existing bounded Move Replay.
+
+Move Replay remains the lightweight read-only view based on the current game plus retained Undo snapshots. Full Replay Archive is a separate portable deterministic action protocol for sessions captured from their actual beginning.
+
+Imported Full Replay Archives are spectator-only. They never replace `AppController.game`, never call the playable Game Backup import path, and cannot update lifetime statistics, achievements, streaks, Daily Challenge history, settings, or trusted per-mode records.
+
+Portable replay JSON is user-editable. Validation establishes deterministic self-consistency, not player identity, cryptographic authenticity, anti-cheat proof, or trusted leaderboard provenance.
+
+## Runtime implementation
+
+### Deterministic event clock
+
+Commit:
+
+```text
+7596b2297e701e7ec80aece5e4f779933d4aef78
+feat: add deterministic replay event clock
+```
+
+`GameEngine.move` accepts optional `DateTime? now` and forwards it into status reconciliation. Existing callers remain compatible.
+
+Replay events store elapsed milliseconds from the captured session start. `ReplayArchivePlayer` reconstructs event time as:
+
+```text
+initialState.startedAt + event.elapsedMilliseconds
+```
+
+and supplies that recorded event time to the engine. This prevents Time Challenge replay from depending on the spectator device's present wall clock.
+
+### Versioned full-session archive protocol
+
+Commit:
+
+```text
+b18d64e5e5c1e8a8f64c2c614dfcd4942a9fbdfd
+feat: add full-session replay archive protocol
+```
+
+New `lib/domain/replay_archive.dart` contains:
+
+- `ReplayEventKind.move`;
+- `ReplayEventKind.undo`;
+- `ReplayEventKind.continueAfterWin`;
+- `ReplayEventKind.statusRefresh`;
+- strict event type, direction, integer, and elapsed-time parsing;
+- `ReplayCapture.start(...)` for complete freshly started sessions;
+- `ReplayCapture.incomplete(...)` for legacy/restored/imported progress whose earlier actions are unavailable;
+- hard `ReplayCapture.maxEvents = 4096`;
+- overflow state that stops further full-history recording without stopping normal gameplay;
+- portable `ReplayArchive` envelope `nova2048.fullReplay`, version 1;
+- maximum encoded archive length of 1,000,000 characters;
+- strict envelope, export-time, capture, completeness, and event validation;
+- `ReplayArchivePlayer` deterministic reconstruction using defensive unmodifiable frames;
+- action legality checks for moves, Undo, win-continuation, status refresh, and event chronology;
+- state-equivalence checks for current-session verification.
+
+Complete portable export requires `startsAtSessionStart == true` and `overflowed == false`. The encoder reconstructs the sequence before emitting archive text. Incomplete and overflowed captures fail closed instead of being mislabeled as full-session history.
+
+### Local persistence
+
+Commit:
+
+```text
+fb4382cb0bf716805f4bbce6aeafcdb3390b4c5c
+feat: persist bounded full-session replay capture
+```
+
+LocalStore owns:
+
+```text
+nova.replay_capture.v1
+```
+
+with save/load/clear behavior. Malformed capture persistence is removed safely. Corrupt current-game recovery clears associated replay metadata, and clearing the current game or all project data clears replay capture.
+
+### AppController capture
+
+`AppController` now:
+
+- creates `ReplayCapture.start(game)` for a fresh `newGame`;
+- records successful moves with direction and time;
+- records valid Undo;
+- records explicit continue-after-win;
+- records status-only timed transitions;
+- persists capture with the session;
+- restores only same-session capture that reconstructs consistently;
+- preserves an otherwise valid current game and falls back to incomplete capture if replay metadata is missing, malformed, or mismatched;
+- assigns an incomplete capture to Game Backup imports because the sender's earlier actions are unavailable;
+- clears replay capture with the current game or all-data reset.
+
+An overflowed capture is a bounded valid prefix, not a complete session. It remains non-exportable while the game continues normally.
+
+### Full Replay Archive UI
+
+Commit:
+
+```text
+cb07ac75ca9b47af6ecbdcdffd7faad173272ab9
+feat: add full-session replay archive workspace
+```
+
+New `lib/features/replay/replay_archive_screen.dart` includes:
+
+- complete/incomplete/overflow/no-capture status;
+- **Copy full replay** only for complete non-overflowed capture;
+- explicit **Open from clipboard**;
+- manual replay-text entry;
+- strict validation/rejection feedback;
+- imported spectator frames kept only in memory;
+- first/previous/next/latest navigation;
+- slider scrubbing;
+- play/pause;
+- 1/2/4 frames per second;
+- frame, move, score, and highest-tile metrics;
+- imported-spectator label;
+- return from imported replay to current replay;
+- recorded-event count versus 4,096 disclosure;
+- reduced-motion board behavior.
+
+Move Replay links to Full Replay Archive in both normal and no-live-game states. Archive import never calls a player-state import path.
+
+## English/Hindi localization
+
+Hindi runtime strings were added for archive title/navigation, complete/incomplete/overflow status, copy/clipboard/manual-open actions, spectator labels, validation errors, Guide content, trust/privacy copy, and About release highlights.
+
+## Focused regression coverage
+
+Phase 19 adds 22 tests over the Phase 18 total of 161:
+
+```text
+test/replay_archive_test.dart                8
+test/replay_capture_store_test.dart          3
+test/replay_capture_controller_test.dart     4
+test/replay_archive_screen_test.dart         4
+test/replay_archive_navigation_test.dart     1
+test/replay_archive_localization_test.dart   2
+```
+
+Representative test commits:
+
+```text
+386f1857a611b8f40363c5160b4f440f69607aca test: cover full-session replay archive protocol
+95b12fe0f00e187c727f7ae5dc14569e1a644431 test: cover persisted replay capture storage
+01408cfa715e6fb21b7cb8c08a518bb9deea8d8 test: cover controller full-session replay capture
+bbd3516858132db86b1cb8bae0298fa81f8d8469 test: cover full replay archive spectator UI
+7954caac38a4d52ba89f7835e0e9abb129e0d350 test: cover move replay archive navigation
+3f9a917ab2a17dc65849c186222bc7923827087b test: cover full replay archive Hindi localization
+```
+
+Formatter normalization:
+
+```text
+a6825a449a8596d110139cf298f8b00fb8aeeaa7
+style: format Dart sources and tests
+```
+
+## First clean maintained Phase 19 gate
+
+After formatter normalization, permanent CI completed against the Phase 19 runtime/test tree:
+
+```text
+Commit: 4a16608c9f8e94de529ef79ca5d213a81b66baae
+CI run: 31871817119
+CI job: 94981543084
+Result: SUCCESS
+Runner: ubuntu-24.04
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS — 88 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 183/183
+Flutter Web release: PASS — build/web produced
+Flutter Web WASM dry run: PASS
+```
+
+The existing non-fatal Cupertino icon-font availability warning appeared while `build/web` still completed successfully.
+
+## Transparent automation failures
+
+The following failures are intentionally retained because they affected repository operations but did **not** produce the runtime/live documentation result they were attempting:
+
+1. Core helper staging commit `cf3ebff74c42f497947064c0da8c0334ab9d9263`, run `31871152886`, job `94979863756`: generated Python patch had a syntax error. No runtime source commit was produced.
+2. Repaired core helper staging commit `ee3ec3202bc1efa85a9d7cd0a00e5d0c6a85aa836`, run `31871211446`, job `94980011690`: multiline source anchor did not match. No runtime source commit was produced.
+3. Early broad Phase 19 CI, including `731871494115` / job `94980745538`, stopped at formatting before analyzer/tests. These are formatter failures, not behavioral test failures and not passing evidence.
