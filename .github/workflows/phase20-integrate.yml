@@ -1,0 +1,51 @@
+name: Phase 20 localization and lock integration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/phase20-integrate.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure commit identity
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+
+      - name: Add Hindi file-backup translations
+        env:
+          BLOCK_B64: "ICAnRXhwb3J0IGNvcGllcyBvbmUgdmFsaWRhdGVkIEpTT04gYmFja3VwIHRvIHRoZSBjbGlwYm9hcmQgb3IgYSAubm92YTIwNDggZmlsZS4gSXQgY29udGFpbnMgdGhlIGN1cnJlbnQgZ2FtZSBvbmx5IOKAlCBuZXZlciBzZXR0aW5ncywgbGlmZXRpbWUgc3RhdGlzdGljcywgYWNoaWV2ZW1lbnRzLCBEYWlseSBoaXN0b3J5LCBvciBVbmRvIGhpc3RvcnkuJzoKICAgICAgJ+Ckj+CklSDgpLjgpKTgpY3gpK/gpL7gpKrgpL/gpKQgSlNPTiDgpKzgpYjgpJXgpIXgpKog4KSV4KWN4KSy4KS/4KSq4KSs4KWL4KSw4KWN4KShIOCkr+CkviAubm92YTIwNDgg4KSr4KS84KS+4KSH4KSyIOCkruClh+CkgiDgpI/gpJXgpY3gpLjgpKrgpYvgpLDgpY3gpJ8g4KSV4KS/4KSv4KS+IOCknOCkviDgpLjgpJXgpKTgpL4g4KS54KWI4KWkIOCkh+CkuOCkruClh+CkgiDgpJXgpYfgpLXgpLIg4KS14KSw4KWN4KSk4KSu4KS+4KSoIOCkl+Clh+CkriDgpLngpYvgpKTgpL4g4KS54KWIIOKAlCDgpLjgpYfgpJ/gpL/gpILgpJfgpY3gpLgsIOCknOClgOCkteCkqOCkleCkvuCksiDgpIbgpIHgpJXgpKHgpLzgpYcsIOCkieCkquCksuCkrOCljeCkp+Ckv+Ckr+CkvuCkgSwg4KSh4KWH4KSy4KWAIOCkueCkv+CkuOCljeCkn+CljeCksOClgCDgpK/gpL4g4KSF4KSo4KSh4KWCIOCkueCkv+CkuOCljeCkn+CljeCksOClgCDgpJXgpK3gpYAg4KSo4KS54KWA4KSC4KWkJywKICAnSW1wb3J0ZWQgYmFja3VwcyBhcmUgZGVsaWJlcmF0ZWx5IHJlc3RvcmVkIGFzIHVucmFua2VkIHNlc3Npb25zLiBDbGlwYm9hcmQgYW5kIGZpbGUgaW1wb3J0cyB1c2UgdGhlIHNhbWUgc3RyaWN0IHZhbGlkYXRpb24gYW5kIHRydXN0IHBvbGljeS4nOgogICAgICAn4KSH4KSu4KWN4KSq4KWL4KSw4KWN4KSfIOCkleCkv+CkjyDgpJfgpI8g4KSs4KWI4KSV4KSF4KSqIOCknOCkvuCkqOCkrOClguCkneCkleCksCDgpIXgpKjgpLDgpYjgpILgpJXgpY3gpKEg4KS44KWH4KS24KSoIOCkleClhyDgpLDgpYLgpKog4KSu4KWH4KSCIOCksOCkv+CkuOCljeCkn+Cli+CksCDgpLngpYvgpKTgpYcg4KS54KWI4KSC4KWkIOCkleCljeCksuCkv+CkquCkrOCli+CksOCljeCkoSDgpJTgpLAg4KSr4KS84KS+4KSH4KSyIOCkh+CkruCljeCkquCli+CksOCljeCknyDgpI/gpJUg4KS54KWAIOCkuOCkluCljeCkpCDgpLjgpKTgpY3gpK/gpL7gpKrgpKgg4KSU4KSwIOCkn+CljeCksOCkuOCljeCknyDgpKjgpYDgpKTgpL8g4KSV4KS+IOCkieCkquCkr+Cli+CklyDgpJXgpLDgpKTgpYcg4KS54KWI4KSC4KWkJywKICAnTm8gY3VycmVudCBnYW1lIGlzIGF2YWlsYWJsZSB0byBleHBvcnQuIFlvdSBjYW4gc3RpbGwgaW1wb3J0IGEgdmFsaWQgMjA0OCBOb3ZhIGdhbWUgYmFja3VwIGZyb20gdGhlIGNsaXBib2FyZCBvciBhIC5ub3ZhMjA0OCBmaWxlLic6CiAgICAgICfgpI/gpJXgpY3gpLjgpKrgpYvgpLDgpY3gpJ8g4KSV4KSw4KSo4KWHIOCkleClhyDgpLLgpL/gpI8g4KSV4KWL4KSIIOCkteCksOCljeCkpOCkruCkvuCkqCDgpJfgpYfgpK4g4KSJ4KSq4KSy4KSs4KWN4KSnIOCkqOCkueClgOCkgiDgpLngpYjgpaQg4KSG4KSqIOCkq+Ckv+CksCDgpK3gpYAg4KSV4KWN4KSy4KS/4KSq4KSs4KWL4KSw4KWN4KShIOCkr+CkviAubm92YTIwNDgg4KSr4KS84KS+4KSH4KSyIOCkuOClhyDgpLXgpYjgpKcgMjA0OCDgpKjgpYvgpLXgpL4g4KSX4KWH4KSuIOCkrOCliOCkleCkheCkqiDgpIfgpK7gpY3gpKrgpYvgpLDgpY3gpJ8g4KSV4KSwIOCkuOCkleCkpOClhyDgpLngpYjgpaQnLAogICdTYXZlIGJhY2t1cCBmaWxlJzogJ+CkrOCliOCkleCkheCkqiDgpKvgpLzgpL7gpIfgpLIg4KS44KWH4KS1IOCkleCksOClh+CkgicsCiAgJ0ltcG9ydCBiYWNrdXAgZmlsZSc6ICfgpKzgpYjgpJXgpIXgpKog4KSr4KS84KS+4KSH4KSyIOCkh+CkruCljeCkquCli+CksOCljeCknyDgpJXgpLDgpYfgpIInLAogICfigKIgRmlsZSBzaXplIGlzIGJvdW5kZWQgYmVmb3JlIFVURi04IGFuZCBKU09OIGRlY29kaW5nLic6CiAgICAgICfigKIgVVRGLTgg4KSU4KSwIEpTT04g4KSh4KS/4KSV4KWL4KSh4KS/4KSC4KSXIOCkuOClhyDgpKrgpLngpLLgpYcg4KSr4KS84KS+4KSH4KSyIOCkhuCkleCkvuCksCDgpLjgpYDgpK7gpL/gpKQg4KSV4KS/4KSv4KS+IOCknOCkvuCkpOCkviDgpLngpYjgpaQnLAogICdHYW1lIGJhY2t1cCBmaWxlIHNhdmVkLic6ICfgpJfgpYfgpK4g4KSs4KWI4KSV4KSF4KSqIOCkq+CkvOCkvuCkh+CksiDgpLjgpYfgpLUg4KS54KWLIOCkl+CkiOClpCcsCiAgJ0JhY2t1cCBmaWxlIGV4cG9ydCBjYW5jZWxsZWQuJzogJ+CkrOCliOCkleCkheCkqiDgpKvgpLzgpL7gpIfgpLIg4KSP4KSV4KWN4KS44KSq4KWL4KSw4KWN4KSfIOCksOCkpuCljeCkpiDgpJXgpL/gpK/gpL4g4KSX4KSv4KS+4KWkJywKICAnQ291bGQgbm90IHNhdmUgYmFja3VwIGZpbGUuJzogJ+CkrOCliOCkleCkheCkqiDgpKvgpLzgpL7gpIfgpLIg4KS44KWH4KS1IOCkqOCkueClgOCkgiDgpJXgpYAg4KSc4KS+IOCkuOCkleClgOClpCcsCiAgJ0NvdWxkIG5vdCBvcGVuIGJhY2t1cCBmaWxlLic6ICfgpKzgpYjgpJXgpIXgpKog4KSr4KS84KS+4KSH4KSyIOCkluCli+CksuClgCDgpKjgpLngpYDgpIIg4KSc4KS+IOCkuOCkleClgOClpCcsCiAgJ0JhY2t1cCBmaWxlIGlzIHRvbyBsYXJnZS4nOiAn4KSs4KWI4KSV4KSF4KSqIOCkq+CkvOCkvuCkh+CksiDgpKzgpLngpYHgpKQg4KSs4KSh4KS84KWAIOCkueCliOClpCcsCiAgJ0JhY2t1cCBmaWxlIGlzIG5vdCB2YWxpZCBVVEYtOCB0ZXh0Lic6ICfgpKzgpYjgpJXgpIXgpKog4KSr4KS84KS+4KSH4KSyIOCkteCliOCkpyBVVEYtOCDgpJ/gpYfgpJXgpY3gpLjgpY3gpJ8g4KSo4KS54KWA4KSCIOCkueCliOClpCcsCg=="
+        run: |
+          echo "$BLOCK_B64" | base64 --decode > /tmp/phase20_hi.txt
+          python3 -c 'from pathlib import Path; p=Path("lib/core/localization/hindi_translations.dart"); t=p.read_text(); b=Path("/tmp/phase20_hi.txt").read_text(); i=t.rfind("};"); p.write_text(t if "Save backup file" in t else t[:i]+b+t[i:])'
+          git add lib/core/localization/hindi_translations.dart
+          if ! git diff --cached --quiet; then git commit -m "feat: localize file-based Game Backup"; fi
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Lock dependencies
+        run: |
+          flutter pub get
+          git add pubspec.lock
+          if ! git diff --cached --quiet; then git commit -m "build: lock file picker dependency"; fi
+
+      - name: Remove helper and push
+        run: |
+          git rm .github/workflows/phase20-integrate.yml
+          git commit -m "chore: remove Phase 20 integration helper"
+          git pull --rebase origin main
+          git push origin HEAD:main
