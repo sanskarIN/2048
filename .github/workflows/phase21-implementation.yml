@@ -1,0 +1,186 @@
+name: Phase 21 implementation commits
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/phase21-implementation.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  implement:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Configure commit identity
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+      - name: Wire QR into Challenge Codes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('lib/features/challenge_codes/challenge_code_screen.dart')
+          s = p.read_text()
+          import_needle = "import '../../shared/text_clipboard.dart';\n"
+          assert import_needle in s
+          s = s.replace(import_needle, import_needle + "\nimport 'challenge_code_qr.dart';\n", 1)
+          button_needle = """                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: _copyGeneratedCode,"""
+          assert button_needle in s
+          qr_block = """                    const SizedBox(height: 12),
+                    Text(
+                      l10n.text('Scan to share'),
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    ChallengeCodeQr(
+                      code: _generatedCode!,
+                      semanticsLabel: l10n.text(
+                        'QR code containing this challenge code',
+                      ),
+                      errorLabel: l10n.text('Unable to render QR code.'),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.text(
+                        'The QR code contains the same plain NOVA1 text shown above. It does not add identity, authentication, or cloud transfer.',
+                      ),
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: _copyGeneratedCode,"""
+          s = s.replace(button_needle, qr_block, 1)
+          p.write_text(s)
+          PY
+          git add lib/features/challenge_codes/challenge_code_screen.dart
+          git commit -m "feat: show QR for generated Challenge Codes"
+      - name: Localize Challenge Code QR copy
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('lib/core/localization/hindi_translations.dart')
+          s = p.read_text()
+          needle = "  'Copy challenge code': 'चैलेंज कोड कॉपी करें',\n"
+          assert needle in s
+          addition = """  'Scan to share': 'स्कैन करके साझा करें',
+  'QR code containing this challenge code':
+      'इस चैलेंज कोड वाला QR कोड',
+  'Unable to render QR code.': 'QR कोड नहीं बनाया जा सका।',
+  'The QR code contains the same plain NOVA1 text shown above. It does not add identity, authentication, or cloud transfer.':
+      'QR कोड में ऊपर दिखाया गया वही साधारण NOVA1 टेक्स्ट है। यह पहचान, प्रमाणीकरण या क्लाउड ट्रांसफर नहीं जोड़ता।',
+"""
+          s = s.replace(needle, needle + addition, 1)
+          p.write_text(s)
+          PY
+          git add lib/core/localization/hindi_translations.dart
+          git commit -m "feat: localize Challenge Code QR sharing"
+      - name: Cover QR generation in Challenge Code screen
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('test/challenge_code_screen_test.dart')
+          s = p.read_text()
+          import_needle = "import 'package:nova_2048/shared/text_clipboard.dart';\n"
+          assert import_needle in s
+          s = s.replace(import_needle, import_needle + "import 'package:qr_flutter/qr_flutter.dart';\n", 1)
+          pump_needle = """    int Function()? seedFactory,
+  }) async {"""
+          assert pump_needle in s
+          s = s.replace(pump_needle, """    int Function()? seedFactory,
+    Locale? locale,
+  }) async {""", 1)
+          app_needle = """      localizedTestApp(
+        routes:"""
+          assert app_needle in s
+          s = s.replace(app_needle, """      localizedTestApp(
+        locale: locale,
+        routes:""", 1)
+          test_needle = """    await tapVisible(tester, find.text('Generate new seeded code'));
+    await tapVisible(tester, find.text('Copy challenge code'));
+
+    expect(clipboard.text, isNotNull);
+    final config = ChallengeCode.decode(clipboard.text!);"""
+          assert test_needle in s
+          replacement = """    await tapVisible(tester, find.text('Generate new seeded code'));
+
+    final expectedCode = ChallengeCode.encode(
+      ChallengeCode.withSeed(GameConfig.preset(GameMode.classic), 24680),
+    );
+    expect(find.byType(QrImageView), findsOneWidget);
+    final qr = tester.widget<QrImageView>(find.byType(QrImageView));
+    expect(qr.data, expectedCode);
+    expect(qr.backgroundColor, Colors.white);
+    expect(qr.semanticsLabel, 'QR code containing this challenge code');
+
+    await tapVisible(tester, find.text('Copy challenge code'));
+    expect(clipboard.text, expectedCode);
+    final config = ChallengeCode.decode(clipboard.text!);"""
+          s = s.replace(test_needle, replacement, 1)
+          marker = """  testWidgets('pastes validates and starts the same seeded challenge',
+"""
+          assert marker in s
+          hindi_test = """  testWidgets('generated Challenge Code QR is localized in Hindi',
+      (tester) async {
+    final controller = AppController(store: LocalStore());
+    final clipboard = _MemoryClipboard();
+    await controller.initialize();
+
+    await pumpScreen(
+      tester,
+      controller,
+      clipboard,
+      seedFactory: () => 13579,
+      locale: const Locale('hi'),
+    );
+    await tapVisible(tester, find.text('नया सीडेड कोड बनाएँ'));
+
+    expect(find.text('स्कैन करके साझा करें'), findsOneWidget);
+    final qr = tester.widget<QrImageView>(find.byType(QrImageView));
+    expect(qr.semanticsLabel, 'इस चैलेंज कोड वाला QR कोड');
+    expect(controller.game, isNull);
+  });
+
+"""
+          s = s.replace(marker, hindi_test + marker, 1)
+          p.write_text(s)
+          PY
+          git add test/challenge_code_screen_test.dart
+          git commit -m "test: cover Challenge Code QR sharing"
+      - name: Refresh dependency lock
+        run: |
+          flutter pub get
+          git checkout -- analysis_options.yaml || true
+          git add pubspec.lock
+          git commit -m "build: lock offline QR dependency"
+      - name: Format Phase 21 Dart changes
+        run: |
+          dart format lib test
+          if ! git diff --quiet -- lib test; then
+            git add lib test
+            git commit -m "style: format Challenge Code QR sources"
+          fi
+      - name: Run focused Challenge Code tests
+        run: flutter test test/challenge_code_test.dart test/challenge_code_screen_test.dart
+      - name: Sync implementation commits
+        run: |
+          git pull --rebase origin main
+          git push origin main
+      - name: Remove temporary implementation workflow
+        run: |
+          git pull --rebase origin main
+          git rm .github/workflows/phase21-implementation.yml
+          git commit -m "chore: remove Phase 21 implementation helper"
+          git push origin main
