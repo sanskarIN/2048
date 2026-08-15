@@ -131,3 +131,23 @@ Complete these before promoting to `1.0.0`:
 Before stable release, manually verify System default, explicit English, and explicit हिन्दी on representative mobile, desktop, and Web targets. Check Home, Settings, modes, gameplay dialogs/metrics, Daily, statistics, achievements, Challenge Codes, Backup, Replay, Auto Play, Guide, About, Support, and external-link fallback text.
 
 Also verify Hindi large-text/narrow-layout wrapping, no clipped critical actions, game-board positional semantics, focus traversal, TalkBack/VoiceOver/representative desktop-browser screen readers, and persistence of the language choice across a real app termination/relaunch. Automated localization tests are evidence, not a substitute for these checks.
+
+
+## Phase 18 solver qualification
+
+Automated/source:
+
+- [x] Normal Hint remains heuristic-only and read-only.
+- [x] Expectimax search is deterministic for a fixed board/configuration.
+- [x] Expectimax simulates hypothetical spawns without consuming game RNG.
+- [x] Search work is bounded by explicit depth/node limits.
+- [x] Auto Play strategy switching preserves sandbox board/RNG state and trusted player isolation.
+- [x] Reusable seeded benchmark runner is deterministic and validates input.
+- [x] English/Hindi strategy controls have automated localization coverage.
+
+Manual before stable release:
+
+- [ ] Verify Heuristic/Expectimax switching and node diagnostics on representative phone/desktop/web layouts.
+- [ ] Verify expectimax responsiveness on slower representative devices and confirm no UI lockup during practical single-step/Auto Play use.
+- [ ] Verify Hindi/English labels, large-text wrapping, keyboard/focus behavior, and screen-reader output for the added strategy controls/metrics.
+- [ ] Confirm long-running Auto Play remains isolated from player saves/statistics/achievements/Daily records on real targets.
