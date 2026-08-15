@@ -330,3 +330,9 @@ Portable replay text must never mutate trusted statistics, achievements, streaks
 Phase 20 adds a platform-plugin boundary under `lib/shared/game_backup_file_port.dart`. Feature/UI code should depend on `GameBackupFilePort`; pure backup validation remains in `lib/domain/game_backup.dart` and trusted-state installation remains in `AppController`.
 
 When changing this integration, run the normal formatter/analyzer/full test/Web gate and the configured native matrix. Plugin or entitlement changes especially require Android, Linux, Windows, macOS, and unsigned-iOS compilation plus real-platform picker checks before stable release.
+
+## Challenge Code QR development notes
+
+Phase 21 pins `qr_flutter 4.1.0`. Keep the QR wrapper presentation-only: do not move protocol logic into the package integration, do not add a network QR-generation endpoint, and do not add camera/scanner permissions unless a separately reviewed in-app scanning feature is intentionally designed.
+
+When changing the QR surface, run the Challenge Code codec/screen tests plus `test/challenge_code_qr_test.dart` and `test/challenge_code_qr_localization_test.dart`, then run the full formatter/analyzer/test/Web gate and configured native builds. Preserve fixed black-on-white QR contrast and narrow-layout containment unless real scan/accessibility evidence supports a deliberate change.
