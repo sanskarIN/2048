@@ -450,3 +450,10 @@ The permanent `CI` workflow run `31867499047` on commit `c443f9fde0cc243269be575
 The two prior acceptance attempts remain documented rather than hidden: run `31867316152` caught an unused test local during analysis; run `31867370893` reached 142 passing / 2 failing tests because the localized Statistics widget harness incorrectly expected combined mode-record metadata to be split into separate `Text` widgets. Commits `f42a8ab18edd4661a066419de0daa84a2ce22f85` and `c443f9fde0cc243269be57515772378c06284e86` corrected those test-quality issues before the final green gate.
 
 See [`PHASE_17_VERIFICATION.md`](PHASE_17_VERIFICATION.md) for the focused acceptance record.
+
+
+## Phase 17 current-source regression rerun
+
+Permanent CI run `31867788776` reran the complete suite on current runtime commit `d33d65840aff67c4e9bf69ad203f46b85146093c` after the final per-mode-record parser correction and source trust-boundary documentation. Result: formatting clean, analyzer clean, **144/144 tests passed**, Web release build passed, and the Web WASM dry run passed.
+
+The test count is unchanged from feature acceptance because this final source commit adds maintainer documentation only; the purpose of the rerun is to prove that the current corrected runtime tree—not an earlier Phase 17 snapshot—remains green.
