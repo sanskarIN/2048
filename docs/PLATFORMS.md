@@ -367,3 +367,20 @@ Interactive picker/document-provider/browser behavior remains a real-environment
 Challenge Code QR rendering is a Flutter presentation feature and requires no target-specific camera permission or scanner integration. The same canonical text is rendered on every configured target, with a fixed black-on-white QR surface inside the surrounding themed UI.
 
 Hosted compilation can verify that the dependency and widget compile across configured targets, but it cannot verify physical screen optical scan quality. Real-device/browser qualification remains required for device-to-device scanning, density/brightness/glare, accessibility, and narrow-layout behavior.
+
+## Phase 21 current native matrix
+
+The final Phase 21 runtime source `2678e65824ca088c4ba93342bc8737fc18ec7708` passed the permanent Platform Builds workflow:
+
+```text
+Platform Builds run: 31877514960
+Android release APK: PASS — job 94995348734
+Linux release: PASS — job 94995348682
+Windows release: PASS — job 94995348743
+macOS release: PASS — job 94995348674
+unsigned iOS release: PASS — job 94995348674
+```
+
+This verifies that the pinned local QR-rendering dependency compiles across all configured native target families. No camera permission or native QR-scanner integration is introduced. The QR remains a Flutter presentation layer over the existing Challenge Code text.
+
+Native compilation is not optical scan qualification. Representative real displays still need device-to-device scan checks across density, brightness, glare, orientation, surrounding theme, large-text layouts, and screen-reader behavior.
