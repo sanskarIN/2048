@@ -107,6 +107,9 @@ All notable changes to this project are documented here.
 
 ### Verification
 
+- Phase 18 final gate: CI `31869835223` on `b114255b6f510f0e7ba8d0516e9a30eebf4451b8` passed formatting (80 files / 0 changes), analysis, **161/161 tests**, Web release, and the Web WASM dry run under Flutter 3.47.0 / Dart 3.13.0.
+- Phase 18 native matrix: Platform Builds `31869794809` on runtime `e324882fc861e9e4221020aabb00515c7366a6f7` passed Android APK, Linux, Windows, macOS, and unsigned iOS release builds.
+- Phase 18 acceptance history remains visible: CI `31869526679` caught a duplicate Hindi key plus benchmark CLI lints; CI `31869794852` caught a missing `AppLanguage` test import. Both were corrected before the final green gate.
 - Phase 17 current-source gate: CI `31867788776` on `d33d65840aff67c4e9bf69ad203f46b85146093c` passed formatting, analysis, **144/144 tests**, Web release, and the Web WASM dry run.
 - Phase 17 current-source native matrix: Platform Builds `31867788753` passed Android APK, Linux, Windows, macOS, and unsigned iOS release builds on the corrected runtime tree.
 - Phase 17 trusted per-mode records final gate: CI run `31867499047` on commit `c443f9fde0cc243269be57515772378c06284e86` used Flutter 3.47.0 / Dart 3.13.0; formatting passed with 74 files / 0 changes, analysis reported no issues, **144/144 tests passed**, the Web release build succeeded, and the WASM dry run passed.
