@@ -165,3 +165,9 @@ Full Replay Archive uses the same explicit `TextClipboard` boundary as Challenge
 Phase 20 pins `file_picker 11.0.2` for explicit Game Backup file selection/save transport. The plugin does not decide whether a backup is valid or ranked. The project applies size limits and UTF-8 decoding at `GameBackupFilePort`, domain validation at `GameBackup.decode()`, confirmation in the UI, and the permanent unranked policy in `AppController.importGameBackup()`.
 
 macOS grants only `com.apple.security.files.user-selected.read-write` for files selected by the user. 2048 Nova does not intentionally enumerate arbitrary directories, retain recent-file paths, or add a cloud-storage/network SDK for backup transfer.
+
+## Challenge Code QR trust boundary
+
+A displayed Challenge Code QR is only another representation of the existing plain `NOVA1...` text. It does not provide authentication, identity, signing, encryption, anti-cheat protection, or proof that the sender played a particular game. The existing checksum remains accidental-corruption detection only.
+
+2048 Nova renders the QR locally and does not add camera permission or an in-app scanner. Text obtained by any external scanner must still pass the same strict Challenge Code decoder before a challenge can start. Security reports should treat QR parsing/rendering, decoder validation, and replacement protection as separate boundaries rather than assuming the image itself establishes trust.
