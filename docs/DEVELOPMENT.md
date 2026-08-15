@@ -286,3 +286,33 @@ Automated green CI is necessary but does not prove universal production readines
 New player-facing fixed strings should be rendered through `context.l10n.text(...)` and supplied with a Hindi catalog entry. Dynamic grammar should use a typed `NovaLocalizations` helper instead of fragile translated-fragment concatenation.
 
 When changing locale behavior, test AppLanguage parsing/persistence, English fallback, Hindi rendering, and relevant semantics. Do not translate protocol tokens, JSON field names, URLs, email addresses, deterministic seeds, or numeric tile values that must remain exact. See [`LOCALIZATION.md`](LOCALIZATION.md) for the full contributor procedure.
+
+
+## Solver strategy and benchmark changes
+
+Normal Hint and Auto Play strategy work have different performance/trust contracts. Keep normal Hint in `hint_solver.dart` fast, read-only, and suggestion-only. Advanced automatic strategies belong behind `AutoplaySession`, not in `AppController`.
+
+For expectimax or future search changes:
+
+- never consume live/sandbox RNG while evaluating hypothetical boards;
+- simulate on defensive board copies;
+- preserve deterministic ordering/tie behavior;
+- keep explicit search-depth and node/work bounds;
+- test legal/no-move behavior, input immutability, resource limits, and larger boards;
+- keep Auto Play state in memory only;
+- do not write statistics, achievements, Daily history, saves, or ranking records;
+- update English/Hindi UI copy and accessibility checks when strategy controls change.
+
+Run the deterministic benchmark comparison with:
+
+```bash
+dart run tool/solver_benchmark.dart
+```
+
+Or pass a positive per-seed move budget:
+
+```bash
+dart run tool/solver_benchmark.dart 500
+```
+
+The benchmark is a regression/performance-comparison aid, not proof of globally optimal 2048 play. See [`SOLVER_BENCHMARKS.md`](SOLVER_BENCHMARKS.md).
