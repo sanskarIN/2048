@@ -207,7 +207,8 @@ class GameBackupScreen extends StatelessWidget {
     } on Object {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.text('Could not open backup file.'))),
+        SnackBar(
+            content: Text(context.l10n.text('Could not open backup file.'))),
       );
       return;
     }
@@ -227,7 +228,8 @@ class GameBackupScreen extends StatelessWidget {
     } on Object {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.text('Backup rejected as invalid.'))),
+        SnackBar(
+            content: Text(context.l10n.text('Backup rejected as invalid.'))),
       );
       return;
     }
