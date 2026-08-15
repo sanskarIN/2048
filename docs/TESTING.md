@@ -514,3 +514,27 @@ Web WASM dry run: PASS
 This is behavioral evidence before the final current-runtime native qualification pass. The final Phase 19 CI/native matrix is recorded in `VERIFICATION.md` and `PHASE_19_VERIFICATION.md` after the final source-documentation trigger completes.
 
 Early Phase 19 helper and formatting failures remain recorded in `what_changed.md`; none is treated as passing analyzer/test evidence.
+
+## Phase 20 file backup coverage
+
+Phase 20 adds **6 focused automated tests** over the Phase 19 total of 183, producing **189 tests** in the first clean Phase 20 functional gate.
+
+New/expanded coverage verifies file export round trip and extension, cancelled file export, valid file import through the existing unranked confirmation path, cancelled file selection, pre-confirmation oversized-file rejection, and Hindi file-backup catalog coverage. Existing clipboard backup, codec, imported-session ranking, persistence, and localization tests remain active.
+
+First clean functional gate after the analyzer fix:
+
+```text
+Commit: 1cd1b4230f6200c9208709d0c76f12fd3a20fce2
+CI run: 31874929593
+CI job: 94989136815
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS — 91 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 189/189
+Web release: PASS — build/web
+Web WASM dry run: PASS
+```
+
+The final current-source Phase 20 CI/native matrix is recorded separately after all source/documentation synchronization is complete. Hosted tests cannot replace real platform Save/Open dialog and document-provider behavior.
