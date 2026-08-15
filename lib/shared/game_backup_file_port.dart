@@ -19,7 +19,7 @@ class BackupFileDocument {
 ///
 /// Selecting a path or receiving a platform document grant does not make the
 /// file contents trusted. Callers must still pass imported text through the
-/// project-owned [GameBackup] codec before any state mutation and must preserve
+/// project-owned Game Backup codec before any state mutation and must preserve
 /// the controller's persistent unranked-import policy.
 abstract interface class GameBackupFilePort {
   Future<BackupFileSaveOutcome> saveText({
