@@ -32,7 +32,7 @@ Remaining release qualification before `1.0.0`:
 - Real-platform Challenge Code generate/copy/paste/manual-entry/validation/replacement/determinism/accessibility checks using actual clipboard/browser handlers.
 - Real-platform Move Replay scrub/play/pause/navigation-away/accessibility checks.
 - Real-platform Full Replay Archive copy/open/manual-entry/import/scrub/play/pause/navigation-away/4,096-event-boundary/accessibility checks, including long replay responsiveness on slower devices.
-- Real-platform Game Backup copy/import/cancel/restore/restart/Undo checks using actual clipboard handlers.
+- Real-platform Game Backup clipboard copy/import plus file Save/Open/cancel/round-trip/oversize/non-UTF-8/restore/restart/Undo checks using actual clipboard, browser download/file-input, native picker, document-provider, and macOS sandbox handlers.
 - Real browser/email-handler checks for external destinations.
 - Native splash/icon presentation review.
 - Distribution signing/provisioning and final store/package metadata review.
