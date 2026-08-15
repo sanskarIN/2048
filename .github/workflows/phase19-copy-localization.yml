@@ -1,0 +1,56 @@
+name: Phase 19 in-app copy localization
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/phase19-copy-localization.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure commit identity
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+      - name: Localize full replay guide copy
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('lib/core/localization/hindi_translations.dart')
+          text = path.read_text()
+          entries = {
+            'Move Replay can open Full Replay Archive. A newly started game records a bounded deterministic action stream from its opening state, including valid moves, Undo, continue-after-win, and timed status transitions. A complete capture can be copied as portable JSON or opened later from clipboard/manual text in spectator mode. Imported replay data never replaces the live game or imports trusted statistics, achievements, streaks, Daily results, or per-mode records. Capture is limited to 4,096 events; if that safety limit is reached, export is disabled instead of silently creating an incomplete archive. Legacy or restored games that did not begin with full capture remain playable but are not falsely exported as complete sessions.': 'Move Replay से Full Replay Archive खोला जा सकता है। नया शुरू किया गया गेम अपनी शुरुआती स्थिति से मान्य चाल, Undo, जीत के बाद जारी रखने और समय-आधारित स्थिति बदलाव सहित सीमित निर्धारक क्रिया-क्रम रिकॉर्ड करता है। पूरा कैप्चर पोर्टेबल JSON के रूप में कॉपी किया जा सकता है या बाद में क्लिपबोर्ड/मैनुअल टेक्स्ट से केवल दर्शक मोड में खोला जा सकता है। इम्पोर्ट किया गया रिप्ले लाइव गेम को नहीं बदलता और विश्वसनीय आँकड़े, उपलब्धियाँ, स्ट्रीक, Daily परिणाम या प्रति-मोड रिकॉर्ड इम्पोर्ट नहीं करता। कैप्चर 4,096 इवेंट तक सीमित है; सीमा पूरी होने पर अधूरा आर्काइव चुपचाप बनाने के बजाय एक्सपोर्ट बंद हो जाता है। पुराने या रिस्टोर किए गए गेम जिनकी पूर्ण कैप्चर शुरुआत से नहीं हुई थी, खेले जा सकते हैं लेकिन उन्हें गलत तरीके से पूर्ण सेशन के रूप में एक्सपोर्ट नहीं किया जाता।',
+            'Core gameplay, Challenge Codes, Game Backup validation, Move Replay, Full Replay Archive, Auto Play Demo, and language switching work without a project server. No account, analytics, advertising tracker, remote AI service, cloud synchronization, or online translation service is required. Clipboard text is read or written only after you choose the corresponding Challenge Code, Game Backup, or Full Replay Archive action.': 'मुख्य गेमप्ले, Challenge Codes, Game Backup सत्यापन, Move Replay, Full Replay Archive, Auto Play Demo और भाषा बदलना प्रोजेक्ट सर्वर के बिना काम करते हैं। कोई अकाउंट, एनालिटिक्स, विज्ञापन ट्रैकर, रिमोट AI सेवा, क्लाउड सिंक्रोनाइज़ेशन या ऑनलाइन अनुवाद सेवा जरूरी नहीं है। क्लिपबोर्ड टेक्स्ट केवल तब पढ़ा या लिखा जाता है जब आप संबंधित Challenge Code, Game Backup या Full Replay Archive क्रिया चुनते हैं।',
+            'Release candidate 0.9 includes ten game modes, deterministic save and Undo integrity, Daily Challenges, offline shareable seeded Challenge Codes, English/Hindi localization with a persisted language setting, statistics and achievements, seven palettes, accessibility controls, heuristic hints, keyboard shortcuts, an isolated Auto Play Demo with Heuristic and bounded Expectimax strategies, deterministic solver benchmarks, read-only bounded Move Replay, portable spectator-only Full Replay Archives with bounded deterministic action capture, validated portable current-game backup with persistent unranked restore policy, and cross-platform release-build verification.': 'रिलीज़ कैंडिडेट 0.9 में दस गेम मोड, निर्धारक सेव और Undo अखंडता, Daily Challenges, ऑफलाइन साझा किए जा सकने वाले seeded Challenge Codes, सहेजी गई भाषा सेटिंग के साथ अंग्रेज़ी/हिन्दी स्थानीयकरण, आँकड़े और उपलब्धियाँ, सात पैलेट, एक्सेसिबिलिटी नियंत्रण, heuristic hints, कीबोर्ड शॉर्टकट, Heuristic और सीमित Expectimax रणनीतियों वाला अलग Auto Play Demo, निर्धारक solver benchmarks, केवल-पढ़ने योग्य सीमित Move Replay, सीमित निर्धारक क्रिया-कैप्चर वाले पोर्टेबल केवल-दर्शक Full Replay Archives, स्थायी unranked restore नीति वाला सत्यापित current-game backup और क्रॉस-प्लेटफ़ॉर्म release-build सत्यापन शामिल हैं।',
+          }
+          lines = []
+          for key, value in entries.items():
+              escaped_key = key.replace("'", "\\'")
+              marker = "  '" + escaped_key + "':"
+              if marker in text:
+                  continue
+              escaped_value = value.replace("'", "\\'")
+              lines.append("  '" + escaped_key + "': '" + escaped_value + "',\n")
+          if lines:
+              pos = text.rfind('};')
+              if pos < 0:
+                  raise SystemExit('translation map terminator missing')
+              text = text[:pos] + ''.join(lines) + text[pos:]
+          path.write_text(text)
+          PY
+          git add lib/core/localization/hindi_translations.dart
+          git commit -m "docs: localize full replay guide and release copy"
+      - name: Remove helper and push
+        run: |
+          git rm .github/workflows/phase19-copy-localization.yml
+          git commit -m "chore: remove Phase 19 copy localization helper"
+          git pull --rebase origin main
+          git push origin main
