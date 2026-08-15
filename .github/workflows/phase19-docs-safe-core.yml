@@ -1,0 +1,103 @@
+name: Phase 19 safe core docs updates
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/phase19-docs-safe-core.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure commit identity
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+
+      - name: Update README
+        run: |
+          python3 -c "from pathlib import Path; p=Path('README.md'); t=p.read_text(); old='a read-only bounded Move Replay, an isolated deterministic Auto Play / AI Demonstration sandbox,'; new='a read-only bounded Move Replay, portable spectator-only Full Replay Archives, an isolated deterministic Auto Play / AI Demonstration sandbox,'; p.write_text(t.replace(old,new,1) if old in t else t)"
+          if ! grep -q '^## Full Replay Archive$' README.md; then
+            cat >> README.md <<'EOF'
+
+## Full Replay Archive
+
+A newly started local game records a bounded deterministic replay action stream from its opening state. Complete captures can be copied as versioned `nova2048.fullReplay` JSON and opened later from clipboard or manual text in spectator mode. Recorded actions include valid moves, Undo, explicit continue-after-win, and timed status transitions. Replay reconstruction supplies the recorded event time to the engine so timed modes do not depend on the spectator device clock.
+
+Full replay capture is capped at **4,096 events**. When that safety bound is reached the normal game continues, but portable full-session export is disabled rather than silently claiming a truncated archive is complete. Legacy, restored, and Game Backup sessions that did not start with full capture remain playable but are marked incomplete for full-session export.
+
+Imported replay archives never replace the live game and cannot import statistics, achievements, streaks, Daily results, per-mode records, settings, or trusted progress. The JSON is user-editable: strict validation proves deterministic self-consistency, not authorship or anti-cheat authenticity. See [`docs/REPLAY_ARCHIVES.md`](docs/REPLAY_ARCHIVES.md).
+EOF
+          fi
+          git add README.md
+          git commit -m "docs: add full replay archives to project overview"
+
+      - name: Update architecture
+        run: |
+          python3 -c "from pathlib import Path; p=Path('docs/ARCHITECTURE.md'); t=p.read_text(); old='Replay deliberately adds **no new persistence format or key**. It reads already-validated bounded Undo history and the current saved game, then creates defensive display copies through `ReplayTimeline`.'; new='Bounded **Move Replay** adds no persistence key. It reads already-validated bounded Undo history and the current saved game, then creates defensive display copies through `ReplayTimeline`. **Full Replay Archive** is separate and uses the project-owned `nova.replay_capture.v1` key for the active bounded deterministic action capture. Portable archive text is not stored as imported player progress.'; p.write_text(t.replace(old,new,1) if old in t else t)"
+          if ! grep -q '^## Full Replay Archive boundary$' docs/ARCHITECTURE.md; then
+            cat >> docs/ARCHITECTURE.md <<'EOF'
+
+## Full Replay Archive boundary
+
+`lib/domain/replay_archive.dart` owns the versioned full-session event model, portable JSON codec, deterministic reconstruction player, event/time validation, and spectator-state equivalence checks. `AppController` owns active capture orchestration and `LocalStore` owns the project key `nova.replay_capture.v1`.
+
+A fresh `AppController.newGame()` creates `ReplayCapture.start(game)`. Valid moves, Undo, continue-after-win, and status-only timed transitions append compact events with elapsed milliseconds. A stored capture must belong to the current session and reconstruct consistently before it is trusted as the active complete capture. If replay metadata is missing, malformed, or mismatched while the current game itself is valid, the game is preserved and replay capture falls back to an incomplete local capture instead of inventing history.
+
+Portable export requires `startsAtSessionStart == true` and `overflowed == false`. The action list is capped at 4,096 events; overflow disables complete export while gameplay continues. Game Backup imports are incomplete by design because sender-side earlier actions are unavailable.
+
+Opening an archive constructs defensive spectator frames only. It never installs the imported replay as `AppController.game` and cannot update saves, achievements, streaks, Daily history, or per-mode records. Because JSON is editable, the format provides deterministic validation, not proof of authorship. See [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md).
+EOF
+          fi
+          git add docs/ARCHITECTURE.md
+          git commit -m "docs: define full replay archive architecture"
+
+      - name: Update data storage
+        run: |
+          if ! grep -q 'nova.replay_capture.v1' docs/DATA_STORAGE.md; then
+            cat >> docs/DATA_STORAGE.md <<'EOF'
+
+## Full-session replay capture
+
+The active full-session replay capture uses the project-owned SharedPreferences key `nova.replay_capture.v1`. It stores a copied initial game state, `startsAtSessionStart`, `overflowed`, and at most 4,096 ordered replay events. Events record elapsed milliseconds plus the action kind and, for moves, direction.
+
+Legacy or restored sessions can receive an incomplete capture so the app remains safe without inventing missing earlier actions. A Game Backup import always receives an incomplete capture. Incomplete or overflowed captures cannot be encoded as portable full-session archives.
+
+Replay capture belongs to the current game lifecycle. Corrupt current-game recovery, Reset Current Game, and Clear All remove it. Malformed capture persistence is removed safely. Opening imported portable replay text is a separate spectator-only in-memory operation and does not install external replay data as trusted current-game progress.
+EOF
+          fi
+          python3 -c "from pathlib import Path; p=Path('docs/DATA_STORAGE.md'); t=p.read_text(); t=t.replace('`clearAll()` removes only the seven project-owned keys listed above.','`clearAll()` removes the eight project-owned keys, including the replay-capture key.'); p.write_text(t)"
+          git add docs/DATA_STORAGE.md
+          git commit -m "docs: document replay capture persistence"
+
+      - name: Update privacy
+        run: |
+          if ! grep -q '^## Full Replay Archive privacy$' docs/PRIVACY.md; then
+            cat >> docs/PRIVACY.md <<'EOF'
+
+## Full Replay Archive privacy
+
+Full Replay Archive records a bounded local action sequence for newly started sessions. The active capture stores the validated opening game state plus move, Undo, continue, and status events with elapsed action timing. It is local project data and is not uploaded, synchronized, analyzed, or sent to a remote AI service.
+
+Selecting **Copy full replay** writes a complete archive to the system clipboard only after explicit user action. **Open from clipboard** reads clipboard text only after explicit action; manual text entry is also available. The app does not monitor the clipboard in the background. Platform clipboard history and synchronization are controlled by the operating system or browser.
+
+A shared replay can reveal game configuration, seed and RNG state, opening board, move directions, timing, and reconstructed score and board evolution. The JSON is not encrypted or signed. Opening a replay is spectator-only and cannot import lifetime statistics, achievements, streaks, Daily history, settings, or per-mode records. Structural and deterministic validity is not proof of authorship.
+EOF
+          fi
+          git add docs/PRIVACY.md
+          git commit -m "docs: document full replay archive privacy"
+
+      - name: Remove helper and push
+        run: |
+          git rm .github/workflows/phase19-docs-safe-core.yml
+          git commit -m "chore: remove Phase 19 safe core docs helper"
+          git pull --rebase origin main
+          git push origin main
