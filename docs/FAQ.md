@@ -253,3 +253,9 @@ No. The archive is validated for structure and deterministic self-consistency, b
 ## What information can a replay archive reveal?
 
 A shared archive can expose game configuration, seed and RNG state, opening board, move, Undo, continue and status actions, action timing, and the reconstructed score and board sequence. The project does not upload that data automatically; clipboard or manual sharing is an explicit user action.
+
+## Can I save Game Backup as a file?
+
+Yes. Phase 20 adds **Save backup file** and **Import backup file** in addition to clipboard copy/import. The recommended extension is `.nova2048`; `.json` can also be selected where the platform filter supports it. Both contain the same versioned Game Backup JSON.
+
+A file is not trusted because of its name or extension. Imported files use the same strict validation, explicit confirmation, and persistent unranked policy as clipboard imports.
