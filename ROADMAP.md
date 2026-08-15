@@ -52,7 +52,6 @@ Promote the release candidate only when:
 These are intentionally non-blocking and must not destabilize core gameplay:
 
 - Additional languages beyond the implemented English/Hindi framework, only with complete translation, layout, persistence, and accessibility qualification.
-- Optional file-based backup import/export in addition to the implemented clipboard backup, with the same strict validation/unranked policy.
 - Optional QR rendering/scanning or OS share-sheet convenience for the already-implemented Challenge Code text format, only if cross-platform/privacy/accessibility costs are justified.
 - Optional deeper/adaptive or alternative solver strategies only if they preserve the existing Auto Play sandbox, deterministic benchmark coverage, explicit resource limits, and normal Hint behavior.
 - Golden/visual-regression matrices for major breakpoints and themes.
