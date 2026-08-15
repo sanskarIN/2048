@@ -232,3 +232,18 @@ Participation is subject to [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Keep tec
 Player-facing behavior changes must keep English/Hindi localization coherent. Route fixed UI strings through the project localization layer, add Hindi catalog entries, preserve English fallback, and add focused tests for critical flows. Dynamic messages should use typed helpers where grammar or values vary.
 
 Do not translate protocol identifiers, JSON keys, URLs, email addresses, seeds, or code. A registered locale is not considered release-qualified until representative layout and assistive-technology checks are also documented. See [`docs/LOCALIZATION.md`](docs/LOCALIZATION.md).
+
+## File-based Game Backup changes
+
+Changes to file backup transport must preserve these additional rules:
+
+- keep `GameBackupFilePort` as the testable platform boundary;
+- keep `.nova2048` / `.json` extensions as chooser hints only, never trust signals;
+- enforce a bounded byte length before UTF-8/JSON processing;
+- route accepted text through `GameBackup.decode()` rather than duplicating a parser;
+- route state replacement through `AppController.importGameBackup()` so file restores remain persistently unranked;
+- preserve explicit user selection and avoid background directory scanning/path retention;
+- update macOS sandbox entitlements deliberately if file-access requirements change;
+- add widget/domain tests and run the native build matrix for plugin/configuration changes.
+
+See [`docs/FILE_BACKUPS.md`](docs/FILE_BACKUPS.md).
