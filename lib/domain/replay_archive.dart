@@ -373,8 +373,7 @@ class ReplayArchivePlayer {
           engine = GameEngine(config: current.config);
           break;
         case ReplayEventKind.continueAfterWin:
-          if (current.status != GameStatus.won ||
-              current.hasAcknowledgedWin) {
+          if (current.status != GameStatus.won || current.hasAcknowledgedWin) {
             throw const FormatException(
               'Replay contains an invalid win continuation',
             );
