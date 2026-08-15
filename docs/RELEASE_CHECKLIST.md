@@ -175,3 +175,21 @@ Manual checks still required before `1.0.0`:
 - [ ] Verify imported spectator replay cannot alter the live game, statistics, achievements, streaks, Daily history, or per-mode records through real interaction.
 - [ ] Verify English and Hindi labels, validation feedback, large-text wrapping, keyboard and focus behavior, and screen-reader semantics for archive status, actions, and viewer controls.
 - [ ] Verify long valid archive reconstruction and playback remain responsive on representative slower devices.
+
+## Phase 20 Game Backup file checks
+
+Do not mark stable `1.0.0` ready until representative real environments verify:
+
+- [ ] `.nova2048` Save/Save As success and cancellation;
+- [ ] `.nova2048` export/import round trip into a fresh app session;
+- [ ] `.json` selection where exposed by the platform picker;
+- [ ] Web browser download and file-input behavior;
+- [ ] Android/iOS document-provider behavior, including a user-selected cloud-backed document where practical;
+- [ ] Windows/Linux native picker behavior;
+- [ ] macOS sandboxed user-selected read/write behavior;
+- [ ] oversized, non-UTF-8, malformed, unsupported-version, and invalid-state rejection without live-game mutation;
+- [ ] large-but-valid backup responsiveness;
+- [ ] persistent unranked status after file restore/restart and Undo after imported moves;
+- [ ] Hindi, large text, keyboard/focus, and representative screen-reader behavior for file actions/errors/confirmation.
+
+Hosted compilation is evidence of build compatibility, not completion of these interactive checks.
