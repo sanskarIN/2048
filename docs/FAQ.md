@@ -231,3 +231,25 @@ https://buymeacoffee.com/sanskarIN
 Yes. Open **Settings → Language** and select **हिन्दी**. You can also choose **System default** or **English**. Language preference is local, works offline, and does not send text to an online translation service.
 
 If the stored language value becomes malformed or references an unsupported value, the app safely falls back to System default. Automated tests cover representative Hindi UI and board semantics, while real-device Hindi font/layout and screen-reader qualification remains part of the manual release checklist.
+
+## What is Full Replay Archive?
+
+Full Replay Archive is the portable spectator replay system. A newly started session records a bounded deterministic action stream from its opening state. A complete capture can be copied as versioned JSON and opened later without replacing the current game.
+
+It differs from Move Replay: Move Replay reuses the latest retained Undo snapshots and can start after move zero, while Full Replay Archive can represent the whole newly recorded session even after old Undo snapshots have fallen out of the 50-snapshot Undo window.
+
+## Can an imported Full Replay Archive change my score or records?
+
+No. Opening an archive builds spectator frames in memory. It does not install a game, import statistics, unlock achievements, change streaks, write Daily history, or improve per-mode records.
+
+## Why is Copy full replay disabled?
+
+Portable full-session export requires a capture that began with the session and did not exceed the safety limit. Legacy, restored, or Game Backup progress does not contain earlier unrecorded actions, so it is marked incomplete. A session that exceeds 4,096 recorded events is marked overflowed. In either case the game remains playable, but the app will not mislabel partial history as a complete replay.
+
+## Are Full Replay Archives signed or proof that someone achieved a score?
+
+No. The archive is validated for structure and deterministic self-consistency, but JSON is editable. It is not a digital signature, identity proof, anti-cheat record, or trusted leaderboard submission.
+
+## What information can a replay archive reveal?
+
+A shared archive can expose game configuration, seed and RNG state, opening board, move, Undo, continue and status actions, action timing, and the reconstructed score and board sequence. The project does not upload that data automatically; clipboard or manual sharing is an explicit user action.
