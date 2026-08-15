@@ -275,3 +275,14 @@ Per-mode records remain part of controller-owned player statistics rather than t
 `AppController` is the policy boundary. It updates a mode record only while `_currentGameUnranked` is false, seeds a missing record from a ranked restored session, preserves maxima across Undo, rebuilds only an active ranked baseline after Reset Statistics, and deliberately bypasses record mutation for imported portable progress. `StatisticsScreen` only reads the sanitized records and presents localized mode/configuration metadata.
 
 This keeps three separate concerns explicit: deterministic game state, trusted local aggregate/record policy, and presentation. Future online/cloud/portable ranking work must not bypass this separation.
+
+
+## Phase 18 advanced solver boundary
+
+Phase 18 extends only the isolated Auto Play domain. `lib/domain/expectimax_solver.dart` owns bounded look-ahead search; `lib/domain/solver_benchmark.dart` owns reproducible seeded benchmark aggregation; `AutoplaySession` chooses between `heuristic` and `expectimax`. None of those types depends on `AppController`, `LocalStore`, SharedPreferences, accounts, network services, analytics, or Flutter widgets.
+
+Normal `GameEngine.hint()` still delegates to `HintSolver`; expectimax is deliberately **not** inserted into the player Hint path. This preserves fast suggestion-only gameplay behavior and prevents a potentially heavier search from becoming an invisible cost of pressing Hint.
+
+Expectimax player nodes choose a legal direction. Chance nodes enumerate every empty cell and both real spawn values (`2` at 90%, `4` at 10%). Search is bounded by depth and an explicit maximum explored-node count. Hypothetical boards are copies, so search does not consume the sandbox or live-game RNG. Only after `AutoplaySession` chooses one direction does its isolated seeded `GameEngine` execute the real move/spawn.
+
+Changing Auto Play strategy clears only decision diagnostics and pauses the UI timer. It does not reset the sandbox board, score, moves, or RNG. Reset Seed recreates the sandbox opening while retaining the selected strategy. The benchmark runner creates fresh seeded sandbox sessions and returns metrics only; it has no path to trusted player persistence.
