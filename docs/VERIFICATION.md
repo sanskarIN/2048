@@ -2,6 +2,48 @@
 
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
+## Phase 21 — Offline Challenge Code QR rendering and current-source matrix
+
+Date: **2026-08-15**
+
+Final accepted runtime source:
+
+```text
+Commit: 2678e65824ca088c4ba93342bc8737fc18ec7708
+CI run: 31877515001
+CI job: 94995319221
+Result: SUCCESS
+Runner: Ubuntu 24.04
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS — 94 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 194/194
+Web release: PASS — build/web
+Web WASM dry run: PASS
+```
+
+Fresh hosted native matrix on the same source:
+
+```text
+Platform Builds run: 31877514960
+Result: SUCCESS
+Android release APK: PASS — job 94995348734
+Linux release: PASS — job 94995348682
+Windows release: PASS — job 94995348743
+macOS release: PASS — job 94995348674
+unsigned iOS release: PASS — job 94995348674
+```
+
+Phase 21 adds presentation-only, offline QR rendering for the exact existing `NOVA1` Challenge Code text. It does not add in-app scanning, camera permission, networking, cloud transfer, a second portable protocol, or any trusted-progress path. The project keeps selectable/copyable text next to the QR, uses fixed black-on-white scan contrast, caps normal QR size at 260 logical pixels, respects narrower parent constraints, and localizes QR semantics/trust copy in English/Hindi.
+
+Phase 21 adds five net tests to the Phase 20 total of 189. The first source-freeze CI `31877417527` failed at formatting because Dart 3.13 identified 32 existing/new source-test files requiring canonical formatting. Maintained formatter run `31877417558`, job `94995089435`, created `03f26863462609b3b7ff33b0bce81640580fbe18`; the final meaningful source trigger `2678e658...` then passed all permanent gates.
+
+The existing non-fatal Cupertino icon-font availability warning remained visible during Web compilation while `build/web` completed successfully. Hosted compilation does not replace optical QR scanning, physical-device/accessibility, signing/provisioning, or store qualification.
+
+Focused details: [`PHASE_21_VERIFICATION.md`](PHASE_21_VERIFICATION.md).
+
 ## Phase 20 - File-Based Game Backup and current-source plugin matrix
 
 Date: **2026-08-15**
