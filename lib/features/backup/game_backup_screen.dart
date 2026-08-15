@@ -5,16 +5,19 @@ import '../../core/localization/nova_localizations.dart';
 import '../../domain/game_backup.dart';
 import '../../domain/game_state.dart';
 import '../../domain/game_types.dart';
+import '../../shared/game_backup_file_port.dart';
 import '../../shared/nova_scaffold.dart';
 import '../../shared/text_clipboard.dart';
 
 class GameBackupScreen extends StatelessWidget {
   const GameBackupScreen({
     this.clipboard = const SystemTextClipboard(),
+    this.filePort = const SystemGameBackupFilePort(),
     super.key,
   });
 
   final TextClipboard clipboard;
+  final GameBackupFilePort filePort;
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +43,13 @@ class GameBackupScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     l10n.text(
-                      'Export copies one validated JSON backup to the clipboard. It contains the current game only — never settings, lifetime statistics, achievements, Daily history, or Undo history.',
+                      'Export copies one validated JSON backup to the clipboard or a .nova2048 file. It contains the current game only — never settings, lifetime statistics, achievements, Daily history, or Undo history.',
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     l10n.text(
-                      'Imported backups are deliberately restored as unranked sessions. You can keep playing them, but they cannot change lifetime records, achievements, streaks, or Daily results.',
+                      'Imported backups are deliberately restored as unranked sessions. Clipboard and file imports use the same strict validation and trust policy.',
                     ),
                   ),
                 ],
@@ -65,7 +68,7 @@ class GameBackupScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(18),
                 child: Text(
                   l10n.text(
-                    'No current game is available to export. You can still import a valid 2048 Nova game backup from the clipboard.',
+                    'No current game is available to export. You can still import a valid 2048 Nova game backup from the clipboard or a .nova2048 file.',
                   ),
                 ),
               ),
@@ -83,9 +86,21 @@ class GameBackupScreen extends StatelessWidget {
                 label: Text(l10n.text('Copy game backup')),
               ),
               FilledButton.tonalIcon(
+                onPressed: current == null
+                    ? null
+                    : () => _saveCurrentGameFile(context, current),
+                icon: const Icon(Icons.save_alt_rounded),
+                label: Text(l10n.text('Save backup file')),
+              ),
+              FilledButton.tonalIcon(
                 onPressed: () => _importFromClipboard(context),
                 icon: const Icon(Icons.content_paste_rounded),
                 label: Text(l10n.text('Import from clipboard')),
+              ),
+              OutlinedButton.icon(
+                onPressed: () => _importFromFile(context),
+                icon: const Icon(Icons.file_open_rounded),
+                label: Text(l10n.text('Import backup file')),
               ),
             ],
           ),
@@ -105,6 +120,8 @@ class GameBackupScreen extends StatelessWidget {
                       '• Backup format and version must match 2048 Nova.')),
                   Text(l10n
                       .text('• Embedded game state is strictly validated.')),
+                  Text(l10n.text(
+                      '• File size is bounded before UTF-8 and JSON decoding.')),
                   Text(l10n.text('• Oversized or malformed text is rejected.')),
                   Text(l10n.text(
                       '• Import always requires an explicit confirmation.')),
@@ -137,6 +154,32 @@ class GameBackupScreen extends StatelessWidget {
     );
   }
 
+  Future<void> _saveCurrentGameFile(
+    BuildContext context,
+    GameState current,
+  ) async {
+    final l10n = context.l10n;
+    try {
+      final outcome = await filePort.saveText(
+        suggestedName: _suggestedBackupFileName(DateTime.now().toUtc()),
+        text: GameBackup.encode(current),
+      );
+      if (!context.mounted) return;
+      final message = switch (outcome) {
+        BackupFileSaveOutcome.saved => 'Game backup file saved.',
+        BackupFileSaveOutcome.cancelled => 'Backup file export cancelled.',
+      };
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.text(message))),
+      );
+    } on Object {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.text('Could not save backup file.'))),
+      );
+    }
+  }
+
   Future<void> _importFromClipboard(BuildContext context) async {
     final l10n = context.l10n;
     final raw = await clipboard.readText();
@@ -150,27 +193,46 @@ class GameBackupScreen extends StatelessWidget {
       return;
     }
 
+    await _restoreFromText(context, raw);
+  }
+
+  Future<void> _importFromFile(BuildContext context) async {
+    final BackupFileDocument? document;
+    try {
+      document = await filePort.openText(maxBytes: GameBackup.maxFileBytes);
+    } on FormatException catch (error) {
+      if (!context.mounted) return;
+      _showBackupRejected(context, error.message.toString());
+      return;
+    } on Object {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.text('Could not open backup file.'))),
+      );
+      return;
+    }
+    if (!context.mounted || document == null) return;
+
+    await _restoreFromText(context, document.text);
+  }
+
+  Future<void> _restoreFromText(BuildContext context, String raw) async {
     final GameState restored;
     try {
       restored = GameBackup.decode(raw);
     } on FormatException catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            l10n.isHindi
-                ? 'बैकअप अस्वीकार किया गया: ${l10n.text(error.message.toString())}'
-                : 'Backup rejected: ${error.message}',
-          ),
-        ),
-      );
+      if (!context.mounted) return;
+      _showBackupRejected(context, error.message.toString());
       return;
     } on Object {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.text('Backup rejected as invalid.'))),
+        SnackBar(content: Text(context.l10n.text('Backup rejected as invalid.'))),
       );
       return;
     }
 
+    if (!context.mounted) return;
     final approved = await showDialog<bool>(
           context: context,
           barrierDismissible: false,
@@ -182,6 +244,19 @@ class GameBackupScreen extends StatelessWidget {
     await AppScope.of(context).importGameBackup(restored);
     if (!context.mounted) return;
     Navigator.pushNamed(context, '/game');
+  }
+
+  void _showBackupRejected(BuildContext context, String message) {
+    final l10n = context.l10n;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          l10n.isHindi
+              ? 'बैकअप अस्वीकार किया गया: ${l10n.text(message)}'
+              : 'Backup rejected: $message',
+        ),
+      ),
+    );
   }
 }
 
@@ -280,6 +355,11 @@ class _Fact extends StatelessWidget {
   Widget build(BuildContext context) {
     return Chip(label: Text('$label: $value'));
   }
+}
+
+String _suggestedBackupFileName(DateTime now) {
+  final value = now.toUtc().toIso8601String().replaceAll(':', '-');
+  return '2048-nova-game-backup-$value.nova2048';
 }
 
 String _statusLabel(GameState state) => switch (state.status) {
