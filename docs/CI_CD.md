@@ -266,3 +266,26 @@ CI on the repaired source passed 91-file formatting, analyzer, 189 tests, Web re
 The normal CI gate covers QR Dart formatting, analyzer checks, the complete widget/unit suite, and the Web release/WASM dry run. Platform Builds must also compile the final runtime tree on Android, Linux, Windows, macOS, and unsigned iOS so the pinned QR package does not silently break a configured target.
 
 Optical scan testing remains manual and is not inferred from a successful build. Final Phase 21 run/job identifiers are recorded in `PHASE_21_VERIFICATION.md` and the canonical verification record after source freeze.
+
+## Phase 21 accepted workflow evidence
+
+Phase 21 final source `2678e65824ca088c4ba93342bc8737fc18ec7708` is covered by both permanent acceptance workflows.
+
+```text
+CI run: 31877515001
+CI job: 94995319221
+Result: SUCCESS
+Formatting: 94 files, 0 changed
+Analyzer: No issues found
+Tests: 194/194
+Web release: PASS
+WASM dry run: PASS
+
+Platform Builds run: 31877514960
+Android: PASS — 94995348734
+Linux: PASS — 94995348682
+Windows: PASS — 94995348743
+macOS + unsigned iOS: PASS — 94995348674
+```
+
+The first final-source CI `31877417527` failed the formatter and is intentionally retained in the record. The maintained formatter workflow `31877417558` corrected the repository-wide Dart formatting drift before the final source trigger. Temporary Phase 21 implementation/product-copy/documentation helpers were removed after use and are not permanent CI infrastructure.
