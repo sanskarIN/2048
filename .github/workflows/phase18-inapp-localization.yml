@@ -1,0 +1,69 @@
+name: Phase 18 in-app solver translations
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/phase18-inapp-localization.yml
+
+permissions:
+  contents: write
+
+jobs:
+  localize-inapp-solver-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure commit identity
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+
+      - name: Add localized Guide solver explanation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('lib/core/localization/hindi_translations.dart')
+          text = path.read_text()
+          key = 'Auto Play Demo is an optional isolated solver sandbox. Heuristic is the fast default and is also used by normal Hint. Expectimax is a bounded look-ahead strategy that evaluates possible 2/4 spawns without consuming the game RNG. You can switch strategy, start, pause/resume, step one move at a time, choose speed, or reset the deterministic seed. Neither strategy is machine learning or guaranteed optimal play, and demo score, moves, search work, and boards are never mixed with your saved game, statistics, achievements, or Daily Challenge history.'
+          if key in text:
+              raise SystemExit('Guide solver translation already exists')
+          addition = "  '" + key + "':\n      'ऑटो प्ले डेमो एक वैकल्पिक अलग सॉल्वर सैंडबॉक्स है। ह्यूरिस्टिक तेज़ डिफ़ॉल्ट रणनीति है और सामान्य संकेत भी उसी का उपयोग करता है। एक्सपेक्टिमैक्स सीमित लुक-अहेड रणनीति है जो गेम RNG का उपयोग किए बिना संभावित 2/4 स्पॉन का मूल्यांकन करती है। आप रणनीति बदल सकते हैं, शुरू या रोक/जारी कर सकते हैं, एक-एक चाल चला सकते हैं, गति चुन सकते हैं या निर्धारक सीड रीसेट कर सकते हैं। कोई भी रणनीति मशीन लर्निंग या सर्वोत्तम खेल की गारंटी नहीं है और डेमो स्कोर, चालें, खोज कार्य तथा बोर्ड आपके सेव गेम, आँकड़ों, उपलब्धियों या डेली चैलेंज हिस्ट्री में नहीं मिलते।',\n"
+          marker = '};\n'
+          index = text.rfind(marker)
+          if index < 0:
+              raise SystemExit('Translation map terminator not found')
+          path.write_text(text[:index] + addition + text[index:])
+          PY
+          git add lib/core/localization/hindi_translations.dart
+          git commit -m "feat: localize advanced solver Guide content"
+
+      - name: Add localized About release highlight
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('lib/core/localization/hindi_translations.dart')
+          text = path.read_text()
+          key = 'Release candidate 0.9 includes ten game modes, deterministic save and Undo integrity, Daily Challenges, offline shareable seeded Challenge Codes, English/Hindi localization with a persisted language setting, statistics and achievements, seven palettes, accessibility controls, heuristic hints, keyboard shortcuts, an isolated Auto Play Demo with Heuristic and bounded Expectimax strategies, deterministic solver benchmarks, read-only Move Replay, validated portable current-game backup with persistent unranked restore policy, and cross-platform release-build verification.'
+          if key in text:
+              raise SystemExit('About solver translation already exists')
+          addition = "  '" + key + "':\n      'रिलीज़ कैंडिडेट 0.9 में दस गेम मोड, निर्धारक सेव और अनडू अखंडता, डेली चैलेंज, ऑफलाइन साझा सीडेड चैलेंज कोड, सेव भाषा सेटिंग सहित English/हिन्दी लोकलाइज़ेशन, आँकड़े और उपलब्धियाँ, सात पैलेट, एक्सेसिबिलिटी कंट्रोल, ह्यूरिस्टिक संकेत, कीबोर्ड शॉर्टकट, ह्यूरिस्टिक और सीमित एक्सपेक्टिमैक्स रणनीतियों वाला अलग ऑटो प्ले डेमो, निर्धारक सॉल्वर बेंचमार्क, रीड-ओनली मूव रिप्ले, स्थायी अनरैंक्ड रिस्टोर नीति वाला सत्यापित पोर्टेबल वर्तमान-गेम बैकअप और क्रॉस-प्लेटफ़ॉर्म रिलीज़-बिल्ड सत्यापन शामिल हैं।',\n"
+          marker = '};\n'
+          index = text.rfind(marker)
+          if index < 0:
+              raise SystemExit('Translation map terminator not found')
+          path.write_text(text[:index] + addition + text[index:])
+          PY
+          git add lib/core/localization/hindi_translations.dart
+          git commit -m "feat: localize advanced solver release highlight"
+
+      - name: Remove helper and push
+        run: |
+          git rm .github/workflows/phase18-inapp-localization.yml
+          git commit -m "chore: remove Phase 18 in-app localization helper"
+          git pull --rebase origin main
+          git push origin HEAD:main
