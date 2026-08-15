@@ -67,7 +67,7 @@ Acceptance history is intentionally retained:
 - CI `31867370893` passed formatting/analysis but finished 142 passed / 2 failed because the Statistics widget tests searched for board-size and target metadata as separate `Text` widgets even though production intentionally renders one combined subtitle. Commit `c443f9fde0cc243269be57515772378c06284e86` aligned the tests with the production component contract.
 - CI `31867499047` passed all 144 tests and the Web/WASM build gate.
 
-The Web build emitted a non-fatal Cupertino icon-font availability warning but still produced `build/web`. This automated result does not replace physical-device, assistive-technology, signing/provisioning, or store-metadata qualification. The previously recorded Phase 16 native build matrix remains the latest native multi-platform evidence until a newer matrix is run.
+The Web build emitted a non-fatal Cupertino icon-font availability warning but still produced `build/web`. This automated result does not replace physical-device, assistive-technology, signing/provisioning, or store-metadata qualification. The newer current-source Phase 17 native matrix recorded above supersedes the Phase 16 matrix as the latest hosted multi-platform build evidence.
 
 Focused details: [`PHASE_17_VERIFICATION.md`](PHASE_17_VERIFICATION.md).
 
