@@ -86,10 +86,11 @@ No QR package, networking package, account SDK, cloud service, cryptography pack
 
 Portable current-game backup uses:
 
-- `dart:convert` for JSON;
-- Flutter `Clipboard` / `ClipboardData` through `TextClipboard` for explicit copy/paste.
+- `dart:convert` for JSON/UTF-8;
+- Flutter `Clipboard` / `ClipboardData` through `TextClipboard` for explicit copy/paste;
+- the Phase 20 `GameBackupFilePort` wrapper around pinned `file_picker 11.0.2` for explicit user-selected save/open transport.
 
-No file picker, cloud-storage SDK, encryption library, account service, or network package is required for the current clipboard-based feature.
+No cloud-storage SDK, encryption library, account service, or network package is required. The file dependency transports bytes only; project code owns all validation and the unranked trust policy.
 
 ### Move Replay
 
