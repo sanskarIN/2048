@@ -182,3 +182,23 @@ All notable changes to this project are documented here.
 - `188e81c607eca76516018be8c668eab41b777cc1` enables AGP-9 built-in Kotlin so `file_picker` Kotlin sources remain available to Flutter plugin registration.
 - Fresh Platform Builds `31875447417` passed Android `94990368847`, Linux `94990368919`, Windows `94990368886`, macOS and unsigned iOS `94990368933`.
 - Stable `1.0.0` remains unpromoted pending the documented real-device/file-picker/accessibility/signing/store checks.
+
+## Phase 21 final verification evidence
+
+The completed offline Challenge Code QR feature is accepted on runtime source `2678e65824ca088c4ba93342bc8737fc18ec7708`.
+
+```text
+CI 31877515001 / job 94995319221: SUCCESS
+94 files formatted, 0 changed
+Analyzer: No issues found
+Tests: 194/194
+Web release + WASM dry run: PASS
+
+Platform Builds 31877514960: SUCCESS
+Android 94995348734: PASS
+Linux 94995348682: PASS
+Windows 94995348743: PASS
+macOS + unsigned iOS 94995348674: PASS
+```
+
+The first final-source CI `31877417527` failed only the formatting gate because 32 files required current Dart formatting. Maintained formatter run `31877417558` produced commit `03f26863462609b3b7ff33b0bce81640580fbe18`; the final source trigger then passed all acceptance workflows. Real-device optical QR scanning and the existing manual release boundaries remain outstanding, so `1.0.0` is not promoted.
