@@ -42,6 +42,7 @@ Current objective evidence is recorded in `docs/VERIFICATION.md` and `what_chang
 - [x] Imported terminal state cannot award a local ranked win
 - [x] Corrupt/cleared current-game state removes the associated unranked marker
 - [x] Normal new local game exits imported unranked policy
+- [x] Trusted per-mode best-score/highest-tile persistence, legacy migration, ranked reset baseline, imported-backup isolation, locally seeded ranking, and English/Hindi Statistics presentation are regression tested in the 144-test Phase 17 gate
 - [x] Permanent workflow directory is clean of temporary one-time patch/wiring workflows
 - [x] Complete user, architecture, engine, mode, Challenge Code, persistence, backup, privacy, accessibility, development, platform, CI/CD, testing, FAQ, troubleshooting, security, contribution, support, and release documentation is present
 
@@ -57,6 +58,7 @@ Complete these before promoting to `1.0.0`:
 - [ ] Verify Time Challenge and Move Limit behavior on representative devices
 - [ ] Verify Daily Challenge across UTC date boundaries where practical
 - [ ] Verify statistics and achievements during representative full-game sessions
+- [ ] Verify per-mode record cards, board/target metadata, Statistics reset baselines, and imported-backup exclusion during representative full-game sessions
 - [ ] Verify light/dark/system themes, all palettes, and high-contrast switching
 - [ ] Verify reduced-motion and platform animation-reduction behavior
 - [ ] Verify touch/swipe controls on representative Android and iOS devices
@@ -106,6 +108,7 @@ Complete these before promoting to `1.0.0`:
 - [ ] Verify Game Backup Copy/Import controls, validation messages, candidate preview, Cancel, and Restore Unranked Backup dialog with TalkBack/VoiceOver/desktop screen reader
 - [ ] Verify imported/unranked continuation status is understandable without color alone
 - [ ] Verify large system text scaling without clipped primary controls, including Challenge Codes, Replay, Auto Play, and Game Backup confirmation screens
+- [ ] Verify expanded per-mode Statistics cards and localized board/target metadata with TalkBack, VoiceOver, representative desktop/browser screen reader, large text, English, and हिन्दी
 - [ ] Verify high contrast and non-color tile-value identification
 - [ ] Verify reduced-motion behavior on Replay and Auto Play boards
 - [ ] Verify timed challenge updates do not create disruptive repeated announcements
