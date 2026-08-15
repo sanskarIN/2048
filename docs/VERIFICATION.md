@@ -2,6 +2,41 @@
 
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
+## Phase 17 — Current-source CI and native matrix
+
+Date: **2026-08-15**
+
+A final `lib/**` source-documentation commit was used to qualify the complete current runtime tree after the Phase 17 parser correction. This closes the gap where an earlier native matrix predated that parser fix.
+
+```text
+Commit: d33d65840aff67c4e9bf69ad203f46b85146093c
+CI run: 31867788776
+CI job: 94971490776
+Result: SUCCESS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS — 74 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 144/144
+Web release: PASS
+Web WASM dry run: PASS
+```
+
+Fresh hosted native matrix:
+
+```text
+Platform Builds run: 31867788753
+Result: SUCCESS
+Android release APK: PASS — job 94971490848
+Linux release: PASS — job 94971490809
+Windows release: PASS — job 94971490788
+macOS release: PASS — job 94971490875
+unsigned iOS release: PASS — job 94971490875
+```
+
+This evidence covers the runtime tree containing the final per-mode-record deserializer, trusted update policy, Statistics presentation, and all 144 tests. Hosted compilation remains separate from physical-device, accessibility, signing/provisioning, and store qualification.
+
 ## Phase 17 — Trusted per-mode records
 
 Date: **2026-08-15**
