@@ -57,7 +57,7 @@ The application does not automatically upload or synchronize backup text and doe
 
 Clipboard data is managed by the operating system/platform, so users should treat a copied backup like other clipboard content. A backup is not encrypted or signed. Do not share it unless you intend to share the embedded current-game state.
 
-Import reads clipboard text only after the user activates **Import from clipboard**. The text is strictly validated and requires explicit confirmation before replacing the current game.
+Import reads clipboard text only after **Import from clipboard**, or opens one selected file only after **Import backup file**. File bytes are bounded before UTF-8/JSON processing. Both transports use the same strict backup validation and require explicit confirmation before replacing the current game.
 
 Every imported game is marked locally as unranked. Imported play cannot update trusted lifetime statistics, achievements, streaks, or Daily history. This policy prevents user-editable portable data from becoming trusted record data.
 
