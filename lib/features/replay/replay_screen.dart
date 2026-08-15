@@ -7,6 +7,7 @@ import '../../core/localization/nova_localizations.dart';
 import '../../data/local_store.dart';
 import '../../domain/game_state.dart';
 import '../../domain/replay_timeline.dart';
+import 'replay_archive_screen.dart';
 import '../../shared/nova_scaffold.dart';
 import '../game/game_board.dart';
 
@@ -248,6 +249,17 @@ class _ReplayBody extends StatelessWidget {
                         replayDescription,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
+                      const SizedBox(height: 12),
+                      OutlinedButton.icon(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (_) => const ReplayArchiveScreen(),
+                          ),
+                        ),
+                        icon: const Icon(Icons.archive_outlined),
+                        label: Text(l10n.text('Full Replay Archive')),
+                      ),
                     ],
                   ),
                 ),
@@ -399,6 +411,17 @@ class _EmptyState extends StatelessWidget {
           FilledButton(
             onPressed: onStart,
             child: Text(l10n.text('Start a game')),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (_) => const ReplayArchiveScreen(),
+              ),
+            ),
+            icon: const Icon(Icons.archive_outlined),
+            label: Text(l10n.text('Open Full Replay Archive')),
           ),
         ],
       ),
