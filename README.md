@@ -225,7 +225,7 @@ Runtime dependencies beyond Flutter are intentionally limited to:
 - `shared_preferences` — small local game/settings/statistics storage.
 - `url_launcher` — safe handoff to browser/email handlers for explicit external actions.
 
-Challenge Codes use Dart JSON/Base64URL and the existing Flutter clipboard abstraction. Game Backup uses Dart JSON and Flutter clipboard APIs. Move Replay and Auto Play Demo add no network service, model download, or third-party AI dependency.
+Challenge Codes use Dart JSON/Base64URL and the existing Flutter clipboard abstraction. Game Backup keeps its project-owned JSON codec and clipboard path and uses pinned `file_picker 11.0.2` only for explicit user-selected file transport. Move Replay and Auto Play Demo add no network service, model download, or third-party AI dependency.
 
 Dependency choices and licensing notes are documented in [`docs/DEPENDENCIES.md`](docs/DEPENDENCIES.md).
 
