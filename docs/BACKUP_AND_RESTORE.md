@@ -207,3 +207,9 @@ This is intentional because backup JSON is portable and editable. Its board/scor
 A Game Backup restores current progress but does not contain the sender's earlier action history. Therefore `AppController.importGameBackup()` creates an **incomplete** local replay capture for the restored board. The imported game remains playable and unranked and can continue saving and Undo normally, but it cannot be exported later as though 2048 Nova had captured the sender's complete session from move zero.
 
 Starting a fresh local game after backup restore creates a new complete replay capture for that new session. Opening a portable Full Replay Archive is different again: it is spectator-only and never installs current-game progress at all.
+
+## Phase 20 file transport
+
+Phase 20 adds `GameBackupFilePort` under `lib/shared/`. Production uses `SystemGameBackupFilePort` backed by pinned `file_picker 11.0.2`; tests inject an in-memory fake. The port is transport-only: it never parses a game and never decides ranking. All accepted text still passes through `GameBackup.decode()`, and all state installation still passes through `AppController.importGameBackup()`.
+
+The macOS sandbox enables `com.apple.security.files.user-selected.read-write` in Debug/Profile and Release entitlements. This is scoped to user-selected files rather than general directory scanning. See [`FILE_BACKUPS.md`](FILE_BACKUPS.md) for the complete transport contract and manual platform checks.
