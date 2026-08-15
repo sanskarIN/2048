@@ -7,6 +7,8 @@ import 'package:qr_flutter/qr_flutter.dart';
 /// access, contact a network service, or change Challenge Code trust semantics.
 /// Text obtained by any external scanner must re-enter through the normal
 /// Challenge Code decoder; this visual layer never validates or trusts it.
+/// The QR surface deliberately stays black-on-white regardless of the surrounding
+/// app theme so presentation styling cannot reduce the intended scan contrast.
 class ChallengeCodeQr extends StatelessWidget {
   const ChallengeCodeQr({
     super.key,
