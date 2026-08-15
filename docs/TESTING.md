@@ -457,3 +457,10 @@ See [`PHASE_17_VERIFICATION.md`](PHASE_17_VERIFICATION.md) for the focused accep
 Permanent CI run `31867788776` reran the complete suite on current runtime commit `d33d65840aff67c4e9bf69ad203f46b85146093c` after the final per-mode-record parser correction and source trust-boundary documentation. Result: formatting clean, analyzer clean, **144/144 tests passed**, Web release build passed, and the Web WASM dry run passed.
 
 The test count is unchanged from feature acceptance because this final source commit adds maintainer documentation only; the purpose of the rerun is to prove that the current corrected runtime tree—not an earlier Phase 17 snapshot—remains green.
+
+
+## Phase 18 advanced solver regression coverage
+
+Phase 18 adds focused coverage for bounded Expectimax and the reusable benchmark layer on top of the Phase 17 total of 144 tests. New coverage includes deterministic/legal recommendations, terminal no-move handling, input-board immutability, explicit node-budget enforcement, larger-board support, malformed-board rejection, strategy-switch state preservation, seeded expectimax sequence reproducibility, decision diagnostics, reset behavior, deterministic benchmark summaries, heuristic zero-search-node accounting, benchmark validation, strategy-selection UI isolation, Hindi solver catalog strings, and Hindi strategy-control presentation.
+
+The final Phase 18 test total and authoritative CI/native run IDs are recorded only after the candidate source/docs stop moving and the permanent workflows complete. Intermediate analyzer/test failures remain documented in `what_changed.md` rather than being treated as passing evidence.

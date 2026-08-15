@@ -130,3 +130,10 @@ Changing language does not alter or upload saved games, statistics, achievements
 Per-mode best score/highest-tile records are derived locally from trusted game sessions and stored inside the existing local statistics preference payload. They are not uploaded, synchronized, advertised, analyzed by telemetry, or attached to an account because 2048 Nova has no account/cloud analytics path.
 
 The Statistics screen reads these values locally. Game Backup export continues to contain only the current game envelope defined by the backup feature; lifetime aggregate statistics and per-mode records are not exported with it. Imported backups remain unranked and cannot write these records.
+
+
+## Advanced solver privacy boundary
+
+Heuristic, bounded Expectimax, and the deterministic solver benchmark run entirely on local in-memory board state. They send no board, seed, score, decision, benchmark metric, or diagnostic to a project server or third party. No remote AI/model API is used.
+
+Expectimax is available only through the isolated Auto Play sandbox. Its search-node count and expected-value calculation are transient diagnostics; they are not persisted as player data or analytics. The benchmark library/CLI creates fresh seeded sandbox sessions and writes no project preference key.
