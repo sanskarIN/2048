@@ -324,3 +324,9 @@ Both replay systems are spectator-only. Move Replay continues to use defensive c
 Full Replay Archive is a separate portable protocol. Changes must preserve explicit format/versioning, encoded-size bounds, strict opening `GameState` validation, deterministic event ordering and action legality, replay-time injection for timed rules, the hard 4,096-event capture bound, complete versus incomplete capture semantics, corruption-safe persistence, and spectator-only imported archives that never replace `AppController.game`.
 
 Portable replay text must never mutate trusted statistics, achievements, streaks, Daily history, or per-mode records. JSON validity must not be described as authorship or authentication. Protocol/player changes belong in `lib/domain/replay_archive.dart`; active capture orchestration belongs in `AppController` and `LocalStore`; viewer behavior belongs in `lib/features/replay/`. Clipboard access must continue through `TextClipboard`. See [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md).
+
+## File backup development
+
+Phase 20 adds a platform-plugin boundary under `lib/shared/game_backup_file_port.dart`. Feature/UI code should depend on `GameBackupFilePort`; pure backup validation remains in `lib/domain/game_backup.dart` and trusted-state installation remains in `AppController`.
+
+When changing this integration, run the normal formatter/analyzer/full test/Web gate and the configured native matrix. Plugin or entitlement changes especially require Android, Linux, Windows, macOS, and unsigned-iOS compilation plus real-platform picker checks before stable release.
