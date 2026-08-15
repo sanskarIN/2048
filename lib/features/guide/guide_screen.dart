@@ -52,7 +52,7 @@ class GuideScreen extends StatelessWidget {
       ),
       (
         'Auto Play / AI Demo',
-        'Auto Play Demo is an optional local heuristic demonstration. It repeatedly applies the same deterministic solver used by Hint to a separate seeded Endless 4×4 sandbox. You can start, pause/resume, step one move at a time, choose the demonstration speed, or reset the seed. It is not machine learning and does not claim optimal play. Demo score and moves are never mixed with your saved game, lifetime statistics, achievements, or Daily Challenge history.',
+        'Auto Play Demo is an optional isolated solver sandbox. Heuristic is the fast default and is also used by normal Hint. Expectimax is a bounded look-ahead strategy that evaluates possible 2/4 spawns without consuming the game RNG. You can switch strategy, start, pause/resume, step one move at a time, choose speed, or reset the deterministic seed. Neither strategy is machine learning or guaranteed optimal play, and demo score, moves, search work, and boards are never mixed with your saved game, statistics, achievements, or Daily Challenge history.',
       ),
       (
         'Daily Challenge',
