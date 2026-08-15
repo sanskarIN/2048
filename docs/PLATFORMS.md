@@ -336,3 +336,11 @@ Hosted builds demonstrate compilation/package success only; physical-device beha
 Full Replay Archive uses Flutter clipboard access through the existing `TextClipboard` abstraction. **Copy full replay** writes only after explicit action; **Open from clipboard** reads only after explicit action; manual text entry remains available when clipboard access is restricted. Browser and OS clipboard permission, history, cross-device synchronization, and maximum practical clipboard sizes differ by environment and therefore remain manual platform checks.
 
 Replay reconstruction itself is local Dart and Flutter logic and requires no project server. Hosted compilation can verify that the runtime source builds for configured targets, but it cannot establish real-device responsiveness for long valid captures, platform clipboard UX, screen-reader behavior, or timer cleanup after lifecycle transitions. Those checks remain in `RELEASE_CHECKLIST.md`.
+
+## Phase 20 file picker integration
+
+Game Backup file transport is configured for Android, iOS, Web, Windows, macOS, and Linux through pinned `file_picker 11.0.2` behind `GameBackupFilePort`.
+
+macOS Debug/Profile and Release entitlements enable `com.apple.security.files.user-selected.read-write`. This grants access to files chosen by the user, not arbitrary filesystem traversal.
+
+Web uses the browser's download/file-input behavior; native targets use their platform picker/document-provider behavior. Hosted release builds verify compilation/integration only. Real Save/Open/cancel/round-trip checks remain required on representative targets before stable `1.0.0`.
