@@ -69,18 +69,33 @@ Why it is used:
 
 It is not an analytics, cloud-storage, account, or networking dependency.
 
+## qr_flutter
+
+Pinned at **4.1.0** for Phase 21. It is used only to render the already-generated Challenge Code string as a local QR image. The project passes the exact `NOVA1...` text into the renderer; `qr_flutter` does not own Challenge Code encoding, checksum validation, game configuration parsing, trust policy, persistence, or networking.
+
+The resolved lockfile also records the package's QR-encoding dependency. 2048 Nova does **not** add a QR scanner/camera package in Phase 21.
+
+Why it is used:
+
+- Flutter core does not include a QR encoder/renderer;
+- local rendering avoids a network QR-generation service;
+- the wrapper can enforce fixed scan contrast, responsive bounds, semantics, and a render-error fallback;
+- rendering remains presentation-only and leaves the domain protocol unchanged.
+
+It does not request camera permission, create an account, upload code contents, add analytics, or establish authenticity.
+
 ## Features that add no additional runtime package
 
-### Challenge Codes
+### Challenge Code codec
 
-Offline shareable seeded Challenge Codes use:
+Offline shareable seeded Challenge Code **encoding and validation** use:
 
 - `dart:convert` for JSON, UTF-8, and Base64URL;
 - project-owned FNV-1a checksum logic;
 - Flutter clipboard APIs through the existing `TextClipboard` abstraction;
 - the existing `GameConfig` strict parser and deterministic game engine.
 
-No QR package, networking package, account SDK, cloud service, cryptography package, database, file picker, or sharing SDK is required. The checksum is intentionally a corruption detector, not a cryptographic signature.
+Phase 21 adds `qr_flutter` only in the feature presentation layer described above. No networking package, account SDK, cloud service, cryptography package, database, file picker, sharing SDK, or in-app QR scanner is required for Challenge Codes. The checksum remains a corruption detector, not a cryptographic signature.
 
 ### Game Backup
 
