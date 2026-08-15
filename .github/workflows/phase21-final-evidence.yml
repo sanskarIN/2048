@@ -1,0 +1,32 @@
+name: Phase 21 final evidence commits
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/phase21-final-evidence.yml
+
+permissions:
+  contents: write
+
+jobs:
+  evidence:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure commit identity
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+      - name: Apply final Phase 21 evidence records
+        run: python3 tool/phase21_final_docs.py
+      - name: Push evidence commits
+        run: git push origin main
+      - name: Remove temporary final evidence tools
+        run: |
+          git reset --hard HEAD
+          git rm tool/phase21_final_docs.py .github/workflows/phase21-final-evidence.yml
+          git commit -m "chore: remove Phase 21 final evidence tools"
+          git push origin main
