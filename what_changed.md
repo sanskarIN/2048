@@ -3552,3 +3552,152 @@ The following failures are intentionally retained because they affected reposito
 1. Core helper staging commit `cf3ebff74c42f497947064c0da8c0334ab9d9263`, run `31871152886`, job `94979863756`: generated Python patch had a syntax error. No runtime source commit was produced.
 2. Repaired core helper staging commit `ee3ec3202bc1efa85a9d7cd0a00e5d0c6a85aa836`, run `31871211446`, job `94980011690`: multiline source anchor did not match. No runtime source commit was produced.
 3. Early broad Phase 19 CI, including `731871494115` / job `94980745538`, stopped at formatting before analyzer/tests. These are formatter failures, not behavioral test failures and not passing evidence.
+# Phase 19 - Portable Full-Session Replay Archives
+
+Date: **2026-08-15**
+
+## Scope and trust model
+
+Phase 19 implements the roadmap's full-session replay export/import expansion without replacing the existing bounded Move Replay. Move Replay remains the lightweight read-only view built from the current game plus retained Undo snapshots. Full Replay Archive is a separate portable deterministic action protocol for sessions captured from their actual beginning.
+
+Imported Full Replay Archives are spectator-only. They never replace `AppController.game`, never call the playable Game Backup import path, and cannot update lifetime statistics, achievements, streaks, Daily Challenge history, settings, or trusted per-mode records.
+
+Portable replay JSON is user-editable. Validation establishes deterministic self-consistency only. It is not a digital signature, player identity proof, anti-cheat mechanism, or trusted leaderboard provenance.
+
+## Deterministic replay event clock
+
+```text
+7596b2297e7017e6c80aece5e4f779933d4aef78
+feat: add deterministic replay event clock
+```
+
+`GameEngine.move` now accepts optional `DateTime? now` and forwards it into status reconciliation. Replay events store elapsed milliseconds from the captured session start. `ReplayArchivePlayer` reconstructs event time as `initialState.startedAt + event.elapsedMilliseconds` and supplies that recorded time to the engine. Timed replay reconstruction therefore does not depend on the spectator device's present wall clock.
+
+## Versioned full replay protocol
+
+```text
+b18d64e5e5c1e8a8f64c2c614dfcd4942a9fbdfd
+feat: add full-session replay archive protocol
+```
+
+Added `lib/domain/replay_archive.dart` with `move`, `undo`, `continueAfterWin`, and `statusRefresh` events; strict event type/direction/integer-time/chronology validation; complete and incomplete capture constructors; hard `ReplayCapture.maxEvents = 4096`; overflow handling that never stops gameplay; portable envelope `nova2048.fullReplay` version 1; 1,000,000-character encoded-size bound; deterministic defensive replay reconstruction; action-legality checks; and current-session state-equivalence validation.
+
+Portable export requires `startsAtSessionStart == true` and `overflowed == false`. The encoder reconstructs the event sequence before producing archive text. Incomplete or overflowed history fails closed instead of being mislabeled as a complete session.
+
+## Bounded local persistence and controller capture
+
+```text
+fb4382cb0bf716805f4bbce6aeafcdb3390b4c5c
+feat: persist bounded full-session replay capture
+```
+
+`LocalStore` now owns `nova.replay_capture.v1` with save/load/clear and corruption-safe recovery. Corrupt current-game recovery removes associated replay metadata, and current-game/Clear All reset removes the capture.
+
+`AppController` starts complete capture for each fresh `newGame`, records successful moves with direction/time, records valid Undo, explicit continue-after-win, and status-only timed transitions, persists capture with the session, restores only same-session deterministically consistent capture, preserves a valid game while falling back to incomplete capture when replay metadata is missing/malformed/mismatched, assigns incomplete capture to Game Backup imports, and clears replay capture with the current game/all-data reset.
+
+An overflowed capture is a valid bounded prefix but remains non-exportable while gameplay continues normally.
+
+## Full Replay Archive workspace
+
+```text
+cb07ac75ca9b47af6ecbdcdffd7faad173272ab9
+feat: add full-session replay archive workspace
+```
+
+Added `lib/features/replay/replay_archive_screen.dart` with complete/incomplete/overflow/no-capture status; Copy full replay only for complete non-overflowed capture; explicit Open from clipboard; manual replay-text entry; strict validation feedback; imported spectator frames retained only in memory; first/previous/next/latest navigation; slider scrubbing; play/pause; 1/2/4 frames per second; frame/move/score/highest-tile metrics; imported spectator labeling; return to current replay; event-count versus 4096 disclosure; and reduced-motion board behavior.
+
+Move Replay links to Full Replay Archive in both normal and no-live-game states, so a received replay can be opened without first creating player progress. Imported spectator replay never calls a player-state import path and never becomes trusted progress.
+
+## English/Hindi localization
+
+Hindi runtime strings cover archive navigation, complete/incomplete/overflow state, copy/clipboard/manual-open actions, spectator labels, validation errors, Guide content, trust/privacy copy, and About release highlights. Focused localization tests cover the real archive UI and catalog strings.
+
+## Focused Phase 19 tests
+
+Phase 19 adds 22 tests over the Phase 18 total of 161:
+
+```text
+test/replay_archive_test.dart                8
+test/replay_capture_store_test.dart          3
+test/replay_capture_controller_test.dart     4
+test/replay_archive_screen_test.dart         4
+test/replay_archive_navigation_test.dart     1
+test/replay_archive_localization_test.dart   2
+------------------------------------------------
+Total Phase 19 additions                    22
+```
+
+Representative commits:
+
+```text
+386f1857a611b8f40363c5160b4f440f69607aca  test: cover full-session replay archive protocol
+95b12fe0f00e187c727f7ae5dc14569e1a644431  test: cover persisted replay capture storage
+01408cfa715e6fb21b7cb8c08a518dbb9deea8d8  test: cover controller full-session replay capture
+bbd3516858132db86b1cb8bae0298fa81f8d8469  test: cover full replay archive spectator UI
+7954caac38a4d52ba89f7835e0e9abb129e0d350  test: cover move replay archive navigation
+3f9a917ab2a17dc65849c186222bc7923827087b  test: cover full replay archive Hindi localization
+a6825a449a8596d110139cf298f8b00fb8aeeaa7  style: format Dart sources and tests
+```
+
+Coverage includes deterministic multi-move round trip, replay Undo, win continuation, recorded-time timed status transition, invalid action/order rejection, incomplete/overflow export rules, malformed/unsupported/oversized input, event-count/shape validation, persistence repair/reset, controller fresh capture/restart/Undo behavior, Game Backup incomplete-capture policy, clipboard export, spectator-only import isolation, invalid-input preservation, Hindi controls/catalog, and Move Replay navigation.
+
+## First clean maintained Phase 19 gate
+
+```text
+Commit: 4a16608c9f8e94de529ef79ca5d213a81b66baae
+CI run: 31871817119
+CI job: 94981543084
+Result: SUCCESS
+Runner: ubuntu-24.04
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS - 88 files, 0 changed
+Static analysis: PASS - No issues found
+Tests: PASS - 183/183
+Flutter Web release: PASS - build/web produced
+Flutter Web WASM dry run: PASS
+```
+
+The existing non-fatal Cupertino icon-font availability warning appeared while `build/web` still completed successfully. This is the first clean behavioral gate, not the final current-runtime native qualification record.
+
+## Transparent automation failures
+
+The following failures are retained and are not counted as passing analyzer/test evidence:
+
+1. Core helper staging `cf3ebff74c42f497947064c0da8c0334ab9d9263`, run `31871152886`, job `94979863756`: generated Python patch script had a syntax error. No runtime source commit was produced.
+2. Repaired core helper staging `ee3ec3202bc1efa85a9d7cd0a00e5d0c6a85a836`, run `31871211446`, job `94980011690`: multiline source anchor did not match. No runtime source commit was produced.
+3. Early broad Phase 19 CI, including run `31871494115` / job `94980745538`, stopped at formatting before analyzer/tests. These were formatter failures, not behavioral test failures.
+4. Permanent Format Dart normalized the source/test tree in `a6825a449a8596d110139cf298f8b00fb8aeeaa7`.
+5. Oversized documentation helper staging `56927ca2f5100e0b9fcd6acf692aa7a1142c9824`, run `31872000586`, failed workflow parsing before a job. No target document edit occurred.
+6. Encoded core-doc helper run `31872236343`, job `94982576071`, failed before target document commits because the decoded executable Python payload was invalid/non-UTF-8.
+7. Initial raw-here-document safe documentation helpers produced YAML parse-only failures, including run `31872407775`; no target document commit occurred from those parse failures.
+8. First combined TESTING/CHANGELOG/work-log helper run `31872834366`, job `94983983247`, completed TESTING and CHANGELOG steps only in its ephemeral checkout but failed at work-log payload before push. None of those target edits reached main from that failed run; the batch was split afterward.
+
+Corrected documentation helpers use smaller Markdown payloads and commit each target separately, then remove themselves. These failures remain visible instead of being hidden.
+
+## Documentation synchronized
+
+Phase 19 added or updated protocol, roadmap, documentation index, project overview, architecture, storage, privacy, user guide, development rules, FAQ, troubleshooting, security, release checklist, platform behavior, CI scope, Game Backup interaction, testing strategy, changelog, and this chronological work log.
+
+Key permanent documentation:
+
+```text
+docs/REPLAY_ARCHIVES.md
+```
+
+Key documentation commits already in history include:
+
+```text
+bc92fb6000cf9d566537263a1a37123abc4250fa  docs: document full-session replay archive protocol
+20033fd2d6febd829572504e22514ae783354648  docs: advance roadmap with full replay archives
+4a16608c9f8e94de529ef79ca5d213a81b66baae  docs: index full replay archive documentation
+```
+
+Additional per-document commits remain in normal Git history with descriptive messages. No empty/no-op commits were created merely to inflate commit count.
+
+## Stable-release boundary
+
+Phase 19 does not promote the project to stable `1.0.0`. Manual qualification still includes physical Android/iOS lifecycle/gameplay, representative accessibility, real clipboard/platform-handler behavior, long-session checks, native branding, signing/provisioning/notarization, and store metadata/review. Phase 19 additionally requires real-platform checks for large replay copy/open/manual entry, long replay scrub/play/pause/timer cleanup, 4,096-event overflow behavior, incomplete-capture messaging, imported spectator isolation, English/Hindi large-text and screen-reader behavior, and slower-device responsiveness.
+
+Final current-source CI and native matrix evidence will be appended after the final runtime source-documentation trigger completes.
