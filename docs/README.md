@@ -1,26 +1,27 @@
 # 2048 Nova Documentation
 
-This directory is the user, technical, development, platform, and release documentation set for 2048 Nova. The application is a Flutter/Dart, offline-first 2048 implementation with deterministic game rules, validated local persistence, multiple modes, trusted per-mode records, English/Hindi localization, accessibility controls, read-only Replay, an isolated Heuristic/Expectimax Auto Play Demo with deterministic solver benchmarks, portable current-game backup/restore, and offline shareable seeded challenge codes.
+This directory is the user, technical, development, platform, and release documentation set for 2048 Nova. The application is a Flutter/Dart, offline-first 2048 implementation with deterministic game rules, validated local persistence, multiple modes, trusted per-mode records, English/Hindi localization, accessibility controls, bounded read-only Move Replay, portable spectator-only Full Replay Archives, an isolated Heuristic/Expectimax Auto Play Demo with deterministic solver benchmarks, portable current-game backup/restore, and offline shareable seeded challenge codes.
 
 ## Start here
 
 | Document | Purpose |
 | --- | --- |
 | [`../README.md`](../README.md) | Project overview, features, setup, controls, build commands, links, and support. |
-| [`USER_GUIDE.md`](USER_GUIDE.md) | Complete player guide for rules, controls, modes, Undo, Hint, Replay, Auto Play, Backup, Challenge Codes, language/settings, and data controls. |
-| [`FAQ.md`](FAQ.md) | Common user/developer questions about rules, modes, saves, Replay, Auto Play, Backup, Challenge Codes, language, privacy, accessibility, platforms, and release status. |
+| [`USER_GUIDE.md`](USER_GUIDE.md) | Complete player guide for rules, controls, modes, Undo, Hint, Move Replay, Full Replay Archive, Auto Play, Backup, Challenge Codes, language/settings, and data controls. |
+| [`FAQ.md`](FAQ.md) | Common user/developer questions about rules, modes, saves, replay systems, Auto Play, Backup, Challenge Codes, language, privacy, accessibility, platforms, and release status. |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Layer boundaries, state flow, persistence responsibilities, trust boundaries, and feature architecture. |
 | [`GAME_ENGINE.md`](GAME_ENGINE.md) | Exact move/merge/spawn rules, deterministic RNG, terminal-state behavior, and invariants. |
 | [`GAME_MODES.md`](GAME_MODES.md) | All supported game modes, board sizes, targets, timers, move limits, and Daily Challenge behavior. |
 | [`MODE_RECORDS.md`](MODE_RECORDS.md) | Trusted local per-mode best score/highest-tile records, migration, reset behavior, and imported-backup isolation. |
 | [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md) | Shareable seeded challenge format, deterministic behavior, validation, checksum, and trust model. |
 | [`LOCALIZATION.md`](LOCALIZATION.md) | English/Hindi locale architecture, persisted language selection, fallback rules, contributor guidance, privacy, and accessibility boundaries. |
-| [`DATA_STORAGE.md`](DATA_STORAGE.md) | Local storage keys, save schemas, bounded collections, corruption recovery, and reset behavior. |
+| [`DATA_STORAGE.md`](DATA_STORAGE.md) | Local storage keys, save schemas, bounded collections, corruption recovery, replay capture persistence, and reset behavior. |
 | [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md) | Portable current-game backup format, clipboard workflow, strict validation, and unranked-import policy. |
+| [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md) | Full-session deterministic replay capture, portable JSON protocol, 4,096-event bound, spectator-only import, validation, privacy, and trust model. |
 | [`HINT_SOLVER.md`](HINT_SOLVER.md) | Deterministic heuristic Hint plus isolated Heuristic/Expectimax Auto Play behavior and limitations. |
 | [`SOLVER_BENCHMARKS.md`](SOLVER_BENCHMARKS.md) | Bounded expectimax design, node limits, sandbox trust boundary, deterministic benchmark library, and CLI harness. |
 | [`ACCESSIBILITY.md`](ACCESSIBILITY.md) | Implemented accessibility features and remaining manual assistive-technology checks, including localized semantics. |
-| [`PRIVACY.md`](PRIVACY.md) | Offline-first data behavior, language/localization, clipboard, external links, local storage, Replay, Auto Play, Backup, and Challenge Code privacy. |
+| [`PRIVACY.md`](PRIVACY.md) | Offline-first data behavior, language/localization, clipboard, external links, local storage, both replay systems, Auto Play, Backup, and Challenge Code privacy. |
 | [`DEVELOPMENT.md`](DEVELOPMENT.md) | Development environment, repository layout, localization practices, local workflow, testing, and contribution practices. |
 | [`PLATFORMS.md`](PLATFORMS.md) | Android/iOS/Web/Windows/macOS/Linux setup, build commands, hosted verification, locale behavior, and signing/distribution boundaries. |
 | [`CI_CD.md`](CI_CD.md) | Permanent GitHub Actions workflows, quality gates, native build matrix, and automation boundaries. |
@@ -31,7 +32,7 @@ This directory is the user, technical, development, platform, and release docume
 | [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) | Automated and manual qualification checklist before stable release. |
 | [`BRANDING.md`](BRANDING.md) | Logo/icon/splash sources and generated platform assets. |
 | [`DEPENDENCIES.md`](DEPENDENCIES.md) | Runtime/development dependency rationale and licensing notes. |
-| [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Common setup, build, save, input, backup, challenge-code, localization, and platform troubleshooting. |
+| [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Common setup, build, save, input, replay, backup, challenge-code, localization, and platform troubleshooting. |
 | [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | Contribution architecture, localization, quality, testing, documentation, and PR requirements. |
 | [`../SECURITY.md`](../SECURITY.md) | Security-reporting and current trust boundaries. |
 | [`../SUPPORT.md`](../SUPPORT.md) | User/developer support channels and report information. |
@@ -43,9 +44,9 @@ This directory is the user, technical, development, platform, and release docume
 
 The documentation follows behavior implemented in the repository rather than describing aspirational features as complete. Historical verification entries are kept as historical evidence; newer entries supersede older test counts for the current source state.
 
-Automated build success does not imply that every physical device, assistive-technology combination, app-store signing configuration, localized layout, or long-running user session has been manually validated. Those boundaries are stated explicitly in the release and verification documents.
+Automated build success does not imply that every physical device, assistive-technology combination, app-store signing configuration, localized layout, clipboard implementation, replay length, or long-running user session has been manually validated. Those boundaries are stated explicitly in the release and verification documents.
 
-A feature should not be documented as ranked/trusted when its source policy makes it unranked, a configured platform should not be described as release-qualified solely because its runner files exist, and a locale should not be described as manually qualified solely because automated localization tests pass.
+A feature should not be documented as ranked/trusted when its source policy makes it unranked or spectator-only, a configured platform should not be described as release-qualified solely because its runner files exist, and a locale should not be described as manually qualified solely because automated localization tests pass.
 
 ## Source-of-truth boundaries
 
@@ -53,7 +54,9 @@ A feature should not be documented as ranked/trusted when its source policy make
 - **Localization:** `lib/core/localization/nova_localizations.dart` and `lib/core/localization/hindi_translations.dart`.
 - **Challenge-code codec:** `lib/domain/challenge_code.dart`.
 - **Portable backup codec:** `lib/domain/game_backup.dart`.
-- **Replay timeline:** `lib/domain/replay_timeline.dart`.
+- **Bounded Move Replay timeline:** `lib/domain/replay_timeline.dart`.
+- **Full Replay Archive protocol/player:** `lib/domain/replay_archive.dart`.
+- **Full replay capture orchestration:** `lib/app/state/app_controller.dart` and `lib/data/local_store.dart`.
 - **Auto Play sandbox:** `lib/domain/autoplay_session.dart`.
 - **Advanced solver:** `lib/domain/expectimax_solver.dart`.
 - **Solver benchmark library:** `lib/domain/solver_benchmark.dart`.
