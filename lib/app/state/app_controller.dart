@@ -67,6 +67,52 @@ class AppSettings {
       value is bool ? value : fallback;
 }
 
+class ModeRecord {
+  ModeRecord({
+    this.bestScore = 0,
+    this.highestTile = 0,
+    this.bestScoreBoardSize,
+    this.bestScoreTarget,
+  });
+
+  int bestScore;
+  int highestTile;
+  int? bestScoreBoardSize;
+  int? bestScoreTarget;
+
+  bool get hasProgress => bestScore > 0 || highestTile > 0;
+
+  Map<String, Object?> toJson() => {
+        'bestScore': bestScore,
+        'highestTile': highestTile,
+        'bestScoreBoardSize': bestScoreBoardSize,
+        'bestScoreTarget': bestScoreTarget,
+      };
+
+  factory ModeRecord.fromJson(Map<String, Object?> json) {
+    final bestScore = PlayerStats._nonNegativeInt(json['bestScore']);
+    final highestTile = PlayerStats._validTileOrZero(json['highestTile']);
+    final boardSize = _validBoardSizeOrNull(json['bestScoreBoardSize']);
+    final target = _validTargetOrNull(json['bestScoreTarget']);
+    return ModeRecord(
+      bestScore: bestScore,
+      highestTile: highestTile,
+      bestScoreBoardSize: bestScore > 0 ? boardSize : null,
+      bestScoreTarget: bestScore > 0 ? target : null,
+    );
+  }
+
+  static int? _validBoardSizeOrNull(Object? value) {
+    final size = PlayerStats._nonNegativeInt(value);
+    return size >= 3 && size <= 8 ? size : null;
+  }
+
+  static int? _validTargetOrNull(Object? value) {
+    final target = PlayerStats._validTileOrZero(value);
+    return target >= 4 ? target : null;
+  }
+}
+
 class PlayerStats {
   PlayerStats();
 
@@ -78,8 +124,14 @@ class PlayerStats {
   int totalMerges = 0;
   int currentStreak = 0;
   int bestStreak = 0;
+  final Map<GameMode, ModeRecord> modeRecords = {};
 
   double get winRate => gamesPlayed == 0 ? 0 : gamesWon / gamesPlayed;
+
+  ModeRecord recordFor(GameMode mode) =>
+      modeRecords.putIfAbsent(mode, ModeRecord.new);
+
+  ModeRecord? existingRecordFor(GameMode mode) => modeRecords[mode];
 
   Map<String, Object?> toJson() => {
         'gamesPlayed': gamesPlayed,
@@ -90,6 +142,10 @@ class PlayerStats {
         'totalMerges': totalMerges,
         'currentStreak': currentStreak,
         'bestStreak': bestStreak,
+        'modeRecords': {
+          for (final entry in modeRecords.entries)
+            if (entry.value.hasProgress) entry.key.name: entry.value.toJson(),
+        },
       };
 
   factory PlayerStats.fromJson(Map<String, Object?> json) {
