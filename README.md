@@ -12,7 +12,7 @@ Made by the Sanskar
 
 ## Overview
 
-2048 Nova preserves the familiar 2048 rules while adding a modern cross-platform interface, deterministic game engine, multiple board sizes and challenge modes, save/resume, robust Undo, offline shareable seeded Challenge Codes, portable current-game backup/restore, read-only Move Replay, heuristic hints, an isolated Auto Play demonstration with heuristic and bounded expectimax strategies, deterministic solver benchmarks, statistics, achievements, theme palettes, accessibility controls, Daily Challenge, and open-source project tooling.
+2048 Nova preserves the familiar 2048 rules while adding a modern cross-platform interface, deterministic game engine, multiple board sizes and challenge modes, save/resume, robust Undo, offline shareable seeded Challenge Codes with local QR rendering, portable current-game backup/restore, read-only Move Replay, heuristic hints, an isolated Auto Play demonstration with heuristic and bounded expectimax strategies, deterministic solver benchmarks, statistics, achievements, theme palettes, accessibility controls, Daily Challenge, and open-source project tooling.
 
 The normal game is offline-first. It does not require an account, subscription, analytics service, advertising tracker, cloud-sync backend, remote AI model, or permanent internet connection. Internet access is only needed when a player deliberately opens an external destination such as GitHub, LinkedIn, email, or Buy Me a Coffee.
 
@@ -23,7 +23,7 @@ The repository is currently on the **`0.9.0+1` release-candidate line**. Automat
 - Deterministic, UI-independent 2048 engine with correct one-merge-per-source-tile behavior.
 - Classic 4×4, Quick 3×3, Extended 5×5, Challenge 6×6, Endless, Target, Time Challenge, Move Limit, Daily Challenge, and Zen modes.
 - Selectable Target milestones from 128 through 16384.
-- Offline **Challenge Codes** that share a supported deterministic game configuration/seed as checksummed `NOVA1...` text without accounts or cloud synchronization.
+- Offline **Challenge Codes** that share a supported deterministic game configuration/seed as checksummed `NOVA1...` text plus a local black-on-white QR containing the exact same text, without accounts, camera permission, or cloud synchronization.
 - Challenge Code validation for size, prefix, checksum, Base64URL/JSON envelope, format/version, strict `GameConfig`, deterministic seed, and supported-mode allowlist; Daily mode is intentionally excluded.
 - Touch/swipe, Arrow Keys, and W/A/S/D movement plus H for Hint, U for Undo, P/Escape for Pause, and R for Restart on keyboard platforms.
 - Save/resume with schema-versioned local state, structural validation, startup challenge reconciliation, and corruption-safe self-healing.
@@ -138,6 +138,8 @@ NOVA1.<base64url-payload>.<8-hex-checksum>
 
 The payload contains only a versioned `GameConfig` plus deterministic seed. It does not contain a current board, score, lifetime statistics, achievements, Daily history, settings, or Undo snapshots. The checksum detects accidental corruption; it is not encryption, authentication, identity proof, or an anti-cheat mechanism.
 
+Generated codes are also rendered locally as a high-contrast QR containing the exact same `NOVA1` text. 2048 Nova does not scan QR codes, request camera permission, or upload QR contents; another device may scan the displayed code using its own camera/scanner application, and the selectable/copyable text remains the fallback.
+
 Supported modes are Classic, Quick, Extended, Challenge, Endless, Target, Time Challenge, Move Limit, and Zen. Daily Challenge stays separate because it already uses the UTC date as its shared seed and maintains dedicated history semantics.
 
 Starting a valid code creates a fresh game through the normal new-game path. The same configuration/seed produces the same opening board and RNG state, and identical valid move sequences preserve the same deterministic spawn sequence.
@@ -222,10 +224,11 @@ More detail: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 Runtime dependencies beyond Flutter are intentionally limited to:
 
 - `file_picker` — explicit user-selected Game Backup file save/open transport across configured Flutter targets.
+- `qr_flutter` — offline presentation-only QR rendering for the exact existing Challenge Code text; no camera/scanner or network service.
 - `shared_preferences` — small local game/settings/statistics storage.
 - `url_launcher` — safe handoff to browser/email handlers for explicit external actions.
 
-Challenge Codes use Dart JSON/Base64URL and the existing Flutter clipboard abstraction. Game Backup keeps its project-owned JSON codec and clipboard path and uses pinned `file_picker 11.0.2` only for explicit user-selected file transport. Move Replay and Auto Play Demo add no network service, model download, or third-party AI dependency.
+Challenge Code encoding/validation uses Dart JSON/Base64URL and the existing Flutter clipboard abstraction; generated-code presentation additionally uses pinned `qr_flutter 4.1.0` for local rendering only. Game Backup keeps its project-owned JSON codec and clipboard path and uses pinned `file_picker 11.0.2` only for explicit user-selected file transport. Move Replay and Auto Play Demo add no network service, model download, or third-party AI dependency.
 
 Dependency choices and licensing notes are documented in [`docs/DEPENDENCIES.md`](docs/DEPENDENCIES.md).
 
