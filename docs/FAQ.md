@@ -259,3 +259,7 @@ A shared archive can expose game configuration, seed and RNG state, opening boar
 Yes. Phase 20 adds **Save backup file** and **Import backup file** in addition to clipboard copy/import. The recommended extension is `.nova2048`; `.json` can also be selected where the platform filter supports it. Both contain the same versioned Game Backup JSON.
 
 A file is not trusted because of its name or extension. Imported files use the same strict validation, explicit confirmation, and persistent unranked policy as clipboard imports.
+
+## Does Challenge Code QR sharing need internet or camera permission?
+
+No. 2048 Nova generates the QR locally from the same `NOVA1...` text already shown on screen. The app does not request camera permission and does not include an in-app QR scanner in Phase 21. Another device may scan the displayed QR using its own camera/scanner app, or users can continue sharing the selectable/copyable text. QR form does not authenticate the sender or code.
