@@ -6,6 +6,11 @@ import '../../core/localization/nova_localizations.dart';
 import '../../domain/game_types.dart';
 import '../../shared/nova_scaffold.dart';
 
+/// Presents aggregate player statistics plus trusted local per-mode records.
+///
+/// This screen is intentionally read-only with respect to record ranking. The
+/// [AppController] owns the trust policy and excludes imported unranked backup
+/// progress before [ModeRecord] values reach this presentation layer.
 class StatisticsScreen extends StatelessWidget {
   const StatisticsScreen({super.key});
 
@@ -100,6 +105,10 @@ class StatisticsScreen extends StatelessWidget {
   }
 }
 
+/// Localized presentation for one already-sanitized mode record.
+///
+/// Configuration metadata belongs to the saved best score and is deliberately
+/// shown as one subtitle so board size and target remain a single record context.
 class _ModeRecordCard extends StatelessWidget {
   const _ModeRecordCard({required this.mode, required this.record});
 
