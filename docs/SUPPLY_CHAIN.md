@@ -36,7 +36,7 @@ The configuration intentionally does not require a repository label that may not
 
 ## Pull-request dependency review
 
-`.github/workflows/dependency-review.yml` runs for pull requests that change Pub, Android, or GitHub Actions dependency surfaces. It uses GitHub's dependency-review action and fails when a dependency change introduces a known **high-or-higher severity** vulnerability.
+`.github/workflows/dependency-review.yml` runs for pull requests that change Pub, Android, or GitHub Actions dependency surfaces. It uses `actions/checkout@v7` with `actions/dependency-review-action@v5` and fails when a dependency change introduces a known **high-or-higher severity** vulnerability. Phase 26 verified this exact pair on a real pull-request event (run `31943963173`, job `95157100528`).
 
 This is an additional gate, not a replacement for maintainer review. License, privacy, platform support, binary-size, API compatibility, and reachable project impact must still be considered.
 
