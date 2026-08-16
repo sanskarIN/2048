@@ -18,11 +18,15 @@ The permanent workflow set lives in `.github/workflows/`:
 
 Temporary one-time patch/logging workflows used during development are removed after their purpose is complete. They are not part of the permanent automation surface.
 
-## Maintained GitHub Actions runtime baseline
+## Maintained GitHub Actions and toolchain baseline
 
-Permanent workflows use `actions/checkout@v7`. Pull-request dependency review uses `actions/dependency-review-action@v5`. The maintained Node 24 action baseline was verified on GitHub-hosted runner `2.336.0` and is regression-guarded by `test/repository_integrity_test.dart`; checkout v4, v5, and v6 references are rejected.
+Permanent workflows execute reviewed full 40-character commit revisions rather than moving Action tags. The qualified set includes checkout v7, Flutter Action v2, Dependency Review v5, upload-artifact v7, and setup-java v5 at the exact revisions recorded in [`WORKFLOW_SECURITY.md`](WORKFLOW_SECURITY.md).
 
-Phase 26 also exercised checkout v7 on Ubuntu, Windows, and macOS through the native matrix and executed Dependency Review v5 on a real disposable pull request. See [`PHASE_26_VERIFICATION.md`](PHASE_26_VERIFICATION.md) for the exact run/job evidence.
+All Flutter workflows also freeze `flutter-version: 3.47.0` and set `cache: false`. The Flutter composite action declares a nested moving `actions/cache@v5`, so disabling its cache input ensures the corresponding cache execution steps are skipped. Read-only CI, Dependency Review, and native jobs use `persist-credentials: false`; repository-writing workflows retain checkout credentials only when pushing is their explicit purpose.
+
+The hosted Android job additionally installs explicit Temurin JDK 17 and the Gradle wrapper verifies the official Gradle 9.7.0 complete-distribution SHA-256. Phase 28 regression tests fail if these trust/reproducibility controls drift.
+
+Phase 26 remains the historical major-runtime migration record. Phase 28 adds immutable revisions and deeper transitive/toolchain hardening; see [`PHASE_28_VERIFICATION.md`](PHASE_28_VERIFICATION.md).
 
 Dependency Review remains an additional pull-request gate, not a replacement for formatter, analyzer, tests, release gates, solver smoke, Web build, native builds, or manual stable-release qualification.
 
@@ -73,6 +77,8 @@ flutter pub get
 flutter build apk --release
 ```
 
+The Android job first installs explicit Temurin JDK 17 through an immutable setup-java revision. The Gradle 9.7.0 wrapper distribution is SHA-256 verified before the build path can use it.
+
 This verifies a release APK can be produced. Store distribution signing remains a separate release responsibility.
 
 ### Linux
@@ -119,7 +125,7 @@ It runs on relevant `main` changes to `lib/`, `test/`, `tool/`, or the workflow 
 The workflow:
 
 1. checks out full history;
-2. installs stable Flutter;
+2. installs pinned Flutter 3.47.0 with composite-action caching disabled;
 3. resolves dependencies;
 4. runs `dart format lib test tool`;
 5. commits only if formatter output changed files;
@@ -409,3 +415,12 @@ See [`RELEASE_ARTIFACTS.md`](RELEASE_ARTIFACTS.md) for the exact accepted artifa
 ### Phase 23 final dispatch hardening
 
 Permanent CI now supports `workflow_dispatch`. This closes a verification usability gap exposed by the Phase 23 documentation refresh: GitHub correctly does not recursively start another workflow from a push authenticated with the repository workflow token, so maintainers need an explicit supported way to run the same quality gate against the resulting head. `test/repository_integrity_test.dart` guards the dispatch trigger as the eighth repository-integrity contract.
+
+
+## Branding generator environment
+
+The branding bootstrap installs its Python image-generation stack from `tool/branding-requirements.txt`, where CairoSVG, Pillow, and their build-time dependencies are exactly version-pinned. Phase 28 reran the generator successfully with no asset drift.
+
+## Repository settings boundary
+
+CI YAML and CODEOWNERS cannot technically prevent direct pushes to an unprotected branch. The Phase 28 GitHub settings audit reports `main` protection disabled and required status-check enforcement off. Issue #12 tracks enabling an actual GitHub branch protection rule or ruleset; documentation does not claim that protection exists before the repository setting confirms it.
