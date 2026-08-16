@@ -64,12 +64,14 @@ All notable changes to this project are documented here.
 - Friendly copy fallback when an approved external destination cannot be opened by the platform.
 
 ### Changed
+- GitHub Actions checkout runtime baseline moved to `actions/checkout@v7` across permanent workflows and was verified on Ubuntu, Windows, and macOS hosted runners.
+- Pull-request dependency review moved to `actions/dependency-review-action@v5` and was verified on a real pull-request event using hosted runner `2.336.0`.
 - Version 1.5 now declares Dart `>=3.9.0 <4.0.0` and Flutter `>=3.35.0`, matching the maintained dependency floor.
 - Updated direct maintenance pins to `cupertino_icons 1.0.9`, `shared_preferences ^2.5.5`, and `flutter_lints ^6.0.0`; current stable `file_picker`, `qr_flutter`, and `url_launcher` pins remain unchanged.
 - Dependabot now covers Pub, Android Gradle, and GitHub Actions without depending on a repository label that is not guaranteed to exist.
 - The maintained package line is now Version 1.5 (`1.5.0+15` candidate metadata, `1.5.0` marketing version) with the qualification manifest and release policy aligned to the same target.
 - Windows version-resource fallback metadata now matches Version 1.5 instead of the old template fallback.
-- Repository-owned workflows now use `actions/checkout@v6`; platform artifacts use `actions/upload-artifact@v7`.
+- Repository-owned workflows now use `actions/checkout@v7`; platform artifacts use `actions/upload-artifact@v7`.
 - Permanent CI now supports explicit maintainer `workflow_dispatch`, guarded by a repository-integrity regression for verification of bot-authored heads.
 - Dependency-lock automation watches dependency metadata, while permanent CI fails when `flutter pub get` changes the committed lockfile or Flutter-managed analysis options.
 - `analysis_options.yaml` explicitly carries Flutter 3.47 generated-platform exclusions instead of being silently migrated during CI.
