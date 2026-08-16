@@ -128,6 +128,39 @@ void main() {
       );
     });
 
+    test('Flutter workflows freeze SDK version and disable action caching', () {
+      final workflowFiles = Directory('.github/workflows')
+          .listSync()
+          .whereType<File>()
+          .where((file) => file.path.endsWith('.yml'));
+      var flutterWorkflowCount = 0;
+
+      for (final workflow in workflowFiles) {
+        final source = workflow.readAsStringSync();
+        if (!source.contains('subosito/flutter-action@$flutterActionRevision')) {
+          continue;
+        }
+        flutterWorkflowCount += 1;
+        expect(
+          source,
+          contains('flutter-version: 3.47.0'),
+          reason: '${workflow.path} must freeze the qualified Flutter SDK',
+        );
+        expect(
+          source,
+          contains('cache: false'),
+          reason: '${workflow.path} must not invoke the action cache path',
+        );
+        expect(
+          source,
+          isNot(contains('cache: true')),
+          reason: '${workflow.path} must not enable transitive actions/cache',
+        );
+      }
+
+      expect(flutterWorkflowCount, 5);
+    });
+
     test('branding generator Python environment is fully version pinned', () {
       final requirements = File(
         'tool/branding-requirements.txt',
