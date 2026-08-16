@@ -211,3 +211,15 @@ Automated Phase 21 acceptance is complete on source `2678e65824ca088c4ba93342bc8
 Before stable `1.0.0`, manually verify the QR on representative physical/real displays using external camera/scanner applications. Confirm exact `NOVA1` text recovery, practical scan reliability across brightness/glare/density/orientation, fixed black-on-white QR presentation inside light/dark themes, large-text/narrow-layout behavior, screen-reader semantics, and the selectable/copyable/manual text fallback. Confirm 2048 Nova requests no camera permission for rendering and that scanned text still enters the ordinary Challenge Code validation/replacement flow.
 
 All earlier physical-device lifecycle/gameplay, clipboard/platform handler, Game Backup file/document provider, replay, accessibility, native branding, signing/provisioning/notarization, and store/package review checks remain required. Automated completion does not authorize a stable-release promotion by itself.
+
+## Release-gate regression safety
+
+- [x] Candidate-mode success path is exercised through the real CLI against an isolated fixture repository.
+- [x] Strict stable-mode success path is exercised with synthetic complete `1.0.0` metadata and all 13 evidence records.
+- [x] Strict stable mode is verified to fail when real-world evidence remains pending.
+- [x] Candidate/package mismatch is rejected.
+- [x] False `passed` evidence without a timestamp/evidence body is rejected.
+- [x] Missing required qualification IDs are rejected.
+- [x] Current maintained CI passes **200/200 tests** on source `57c6312ee26eed0cea8597ebf6417d442cf988cc` (run `31932367464`).
+
+These checked items validate the release gate itself. They do not mark any of the 13 manual qualification entries as complete.
