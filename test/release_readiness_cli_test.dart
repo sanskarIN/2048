@@ -38,7 +38,7 @@ void main() {
   });
 
   Future<Directory> fixture({
-    String version = '0.9.0+1',
+    String version = '1.5.0+15',
     String? candidate,
     bool stableMetadata = false,
     bool passedEvidence = false,
@@ -72,11 +72,11 @@ void main() {
     await write(
       'CHANGELOG.md',
       '# Changelog\n\n## [Unreleased]\n'
-          '${stableMetadata ? '\n## [1.0.0]\n' : ''}',
+          '${stableMetadata ? '\n## [1.5.0]\n' : ''}',
     );
     await write(
       'ROADMAP.md',
-      '# Roadmap\n\nRemaining release qualification before `1.0.0`\n',
+      '# Roadmap\n\nRemaining release qualification before `1.5.0`\n',
     );
 
     final manifestChecks = checks ??
@@ -133,7 +133,7 @@ void main() {
 
     expect(result.process.exitCode, 0);
     expect(result.json['mode'], 'candidate');
-    expect(result.json['version'], '0.9.0+1');
+    expect(result.json['version'], '1.5.0+15');
     expect(result.json['candidateGatePassed'], isTrue);
     expect(result.json['readyForStable'], isFalse);
     expect(result.json['manualChecksPassed'], 0);
@@ -143,7 +143,7 @@ void main() {
 
   test('stable fixture passes with complete metadata and evidence', () async {
     final root = await fixture(
-      version: '1.0.0+1',
+      version: '1.5.0+15',
       stableMetadata: true,
       passedEvidence: true,
     );
@@ -160,7 +160,7 @@ void main() {
   });
 
   test('stable mode fails closed while manual evidence is pending', () async {
-    final root = await fixture(version: '1.0.0', stableMetadata: true);
+    final root = await fixture(version: '1.5.0', stableMetadata: true);
 
     final result = await runGate(root, stable: true);
 
@@ -172,8 +172,21 @@ void main() {
     );
   });
 
+  test('legacy 0.9 candidate is rejected after the 1.5 migration', () async {
+    final root = await fixture(version: '0.9.99+99');
+
+    final result = await runGate(root);
+
+    expect(result.process.exitCode, 1);
+    expect(result.json['candidateGatePassed'], isFalse);
+    expect(
+      (result.json['failures'] as List<dynamic>).join('\n'),
+      contains('1.5.x current release line'),
+    );
+  });
+
   test('candidate mismatch is rejected', () async {
-    final root = await fixture(candidate: '0.9.9+1');
+    final root = await fixture(candidate: '1.5.99+99');
 
     final result = await runGate(root);
 
