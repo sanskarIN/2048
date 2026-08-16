@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        // Stable Android application ID for 2048 Nova.
         applicationId = "com.sanskarin.nova_2048"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
@@ -31,8 +31,9 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // Hosted qualification builds intentionally use the debug key so release-mode
+            // compilation can be verified without committing distribution credentials.
+            // Production distribution signing remains an explicit manual release gate.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
