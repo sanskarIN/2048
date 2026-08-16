@@ -8,20 +8,30 @@ updates:
       time: "06:00"
       timezone: Asia/Kolkata
     open-pull-requests-limit: 5
-    labels:
-      - dependencies
     commit-message:
       prefix: chore
       include: scope
+
+  - package-ecosystem: gradle
+    directory: /android
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:10"
+      timezone: Asia/Kolkata
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: build
+      include: scope
+
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
       day: monday
-      time: "06:15"
+      time: "06:20"
       timezone: Asia/Kolkata
     open-pull-requests-limit: 5
-    labels:
-      - dependencies
     commit-message:
       prefix: ci
+      include: scope
