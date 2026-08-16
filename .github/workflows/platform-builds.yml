@@ -1,3 +1,4 @@
+# Phase 25 requalification trigger: dependency/toolchain maintenance is validated on every hosted native target.
 name: Platform Builds
 
 on:
