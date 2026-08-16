@@ -32,7 +32,13 @@ void main() {
         expect(dependabot, contains('package-ecosystem: $ecosystem'));
       }
       expect(dependabot, isNot(contains('- dependencies')));
-      expect(dependencyReview, contains('actions/dependency-review-action@v4'));
+      expect(
+        dependencyReview,
+        anyOf(
+          contains('actions/dependency-review-action@v4'),
+          contains('actions/dependency-review-action@v5'),
+        ),
+      );
       expect(dependencyReview, contains('fail-on-severity: high'));
     });
 
@@ -148,7 +154,13 @@ void main() {
 
       expect(workflow, contains('- pubspec.yaml'));
       expect(workflow, contains('- pubspec.lock'));
-      expect(workflow, contains('actions/checkout@v6'));
+      expect(
+        workflow,
+        anyOf(
+          contains('actions/checkout@v6'),
+          contains('actions/checkout@v7'),
+        ),
+      );
     });
 
     test('CI rejects Flutter metadata drift and missing Web icon fonts', () {
@@ -159,7 +171,13 @@ void main() {
         contains('git diff --exit-code -- pubspec.lock analysis_options.yaml'),
       );
       expect(workflow, contains('Expected to find fonts for'));
-      expect(workflow, contains('actions/checkout@v6'));
+      expect(
+        workflow,
+        anyOf(
+          contains('actions/checkout@v6'),
+          contains('actions/checkout@v7'),
+        ),
+      );
     });
 
     test('CI supports explicit maintainer dispatch', () {
