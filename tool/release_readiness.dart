@@ -139,13 +139,12 @@ void main(List<String> args) {
   final passedChecks = checks.where((check) => check.status == 'passed').length;
   final allManualChecksPassed =
       checks.length == _requiredManualCheckIds.length &&
-          checks.every((check) => check.isStableEvidenceComplete);
+      checks.every((check) => check.isStableEvidenceComplete);
 
   var stableMetadataReady = false;
   if (version != null && changelog != null) {
-    stableMetadataReady = RegExp(
-          r'^1\.5\.0(?:\+\d+)?$',
-        ).hasMatch(version) &&
+    stableMetadataReady =
+        RegExp(r'^1\.5\.0(?:\+\d+)?$').hasMatch(version) &&
         changelog.contains('## [1.5.0]');
   }
 
@@ -159,8 +158,9 @@ void main(List<String> args) {
       );
     }
     if (changelog == null || !changelog.contains('## [1.5.0]')) {
-      failures
-          .add('Stable mode requires a CHANGELOG.md [1.5.0] release section.');
+      failures.add(
+        'Stable mode requires a CHANGELOG.md [1.5.0] release section.',
+      );
     }
     for (final check in checks) {
       if (!check.isStableEvidenceComplete) {
@@ -242,9 +242,10 @@ String? _readVersion(String? pubspec, List<String> failures) {
   if (pubspec == null) {
     return null;
   }
-  final match = RegExp(r'^version:\s*(\S+)\s*$', multiLine: true).firstMatch(
-    pubspec,
-  );
+  final match = RegExp(
+    r'^version:\s*(\S+)\s*$',
+    multiLine: true,
+  ).firstMatch(pubspec);
   if (match == null) {
     failures.add('pubspec.yaml does not contain a parseable version field.');
     return null;
@@ -252,10 +253,7 @@ String? _readVersion(String? pubspec, List<String> failures) {
   return match.group(1);
 }
 
-Map<String, dynamic>? _readManifest(
-  String? text,
-  List<String> failures,
-) {
+Map<String, dynamic>? _readManifest(String? text, List<String> failures) {
   if (text == null) {
     return null;
   }
@@ -374,8 +372,9 @@ List<_ManualCheck> _validateManifest({
     }
   }
 
-  final missingIds =
-      _requiredManualCheckIds.where((id) => !seenIds.contains(id));
+  final missingIds = _requiredManualCheckIds.where(
+    (id) => !seenIds.contains(id),
+  );
   for (final id in missingIds) {
     failures.add('Missing required manual check id: $id');
   }
