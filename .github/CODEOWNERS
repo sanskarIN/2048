@@ -1,0 +1,18 @@
+# Default ownership for the 2048 Nova repository.
+* @sanskarIN
+
+# Release, dependency, and automation policy.
+/.github/ @sanskarIN
+/pubspec.yaml @sanskarIN
+/pubspec.lock @sanskarIN
+/SECURITY.md @sanskarIN
+/docs/RELEASE* @sanskarIN
+/docs/release_qualification.json @sanskarIN
+
+# Platform integration and signing-sensitive metadata.
+/android/ @sanskarIN
+/ios/ @sanskarIN
+/macos/ @sanskarIN
+/windows/ @sanskarIN
+/linux/ @sanskarIN
+/web/ @sanskarIN
