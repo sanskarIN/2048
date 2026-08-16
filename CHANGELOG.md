@@ -5,6 +5,8 @@ All notable changes to this project are documented here.
 ## [Unreleased]
 
 ### Added
+- Dedicated Android toolchain compatibility policy and Phase 27 verification record covering the rejected AGP 9.3/JDK-17 path, JDK-21 diagnostic, accepted safe subset, and final artifacts.
+- Repository-integrity regression pinning the accepted AGP 9.1.0 / Kotlin 2.4.10 / Gradle 9.7.0 baseline and rejecting AGP 9.3.1 while issue #10 remains open.
 - Pull-request dependency review for Pub, Android Gradle, and GitHub Actions dependency surfaces, failing on newly introduced high-severity vulnerable dependency changes.
 - Repository CODEOWNERS coverage for default, release, dependency, automation, and platform-sensitive paths.
 - Dedicated supply-chain maintenance documentation covering SDK floors, Dependabot, dependency review, lockfile policy, code ownership, and dependency acceptance checks.
@@ -64,6 +66,9 @@ All notable changes to this project are documented here.
 - Friendly copy fallback when an approved external destination cannot be opened by the platform.
 
 ### Changed
+- Android build tooling now uses AGP 9.1.0, Kotlin Android 2.4.10, and Gradle 9.7.0 after a coordinated safe-subset qualification on JDK 17 and all hosted targets.
+- AGP 9.3.1 is intentionally deferred under issue #10: its Android release lint failed on JDK 17 but passed a branch-only JDK 21 diagnostic; release lint was not disabled and the project Java baseline was not raised solely as a workaround.
+- Stable `file_picker 11.0.2` remains in Version 1.5 while the relevant built-in-Kotlin cleanup is still on the package's 12.0.0 prerelease line.
 - GitHub Actions checkout runtime baseline moved to `actions/checkout@v7` across permanent workflows and was verified on Ubuntu, Windows, and macOS hosted runners.
 - Pull-request dependency review moved to `actions/dependency-review-action@v5` and was verified on a real pull-request event using hosted runner `2.336.0`.
 - Version 1.5 now declares Dart `>=3.9.0 <4.0.0` and Flutter `>=3.35.0`, matching the maintained dependency floor.
@@ -75,7 +80,7 @@ All notable changes to this project are documented here.
 - Permanent CI now supports explicit maintainer `workflow_dispatch`, guarded by a repository-integrity regression for verification of bot-authored heads.
 - Dependency-lock automation watches dependency metadata, while permanent CI fails when `flutter pub get` changes the committed lockfile or Flutter-managed analysis options.
 - `analysis_options.yaml` explicitly carries Flutter 3.47 generated-platform exclusions instead of being silently migrated during CI.
-- Maintained CI now passes 215/215 tests, 98-file formatting, metadata drift checks, release gates, solver smoke, and a warning-enforced Web build.
+- Maintained CI now passes 217/217 tests, 98-file formatting, metadata drift checks, release gates, solver smoke, and a warning-enforced Web build.
 - `tool/release_readiness.dart` now accepts `--root=<path>` for isolated regression fixtures, while normal repository-root behavior and the real 13-item qualification boundary remain unchanged.
 - Current maintained CI evidence now passes 200/200 tests and 97-file formatting on the fixture-tested release-gate source.
 - Permanent CI formats `tool/`, validates Version 1.5 candidate metadata, proves the stable gate remains fail-closed while real-world qualification is incomplete, smoke-runs both deterministic solver strategies, and then produces the Web release build.
