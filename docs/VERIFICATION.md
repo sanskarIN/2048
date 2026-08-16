@@ -2,6 +2,51 @@
 
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
+## Phase 23 — Reproducible metadata, warning-free Web, and retained native artifacts
+
+Date: **2026-08-16**
+
+Final Phase 23 quality source:
+
+```text
+Commit: a93542ecae7713214f7f3e4e11a03c647e880129
+CI run: 31934191150
+CI job: 95133484471
+Result: SUCCESS
+Runner: Ubuntu 24.04.4 LTS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Flutter metadata drift: PASS — pubspec.lock + analysis_options.yaml unchanged by pub get
+Formatting: PASS — 98 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 207/207
+Candidate readiness: PASS — candidateGatePassed=true; readyForStable=false; 0/13 manual evidence complete
+Stable promotion boundary: PASS — strict stable mode correctly rejected current 0.9.0+1
+Solver smoke benchmark: PASS
+WASM dry run: PASS
+Missing icon-font warning guard: PASS
+Web release: PASS — build/web
+```
+
+The Web log now contains a real tree-shaken `CupertinoIcons.ttf` asset instead of the earlier `Expected to find fonts for ... CupertinoIcons` warning. CI would fail if that warning reappeared.
+
+Accepted native artifact source:
+
+```text
+Commit: 5b22795d5aba661bd587e7bcbf2ae6442c8b4b3a
+Platform Builds run: 31934181987
+Linux job 95133491351: SUCCESS
+Android job 95133491378: SUCCESS
+Windows job 95133491405: SUCCESS
+macOS + unsigned iOS job 95133491379: SUCCESS
+```
+
+All generated-dependency synchronization checks, release builds, package/checksum steps, and artifact uploads passed. Five artifacts were retained for 14 days: Android `9260209072`, Linux `9260177318`, Windows `9260197932`, macOS `9260232848`, and unsigned iOS `9260233269`. Exact sizes/digests are recorded in [`RELEASE_ARTIFACTS.md`](RELEASE_ARTIFACTS.md).
+
+Phase 23 also repaired generated macOS registration for `file_picker`, made the Flutter 3.47 analysis migration explicit in source, synchronized dependency locking, and moved repository-owned checkout usage to v6. These are release/build/integration changes; the 13 real-world qualification entries remain pending and are not converted into manual evidence by hosted builds.
+
+
 
 ## Phase 22 — Release-gate regression expansion (current automated source)
 
