@@ -1,6 +1,6 @@
 # Release Qualification
 
-2048 Nova separates automated release-candidate verification from real-device and assistive-technology qualification. A green CI run is required, but it is not by itself sufficient evidence for a stable `1.0.0` release.
+2048 Nova separates automated release-candidate verification from real-device and assistive-technology qualification. A green CI run is required, but it is not by itself sufficient evidence for a stable `1.5.0` release.
 
 ## Machine-enforced gate
 
@@ -18,7 +18,7 @@ dart run tool/release_readiness.dart --json
 
 The normal candidate check validates the release metadata, required repository files, the qualification-manifest schema, candidate-version consistency, and the exact set of required manual checks. Pending manual checks are reported as warnings so normal release-candidate CI can continue while qualification is in progress.
 
-Before publishing `1.0.0`, run the strict stable gate:
+Before publishing `1.5.0`, run the strict stable gate:
 
 ```bash
 dart run tool/release_readiness.dart --stable
@@ -26,8 +26,8 @@ dart run tool/release_readiness.dart --stable
 
 Stable mode exits with a failure unless all of the following are true:
 
-- `pubspec.yaml` is version `1.0.0` (an optional build suffix is allowed);
-- `CHANGELOG.md` contains a `## [1.0.0]` release section;
+- `pubspec.yaml` is version `1.5.0` (an optional build suffix is allowed);
+- `CHANGELOG.md` contains a `## [1.5.0]` release section;
 - every required qualification item in `docs/release_qualification.json` has status `passed`;
 - every passed item contains non-empty evidence;
 - every passed item contains a valid ISO-8601 `updatedAt` timestamp;
@@ -114,7 +114,7 @@ dart run tool/solver_benchmark.dart 8
 flutter build web --release
 ```
 
-The CI gate intentionally runs candidate mode, not `--stable`, while the project is still on the `0.9.x` release-candidate line.
+The CI gate intentionally runs candidate mode, not `--stable`, while the project is still on the `1.5.x` release-candidate line.
 
 ## Stable-release sequence
 
@@ -122,9 +122,9 @@ When every real-world qualification item is genuinely complete:
 
 1. Update each manifest item to `passed` with verifiable evidence and an ISO-8601 timestamp.
 2. Resolve every release-blocking defect discovered during qualification.
-3. Change `pubspec.yaml` to the final `1.0.0` version/build number.
+3. Change `pubspec.yaml` to the final `1.5.0` version/build number.
 4. Change the manifest `candidate` field to exactly the same version.
-5. Move the final user-facing entries from `Unreleased` into a `## [1.0.0]` changelog section.
+5. Move the final user-facing entries from `Unreleased` into a `## [1.5.0]` changelog section.
 6. Update release notes, privacy/store metadata, `ROADMAP.md`, and `what_changed.md`.
 7. Run the full normal CI suite.
 8. Run `dart run tool/release_readiness.dart --stable` and require a zero exit code.
@@ -143,7 +143,7 @@ dart run tool/release_readiness.dart --root=<fixture-path> --json
 
 The fixture option exists for testability only. It does not turn synthetic metadata into real release evidence. The suite exercises candidate success, complete stable success, stable refusal with pending evidence, package/manifest candidate mismatch, false `passed` entries without evidence/timestamps, and missing required qualification IDs. See [`RELEASE_GATE_TESTING.md`](RELEASE_GATE_TESTING.md).
 
-Current accepted source `57c6312ee26eed0cea8597ebf6417d442cf988cc` passed permanent CI run `31932367464` with **200/200 tests**. The live candidate still reports **0/13** real-world qualification items complete, so strict stable mode correctly remains closed.
+Current accepted source `57c6312ee26eed0cea8597ebf6417d442cf988cc` passed permanent CI run `31932367464` with **200/200 tests**. The live Version 1.5 candidate still reports **0/13** real-world qualification items complete, so strict stable mode correctly remains closed.
 
 ## Hosted qualification artifacts
 
