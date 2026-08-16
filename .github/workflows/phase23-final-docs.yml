@@ -1,0 +1,44 @@
+name: Final Phase 23 evidence refresh
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/phase23-final-docs.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase23-final-docs
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+
+      - name: Apply final Phase 23 evidence updates
+        run: python .github/scripts/phase23_final_docs.py
+
+      - name: Remove one-time final evidence helpers
+        run: |
+          git rm .github/scripts/phase23_final_docs.py .github/workflows/phase23-final-docs.yml
+          git commit -m "chore: remove final Phase 23 evidence helpers"
+
+      - name: Rebase and push final evidence commits
+        run: |
+          git pull --rebase origin main
+          git push origin HEAD:main
