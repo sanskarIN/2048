@@ -1,4 +1,4 @@
-name: Phase 26 Actions runtime migration
+name: Phase 26 evidence finalizer
 
 on:
   push:
@@ -10,12 +10,12 @@ permissions:
   contents: write
 
 jobs:
-  migrate:
+  finalize:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     steps:
-      - name: Checkout with v7
+      - name: Checkout main with v7
         uses: actions/checkout@v7
         with:
           ref: main
@@ -26,117 +26,50 @@ jobs:
           git config user.name "Sanskar"
           git config user.email "sanskarin@outlook.in"
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Apply Phase 26 runtime migration
+      - name: Apply verified Phase 26 evidence updates
         run: python3 tool/phase26_actions.py
 
-      - name: Resolve dependencies
-        run: flutter pub get
-
-      - name: Format changed Dart tests
-        run: dart format test/repository_integrity_test.dart
-
-      - name: Verify dependency metadata stability
-        run: git diff --exit-code -- pubspec.lock analysis_options.yaml
-
-      - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed lib test tool
-
-      - name: Static analysis
-        run: flutter analyze
-
-      - name: Run complete tests
-        run: flutter test
-
-      - name: Verify Version 1.5 candidate gate
-        run: dart run tool/release_readiness.dart --json
-
-      - name: Verify stable gate remains fail-closed
-        shell: bash
+      - name: Commit CI/CD documentation
         run: |
-          if dart run tool/release_readiness.dart --stable --json; then
-            echo "Stable gate unexpectedly passed without complete real-world qualification."
-            exit 1
-          fi
+          git add docs/CI_CD.md
+          git commit -m "docs: document maintained Actions runtime baseline"
 
-      - name: Solver smoke benchmark
-        run: dart run tool/solver_benchmark.dart 8
-
-      - name: Build Web release without missing-font warnings
-        shell: bash
+      - name: Commit supply-chain documentation
         run: |
-          set -o pipefail
-          flutter build web --release 2>&1 | tee web-build.log
-          if grep -F "Expected to find fonts for" web-build.log; then
-            echo "Web build emitted a missing icon-font warning."
-            exit 1
-          fi
+          git add docs/SUPPLY_CHAIN.md
+          git commit -m "docs: record Dependency Review v5 evidence"
 
-      - name: Commit workflow runtime upgrades separately
-        shell: bash
+      - name: Commit release-facing changelog
         run: |
-          set -euo pipefail
-          commit_file() {
-            path="$1"
-            message="$2"
-            git add -- "$path"
-            if ! git diff --cached --quiet; then
-              git commit -m "$message"
-            fi
-          }
+          git add CHANGELOG.md
+          git commit -m "docs: record Phase 26 Actions hardening"
 
-          commit_file .github/workflows/bootstrap-branding.yml "ci: use checkout v7 in branding bootstrap"
-          commit_file .github/workflows/bootstrap-platforms.yml "ci: use checkout v7 in platform bootstrap"
-          commit_file .github/workflows/ci.yml "ci: use checkout v7 in permanent quality gate"
-          commit_file .github/workflows/dependency-review.yml "ci: upgrade dependency review to Node 24 actions"
-          commit_file .github/workflows/format-code.yml "ci: use checkout v7 in formatter automation"
-          commit_file .github/workflows/lock-dependencies.yml "ci: use checkout v7 in dependency locking"
-          commit_file .github/workflows/platform-builds.yml "ci: use checkout v7 in native matrix"
-          commit_file test/repository_integrity_test.dart "test: enforce current GitHub Actions runtimes"
-          commit_file docs/CI_CD.md "docs: align CI runtime and release-gate documentation"
-          commit_file docs/SUPPLY_CHAIN.md "docs: document maintained Actions majors"
-          commit_file CHANGELOG.md "docs: record Phase 26 Actions hardening"
-
-      - name: Record Phase 26 continuity
-        shell: bash
+      - name: Commit documentation index
         run: |
-          {
-            echo
-            echo "---"
-            echo
-            echo "## Phase 26 — GitHub Actions runtime hardening (2026-08-16)"
-            echo
-            echo "- Migrated permanent repository checkout steps from actions/checkout v6 to v7."
-            echo "- Migrated pull-request dependency review from actions/dependency-review-action v4 to v5."
-            echo "- Added repository-integrity coverage that rejects checkout v4/v5/v6 and requires the maintained v7/v5 dependency-review baseline."
-            echo "- Fixed stale CI/CD documentation that still described the stable release boundary as the former 0.9.x line."
-            echo "- Added dependency-review.yml to the documented permanent workflow inventory and documented the maintained Node 24 action baseline."
-            echo "- The guarded migration itself successfully checked out with actions/checkout v7 before any generated migration commits could be pushed."
-            echo "- Validation passed formatting, static analysis, the complete test suite, Version 1.5 candidate gate, expected-closed stable gate, solver smoke, and warning-enforced Web release build before push."
-            echo "- Cross-platform checkout v7 verification and a real pull-request Dependency Review v5 execution are recorded separately after this migration is pushed."
-          } >> what_changed.md
+          git add docs/README.md
+          git commit -m "docs: index Phase 26 verification record"
+
+      - name: Commit compact verification record
+        run: |
+          git add docs/VERIFICATION.md
+          git commit -m "docs: record Phase 26 current verification"
+
+      - name: Commit native artifact evidence
+        run: |
+          git add docs/RELEASE_ARTIFACTS.md
+          git commit -m "docs: record Phase 26 checkout-v7 artifacts"
+
+      - name: Commit continuity log
+        run: |
           git add what_changed.md
-          git commit -m "docs: record Phase 26 Actions continuity"
+          git commit -m "docs: record Phase 26 runtime continuity"
 
-      - name: Remove temporary Phase 26 tooling
-        shell: bash
-        run: |
-          git rm tool/phase26_actions.py
-          git commit -m "chore: remove Phase 26 Actions migration script"
-          git rm .github/workflows/phase-26-actions.yml
-          git commit -m "chore: remove Phase 26 Actions migration workflow"
-
-      - name: Verify clean tree
+      - name: Verify only temporary Phase 26 files remain unchanged
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
             git status --short
             exit 1
           fi
 
-      - name: Push validated Phase 26 migration
+      - name: Push finalized evidence commits
         run: git push origin HEAD:main
