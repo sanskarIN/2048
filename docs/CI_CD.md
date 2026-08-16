@@ -24,7 +24,8 @@ Workflow name: **CI**
 Triggers:
 
 - every push to `main`;
-- pull requests targeting `main`.
+- pull requests targeting `main`;
+- explicit maintainer `workflow_dispatch` for verifying a chosen current `main` head, including heads produced by repository-writing workflows whose token-authored push intentionally does not recurse into another Actions run.
 
 The quality job runs on Ubuntu and currently performs, in order:
 
@@ -363,16 +364,16 @@ Permanent changes include:
 Accepted quality evidence:
 
 ```text
-CI run: 31934191150
-Job: 95133484471
-Source: a93542ecae7713214f7f3e4e11a03c647e880129
+CI run: 31934616568
+Job: 95134494782
+Source: 1f48ebc947596915be3104aa5da56eb6ad291fff
 Flutter: 3.47.0 stable
 Dart: 3.13.0
 DevTools: 2.60.0
 Flutter metadata drift: PASS
 Formatting: PASS — 98 files, 0 changed
 Analyzer: PASS — No issues found
-Tests: PASS — 207/207
+Tests: PASS — 208/208
 Candidate release gate: PASS — 0/13 manual evidence remains
 Stable boundary assertion: PASS — current 0.9.0+1 remains fail-closed
 Solver smoke benchmark: PASS
@@ -394,3 +395,8 @@ Qualification artifacts: 5/5 uploaded with SHA-256 sidecars
 ```
 
 See [`RELEASE_ARTIFACTS.md`](RELEASE_ARTIFACTS.md) for the exact accepted artifact IDs/digests and the boundary between hosted artifacts and real-world qualification.
+
+
+### Phase 23 final dispatch hardening
+
+Permanent CI now supports `workflow_dispatch`. This closes a verification usability gap exposed by the Phase 23 documentation refresh: GitHub correctly does not recursively start another workflow from a push authenticated with the repository workflow token, so maintainers need an explicit supported way to run the same quality gate against the resulting head. `test/repository_integrity_test.dart` guards the dispatch trigger as the eighth repository-integrity contract.
