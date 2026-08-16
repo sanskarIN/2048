@@ -87,5 +87,27 @@ void main() {
       expect(workflow, contains('Expected to find fonts for'));
       expect(workflow, contains('actions/checkout@v6'));
     });
+
+    test('native builds publish checksummed qualification artifacts', () {
+      final workflow = File(
+        '.github/workflows/platform-builds.yml',
+      ).readAsStringSync();
+
+      expect(workflow, contains('actions/upload-artifact@v7'));
+      expect(workflow, contains('if-no-files-found: error'));
+      expect(workflow, contains('retention-days: 14'));
+      for (final artifact in <String>[
+        'nova-2048-android-release',
+        'nova-2048-linux-x64-release',
+        'nova-2048-windows-x64-release',
+        'nova-2048-macos-release',
+        'nova-2048-ios-unsigned-release',
+      ]) {
+        expect(workflow, contains('name: $artifact'));
+      }
+      expect(workflow, contains('sha256sum'));
+      expect(workflow, contains('Get-FileHash'));
+      expect(workflow, contains('shasum -a 256'));
+    });
   });
 }
