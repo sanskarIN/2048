@@ -8,10 +8,10 @@ The permanent workflow set lives in `.github/workflows/`:
 
 | Workflow | Primary purpose |
 | --- | --- |
-| `ci.yml` | Format verification for application/tests/tools, analyzer, test suite with coverage, release-readiness gates, deterministic solver smoke benchmark, and Web release build. |
-| `platform-builds.yml` | Android, Linux, Windows, macOS, and unsigned iOS release-build matrix. |
+| `ci.yml` | Flutter-managed metadata drift guard, format verification for application/tests/tools, analyzer, test suite with coverage, release-readiness gates, deterministic solver smoke benchmark, and warning-enforced Web release build. |
+| `platform-builds.yml` | Android, Linux, Windows, macOS, and unsigned iOS release-build matrix with generated-dependency drift checks, packaging, SHA-256 sidecars, and retained qualification artifacts. |
 | `format-code.yml` | Auto-format `lib/` and `test/` on `main` and commit only when formatting changes are required. |
-| `lock-dependencies.yml` | Resolve and commit `pubspec.lock` when explicitly triggered. |
+| `lock-dependencies.yml` | Resolve and commit `pubspec.lock` automatically when dependency metadata changes or when manually dispatched. |
 | `bootstrap-platforms.yml` | Recreate Flutter native platform runners with the project package/org configuration. |
 | `bootstrap-branding.yml` | Export project branding into platform-specific icon/splash assets. |
 
@@ -31,12 +31,14 @@ The quality job runs on Ubuntu and currently performs, in order:
 ```bash
 flutter --version
 flutter pub get
+git diff --exit-code -- pubspec.lock analysis_options.yaml
 dart format --output=none --set-exit-if-changed lib test tool
 flutter analyze
 flutter test --coverage
 dart run tool/release_readiness.dart --json
 # CI also verifies that --stable fails closed while the package is 0.9.x
 dart run tool/solver_benchmark.dart 8
+# Web output is captured and fails if Flutter reports missing icon-font assets.
 flutter build web --release
 ```
 
@@ -127,7 +129,7 @@ The job skips when the actor is `github-actions[bot]` to prevent a formatting-co
 
 Workflow name: **Lock Flutter Dependencies**
 
-This workflow is intentionally narrow. It runs when its own workflow file changes or when manually dispatched, executes `flutter pub get`, and commits `pubspec.lock` only if resolution changes the lockfile.
+This workflow is intentionally narrow. It runs when `pubspec.yaml`, `pubspec.lock`, or its own workflow file changes and can also be manually dispatched. It executes `flutter pub get` and commits `pubspec.lock` only if resolution changes the lockfile.
 
 The application lockfile is committed because 2048 Nova is an application, not a reusable Dart library.
 
@@ -342,3 +344,53 @@ WASM dry run: PASS
 ```
 
 The accepted native runtime build matrix remains Phase 21 because Phase 22 changes release tooling/tests/documentation, not application runtime behavior.
+
+## Phase 23 release-engineering hardening
+
+Phase 23 hardened reproducibility and retained-build evidence without changing gameplay rules or claiming manual device qualification.
+
+Permanent changes include:
+
+- every repository-owned checkout moved to `actions/checkout@v6`, removing the prior Node-20 checkout warning on current runners;
+- exact `cupertino_icons 1.0.8` dependency/lock entry so Web includes the referenced Cupertino icon font;
+- CI fails when `flutter pub get` changes `pubspec.lock` or `analysis_options.yaml`;
+- `analysis_options.yaml` contains Flutter 3.47's generated-platform exclusions, so Flutter no longer silently migrates it during CI;
+- platform jobs fail when generated plugin registrants/CMake files drift from dependency metadata;
+- macOS generated plugin registration now includes `FilePickerPlugin`, repairing the native file-picker registration required by Game Backup file transport;
+- the Web build is captured and fails if the missing-icon-font warning returns;
+- native outputs are packaged with SHA-256 sidecars and uploaded as five 14-day qualification artifacts using `actions/upload-artifact@v7`.
+
+Accepted quality evidence:
+
+```text
+CI run: 31934191150
+Job: 95133484471
+Source: a93542ecae7713214f7f3e4e11a03c647e880129
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Flutter metadata drift: PASS
+Formatting: PASS — 98 files, 0 changed
+Analyzer: PASS — No issues found
+Tests: PASS — 207/207
+Candidate release gate: PASS — 0/13 manual evidence remains
+Stable boundary assertion: PASS — current 0.9.0+1 remains fail-closed
+Solver smoke benchmark: PASS
+Web/WASM dry run: PASS
+Missing icon-font warning guard: PASS
+Web release: PASS — build/web
+```
+
+Accepted native/package evidence:
+
+```text
+Platform Builds run: 31934181987
+Source: 5b22795d5aba661bd587e7bcbf2ae6442c8b4b3a
+Android job: 95133491378 — PASS
+Linux job: 95133491351 — PASS
+Windows job: 95133491405 — PASS
+macOS + unsigned iOS job: 95133491379 — PASS
+Qualification artifacts: 5/5 uploaded with SHA-256 sidecars
+```
+
+See [`RELEASE_ARTIFACTS.md`](RELEASE_ARTIFACTS.md) for the exact accepted artifact IDs/digests and the boundary between hosted artifacts and real-world qualification.
