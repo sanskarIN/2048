@@ -35,6 +35,7 @@ This directory is the user, technical, development, platform, and release docume
 | [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) | Automated and manual qualification checklist before stable release. |
 | [`BRANDING.md`](BRANDING.md) | Logo/icon/splash sources and generated platform assets. |
 | [`DEPENDENCIES.md`](DEPENDENCIES.md) | Runtime/development dependency rationale and licensing notes. |
+| [`SUPPLY_CHAIN.md`](SUPPLY_CHAIN.md) | SDK floors, dependency update automation, dependency review, lockfile policy, code ownership, and acceptance checks. |
 | [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Common setup, build, save, input, replay, backup, challenge-code, localization, and platform troubleshooting. |
 | [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | Contribution architecture, localization, quality, testing, documentation, and PR requirements. |
 | [`../SECURITY.md`](../SECURITY.md) | Security-reporting and current trust boundaries. |
