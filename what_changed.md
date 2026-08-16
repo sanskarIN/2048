@@ -13,7 +13,7 @@
 - **Creator / branding:** Sanskar / **Made by the Sanskar**
 - **Commit email used by repository automation:** `sanskarin@outlook.in`
 - **License:** MIT
-- **Current phase:** Phase 10 — release-candidate verification complete; manual/device release validation remains before 1.0.0
+- **Current phase:** Phase 22 — evidence-backed release qualification and fail-closed stable promotion gate complete; manual/device qualification remains before 1.0.0
 - **Latest production-code commit used by native build verification:** `eacdb9dc04b4467271f98ce2104e60daf0124f6d` — `fix: use portable page transition builders`
 - **Latest test-fix commit used by the final quality gate:** `f3e7aaec6404139951425144cb1fb4d2fda66e27` — `test: scroll lazy mode list before asserting offscreen entries`
 - **Latest documentation commit before this log refresh:** `3d5988f1a7a29d38dbd72602e2c489d5975c7b5b` — `docs: update changelog for release candidate verification`
@@ -4412,3 +4412,64 @@ Phase 21 still requires manual real-environment checks for:
 All previous manual release requirements also remain outstanding: real Android/iOS gameplay and lifecycle/save-resume, long-session Daily/timed/move-limit/Undo/win-continue behavior, real clipboard/browser handlers, Game Backup file/document-provider behavior, Move Replay and Full Replay Archive interaction/accessibility/performance, external browser/email handlers, native splash/icon review, signing/provisioning/notarization, and final store/package metadata/review.
 
 Hosted formatter/analyzer/tests/Web/native builds are strong automated evidence but are not a substitute for those physical-device, assistive-technology, optical, signing, and distribution checks.
+
+
+---
+
+## 2026-08-16 — Phase 22: Evidence-backed release qualification and fail-closed stable promotion
+
+Phase 22 continued from the Phase 21 release-candidate state without pretending that hosted automation can perform physical-device, assistive-technology, external-handler, signing, or store qualification. The repository already had a mature gameplay/runtime feature set, so this phase hardened the transition from `0.9.x` to a future stable `1.0.0`.
+
+### Implemented release evidence model
+
+Added `docs/release_qualification.json` with schema version 1 and exactly 13 required real-world qualification IDs: `android-device`, `ios-device`, `input-responsive`, `assistive-tech`, `long-session`, `autoplay-real-target`, `challenge-code-real-target`, `move-replay-real-target`, `full-replay-real-target`, `backup-real-target`, `external-handlers`, `native-branding`, and `distribution-metadata`. Every item begins `pending` with no invented evidence. Passed items require non-empty evidence and a valid ISO-8601 timestamp.
+
+### Implemented release readiness CLI
+
+`tool/release_readiness.dart` now validates required release/support/security/CI/continuity files, package/candidate version consistency, manifest JSON/schema, the exact manual-check ID set, allowed statuses, passed-evidence/timestamp completeness, the `[Unreleased]` changelog boundary, and the explicit ROADMAP pre-1.0 boundary. Candidate mode remains usable while qualification is pending; strict `--stable` requires real `1.0.0` metadata and complete passed evidence.
+
+### Permanent CI hardening
+
+The permanent CI gate now formats `lib test tool`, runs analyzer and all tests, validates candidate readiness, asserts that the current RC cannot pass strict stable mode, smoke-runs both deterministic solver strategies, and builds Web. Formatter automation now also owns `tool/**` and correctly produced the canonical-format commit `aa8d3d639d681f7e3972fba020b797d04bab15dc` for the new CLI.
+
+### Phase 22 implementation commits before final documentation
+
+```text
+372c4c2377d55eddd6023aeab7d14acfdeb5882c  chore: add release qualification evidence manifest
+fff686994ae708ca6022948b21cae95311165fd4  feat: add release readiness gate
+8e531d358fd7d6ea8b1cee778ef19ecfa2310b46  ci: enforce release readiness and tool quality
+3431724cf66a583b51a89f3e035ab1cd7df3bcef  docs: add evidence-backed release qualification guide
+dc905663a0e7ebf1505b0595d70b8a1265b7b1f9  ci: include tool sources in formatter automation
+aa8d3d639d681f7e3972fba020b797d04bab15dc  style: format Dart sources tests and tools
+593f037c6dfcce2dc2bc2b2eabd2cb95c1189ed5  docs: add machine-enforced stable release boundary
+86aaddeb6cfcbfef45c86889060ec5313fdbab31  ci: verify release promotion boundary fails closed
+```
+
+### Accepted automated verification
+
+Permanent CI run `31932018261`, job `95128223530`, verified source `86aaddeb6cfcbfef45c86889060ec5313fdbab31` on Ubuntu 24.04 with Flutter 3.47.0, Dart 3.13.0, and DevTools 2.60.0.
+
+```text
+Formatting: PASS — 96 files, 0 changed
+Static analysis: PASS — No issues found
+Automated tests: PASS — 194/194
+Candidate release gate: PASS — candidateGatePassed=true; readyForStable=false; 0/13 evidence items passed
+Stable boundary assertion: PASS — strict --stable correctly rejected 0.9.0+1, missing [1.0.0] changelog metadata, and all 13 pending evidence items
+Solver benchmark smoke: PASS — Heuristic + Expectimax; seeds 2048, 4096, 8192, 20260815; move budget 8 each
+Web release: PASS — build/web
+Web WASM dry run: PASS
+```
+
+The existing non-fatal Cupertino icon-font warning remained visible during Web compilation; the Web build completed successfully. No Flutter gameplay/runtime source changed in Phase 22, so the latest accepted native runtime matrix remains Phase 21 rather than being falsely relabeled.
+
+### Transparent helper failure
+
+Temporary documentation workflow run `31932187504` failed at workflow-definition validation before creating any job or modifying any project file. The cause was the first helper YAML embedding unindented multiline Python string contents inside a YAML block. It was replaced by a small valid workflow plus this repository-local temporary Python helper. This failure did not invalidate permanent CI run `31932018261` and is retained here rather than hidden.
+
+### Documentation synchronized
+
+README, documentation index, CI/CD guide, release checklist, changelog, roadmap, verification record, dedicated release qualification guide, and this continuity log now describe one consistent path from release candidate to stable release.
+
+### Remaining stable-release boundary
+
+The project is intentionally **not** marked `1.0.0`. All 13 real-world evidence items remain pending until actually performed. The stable gate prevents missing manual checks from being silently converted into a stable-release claim by a version edit alone.
