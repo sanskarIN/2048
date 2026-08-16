@@ -29,9 +29,7 @@ void main() {
 
       expect(
         workflow,
-        contains(
-          'actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961',
-        ),
+        contains('actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961'),
       );
       expect(workflow, contains('distribution: temurin'));
       expect(workflow, contains("java-version: '17'"));
