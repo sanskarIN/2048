@@ -1,3 +1,4 @@
+# Phase 26 validation branch: this comment exists only to exercise the pull-request dependency-review path.
 name: Dependency Review
 
 on:
