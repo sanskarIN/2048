@@ -22,6 +22,22 @@ void main() {
       }
     });
 
+    test('Android hosted build pins the qualified JDK 17 runtime', () {
+      final workflow = File(
+        '.github/workflows/platform-builds.yml',
+      ).readAsStringSync();
+
+      expect(
+        workflow,
+        contains(
+          'actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961',
+        ),
+      );
+      expect(workflow, contains('distribution: temurin'));
+      expect(workflow, contains("java-version: '17'"));
+      expect(workflow, isNot(contains("java-version: '21'")));
+    });
+
     test(
       'permanent workflows reject high-risk trigger and permission patterns',
       () {
