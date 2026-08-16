@@ -1,0 +1,44 @@
+name: Phase 23 documentation refresh
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/phase23-docs.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase23-docs
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+
+      - name: Apply Phase 23 documentation updates
+        run: python .github/scripts/phase23_docs.py
+
+      - name: Remove one-time documentation helpers
+        run: |
+          git rm .github/scripts/phase23_docs.py .github/workflows/phase23-docs.yml
+          git commit -m "chore: remove Phase 23 documentation helpers"
+
+      - name: Rebase and push documentation commits
+        run: |
+          git pull --rebase origin main
+          git push origin HEAD:main
