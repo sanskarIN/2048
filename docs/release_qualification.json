@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "candidate": "0.9.0+1",
+  "manualChecks": [
+    {
+      "id": "android-device",
+      "title": "Physical Android gameplay, lifecycle, save, and resume",
+      "status": "pending",
+      "evidence": "",
+      "updatedAt": null
+    },
+    {
+      "id": "ios-device",
+      "title": "Physical iOS gameplay, lifecycle, save, and resume",
+      "status": "pending",
+      "evidence": "",
+      "updatedAt": null
+    },
+    {
+      "id": "input-responsive",
+      "title": "Touch, orientation, keyboard, focus, and responsive layout on representative targets",
+      "status": "pending",
+      "evidence": "",
+      "updatedAt": null
+    },
+    {
+      "id": "assistive-tech",
+      "title": "VoiceOver, TalkBack, Narrator or browser screen-reader qualification including Hindi and large text",
+      "status": "pending",
+      "evidence": "",
+      "updatedAt": null
+    },
+    {
+      "id": "long-session",
+      "title": "Long-session Daily, timed, move-limit, Undo, and win-continue qualification",
+      "status": "pending",
+      "evidence": "",
+      "updatedAt": null
+    },
+    {
+      "id": "autoplay-real-target",
+      "title": "Auto Play strategy switching, pause, responsiveness, localization, and accessibility on real targets",
+      "status": "pending",
+      "evidence": "",
+      "updatedAt": null
+    },
+    {
+      "id": "challenge-code-real-target",
+      "title": "Challenge Code QR, copy, paste, manual entry, validation, determinism, and accessibility on real targets",
+      "status": "pending",
+      "evidence": "",
+      "updatedAt": null
+    },
+    {
+      "id": "move-replay-real-target",
+      "title": "Move Replay scrub, playback, navigation-away, and accessibility on real targets",
+      "status": "pending",
+      "evidence": "",
+      "updatedAt": null
+    },
+    {
+      "id": "full-replay-real-target",
+      "title": "Full Replay Archive import, playback, 4096-event boundary, long-replay responsiveness, and accessibility",
+      "status": "pending",
+      "evidence": "",
+      "updatedAt": null
+    },
+    {
+      "id": "backup-real-target",
+      "title": "Game Backup clipboard and file save/open/cancel/round-trip/error/restore qualification using real handlers",
+      "status": "pending",
+      "evidence": "",
+      "updatedAt": null
+    },
+    {
+      "id": "external-handlers",
+      "title": "Real browser, clipboard, file-provider, and email-handler qualification",
+      "status": "pending",
+      "evidence": "",
+      "updatedAt": null
+    },
+    {
+      "id": "native-branding",
+      "title": "Native splash and launcher icon presentation review",
+      "status": "pending",
+      "evidence": "",
+      "updatedAt": null
+    },
+    {
+      "id": "distribution-metadata",
+      "title": "Distribution signing, provisioning, package metadata, privacy information, and store metadata review",
+      "status": "pending",
+      "evidence": "",
+      "updatedAt": null
+    }
+  ]
+}
