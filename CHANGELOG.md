@@ -5,6 +5,8 @@ All notable changes to this project are documented here.
 ## [Unreleased]
 
 ### Added
+- Version 1.5 package/runtime metadata (`1.5.0+15`) with regression coverage that keeps the runtime marketing version synchronized with `pubspec.yaml`.
+- Version 1.5 release-gate regression coverage rejecting legacy 0.9 candidates while preserving fail-closed manual qualification.
 - Eight repository-integrity regressions covering dependency/lock pairing, macOS FilePicker registration, Flutter analysis migration exclusions, checkout runtime policy, dependency-lock triggers, CI metadata/font guards, and native artifact publishing contracts.
 - Checksummed 14-day native qualification artifacts for Android, Linux x64, Windows x64, macOS, and unsigned iOS, with hard failure when expected package files are absent.
 - Process-level release-gate regression coverage with six temporary-repository fixtures spanning candidate success, stable success, pending-evidence refusal, candidate mismatch, incomplete passed evidence, and missing required IDs.
@@ -58,11 +60,9 @@ All notable changes to this project are documented here.
 - Legacy save-schema migration from schema 0 to the current schema 1 representation.
 - Friendly copy fallback when an approved external destination cannot be opened by the platform.
 
-### Fixed
-- Missing Cupertino icon-font asset in Web release builds by explicitly pinning `cupertino_icons 1.0.8`; CI now fails if the missing-font warning returns.
-- Generated macOS `file_picker` registration so Game Backup file transport has the expected native plugin registration on macOS.
-
 ### Changed
+- The maintained package line is now Version 1.5 (`1.5.0+15` candidate metadata, `1.5.0` marketing version) with the qualification manifest and release policy aligned to the same target.
+- Windows version-resource fallback metadata now matches Version 1.5 instead of the old template fallback.
 - Repository-owned workflows now use `actions/checkout@v6`; platform artifacts use `actions/upload-artifact@v7`.
 - Permanent CI now supports explicit maintainer `workflow_dispatch`, guarded by a repository-integrity regression for verification of bot-authored heads.
 - Dependency-lock automation watches dependency metadata, while permanent CI fails when `flutter pub get` changes the committed lockfile or Flutter-managed analysis options.
@@ -105,6 +105,9 @@ All notable changes to this project are documented here.
 - Repository documentation now distinguishes configured/compiled platform support from real-device, assistive-technology, clipboard-handler, signing/provisioning, and store-release qualification.
 
 ### Fixed
+- Removed release automation assumptions that treated every non-0.9 version as already stable-qualified; candidate CI is now independent from real-device stable qualification while the strict stable gate remains fail-closed.
+- Missing Cupertino icon-font asset in Web release builds by explicitly pinning `cupertino_icons 1.0.8`; CI now fails if the missing-font warning returns.
+- Generated macOS `file_picker` registration so Game Backup file transport has the expected native plugin registration on macOS.
 - Prevented directional engine write logic from falling through switch cases.
 - Preserved RNG state across save/resume and undo snapshots.
 - Preserved lifetime best score when undoing to an earlier board snapshot.
