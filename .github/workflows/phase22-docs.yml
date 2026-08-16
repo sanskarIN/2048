@@ -1,0 +1,399 @@
+name: Phase 22 documentation refresh
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/phase22-docs.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase22-docs
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+
+      - name: Refresh README release qualification references
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('README.md')
+          text = path.read_text()
+          old = "The repository is currently on the **`0.9.0+1` release-candidate line**. Automated quality and native build evidence is documented, while physical-device, real screen-reader, signing/provisioning, long-session, and store-release qualification remain explicit manual boundaries before a stable 1.0.0 claim."
+          new = old + "\n\nRelease promotion is now fail-closed: `dart run tool/release_readiness.dart` validates candidate metadata and the evidence manifest, while `dart run tool/release_readiness.dart --stable` refuses promotion until the package is actually `1.0.0`, the changelog has a stable release section, and every required real-world qualification item has recorded passed evidence. See [`docs/RELEASE_QUALIFICATION.md`](docs/RELEASE_QUALIFICATION.md)."
+          if old not in text:
+              raise SystemExit('README release-candidate paragraph not found')
+          text = text.replace(old, new, 1)
+          old_row = "| Release qualification | [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md) |"
+          new_rows = "| Release qualification gate | [`docs/RELEASE_QUALIFICATION.md`](docs/RELEASE_QUALIFICATION.md) |\n| Release checklist | [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md) |"
+          if old_row not in text:
+              raise SystemExit('README release qualification row not found')
+          path.write_text(text.replace(old_row, new_rows, 1))
+
+      - name: Commit README
+        run: |
+          git add README.md
+          git commit -m "docs: expose fail-closed release qualification"
+
+      - name: Refresh documentation index
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('docs/README.md')
+          text = path.read_text()
+          anchor = "| [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) | Automated and manual qualification checklist before stable release. |"
+          replacement = "| [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md) | Evidence manifest, candidate/stable readiness commands, fail-closed promotion rules, and stable-release sequence. |\n" + anchor
+          if anchor not in text:
+              raise SystemExit('docs index release checklist row not found')
+          text = text.replace(anchor, replacement, 1)
+          source_anchor = "- **Automated quality gates:** `.github/workflows/`."
+          source_replacement = source_anchor + "\n- **Stable-release evidence gate:** `tool/release_readiness.dart` plus `release_qualification.json`; human procedure is `RELEASE_QUALIFICATION.md`."
+          if source_anchor not in text:
+              raise SystemExit('docs index quality source line not found')
+          path.write_text(text.replace(source_anchor, source_replacement, 1))
+
+      - name: Commit documentation index
+        run: |
+          git add docs/README.md
+          git commit -m "docs: index release readiness evidence gate"
+
+      - name: Refresh CI and release checklist docs
+        shell: python
+        run: |
+          from pathlib import Path
+
+          ci = Path('docs/CI_CD.md')
+          text = ci.read_text()
+          text = text.replace(
+              '`ci.yml` | Format verification, analyzer, test suite with coverage, and Web release build.',
+              '`ci.yml` | Format verification for application/tests/tools, analyzer, test suite with coverage, release-readiness gates, deterministic solver smoke benchmark, and Web release build.',
+              1,
+          )
+          old_commands = """flutter --version
+flutter pub get
+dart format --output=none --set-exit-if-changed lib test
+flutter analyze
+flutter test --coverage
+flutter build web --release"""
+          new_commands = """flutter --version
+flutter pub get
+dart format --output=none --set-exit-if-changed lib test tool
+flutter analyze
+flutter test --coverage
+dart run tool/release_readiness.dart --json
+# CI also verifies that --stable fails closed while the package is 0.9.x
+dart run tool/solver_benchmark.dart 8
+flutter build web --release"""
+          if old_commands not in text:
+              raise SystemExit('CI command block not found')
+          text = text.replace(old_commands, new_commands, 1)
+          text = text.replace(
+              'It runs on relevant `main` changes to `lib/`, `test/`, or the workflow itself and can be manually dispatched.',
+              'It runs on relevant `main` changes to `lib/`, `test/`, `tool/`, or the workflow itself and can be manually dispatched.',
+              1,
+          )
+          text = text.replace('4. runs `dart format lib test`;', '4. runs `dart format lib test tool`;', 1)
+          phase = """
+
+## Phase 22 release-promotion gate
+
+Phase 22 adds an evidence-backed release boundary without pretending that hosted automation performs physical-device or assistive-technology qualification. `tool/release_readiness.dart` validates required release files, package/candidate version consistency, the exact manual-check ID set, allowed statuses, evidence/timestamp requirements, changelog/roadmap boundaries, and stable metadata. Candidate mode is CI-safe while required manual checks remain pending; strict `--stable` mode fails until all stable conditions are genuinely satisfied.
+
+Accepted Phase 22 CI evidence:
+
+```text
+Source commit: 86aaddeb6cfcbfef45c86889060ec5313fdbab31
+CI run: 31932018261
+CI job: 95128223530
+Runner: Ubuntu 24.04
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+Formatting: PASS — 96 files, 0 changed
+Analyzer: PASS — No issues found
+Tests: PASS — 194/194
+Candidate readiness: PASS — candidateGatePassed=true; readyForStable=false; 0/13 manual evidence complete
+Stable-boundary assertion: PASS — strict stable mode correctly refused 0.9.0+1
+Solver smoke benchmark: PASS — Heuristic and Expectimax, four deterministic seeds, eight moves each
+Web release: PASS — build/web
+WASM dry run: PASS
+```
+
+The same run intentionally proves both sides of the boundary: the release candidate is structurally valid, and a stable release is not yet qualified. Native runtime code did not change in Phase 22, so the latest accepted native compilation evidence remains the Phase 21 matrix; real-device/manual checks remain outstanding in the evidence manifest and release checklist.
+"""
+          if '## Phase 22 release-promotion gate' not in text:
+              text += phase
+          ci.write_text(text)
+
+          checklist = Path('docs/RELEASE_CHECKLIST.md')
+          text = checklist.read_text()
+          intro = 'Current objective evidence is recorded in `docs/VERIFICATION.md` and `what_changed.md`.'
+          replacement = intro + ' The machine-readable manual evidence state is `docs/release_qualification.json`; the exact promotion procedure and fail-closed commands are in [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md).'
+          if intro not in text:
+              raise SystemExit('release checklist evidence intro not found')
+          text = text.replace(intro, replacement, 1)
+          text = text.replace(
+              '- [x] `dart format --output=none --set-exit-if-changed lib test`',
+              '- [x] `dart format --output=none --set-exit-if-changed lib test tool`',
+              1,
+          )
+          marker = '- [x] `flutter test --coverage`'
+          additions = marker + "\n- [x] `dart run tool/release_readiness.dart --json` validates candidate metadata/manifest structure\n- [x] Permanent CI proves strict `--stable` remains fail-closed while the package is `0.9.x`\n- [x] `dart run tool/solver_benchmark.dart 8` smoke-runs both deterministic Auto Play strategies"
+          if marker not in text:
+              raise SystemExit('release checklist test marker not found')
+          text = text.replace(marker, additions, 1)
+          stable_marker = '- [ ] Promote version/tag to `1.0.0` only after the stable-release criteria are satisfied'
+          stable_replacement = '- [ ] `dart run tool/release_readiness.dart --stable` exits successfully on the exact release commit\n' + stable_marker
+          if stable_marker not in text:
+              raise SystemExit('stable promotion checklist marker not found')
+          text = text.replace(stable_marker, stable_replacement, 1)
+          checklist.write_text(text)
+
+      - name: Commit release process documentation
+        run: |
+          git add docs/CI_CD.md docs/RELEASE_CHECKLIST.md
+          git commit -m "docs: align CI and stable release checklist"
+
+      - name: Refresh changelog
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('CHANGELOG.md')
+          text = path.read_text()
+          added = '### Added\n'
+          if added not in text:
+              raise SystemExit('CHANGELOG Added section not found')
+          additions = """### Added
+- Evidence-backed release qualification with `docs/release_qualification.json`, covering the exact 13 real-device/accessibility/handler/branding/distribution checks that must be completed before stable promotion.
+- `tool/release_readiness.dart` candidate/stable CLI with JSON output, required-file/version/manifest validation, evidence/timestamp enforcement, and a fail-closed `--stable` mode.
+- Dedicated `docs/RELEASE_QUALIFICATION.md` procedure for recording verifiable manual evidence and promoting the exact qualified commit.
+"""
+          text = text.replace(added, additions, 1)
+          changed = '### Changed\n'
+          if changed not in text:
+              raise SystemExit('CHANGELOG Changed section not found')
+          changed_additions = """### Changed
+- Permanent CI now formats `tool/`, validates release-candidate metadata, proves the stable gate remains closed on the `0.9.x` line, smoke-runs both deterministic solver strategies, and then produces the Web release build.
+- Formatter automation now covers `lib/`, `test/`, and `tool/` so maintenance CLIs cannot drift outside canonical Dart formatting.
+- Stable `1.0.0` promotion criteria are machine-enforced instead of depending only on prose checklists; pending real-world checks remain explicit rather than being fabricated from hosted automation.
+"""
+          path.write_text(text.replace(changed, changed_additions, 1))
+
+      - name: Commit changelog
+        run: |
+          git add CHANGELOG.md
+          git commit -m "docs: record release qualification infrastructure"
+
+      - name: Refresh verification record
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('docs/VERIFICATION.md')
+          text = path.read_text()
+          intro = 'This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.\n'
+          if intro not in text:
+              raise SystemExit('verification intro not found')
+          section = """
+
+## Phase 22 — Evidence-backed stable-release promotion gate
+
+Date: **2026-08-16**
+
+Accepted maintained CI source:
+
+```text
+Commit: 86aaddeb6cfcbfef45c86889060ec5313fdbab31
+CI run: 31932018261
+CI job: 95128223530
+Result: SUCCESS
+Runner: Ubuntu 24.04
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS — 96 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 194/194
+Candidate readiness: PASS
+Stable promotion boundary: PASS — strict stable mode correctly rejected the current RC
+Solver smoke benchmark: PASS — Heuristic + Expectimax, seeds 2048/4096/8192/20260815, 8 moves each
+Web release: PASS — build/web
+WASM dry run: PASS
+```
+
+Candidate-gate output on the accepted source reported `candidateGatePassed=true`, `readyForStable=false`, and **0/13** required manual evidence items passed. The CI then deliberately invoked strict stable mode and required it to fail; it correctly rejected version `0.9.0+1`, the absence of a `[1.0.0]` changelog section, and every still-pending manual evidence item. The workflow treats that expected refusal as a passing assertion, so a future accidental weakening of the boundary fails CI.
+
+Phase 22 changes release engineering and documentation only; it does not alter Flutter gameplay/runtime behavior. Therefore the latest native runtime build evidence remains the Phase 21 Android/Linux/Windows/macOS/unsigned-iOS matrix. Physical-device, real screen-reader, external-handler, native-branding, signing/provisioning, and store metadata checks remain unqualified until genuine evidence is recorded in `release_qualification.json`.
+"""
+          path.write_text(text.replace(intro, intro + section, 1))
+
+      - name: Commit verification evidence
+        run: |
+          git add docs/VERIFICATION.md
+          git commit -m "docs: record Phase 22 CI evidence"
+
+      - name: Update continuity log
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path = Path('what_changed.md')
+          text = path.read_text()
+          text, count = re.subn(
+              r'- \*\*Current phase:\*\*.*',
+              '- **Current phase:** Phase 22 — evidence-backed release qualification and fail-closed stable promotion gate complete; manual/device qualification remains before 1.0.0',
+              text,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit('what_changed current phase line not found')
+          section = """
+
+---
+
+## 2026-08-16 — Phase 22: Evidence-backed release qualification and fail-closed stable promotion
+
+Phase 22 continued from the Phase 21 release-candidate state without pretending that hosted automation can perform physical-device, assistive-technology, external-handler, signing, or store qualification. The repository already had a mature gameplay/runtime feature set, so this phase hardened the transition from `0.9.x` to a future stable `1.0.0`.
+
+### Implemented release evidence model
+
+Added `docs/release_qualification.json` with schema version 1 and exactly 13 required real-world qualification IDs:
+
+1. `android-device`
+2. `ios-device`
+3. `input-responsive`
+4. `assistive-tech`
+5. `long-session`
+6. `autoplay-real-target`
+7. `challenge-code-real-target`
+8. `move-replay-real-target`
+9. `full-replay-real-target`
+10. `backup-real-target`
+11. `external-handlers`
+12. `native-branding`
+13. `distribution-metadata`
+
+Every item begins `pending` with no invented evidence. Passed items require non-empty evidence and a valid ISO-8601 timestamp.
+
+### Implemented `tool/release_readiness.dart`
+
+The new pure-Dart release gate validates:
+
+- required release/support/security/CI/continuity files exist and are non-empty;
+- `pubspec.yaml` has a parseable release-candidate/stable version;
+- the evidence manifest is valid JSON with schema version 1;
+- manifest candidate exactly matches the package version;
+- the exact required manual-check ID set is present, with no duplicates or unknown IDs;
+- statuses are restricted to `pending`, `passed`, or `blocked`;
+- passed checks include verifiable evidence text and a parseable timestamp;
+- `CHANGELOG.md` keeps `[Unreleased]`;
+- `ROADMAP.md` preserves the explicit pre-1.0 qualification boundary.
+
+Candidate mode reports incomplete manual evidence as a warning so RC CI remains usable. `--stable` fails unless the package is `1.0.0` (optional build suffix), the changelog contains `[1.0.0]`, and every required manual check has passed evidence. `--json` provides machine-readable output.
+
+### Permanent CI hardening
+
+Updated `.github/workflows/ci.yml` to run:
+
+```text
+flutter pub get
+dart format --output=none --set-exit-if-changed lib test tool
+flutter analyze
+flutter test --coverage
+dart run tool/release_readiness.dart --json
+release-promotion boundary assertion
+dart run tool/solver_benchmark.dart 8
+flutter build web --release
+```
+
+The promotion assertion is version-aware. On the current `0.9.x` line it requires strict stable mode to fail; after a real stable-version change it requires strict stable mode to pass. This makes the transition fail closed instead of relying on a maintainer remembering a prose-only checklist.
+
+Updated `.github/workflows/format-code.yml` so `tool/**` changes trigger formatting, `dart format lib test tool` runs, and tool changes are included in formatting commits.
+
+The first formatter pass correctly created `aa8d3d639d681f7e3972fba020b797d04bab15dc` (`style: format Dart sources tests and tools`) for the newly added CLI. This is retained as normal automated formatting evidence, not hidden.
+
+### Phase 22 commit sequence before final documentation
+
+```text
+372c4c2377d55eddd6023aeab7d14acfdeb5882c  chore: add release qualification evidence manifest
+fff686994ae708ca6022948b21cae95311165fd4  feat: add release readiness gate
+8e531d358fd7d6ea8b1cee778ef19ecfa2310b46  ci: enforce release readiness and tool quality
+3431724cf66a583b51a89f3e035ab1cd7df3bcef  docs: add evidence-backed release qualification guide
+dc905663a0e7ebf1505b0595d70b8a1265b7b1f9  ci: include tool sources in formatter automation
+aa8d3d639d681f7e3972fba020b797d04bab15dc  style: format Dart sources tests and tools
+593f037c6dfcce2dc2bc2b2eabd2cb95c1189ed5  docs: add machine-enforced stable release boundary
+86aaddeb6cfcbfef45c86889060ec5313fdbab31  ci: verify release promotion boundary fails closed
+```
+
+### Accepted automated verification
+
+Permanent CI run `31932018261`, job `95128223530`, verified source `86aaddeb6cfcbfef45c86889060ec5313fdbab31` on Ubuntu 24.04 with Flutter 3.47.0 / Dart 3.13.0 / DevTools 2.60.0.
+
+```text
+Formatting: PASS — 96 files, 0 changed
+Static analysis: PASS — No issues found
+Automated tests: PASS — 194/194
+Candidate release gate: PASS
+  candidateGatePassed=true
+  readyForStable=false
+  manualChecksPassed=0
+  manualChecksRequired=13
+Stable boundary assertion: PASS
+  strict --stable correctly rejected 0.9.0+1
+  strict --stable correctly rejected missing [1.0.0] changelog metadata
+  strict --stable correctly rejected all 13 pending manual evidence items
+Solver benchmark smoke: PASS
+  Heuristic and Expectimax both executed
+  Seeds: 2048, 4096, 8192, 20260815
+  Move budget: 8 each
+Web release: PASS — build/web
+Web WASM dry run: PASS
+```
+
+The existing non-fatal Cupertino icon-font warning remained visible during Web compilation; the Web build still completed successfully. No runtime Flutter source changed in Phase 22, so a new native build matrix was not misrepresented as necessary evidence; the latest runtime-native evidence remains Phase 21.
+
+### Documentation synchronized
+
+Updated the README, documentation index, CI/CD guide, release checklist, changelog, roadmap, verification record, dedicated release qualification guide, and this continuity log so maintainers have one consistent path from release candidate to stable release.
+
+### Remaining stable-release boundary
+
+The project is intentionally **not** marked `1.0.0` yet. All 13 real-world evidence items remain pending until they are actually performed. The new gate prevents those missing checks from being silently converted into a stable-release claim by a version edit alone.
+"""
+          if '## 2026-08-16 — Phase 22: Evidence-backed release qualification' not in text:
+              text += section
+          path.write_text(text)
+
+      - name: Commit continuity log
+        run: |
+          git add what_changed.md
+          git commit -m "docs: record complete Phase 22 implementation log"
+
+      - name: Remove temporary documentation workflow
+        run: |
+          git rm .github/workflows/phase22-docs.yml
+          git commit -m "chore: remove Phase 22 documentation helper"
+
+      - name: Push documentation commits
+        run: |
+          git pull --rebase origin main
+          git push origin HEAD:main
