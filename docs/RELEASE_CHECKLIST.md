@@ -4,11 +4,14 @@
 
 ## Automated release-candidate gate
 
-Current objective evidence is recorded in `docs/VERIFICATION.md` and `what_changed.md`.
+Current objective evidence is recorded in `docs/VERIFICATION.md` and `what_changed.md`. The machine-readable manual evidence state is `docs/release_qualification.json`; the exact promotion procedure and fail-closed commands are in [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md).
 
-- [x] `dart format --output=none --set-exit-if-changed lib test`
+- [x] `dart format --output=none --set-exit-if-changed lib test tool`
 - [x] `flutter analyze`
 - [x] `flutter test --coverage`
+- [x] `dart run tool/release_readiness.dart --json` validates candidate metadata/manifest structure
+- [x] Permanent CI proves strict `--stable` remains fail-closed while the package is `0.9.x`
+- [x] `dart run tool/solver_benchmark.dart 8` smoke-runs both deterministic Auto Play strategies
 - [x] `flutter build web --release`
 - [x] Android release APK builds on the configured hosted runner
 - [x] Linux release builds on the configured hosted runner
@@ -124,6 +127,7 @@ Complete these before promoting to `1.0.0`:
 - [ ] Confirm no credentials/private signing material are committed
 - [ ] Review dependency/update state deliberately; do not upgrade blindly immediately before release
 - [ ] Document any remaining known limitations, including non-cryptographic Challenge Code checksums, same-code divergence after different move sequences, bounded Replay history, plain-JSON clipboard backup, imported-game unranked policy, and the heuristic rather than guaranteed-optimal Auto Play solver
+- [ ] `dart run tool/release_readiness.dart --stable` exits successfully on the exact release commit
 - [ ] Promote version/tag to `1.0.0` only after the stable-release criteria are satisfied
 
 ## English/Hindi localization qualification

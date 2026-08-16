@@ -8,7 +8,7 @@ The permanent workflow set lives in `.github/workflows/`:
 
 | Workflow | Primary purpose |
 | --- | --- |
-| `ci.yml` | Format verification, analyzer, test suite with coverage, and Web release build. |
+| `ci.yml` | Format verification for application/tests/tools, analyzer, test suite with coverage, release-readiness gates, deterministic solver smoke benchmark, and Web release build. |
 | `platform-builds.yml` | Android, Linux, Windows, macOS, and unsigned iOS release-build matrix. |
 | `format-code.yml` | Auto-format `lib/` and `test/` on `main` and commit only when formatting changes are required. |
 | `lock-dependencies.yml` | Resolve and commit `pubspec.lock` when explicitly triggered. |
@@ -31,9 +31,12 @@ The quality job runs on Ubuntu and currently performs, in order:
 ```bash
 flutter --version
 flutter pub get
-dart format --output=none --set-exit-if-changed lib test
+dart format --output=none --set-exit-if-changed lib test tool
 flutter analyze
 flutter test --coverage
+dart run tool/release_readiness.dart --json
+# CI also verifies that --stable fails closed while the package is 0.9.x
+dart run tool/solver_benchmark.dart 8
 flutter build web --release
 ```
 
@@ -99,14 +102,14 @@ Challenge Codes use only Dart/Flutter code plus the already-existing platform cl
 
 Workflow name: **Format Dart**
 
-It runs on relevant `main` changes to `lib/`, `test/`, or the workflow itself and can be manually dispatched.
+It runs on relevant `main` changes to `lib/`, `test/`, `tool/`, or the workflow itself and can be manually dispatched.
 
 The workflow:
 
 1. checks out full history;
 2. installs stable Flutter;
 3. resolves dependencies;
-4. runs `dart format lib test`;
+4. runs `dart format lib test tool`;
 5. commits only if formatter output changed files;
 6. rebases on the current `main`;
 7. pushes normally.
@@ -289,3 +292,29 @@ macOS + unsigned iOS: PASS — 94995348674
 ```
 
 The first final-source CI `31877417527` failed the formatter and is intentionally retained in the record. The maintained formatter workflow `31877417558` corrected the repository-wide Dart formatting drift before the final source trigger. Temporary Phase 21 implementation/product-copy/documentation helpers were removed after use and are not permanent CI infrastructure.
+
+
+## Phase 22 release-promotion gate
+
+Phase 22 adds an evidence-backed release boundary without pretending that hosted automation performs physical-device or assistive-technology qualification. `tool/release_readiness.dart` validates required release files, package/candidate version consistency, the exact manual-check ID set, allowed statuses, evidence/timestamp requirements, changelog/roadmap boundaries, and stable metadata. Candidate mode is CI-safe while required manual checks remain pending; strict `--stable` mode fails until all stable conditions are genuinely satisfied.
+
+Accepted Phase 22 CI evidence:
+
+```text
+Source commit: 86aaddeb6cfcbfef45c86889060ec5313fdbab31
+CI run: 31932018261
+CI job: 95128223530
+Runner: Ubuntu 24.04
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+Formatting: PASS — 96 files, 0 changed
+Analyzer: PASS — No issues found
+Tests: PASS — 194/194
+Candidate readiness: PASS — candidateGatePassed=true; readyForStable=false; 0/13 manual evidence complete
+Stable-boundary assertion: PASS — strict stable mode correctly refused 0.9.0+1
+Solver smoke benchmark: PASS — Heuristic and Expectimax, four deterministic seeds, eight moves each
+Web release: PASS — build/web
+WASM dry run: PASS
+```
+
+The same run intentionally proves both sides of the boundary: the release candidate is structurally valid, and a stable release is not yet qualified. Native runtime code did not change in Phase 22, so the latest accepted native compilation evidence remains the Phase 21 matrix; real-device/manual checks remain outstanding in the evidence manifest and release checklist.
