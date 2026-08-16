@@ -2,6 +2,36 @@
 
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
+
+## Phase 22 — Evidence-backed stable-release promotion gate
+
+Date: **2026-08-16**
+
+Accepted maintained CI source:
+
+```text
+Commit: 86aaddeb6cfcbfef45c86889060ec5313fdbab31
+CI run: 31932018261
+CI job: 95128223530
+Result: SUCCESS
+Runner: Ubuntu 24.04
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS — 96 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 194/194
+Candidate readiness: PASS
+Stable promotion boundary: PASS — strict stable mode correctly rejected the current RC
+Solver smoke benchmark: PASS — Heuristic + Expectimax, seeds 2048/4096/8192/20260815, 8 moves each
+Web release: PASS — build/web
+WASM dry run: PASS
+```
+
+Candidate-gate output on the accepted source reported `candidateGatePassed=true`, `readyForStable=false`, and **0/13** required manual evidence items passed. The CI then deliberately invoked strict stable mode and required it to fail; it correctly rejected version `0.9.0+1`, the absence of a `[1.0.0]` changelog section, and every still-pending manual evidence item. The workflow treats that expected refusal as a passing assertion, so a future accidental weakening of the boundary fails CI.
+
+Phase 22 changes release engineering and documentation only; it does not alter Flutter gameplay/runtime behavior. Therefore the latest native runtime build evidence remains the Phase 21 Android/Linux/Windows/macOS/unsigned-iOS matrix. Physical-device, real screen-reader, external-handler, native-branding, signing/provisioning, and store metadata checks remain unqualified until genuine evidence is recorded in `release_qualification.json`.
+
 ## Phase 21 — Offline Challenge Code QR rendering and current-source matrix
 
 Date: **2026-08-15**
