@@ -9,6 +9,7 @@ The permanent workflow set lives in `.github/workflows/`:
 | Workflow | Primary purpose |
 | --- | --- |
 | `ci.yml` | Flutter-managed metadata drift guard, format verification for application/tests/tools, analyzer, test suite with coverage, release-readiness gates, deterministic solver smoke benchmark, and warning-enforced Web release build. |
+| `dependency-review.yml` | Pull-request dependency diff review for dependency-sensitive changes, failing on newly introduced high-severity vulnerable dependencies. |
 | `platform-builds.yml` | Android, Linux, Windows, macOS, and unsigned iOS release-build matrix with generated-dependency drift checks, packaging, SHA-256 sidecars, and retained qualification artifacts. |
 | `format-code.yml` | Auto-format `lib/` and `test/` on `main` and commit only when formatting changes are required. |
 | `lock-dependencies.yml` | Resolve and commit `pubspec.lock` automatically when dependency metadata changes or when manually dispatched. |
@@ -16,6 +17,14 @@ The permanent workflow set lives in `.github/workflows/`:
 | `bootstrap-branding.yml` | Export project branding into platform-specific icon/splash assets. |
 
 Temporary one-time patch/logging workflows used during development are removed after their purpose is complete. They are not part of the permanent automation surface.
+
+## Maintained GitHub Actions runtime baseline
+
+Permanent workflows use `actions/checkout@v7`. Pull-request dependency review uses `actions/dependency-review-action@v5`. The maintained Node 24 action baseline was verified on GitHub-hosted runner `2.336.0` and is regression-guarded by `test/repository_integrity_test.dart`; checkout v4, v5, and v6 references are rejected.
+
+Phase 26 also exercised checkout v7 on Ubuntu, Windows, and macOS through the native matrix and executed Dependency Review v5 on a real disposable pull request. See [`PHASE_26_VERIFICATION.md`](PHASE_26_VERIFICATION.md) for the exact run/job evidence.
+
+Dependency Review remains an additional pull-request gate, not a replacement for formatter, analyzer, tests, release gates, solver smoke, Web build, native builds, or manual stable-release qualification.
 
 ## CI quality gate
 
@@ -37,7 +46,7 @@ dart format --output=none --set-exit-if-changed lib test tool
 flutter analyze
 flutter test --coverage
 dart run tool/release_readiness.dart --json
-# CI also verifies that --stable fails closed while the package is 0.9.x
+# CI also verifies that --stable fails closed while real-world Version 1.5 qualification is incomplete
 dart run tool/solver_benchmark.dart 8
 # Web output is captured and fails if Flutter reports missing icon-font assets.
 flutter build web --release
