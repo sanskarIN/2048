@@ -4,11 +4,17 @@ on:
   push:
     branches: [main]
     paths:
+      - pubspec.yaml
+      - pubspec.lock
       - .github/workflows/lock-dependencies.yml
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: lock-dependencies-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   lock:
@@ -17,7 +23,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
