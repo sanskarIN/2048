@@ -156,13 +156,13 @@ class SettingsScreen extends StatelessWidget {
             enabled: controller.hasGame,
             onTap: controller.hasGame
                 ? () => _confirmAction(
-                      context,
-                      title: l10n.text('Reset current game?'),
-                      message: l10n.text(
-                        'Your saved board and undo history will be removed.',
-                      ),
-                      action: controller.clearCurrentGame,
-                    )
+                    context,
+                    title: l10n.text('Reset current game?'),
+                    message: l10n.text(
+                      'Your saved board and undo history will be removed.',
+                    ),
+                    action: controller.clearCurrentGame,
+                  )
                 : null,
           ),
           ListTile(
@@ -249,8 +249,9 @@ class SettingsScreen extends StatelessWidget {
             style: destructive
                 ? FilledButton.styleFrom(
                     backgroundColor: Theme.of(dialogContext).colorScheme.error,
-                    foregroundColor:
-                        Theme.of(dialogContext).colorScheme.onError,
+                    foregroundColor: Theme.of(
+                      dialogContext,
+                    ).colorScheme.onError,
                   )
                 : null,
             onPressed: () => Navigator.pop(dialogContext, true),
