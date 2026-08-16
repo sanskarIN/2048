@@ -27,6 +27,7 @@ This directory is the user, technical, development, platform, and release docume
 | [`CI_CD.md`](CI_CD.md) | Permanent GitHub Actions workflows, quality gates, native build matrix, and automation boundaries. |
 | [`TESTING.md`](TESTING.md) | Automated test strategy, regression areas, and current evidence. |
 | [`VERIFICATION.md`](VERIFICATION.md) | Compact current automated verification record. |
+| [`PHASE_25_VERIFICATION.md`](PHASE_25_VERIFICATION.md) | Focused Version 1.5 SDK/dependency, supply-chain, 215-test, Web, and post-maintenance native-matrix verification record. |
 | [`PHASE_18_VERIFICATION.md`](PHASE_18_VERIFICATION.md) | Focused Phase 18 bounded-expectimax, 161-test, Web/WASM, and native-matrix acceptance record. |
 | [`PHASE_17_VERIFICATION.md`](PHASE_17_VERIFICATION.md) | Focused Phase 17 trusted per-mode-record acceptance history and final 144-test Web/WASM gate. |
 | [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md) | Evidence manifest, candidate/stable readiness commands, fail-closed promotion rules, and stable-release sequence. |
