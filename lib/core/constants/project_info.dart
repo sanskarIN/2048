@@ -1,6 +1,6 @@
 abstract final class ProjectInfo {
   static const name = '2048 Nova';
-  static const version = '0.9.0';
+  static const version = '1.5.0';
   static const creator = 'Sanskar';
   static const watermark = 'Made by the Sanskar';
   static const repository = 'https://github.com/sanskarIN/2048';
