@@ -4673,3 +4673,19 @@ Date: **2026-08-16**
 - Hosted compilation/package success is **not** physical-device or store-distribution qualification. `docs/release_qualification.json` remains intentionally at **0/13** passed real-world checks.
 - Temporary Version 1.5 migration automation was removed after successful use; the repository retains only permanent release/CI tooling.
 - Repository-writing automation for this phase explicitly uses `Sanskar <sanskarin@outlook.in>`.
+
+---
+
+## Phase 25 — Dependency and supply-chain maintenance hardening (2026-08-16)
+
+- Corrected Dependabot maintenance to cover Pub, Android Gradle, and GitHub Actions without requiring the missing custom dependencies label.
+- Added pull-request dependency review that fails on newly introduced high-severity vulnerable dependency changes.
+- Added CODEOWNERS coverage for default, release, dependency, automation, and platform-sensitive paths.
+- Raised the maintained Version 1.5 toolchain floor to Dart >=3.9 and Flutter >=3.35 so pubspec no longer advertises SDKs that cannot resolve the maintained direct dependency set.
+- Updated cupertino_icons to 1.0.9, shared_preferences to ^2.5.5, and flutter_lints to ^6.0.0 while keeping file_picker 11.0.2, qr_flutter 4.1.0, and url_launcher ^6.3.2.
+- Migrated repository Dart formatting to the canonical Dart 3.9+ formatter style and kept formatting-only changes isolated in per-file commits.
+- Fixed three unnecessary-underscore findings exposed by flutter_lints 6 in Achievements, Modes, and Statistics separator callbacks.
+- Added four repository-integrity regressions for SDK/dependency floors, supply-chain automation, CODEOWNERS, and the Version 1.5 security policy.
+- Added docs/SUPPLY_CHAIN.md and synchronized README, DEVELOPMENT, DEPENDENCIES, SECURITY, documentation index, and CHANGELOG.
+- Validation passed dependency resolution, canonical formatting, static analysis under flutter_lints 6, the complete Flutter test suite, Version 1.5 candidate gate, expected-closed stable gate, deterministic solver smoke, and warning-enforced Web release build before push.
+- Real-device/accessibility/handler/signing qualification remains 0/13; no hosted automation evidence was substituted for those checks.
