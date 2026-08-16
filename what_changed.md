@@ -13,10 +13,10 @@
 - **Creator / branding:** Sanskar / **Made by the Sanskar**
 - **Commit email used by repository automation:** `sanskarin@outlook.in`
 - **License:** MIT
-- **Current phase:** Phase 27 — Android toolchain compatibility qualification complete; AGP 9.1.0 + Kotlin 2.4.10 + Gradle 9.7.0 is the protected hosted-build baseline; permanent CI is green at 217 tests; AGP 9.3.1 remains explicitly deferred under issue #10; 13 real-world qualification checks remain before stable promotion
-- **Latest accepted Version 1.5 native-matrix source:** `b5ddc657880826bb8a0a5621ff03a99050350342` — `build(android): adopt safe Kotlin and Gradle updates`
-- **Permanent Version 1.5 CI evidence:** run `31945071057`, job `95159704902` — SUCCESS, 217/217 tests, analyzer clean, protected Android toolchain baseline, candidate gate passed, strict stable gate correctly closed, solver smoke passed, Web release passed
-- **Version 1.5 native build evidence:** Platform Builds run `31944999081` — Android, Linux, Windows, macOS, and unsigned iOS jobs all SUCCESS with the accepted Android toolchain and checksummed artifacts retained for 14 days
+- **Current phase:** Phase 28 — workflow and supply-chain reproducibility hardening complete; permanent CI is green at 225 tests with immutable Action revisions, Flutter 3.47.0, disabled composite-action cache execution, least-privilege checkout credentials, explicit Android Temurin 17, verified Gradle 9.7 distribution checksum, and pinned branding-generator dependencies; AGP issue #10 and repository-protection issue #12 remain explicit; 13 real-world qualification checks remain before stable promotion
+- **Latest accepted Version 1.5 native-matrix source:** `f694f508057ebcf1e91a825a90cc764398051647` — `ci(android): pin hosted JDK 17 runtime`
+- **Permanent Version 1.5 CI evidence:** run `31948413257`, job `95167995837` — SUCCESS, 225/225 tests, 99 files formatter-clean, analyzer clean, Flutter 3.47.0, candidate gate passed, strict stable gate correctly closed, solver smoke passed, WASM/Web release passed
+- **Version 1.5 native build evidence:** Platform Builds run `31948335974` — Android, Linux, Windows, macOS, and unsigned iOS jobs all SUCCESS with immutable workflow revisions, frozen Flutter 3.47.0, read-only checkout credential persistence disabled, explicit Android JDK 17, checksummed packaging, and 14-day qualification artifacts
 - **Manual qualification boundary:** `0/13` real-world evidence items are passed; no physical-device, assistive-technology, external-handler, long-session, signing/provisioning, or store-distribution evidence has been synthesized
 
 ---
@@ -4737,3 +4737,25 @@ Date: **2026-08-16**
 - Permanent CI run `31945071057`, job `95159704902`, passed formatter, analyzer, **217/217 tests**, Version 1.5 candidate gate, expected-closed stable gate, deterministic solver smoke, WASM dry run, and Web release build.
 - Added `docs/ANDROID_TOOLCHAIN.md` and `docs/PHASE_27_VERIFICATION.md` with upgrade policy, failure/diagnostic evidence, accepted artifact digests, and revisit criteria.
 - Real-device/accessibility/handler/signing qualification remains **0/13**; no hosted toolchain result was substituted for manual evidence.
+
+
+---
+
+## Phase 28 — Workflow and supply-chain reproducibility hardening (2026-08-16)
+
+- Audited maintained workflows, tracked secrets/signing configuration, TODO/FIXME-style debt, repository protection state, and available GitHub security surfaces.
+- Replaced moving remote Action tags with reviewed full 40-character commit revisions for checkout, Flutter setup, Dependency Review, upload-artifact, and Android Java setup.
+- Frozen every Flutter-executing workflow to Flutter 3.47.0 and set the composite action cache input to false. GitHub still prepares nested `actions/cache@v5` metadata from the composite action definition, but both cache execution steps are skipped; no cache action step executes.
+- Added `persist-credentials: false` to read-only CI, Dependency Review, and native checkout operations. Repository-writing workflows retain only the credentials needed for their explicit push purpose.
+- Replaced floating branding Python installs with exact versions in `tool/branding-requirements.txt`; Bootstrap Branding Assets run `31947463847`, job `95165649555`, succeeded with no generated drift.
+- Added the official Gradle 9.7.0 complete-distribution SHA-256 to the Android wrapper configuration and regression coverage for the version/checksum pair.
+- Made the hosted Android Java baseline explicit with immutable `actions/setup-java` and Temurin JDK 17 rather than relying on runner-image defaults. JDK 21 remains only a diagnostic from issue #10.
+- Added repository-integrity and workflow-security regressions for immutable Action references, exact qualified revisions, frozen Flutter/cache policy, pinned branding packages, Gradle checksum, checkout credential persistence, JDK 17, rejection of `pull_request_target`/`write-all`, repository-writing identity, and no force pushes.
+- Exercised immutable Dependency Review on disposable PR #13. Run `31947619961`, job `95166040339`, succeeded with no high-or-higher vulnerable dependency changes; the PR was closed without merge.
+- Permanent CI run `31948413257`, job `95167995837`, passed **225/225 tests**, 99-file formatting, analyzer, candidate gate, expected-closed stable gate, solver smoke, WASM dry run, and Web release.
+- Definitive native run `31948335974` passed Android `95167849002`, Linux `95167849014`, Windows `95167848969`, and macOS + unsigned iOS `95167849007`, including package checksums and artifact uploads.
+- Added `docs/WORKFLOW_SECURITY.md` and `docs/PHASE_28_VERIFICATION.md` for executable trust/reproducibility policy and objective evidence.
+- GitHub reported `main` as unprotected with required status enforcement off. The connected integration cannot write branch rulesets, so issue #12 tracks this repository-setting requirement rather than pretending CODEOWNERS/YAML enforces it.
+- Dependabot/code-scanning/secret-scanning alert APIs were permission-restricted to the connected integration; no claim of empty hidden alert sets is made.
+- AGP 9.3.1 remains deferred under issue #10. Dependabot already records the ignored exact release, while future newer AGP releases remain discoverable.
+- Real-device/accessibility/handler/signing qualification remains **0/13**; no automation evidence was substituted for physical or distribution evidence.
