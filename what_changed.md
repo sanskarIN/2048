@@ -13,7 +13,7 @@
 - **Creator / branding:** Sanskar / **Made by the Sanskar**
 - **Commit email used by repository automation:** `sanskarin@outlook.in`
 - **License:** MIT
-- **Current phase:** Phase 22 — evidence-backed release qualification plus 200-test release-gate regression hardening complete; manual/device qualification remains before 1.0.0
+- **Current phase:** Phase 23 — reproducible Flutter metadata, warning-free Web assets, generated-plugin integrity, and retained checksummed native qualification artifacts complete; 13 real-world checks remain before 1.0.0
 - **Latest production-code commit used by native build verification:** `eacdb9dc04b4467271f98ce2104e60daf0124f6d` — `fix: use portable page transition builders`
 - **Latest test-fix commit used by the final quality gate:** `f3e7aaec6404139951425144cb1fb4d2fda66e27` — `test: scroll lazy mode list before asserting offscreen entries`
 - **Latest documentation commit before this log refresh:** `3d5988f1a7a29d38dbd72602e2c489d5975c7b5b` — `docs: update changelog for release candidate verification`
@@ -4528,3 +4528,94 @@ The Web build retained the existing non-fatal Cupertino icon-font warning but co
 
 The codeable release-engineering boundary is now tested in both directions. The real manifest remains **0/13**, and strict stable mode therefore remains intentionally closed. Physical Android/iOS, representative input/responsive behavior, real assistive technology, long sessions, Auto Play/Challenge Code/replay/backup on real targets, external handlers, native branding, signing/provisioning, privacy/store metadata, and distribution qualification must still be performed before changing the project to stable `1.0.0`.
 
+---
+
+## 2026-08-16 — Phase 23: reproducible release engineering and retained qualification artifacts
+
+Phase 23 continued from the fixture-tested Phase 22 release gate and focused on codeable release/build defects already visible in objective CI logs. It does not claim completion of any physical-device or assistive-technology check.
+
+### Problems found and corrected
+
+1. **Web Cupertino icon font warning.** Phase 22 Web builds succeeded but emitted `Expected to find fonts for ... CupertinoIcons`. `pubspec.yaml` did not declare the font package even though Flutter/Cupertino icon data referenced it. Exact `cupertino_icons 1.0.8` was added and locked to preserve the repository's declared Dart SDK range. Permanent CI now fails if the warning returns. The accepted Phase 23 Web log shows `CupertinoIcons.ttf` being tree-shaken and no missing-font warning.
+2. **Deprecated checkout runtime warning.** All repository-owned workflows used `actions/checkout@v4`, which current GitHub-hosted runners were forcing away from its deprecated Node 20 runtime. All six permanent workflows now use `actions/checkout@v6`.
+3. **Dependency-lock drift risk.** `lock-dependencies.yml` previously did not automatically follow ordinary `pubspec.yaml` edits. It now watches dependency metadata, while CI independently rejects an unstaged `pubspec.lock` rewrite after `flutter pub get`.
+4. **Silent Flutter analysis-options migration.** Flutter 3.47 was rewriting `analysis_options.yaml` in hosted jobs because generated platform trees were not all excluded. The repository now carries the current generated-platform exclusion set explicitly, and CI rejects future drift.
+5. **Missing generated macOS FilePicker registration.** Re-running the platform generator produced one meaningful native difference: `macos/Flutter/GeneratedPluginRegistrant.swift` was missing `FilePickerPlugin`. The generated registration was committed, and native jobs now fail if generated dependency/plugin files drift after dependency resolution.
+6. **Ephemeral native build evidence.** Successful native builds were discarded when jobs ended. The permanent matrix now creates payload SHA-256 sidecars, packages desktop/Apple bundles safely, hard-fails on missing outputs, and uploads five 14-day qualification artifacts.
+
+### Phase 23 implementation commits
+
+```text
+83a8b02443aed3e3e99ea15a5fadebf462094d80  ci: keep dependency lockfile synchronized
+3c54a6c33472d6e4cdce732a071e69685a7ad233  ci: move formatter checkout to Node 24 action
+5419e3cfbfcc75764dec33c143b43cea6009acbc  ci: modernize branding workflow checkout
+91e12965fc2a90cd589b99325f0bf525af5310bf  ci: modernize platform bootstrap checkout
+5dd6c0e060295d8f57f5fe9e5340932e9778b77b  ci: move platform builds to checkout v6
+ffa40ffc7eca91bf8c4c58eb8174919f92f4d836  ci: fail web builds on missing font assets
+1cbf482d1b3eded98f1e1e079bcb02ecab9d4735  build: include Cupertino icon font asset
+1d445c7b8291260e974a1d0132c9417f1132b48e  build: generate Flutter platform runners
+c82b77f71b650fb0fb9c7e7e3fb75f64ded175ec  build: lock Flutter dependencies
+36cf29014a610092f8577cf467dee66b7ce96d8e  ci: reject stale dependency lockfiles
+21065f20797f3aa9cad71153f4faf22f90b9dd8e  ci: verify native dependency generation stays clean
+c63811d35529c2a7d0b27e441fb5a7466a6dc8e4  test: guard release engineering repository integrity
+1024a543e9fc114ee977d69ee6d708413026e000  build: apply current Flutter analysis migration
+77d9bb931decdb0840e65131b3b32ebbca5eacd4  ci: reject Flutter project metadata drift
+7b21997474a9d68d15151a01ed5b51a563d115f1  test: guard Flutter project metadata migration
+5b22795d5aba661bd587e7bcbf2ae6442c8b4b3a  ci: retain checksummed native qualification artifacts
+a93542ecae7713214f7f3e4e11a03c647e880129  test: guard qualification artifact publishing
+a0581eb13722b28e9f98cf3e2920832b80fa48af  docs: define native qualification artifact handling
+```
+
+The platform-bootstrap commit is retained because it repaired the missing macOS FilePicker registration. The dependency lock commit was created by the corrected lockfile automation. Formatting automation found the final repository-integrity test source already canonical and produced no extra formatter commit.
+
+### Accepted Phase 23 quality gate
+
+Permanent CI run **31934191150**, job **95133484471**, verified source `a93542ecae7713214f7f3e4e11a03c647e880129`:
+
+```text
+Runner: Ubuntu 24.04.4 LTS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Checkout v6: PASS
+Flutter metadata drift: PASS
+Formatting: PASS — 98 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 207/207
+Repository-integrity regressions: PASS — 7/7
+Candidate gate: PASS — candidateGatePassed=true; readyForStable=false; 0/13 manual evidence complete
+Strict stable boundary: PASS — current 0.9.0+1 correctly refused
+Solver benchmark: PASS — Heuristic + Expectimax; seeds 2048/4096/8192/20260815; 8 moves each
+WASM dry run: PASS
+Missing icon-font warning guard: PASS
+Web release: PASS — build/web
+```
+
+The accepted Web log now reports a tree-shaken `CupertinoIcons.ttf` asset and no `Expected to find fonts for` warning, directly closing the warning that remained documented in Phase 22.
+
+### Accepted native matrix and retained artifacts
+
+Platform Builds run **31934181987** verified source `5b22795d5aba661bd587e7bcbf2ae6442c8b4b3a`:
+
+```text
+Linux job 95133491351: PASS — build + package + checksum + upload
+Android job 95133491378: PASS — APK + checksum + upload
+Windows job 95133491405: PASS — build + ZIP + checksum + upload
+Apple job 95133491379: PASS — macOS + unsigned iOS builds + ZIPs + checksums + uploads
+```
+
+GitHub retained exactly five artifacts:
+
+```text
+9260209072  nova-2048-android-release      25,409,651 bytes  sha256:d88a691dd33bcb3e12544f5fb9b35f623cd5890fe96e74dcefe8af4ada75df5d
+9260177318  nova-2048-linux-x64-release     10,396,367 bytes  sha256:8556a5d31017faa4ff7f8c128e097aafc5664cf36e219075ea24499bc58dfcef
+9260197932  nova-2048-windows-x64-release   12,655,196 bytes  sha256:9ac4fcc2ce969139e9412466f7d568c361a84b666d0812184b1c671a0966e463
+9260232848  nova-2048-macos-release         18,739,502 bytes  sha256:20f52591cb0c3cbd5da330b129a98c03831388d2f8dceadf90d760cf7c7193dc
+9260233269  nova-2048-ios-unsigned-release   8,709,732 bytes  sha256:44a0adb2482ef422637eb241659a54fc0b7ed59c343ee7d8e104920783e03721
+```
+
+The configured artifact retention expires these run artifacts on **2026-08-30**. Every uploaded artifact also contains the payload-level `.sha256` sidecar generated before upload.
+
+### Manual stable-release boundary remains intact
+
+None of the 13 entries in `docs/release_qualification.json` were changed from `pending`. Hosted artifact availability makes real-target testing more reproducible, but it cannot substitute for physical Android/iOS interaction, real screen readers, external handlers, long sessions, native branding review, signing/provisioning, or store/privacy metadata qualification. The project therefore remains correctly on `0.9.0+1`; strict stable mode remains intentionally closed.
