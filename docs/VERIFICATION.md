@@ -3,6 +3,36 @@
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
 
+## Phase 22 — Release-gate regression expansion (current automated source)
+
+Date: **2026-08-16**
+
+The release-readiness CLI now supports isolated fixture roots and is protected by six process-level regression tests. This is the current automated source for Phase 22 and supersedes the earlier 194-test count while preserving that earlier run as historical implementation evidence.
+
+```text
+Commit: 57c6312ee26eed0cea8597ebf6417d442cf988cc
+CI run: 31932367464
+CI job: 95129044532
+Result: SUCCESS
+Runner: Ubuntu 24.04.4 LTS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS — 97 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 200/200
+Release-gate fixture cases: PASS — 6/6
+Candidate readiness: PASS — candidateGatePassed=true; readyForStable=false; manualChecksPassed=0/13
+Stable promotion boundary: PASS — strict stable mode correctly rejected the live 0.9.0+1 RC
+Solver benchmark smoke: PASS — both strategies, four deterministic seeds, eight moves each
+Web release: PASS — build/web
+WASM dry run: PASS
+```
+
+The six new cases prove both acceptance and rejection branches: candidate success, fully qualified synthetic stable success, pending-evidence refusal, version mismatch refusal, evidence-completeness refusal, and missing-ID refusal. Synthetic stable success demonstrates that the gate can open when its declared conditions are satisfied; it is not evidence that the real project has completed those conditions.
+
+The live manifest remains at **0/13** completed manual checks. No physical-device, screen-reader, external-handler, branding, signing/provisioning, or store qualification is inferred from this CI run. The Phase 21 native runtime matrix remains the latest native evidence because no Flutter gameplay/runtime code changed here.
+
 ## Phase 22 — Evidence-backed stable-release promotion gate
 
 Date: **2026-08-16**
