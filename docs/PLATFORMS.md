@@ -384,3 +384,11 @@ unsigned iOS release: PASS — job 94995348674
 This verifies that the pinned local QR-rendering dependency compiles across all configured native target families. No camera permission or native QR-scanner integration is introduced. The QR remains a Flutter presentation layer over the existing Challenge Code text.
 
 Native compilation is not optical scan qualification. Representative real displays still need device-to-device scan checks across density, brightness, glare, orientation, surrounding theme, large-text layouts, and screen-reader behavior.
+
+## Phase 23 retained qualification artifacts
+
+The permanent Platform Builds matrix packages checksummed qualification inputs for Android, Linux x64, Windows x64, macOS, and unsigned iOS after successful hosted release compilation. The artifact policy, exact packaging formats, checksum commands, current accepted IDs, and 14-day retention boundary are documented in [`RELEASE_ARTIFACTS.md`](RELEASE_ARTIFACTS.md).
+
+The macOS generated plugin registrant now explicitly registers `FilePickerPlugin`, matching the pinned `file_picker 11.0.2` dependency used by Game Backup file transport. Platform jobs verify generated dependency/plugin files remain synchronized after `flutter pub get`.
+
+Hosted artifacts do not replace device, handler, accessibility, signing, notarization, provisioning, or store qualification.
