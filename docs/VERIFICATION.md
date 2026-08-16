@@ -2,6 +2,58 @@
 
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
+## Phase 26 — GitHub Actions runtime hardening
+
+Date: **2026-08-16**
+
+Permanent quality evidence:
+
+```text
+Commit: f21dda252527dee14b8bf9e942cb5aadfda899ca
+CI run: 31943741993
+CI job: 95156594200
+Result: SUCCESS
+Runner: 2.336.0 / Ubuntu 24.04.4 LTS
+Checkout: actions/checkout@v7
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+Formatting: PASS — 98 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 216/216
+Candidate readiness: PASS — candidateGatePassed=true; readyForStable=false; 0/13 manual evidence complete
+Stable promotion boundary: PASS — strict stable mode correctly remained closed
+Solver smoke benchmark: PASS
+WASM dry run: PASS
+Missing icon-font warning guard: PASS
+Web release: PASS — build/web
+```
+
+Checkout-v7 hosted native matrix:
+
+```text
+Source: bd11a4bdeec6115f132d6b2d2cebef0be34d74f7
+Platform Builds run: 31943702153
+Android job 95156471990: SUCCESS
+Linux job 95156471965: SUCCESS
+Windows job 95156471956: SUCCESS
+macOS + unsigned iOS job 95156471915: SUCCESS
+```
+
+Real pull-request Dependency Review v5 evidence:
+
+```text
+Temporary PR: #8 (closed without merge)
+Head: fb851365249733367bc4a631f6331ced6a78c324
+Run: 31943963173
+Job: 95157100528
+Result: SUCCESS
+Checkout: actions/checkout@v7
+Dependency review: actions/dependency-review-action@v5
+High-or-higher vulnerable packages detected: none
+```
+
+Focused evidence, artifact digests, guarded-migration recovery, and manual-boundary details are recorded in [`PHASE_26_VERIFICATION.md`](PHASE_26_VERIFICATION.md). Real-world qualification remains **0/13**.
+
 ## Phase 25 — Dependency/toolchain and supply-chain maintenance hardening
 
 Date: **2026-08-16**
