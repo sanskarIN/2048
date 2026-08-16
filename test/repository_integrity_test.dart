@@ -22,6 +22,26 @@ void main() {
       expect(pubspec, contains('flutter_lints: ^6.0.0'));
     });
 
+    test('validated Android toolchain baseline remains pinned', () {
+      final settings = File('android/settings.gradle.kts').readAsStringSync();
+      final wrapper = File(
+        'android/gradle/wrapper/gradle-wrapper.properties',
+      ).readAsStringSync();
+
+      expect(
+        settings,
+        contains('id("com.android.application") version "9.1.0" apply false'),
+      );
+      expect(
+        settings,
+        contains(
+          'id("org.jetbrains.kotlin.android") version "2.4.10" apply false',
+        ),
+      );
+      expect(wrapper, contains('gradle-9.7.0-all.zip'));
+      expect(settings, isNot(contains('version "9.3.1"')));
+    });
+
     test('supply-chain automation covers maintained dependency ecosystems', () {
       final dependabot = File('.github/dependabot.yml').readAsStringSync();
       final dependencyReview = File(
