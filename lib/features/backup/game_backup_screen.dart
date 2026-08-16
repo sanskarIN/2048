@@ -185,8 +185,9 @@ class GameBackupScreen extends StatelessWidget {
         BackupFileSaveOutcome.saved => 'Game backup file saved.',
         BackupFileSaveOutcome.cancelled => 'Backup file export cancelled.',
       };
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.text(message))));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.text(message))));
     } on Object {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -252,7 +253,8 @@ class GameBackupScreen extends StatelessWidget {
     }
 
     if (!context.mounted) return;
-    final approved = await showDialog<bool>(
+    final approved =
+        await showDialog<bool>(
           context: context,
           barrierDismissible: false,
           builder: (dialogContext) => _ImportPreviewDialog(state: restored),
@@ -386,7 +388,7 @@ String _suggestedBackupFileName(DateTime now) {
 }
 
 String _statusLabel(GameState state) => switch (state.status) {
-      GameStatus.playing => 'Playing',
-      GameStatus.won => 'Won',
-      GameStatus.lost => 'Lost',
-    };
+  GameStatus.playing => 'Playing',
+  GameStatus.won => 'Won',
+  GameStatus.lost => 'Lost',
+};
