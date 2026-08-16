@@ -26,6 +26,9 @@ a1d282b36b6f3519aa1f3fc636f609c47dddb294  # v5
 
 actions/upload-artifact
 043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7
+
+actions/setup-java
+b6effb05e454b25005698d916606bdc6ffcbf961  # v5
 ```
 
 The comment is informational. GitHub executes the commit revision before the comment.
@@ -47,6 +50,28 @@ The exact version prevents a later stable-channel release from changing the comp
 `cache: false` is intentional. The qualified `subosito/flutter-action` composite implementation contains an internal `actions/cache@v5` reference when caching is enabled. Because that is a moving major-version reference outside this repository, 2048 Nova disables the action cache path rather than silently reintroducing mutable executable code through a transitive Action.
 
 This trades some hosted-runner speed for stronger reproducibility. A future cache design can be adopted only when its executable reference is reviewable and immutably pinned by the repository's own workflow surface.
+
+## Android Java and Gradle verification
+
+The hosted Android job explicitly installs **Temurin JDK 17** through the immutable `actions/setup-java` revision above. This is important because Phase 27 demonstrated materially different AGP 9.3.1 release-lint behavior between JDK 17 and JDK 21. The accepted Version 1.5 Android baseline must therefore not depend on whichever Java runtime a future runner image happens to make default.
+
+The Android Gradle wrapper also verifies the official Gradle 9.7.0 complete-distribution SHA-256 through `distributionSha256Sum`. Repository-integrity tests protect both the accepted Gradle version and checksum.
+
+JDK 21 remains a diagnostic result for issue #10, not the maintained release-build baseline.
+
+## Checkout credential persistence
+
+Read-only CI, Dependency Review, and native matrix jobs use:
+
+```yaml
+persist-credentials: false
+```
+
+They need repository contents after checkout but do not need to push. Removing the checkout credential from local Git configuration narrows the credential exposure available to later build/test commands.
+
+The four repository-writing workflows intentionally retain normal checkout credentials because their explicit purpose includes pushing generated assets, generated platform files, formatting repairs, or lockfile updates. Those workflows still request only `contents: write`, preserve the project commit identity, and do not force-push.
+
+`test/workflow_security_test.dart` enforces both sides of this boundary.
 
 ## Branding generator reproducibility
 
@@ -81,6 +106,8 @@ Repository-writing workflows request `contents: write` and follow these rules:
 - exit without a commit when output is already current;
 - do not store credentials, signing keys, or access tokens in tracked files.
 
+The repository security regression also rejects permanent `pull_request_target` triggers and blanket `write-all` permissions.
+
 ## Dependabot update policy for Actions
 
 Dependabot continues monitoring GitHub Actions. A proposed Action update must not be accepted solely because the version label is newer.
@@ -95,6 +122,18 @@ For an Action change:
 6. run affected native/generator workflows;
 7. update repository-integrity expected revisions only after qualification;
 8. preserve the stable-release `0/13` manual boundary unless actual real-world evidence exists.
+
+## Hosted runner boundary
+
+Pinning Action code, Flutter, JDK, Gradle, Dart packages, and branding Python packages substantially reduces drift, but GitHub-hosted runner images and OS package mirrors remain external managed infrastructure. Labels such as `ubuntu-latest`, `windows-latest`, and `macos-latest` can receive image updates over time, and the Linux native job installs system build prerequisites from the runner's configured package mirror.
+
+For that reason, every release-candidate maintenance change still requires fresh hosted verification. An old successful build is evidence for its recorded runner environment, not proof that all future runner images are identical.
+
+## Security-alert API visibility
+
+Phase 28 attempted to read repository Dependabot, code-scanning, and secret-scanning alert endpoints through the connected integration. GitHub returned permission-restricted responses for those endpoints. The repository therefore does **not** claim that hidden alert sets are empty based on inaccessible APIs.
+
+Available evidence remains the tracked-source secret/config audit, Dependency Review execution, analyzer/tests/builds, and GitHub settings that the integration can actually read.
 
 ## Repository protection boundary
 
