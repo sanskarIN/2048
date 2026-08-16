@@ -586,3 +586,40 @@ Five Phase 21 regressions were added over the Phase 20 total of 189: Hindi gener
 The earlier final-source CI `31877417527` is retained as a formatting failure, not a behavioral pass. It reported 32 files requiring Dart 3.13 canonical formatting. Maintained formatter run `31877417558` normalized that tree before the final accepted CI.
 
 Automated widget tests verify payload/constraints/semantics but do not prove optical scan performance. Real screens and external camera/scanner apps remain a manual release requirement.
+
+## Phase 22 — Release-gate regression evidence
+
+Phase 22 adds six process/filesystem integration cases in `test/release_readiness_cli_test.dart` to the previous 194-test suite, bringing the current maintained suite to **200 tests**. These cases launch the real Dart CLI against isolated temporary repository roots rather than mocking release-file parsing.
+
+Covered release-gate scenarios:
+
+- valid `0.9.0+1` candidate metadata passes candidate mode while remaining not ready for stable promotion;
+- complete `1.0.0+1` metadata plus all 13 passed evidence records succeeds in strict stable mode;
+- stable metadata with pending manual evidence fails closed;
+- manifest/package candidate mismatch is rejected;
+- a check falsely marked `passed` without evidence/timestamp is rejected;
+- omission of a required manual-check ID is rejected.
+
+Accepted maintained gate:
+
+```text
+Workflow: CI
+Run: 31932367464
+Job: 95129044532
+Verified source: 57c6312ee26eed0cea8597ebf6417d442cf988cc
+Runner: Ubuntu 24.04.4 LTS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS — 97 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 200/200
+Candidate readiness: PASS — candidateGatePassed=true; readyForStable=false; 0/13 manual evidence complete
+Stable-boundary assertion: PASS — strict stable mode correctly refused current 0.9.0+1 state
+Solver smoke benchmark: PASS — Heuristic + Expectimax across four deterministic seeds, 8 moves each
+Web release build: PASS — build/web
+WASM dry run: PASS
+Overall: SUCCESS
+```
+
+The Web compiler retained the known non-fatal Cupertino icon-font warning while still producing `build/web`. These fixture tests verify release-gate behavior; they do not substitute for physical-device, assistive-technology, real-handler, signing/provisioning, branding, or distribution qualification.
