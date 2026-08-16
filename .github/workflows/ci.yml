@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Format, analyze, test, web build
+    name: Format, analyze, test, release gate, web build
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -35,13 +35,19 @@ jobs:
         run: flutter pub get
 
       - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed lib test
+        run: dart format --output=none --set-exit-if-changed lib test tool
 
       - name: Static analysis
         run: flutter analyze
 
       - name: Run tests
         run: flutter test --coverage
+
+      - name: Verify release-candidate readiness metadata
+        run: dart run tool/release_readiness.dart --json
+
+      - name: Smoke-test deterministic solver benchmark
+        run: dart run tool/solver_benchmark.dart 8
 
       - name: Build web release
         run: flutter build web --release
