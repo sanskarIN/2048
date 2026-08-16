@@ -47,7 +47,8 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           channel: stable
-          cache: true
+          flutter-version: 3.47.0
+          cache: false
       - run: flutter pub get
       - name: Verify dependency lockfile is synchronized
         run: git diff --exit-code -- pubspec.lock
@@ -77,7 +78,8 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           channel: stable
-          cache: true
+          flutter-version: 3.47.0
+          cache: false
       - run: flutter config --enable-linux-desktop
       - run: flutter pub get
       - name: Verify Linux generated dependency files are synchronized
@@ -110,7 +112,8 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           channel: stable
-          cache: true
+          flutter-version: 3.47.0
+          cache: false
       - run: flutter config --enable-windows-desktop
       - run: flutter pub get
       - name: Verify Windows generated dependency files are synchronized
@@ -145,7 +148,8 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           channel: stable
-          cache: true
+          flutter-version: 3.47.0
+          cache: false
       - run: flutter config --enable-macos-desktop
       - run: flutter pub get
       - name: Verify Apple generated dependency files are synchronized
