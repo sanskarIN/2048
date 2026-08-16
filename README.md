@@ -230,6 +230,7 @@ More detail: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 Runtime dependencies beyond Flutter are intentionally limited to:
 
+- `cupertino_icons` — explicit Cupertino icon-font asset required by referenced Cupertino icon data and guarded by the Web build.
 - `file_picker` — explicit user-selected Game Backup file save/open transport across configured Flutter targets.
 - `qr_flutter` — offline presentation-only QR rendering for the exact existing Challenge Code text; no camera/scanner or network service.
 - `shared_preferences` — small local game/settings/statistics storage.
@@ -241,7 +242,7 @@ Dependency choices and licensing notes are documented in [`docs/DEPENDENCIES.md`
 
 ## Prerequisites
 
-Install a current stable Flutter SDK and the platform toolchain for the target you want to build. Confirm the environment with:
+Install **Flutter 3.35 or newer with Dart 3.9 or newer** and the platform toolchain for the target you want to build. Permanent CI uses the current stable Flutter channel. Confirm the environment with:
 
 ```bash
 flutter doctor -v
