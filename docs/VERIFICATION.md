@@ -9,9 +9,9 @@ Date: **2026-08-16**
 Final Phase 23 quality source:
 
 ```text
-Commit: a93542ecae7713214f7f3e4e11a03c647e880129
-CI run: 31934191150
-CI job: 95133484471
+Commit: 1f48ebc947596915be3104aa5da56eb6ad291fff
+CI run: 31934616568
+CI job: 95134494782
 Result: SUCCESS
 Runner: Ubuntu 24.04.4 LTS
 Flutter: 3.47.0 stable
@@ -20,12 +20,13 @@ DevTools: 2.60.0
 Flutter metadata drift: PASS — pubspec.lock + analysis_options.yaml unchanged by pub get
 Formatting: PASS — 98 files, 0 changed
 Static analysis: PASS — No issues found
-Tests: PASS — 207/207
+Tests: PASS — 208/208
 Candidate readiness: PASS — candidateGatePassed=true; readyForStable=false; 0/13 manual evidence complete
 Stable promotion boundary: PASS — strict stable mode correctly rejected current 0.9.0+1
 Solver smoke benchmark: PASS
 WASM dry run: PASS
 Missing icon-font warning guard: PASS
+Explicit CI dispatch: PASS — workflow_dispatch is present and regression guarded
 Web release: PASS — build/web
 ```
 
