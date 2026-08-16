@@ -19,6 +19,7 @@ Current objective evidence is recorded in `docs/VERIFICATION.md` and `what_chang
 - [x] macOS generated plugin registration includes `FilePickerPlugin` for Game Backup file transport
 - [x] Android/Linux/Windows/macOS/unsigned-iOS outputs are packaged with payload SHA-256 sidecars
 - [x] Five native qualification artifacts upload successfully with hard failure on missing output files and 14-day retention
+- [x] Permanent CI supports explicit `workflow_dispatch` and the trigger is regression guarded
 - [x] Android release APK builds on the configured hosted runner
 - [x] Linux release builds on the configured hosted runner
 - [x] Windows release builds on the configured hosted runner
