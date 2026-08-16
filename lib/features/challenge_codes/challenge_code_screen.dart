@@ -123,9 +123,9 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .surfaceContainerHighest,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: SelectableText(
@@ -338,17 +338,17 @@ class _ChallengeCodeScreenState extends State<ChallengeCodeScreen> {
   }
 
   static String _modeLabel(GameMode mode) => switch (mode) {
-        GameMode.classic => 'Classic 4×4',
-        GameMode.quick => 'Quick 3×3',
-        GameMode.extended => 'Extended 5×5',
-        GameMode.challenge => 'Challenge 6×6',
-        GameMode.endless => 'Endless',
-        GameMode.target => 'Target',
-        GameMode.timeChallenge => 'Time Challenge',
-        GameMode.moveLimit => 'Move Limit',
-        GameMode.zen => 'Zen',
-        GameMode.daily => 'Daily Challenge',
-      };
+    GameMode.classic => 'Classic 4×4',
+    GameMode.quick => 'Quick 3×3',
+    GameMode.extended => 'Extended 5×5',
+    GameMode.challenge => 'Challenge 6×6',
+    GameMode.endless => 'Endless',
+    GameMode.target => 'Target',
+    GameMode.timeChallenge => 'Time Challenge',
+    GameMode.moveLimit => 'Move Limit',
+    GameMode.zen => 'Zen',
+    GameMode.daily => 'Daily Challenge',
+  };
 }
 
 class _ConfigPreview extends StatelessWidget {
