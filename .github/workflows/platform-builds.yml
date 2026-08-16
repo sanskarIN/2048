@@ -43,8 +43,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
-      - uses: actions/checkout@v7
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           channel: stable
           cache: true
@@ -57,7 +57,7 @@ jobs:
           sha256sum build/app/outputs/flutter-apk/app-release.apk
           > build/app/outputs/flutter-apk/app-release.apk.sha256
       - name: Upload Android qualification artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: nova-2048-android-release
           path: |
@@ -71,10 +71,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Install Linux build prerequisites
         run: sudo apt-get update && sudo apt-get install -y ninja-build libgtk-3-dev liblzma-dev
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           channel: stable
           cache: true
@@ -92,7 +92,7 @@ jobs:
           tar -C build/linux/x64/release -czf nova-2048-linux-x64.tar.gz bundle
           sha256sum nova-2048-linux-x64.tar.gz > nova-2048-linux-x64.tar.gz.sha256
       - name: Upload Linux qualification artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: nova-2048-linux-x64-release
           path: |
@@ -106,8 +106,8 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 35
     steps:
-      - uses: actions/checkout@v7
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           channel: stable
           cache: true
@@ -127,7 +127,7 @@ jobs:
           $hash = (Get-FileHash nova-2048-windows-x64.zip -Algorithm SHA256).Hash.ToLower()
           "$hash  nova-2048-windows-x64.zip" | Out-File -Encoding ascii nova-2048-windows-x64.zip.sha256
       - name: Upload Windows qualification artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: nova-2048-windows-x64-release
           path: |
@@ -141,8 +141,8 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v7
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           channel: stable
           cache: true
@@ -170,7 +170,7 @@ jobs:
           shasum -a 256 nova-2048-macos-release.zip > nova-2048-macos-release.zip.sha256
           shasum -a 256 nova-2048-ios-unsigned-release.zip > nova-2048-ios-unsigned-release.zip.sha256
       - name: Upload macOS qualification artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: nova-2048-macos-release
           path: |
@@ -179,7 +179,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Upload unsigned iOS qualification artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: nova-2048-ios-unsigned-release
           path: |
