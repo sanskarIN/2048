@@ -22,15 +22,15 @@ The project does not add a separate state-management framework; `ChangeNotifier`
 
 ### cupertino_icons
 
-Pinned at **1.0.8**. The package supplies the Cupertino icon font referenced by Flutter/Cupertino icon data. Phase 23 made the dependency explicit after the Web compiler correctly reported that Cupertino icon data was referenced while the font asset was absent.
+Pinned at **1.0.9**. The package supplies the Cupertino icon font referenced by Flutter/Cupertino icon data. Phase 23 made the dependency explicit after the Web compiler correctly reported that Cupertino icon data was referenced while the font asset was absent.
 
-Version 1.0.8 is intentionally pinned for the current release-candidate SDK range (`>=3.3.0 <4.0.0`) rather than blindly adopting a newer release with a higher Dart SDK floor. It adds no networking, analytics, account, persistence, or platform permission behavior.
+Version 1.0.9 is pinned for the maintained Version 1.5 toolchain. The project now declares Dart `>=3.9.0 <4.0.0` and Flutter `>=3.35.0`, matching the package's supported floor instead of advertising an older toolchain that cannot resolve the maintained dependency set. It adds no networking, analytics, account, persistence, or platform permission behavior.
 
 The permanent Web gate now fails if Flutter again emits `Expected to find fonts for`, and repository-integrity tests verify the declaration and resolved lockfile entry remain synchronized.
 
 ### shared_preferences
 
-Used for small local project-owned values such as:
+Declared at **^2.5.5** for Version 1.5 and used for small local project-owned values such as:
 
 - current game snapshot;
 - bounded Undo history;
@@ -135,13 +135,13 @@ Provides unit, widget, semantics, and integration-like widget-flow testing found
 
 ### flutter_lints
 
-Provides baseline static-analysis rules, supplemented by project-specific analyzer rules in `analysis_options.yaml`.
+Declared at **^6.0.0**. It provides the current baseline Flutter static-analysis rules, supplemented by project-specific analyzer rules in `analysis_options.yaml`. The upgraded lint set is required to pass with zero analyzer issues before dependency changes are accepted.
 
 ## Lockfile policy
 
 2048 Nova is an application, so `pubspec.lock` is committed. This improves reproducibility across local development and CI.
 
-A dedicated GitHub Actions workflow automatically resolves/commits lockfile changes when dependency metadata changes and can also be manually dispatched. Permanent CI independently fails when `flutter pub get` would change the committed lockfile, while Dependabot provides update discovery. Dependency updates still require analyzer/test/build verification.
+A dedicated GitHub Actions workflow automatically resolves/commits lockfile changes when dependency metadata changes and can also be manually dispatched. Permanent CI independently fails when `flutter pub get` would change the committed lockfile. Dependabot monitors Pub, Android Gradle, and GitHub Actions, while the pull-request dependency-review workflow rejects newly introduced high-severity vulnerable dependency changes. Dependency updates still require analyzer/test/build verification.
 
 ## Dependency-review checklist
 
