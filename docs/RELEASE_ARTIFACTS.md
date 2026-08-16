@@ -213,3 +213,18 @@ Accepted Platform Builds run: **31944999081**, source `b5ddc657880826bb8a0a5621f
 | `nova-2048-ios-unsigned-release` | 9263081347 | 8,709,456 bytes | `sha256:c775b87f66d1fd48a7f1ef8714350d6f832d93a24e48744925a34c77b4f9812f` |
 
 Every Phase 27 accepted-baseline hosted native dependency-sync, build, package, checksum, and upload step completed successfully. These artifacts expire on **2026-08-30**. They remain hosted qualification inputs only and do not change the **0/13** real-world stable-release qualification status.
+
+
+## Phase 28 reproducibility-hardened hosted artifact set
+
+Accepted Platform Builds run: **31948335974**, source `f694f508057ebcf1e91a825a90cc764398051647`.
+
+| Artifact | ID | Size | GitHub artifact digest |
+| --- | ---: | ---: | --- |
+| `nova-2048-android-release` | 9263995770 | 25,409,409 bytes | `sha256:372bed361b7976e5125cbea38ff691c4c2399780fd126af8aa3a8d25c02b00b0` |
+| `nova-2048-linux-x64-release` | 9263955131 | 10,396,415 bytes | `sha256:4a19198b3949389845d2cdc8b1b96beb0f0a8bc90553e3add5877151eb095892` |
+| `nova-2048-windows-x64-release` | 9263974634 | 12,655,211 bytes | `sha256:6bc86e5fe55a6a90241c4d4f2b9dc2584b4e8129c2928003a59653a94c1f3053` |
+| `nova-2048-macos-release` | 9263981693 | 18,739,155 bytes | `sha256:d22aa3d99353c64b190723e6588baffad276a2c6530cde94fcf04874ee81531d` |
+| `nova-2048-ios-unsigned-release` | 9263981993 | 8,709,383 bytes | `sha256:d7fec66f6a781bb6e996520e6a04f93b763de2b9e09a5b8cdb1b77bffde70b18` |
+
+Every Phase 28 hosted native dependency-sync, build, package, checksum, and upload step completed successfully. Android additionally used explicit Temurin JDK 17 and the verified Gradle 9.7.0 distribution checksum. These artifacts expire on **2026-08-30** and remain hosted qualification inputs only; stable-release real-world evidence remains **0/13**.
