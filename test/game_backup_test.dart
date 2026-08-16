@@ -10,25 +10,25 @@ void main() {
   final exportedAt = DateTime.utc(2026, 8, 14, 10);
 
   GameState state() => GameState(
-        config: const GameConfig(
-          mode: GameMode.classic,
-          size: 4,
-          target: 2048,
-          seed: 42,
-        ),
-        board: [
-          [2, 4, 8, 16],
-          [32, 64, 0, 0],
-          [0, 0, 0, 0],
-          [0, 0, 0, 0],
-        ],
-        score: 120,
-        bestScore: 256,
-        moves: 12,
-        totalMerges: 7,
-        rngState: 123456,
-        startedAt: startedAt,
-      );
+    config: const GameConfig(
+      mode: GameMode.classic,
+      size: 4,
+      target: 2048,
+      seed: 42,
+    ),
+    board: [
+      [2, 4, 8, 16],
+      [32, 64, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+    ],
+    score: 120,
+    bestScore: 256,
+    moves: 12,
+    totalMerges: 7,
+    rngState: 123456,
+    startedAt: startedAt,
+  );
 
   test('backup round trip preserves the current game', () {
     final source = state();
@@ -60,9 +60,9 @@ void main() {
   });
 
   test('unsupported format and version are rejected', () {
-    final valid = jsonDecode(
-      GameBackup.encode(state(), exportedAt: exportedAt),
-    ) as Map<String, dynamic>;
+    final valid =
+        jsonDecode(GameBackup.encode(state(), exportedAt: exportedAt))
+            as Map<String, dynamic>;
 
     final wrongFormat = Map<String, dynamic>.from(valid)
       ..['format'] = 'another-game';
@@ -79,9 +79,9 @@ void main() {
   });
 
   test('invalid export timestamp and missing game are rejected', () {
-    final valid = jsonDecode(
-      GameBackup.encode(state(), exportedAt: exportedAt),
-    ) as Map<String, dynamic>;
+    final valid =
+        jsonDecode(GameBackup.encode(state(), exportedAt: exportedAt))
+            as Map<String, dynamic>;
     final invalidTime = Map<String, dynamic>.from(valid)
       ..['exportedAt'] = 'not-a-time';
     final missingGame = Map<String, dynamic>.from(valid)..remove('game');
@@ -97,9 +97,9 @@ void main() {
   });
 
   test('strict game-state validation is applied to imported backups', () {
-    final valid = jsonDecode(
-      GameBackup.encode(state(), exportedAt: exportedAt),
-    ) as Map<String, dynamic>;
+    final valid =
+        jsonDecode(GameBackup.encode(state(), exportedAt: exportedAt))
+            as Map<String, dynamic>;
     final game = Map<String, dynamic>.from(valid['game'] as Map)
       ..['board'] = [
         [3, 0, 0, 0],
