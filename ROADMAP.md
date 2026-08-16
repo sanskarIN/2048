@@ -21,6 +21,8 @@ Completed in the current release-candidate line:
 - Hosted release-build verification for Android, Linux, Windows, macOS, and unsigned iOS.
 - Expanded automated engine, persistence, controller, interaction, session-integrity, accessibility, Challenge Code, Auto Play isolation, bounded Move Replay, full-session replay protocol/capture/storage/spectator UI, portable-backup, clipboard-flow, imported-ranking, per-mode-record persistence/trust/reset, and localized UI tests.
 - Complete user/technical/development/release documentation set, branding, CI, contribution/security templates, and project support/contact integration.
+- Evidence-backed release qualification infrastructure: `docs/release_qualification.json`, `docs/RELEASE_QUALIFICATION.md`, and `tool/release_readiness.dart` keep normal release-candidate CI usable while making strict stable-release mode fail until every required real-world qualification item has recorded passed evidence and release metadata is actually `1.0.0`.
+- Permanent CI now formats `tool/` together with application/tests, runs the release-candidate readiness gate, and smoke-runs the deterministic solver benchmark in addition to the existing analyzer/tests/Web release build.
 
 Remaining release qualification before `1.0.0`:
 
@@ -37,15 +39,18 @@ Remaining release qualification before `1.0.0`:
 - Native splash/icon presentation review.
 - Distribution signing/provisioning and final store/package metadata review.
 
+Each item above has a stable machine-readable ID in `docs/release_qualification.json`. A maintainer must record genuine evidence there rather than treating hosted compilation or automated widget tests as a substitute for physical qualification.
+
 ## 1.0.0 — First stable release
 
 Promote the release candidate only when:
 
-- automated formatter, analyzer, regression tests, Web build, and configured native builds are green for the candidate state;
-- manual device/accessibility qualification above is complete;
+- automated formatter, analyzer, regression tests, release-candidate metadata gate, deterministic solver smoke benchmark, Web build, and configured native builds are green for the candidate state;
+- manual device/accessibility qualification above is complete and every required manifest entry contains passed evidence plus a valid timestamp;
 - Challenge Code, replay archive, backup/restore, and external platform-handler checks are complete on representative targets;
 - no known release-blocking defect remains;
-- version, changelog, release notes, privacy information, complete documentation, and `what_changed.md` are ready for the stable tag.
+- version, changelog, release notes, privacy information, complete documentation, and `what_changed.md` are ready for the stable tag;
+- `dart run tool/release_readiness.dart --stable` exits successfully on the exact commit intended for tagging.
 
 ## Later — Optional expansion
 
@@ -76,4 +81,5 @@ Future expansion should preserve these verified boundaries unless a deliberate r
 - growing histories remain bounded, including full replay capture;
 - external links remain explicit and scheme-validated;
 - no analytics/ads/accounts/cloud dependency is added silently;
-- automated verification does not replace real-device and assistive-technology release qualification.
+- automated verification does not replace real-device and assistive-technology release qualification;
+- stable-release automation must fail closed when required manual evidence is missing, malformed, stale in structure, or inconsistent with the package version.
