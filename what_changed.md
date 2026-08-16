@@ -14,7 +14,8 @@
 - **Commit email used by repository automation:** `sanskarin@outlook.in`
 - **License:** MIT
 - **Current phase:** Phase 23 — reproducible Flutter metadata, warning-free Web assets, generated-plugin integrity, and retained checksummed native qualification artifacts complete; 13 real-world checks remain before 1.0.0
-- **Latest production-code commit used by native build verification:** `eacdb9dc04b4467271f98ce2104e60daf0124f6d` — `fix: use portable page transition builders`
+- **Latest runtime/native integration commit used by Phase 23 native build verification:** `1d445c7b8291260e974a1d0132c9417f1132b48e` — `build: generate Flutter platform runners`
+- **Latest release-pipeline commit used by retained native artifact verification:** `5b22795d5aba661bd587e7bcbf2ae6442c8b4b3a` — `ci: retain checksummed native qualification artifacts`
 - **Latest test-fix commit used by the final quality gate:** `f3e7aaec6404139951425144cb1fb4d2fda66e27` — `test: scroll lazy mode list before asserting offscreen entries`
 - **Latest documentation commit before this log refresh:** `3d5988f1a7a29d38dbd72602e2c489d5975c7b5b` — `docs: update changelog for release candidate verification`
 
@@ -4564,13 +4565,15 @@ c63811d35529c2a7d0b27e441fb5a7466a6dc8e4  test: guard release engineering reposi
 5b22795d5aba661bd587e7bcbf2ae6442c8b4b3a  ci: retain checksummed native qualification artifacts
 a93542ecae7713214f7f3e4e11a03c647e880129  test: guard qualification artifact publishing
 a0581eb13722b28e9f98cf3e2920832b80fa48af  docs: define native qualification artifact handling
+8997945b11e0db749ad24dbb434d3f3ef8c3dc5e  ci: allow explicit quality gate dispatch
+1f48ebc947596915be3104aa5da56eb6ad291fff  test: guard manual CI dispatch support
 ```
 
 The platform-bootstrap commit is retained because it repaired the missing macOS FilePicker registration. The dependency lock commit was created by the corrected lockfile automation. Formatting automation found the final repository-integrity test source already canonical and produced no extra formatter commit.
 
 ### Accepted Phase 23 quality gate
 
-Permanent CI run **31934191150**, job **95133484471**, verified source `a93542ecae7713214f7f3e4e11a03c647e880129`:
+Final permanent CI run **31934616568**, job **95134494782**, verified source `1f48ebc947596915be3104aa5da56eb6ad291fff`:
 
 ```text
 Runner: Ubuntu 24.04.4 LTS
@@ -4581,8 +4584,8 @@ Checkout v6: PASS
 Flutter metadata drift: PASS
 Formatting: PASS — 98 files, 0 changed
 Static analysis: PASS — No issues found
-Tests: PASS — 207/207
-Repository-integrity regressions: PASS — 7/7
+Tests: PASS — 208/208
+Repository-integrity regressions: PASS — 8/8
 Candidate gate: PASS — candidateGatePassed=true; readyForStable=false; 0/13 manual evidence complete
 Strict stable boundary: PASS — current 0.9.0+1 correctly refused
 Solver benchmark: PASS — Heuristic + Expectimax; seeds 2048/4096/8192/20260815; 8 moves each
@@ -4619,3 +4622,12 @@ The configured artifact retention expires these run artifacts on **2026-08-30**.
 ### Manual stable-release boundary remains intact
 
 None of the 13 entries in `docs/release_qualification.json` were changed from `pending`. Hosted artifact availability makes real-target testing more reproducible, but it cannot substitute for physical Android/iOS interaction, real screen readers, external handlers, long sessions, native branding review, signing/provisioning, or store/privacy metadata qualification. The project therefore remains correctly on `0.9.0+1`; strict stable mode remains intentionally closed.
+
+
+### Final Phase 23 dispatch verification improvement
+
+The documentation helper completed successfully and removed itself, but its cleanup push was authenticated by GitHub Actions. GitHub intentionally suppresses recursive workflow execution for ordinary workflow-token pushes, which meant the permanent CI workflow had no supported explicit trigger for verifying that exact bot-authored documentation head.
+
+Commit `8997945b11e0db749ad24dbb434d3f3ef8c3dc5e` adds `workflow_dispatch` to permanent CI. Commit `1f48ebc947596915be3104aa5da56eb6ad291fff` adds the eighth repository-integrity regression so that manual dispatch support cannot silently disappear. The normal push-triggered CI on `1f48ebc947596915be3104aa5da56eb6ad291fff` then passed 208/208 tests, metadata drift, formatting, analysis, both release-gate directions, solver smoke, WASM dry run, and the warning-enforced Web release build.
+
+This changes no manual release evidence. The real qualification manifest remains 0/13 passed, and stable `1.0.0` remains intentionally unavailable.
