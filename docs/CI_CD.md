@@ -318,3 +318,27 @@ WASM dry run: PASS
 ```
 
 The same run intentionally proves both sides of the boundary: the release candidate is structurally valid, and a stable release is not yet qualified. Native runtime code did not change in Phase 22, so the latest accepted native compilation evidence remains the Phase 21 matrix; real-device/manual checks remain outstanding in the evidence manifest and release checklist.
+
+## Phase 22 gate regression expansion — current evidence
+
+The fixture-testable release gate supersedes the earlier 194-test Phase 22 automation count without changing Flutter gameplay/runtime code. The permanent CI source below contains `--root=<path>` test support, all six CLI regression cases, and the focused regression-testing documentation.
+
+```text
+Source commit: 57c6312ee26eed0cea8597ebf6417d442cf988cc
+CI run: 31932367464
+CI job: 95129044532
+Runner: Ubuntu 24.04.4 LTS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS — 97 files, 0 changed
+Analyzer: PASS — No issues found
+Tests: PASS — 200/200
+Candidate readiness: PASS — 0/13 real-world evidence complete; readyForStable=false
+Stable boundary: PASS — strict stable mode refused the current RC as required
+Solver smoke: PASS
+Web release: PASS — build/web
+WASM dry run: PASS
+```
+
+The accepted native runtime build matrix remains Phase 21 because Phase 22 changes release tooling/tests/documentation, not application runtime behavior.
