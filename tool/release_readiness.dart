@@ -39,13 +39,15 @@ void main(List<String> args) {
   final stableMode = args.contains('--stable');
   final jsonMode = args.contains('--json');
   final helpMode = args.contains('--help') || args.contains('-h');
+  final rootArgs = args.where((arg) => arg.startsWith('--root=')).toList();
   final unknownArgs = args
       .where(
         (arg) =>
             arg != '--stable' &&
             arg != '--json' &&
             arg != '--help' &&
-            arg != '-h',
+            arg != '-h' &&
+            !arg.startsWith('--root='),
       )
       .toList(growable: false);
 
@@ -54,11 +56,14 @@ void main(List<String> args) {
     stdout.writeln();
     stdout.writeln('Usage: dart run tool/release_readiness.dart [options]');
     stdout.writeln();
-    stdout.writeln('  --json    Emit machine-readable JSON.');
+    stdout.writeln('  --json         Emit machine-readable JSON.');
     stdout.writeln(
-      '  --stable  Require every stable-release condition and manual evidence item.',
+      '  --stable       Require every stable-release condition and manual evidence item.',
     );
-    stdout.writeln('  --help    Show this help text.');
+    stdout.writeln(
+      '  --root=<path>  Validate another repository root (intended for regression fixtures).',
+    );
+    stdout.writeln('  --help         Show this help text.');
     return;
   }
 
@@ -68,9 +73,23 @@ void main(List<String> args) {
   if (unknownArgs.isNotEmpty) {
     failures.add('Unknown argument(s): ${unknownArgs.join(', ')}');
   }
+  if (rootArgs.length > 1) {
+    failures.add('Only one --root=<path> argument may be provided.');
+  }
+
+  final configuredRoot = rootArgs.isEmpty
+      ? Directory.current.path
+      : rootArgs.first.substring('--root='.length).trim();
+  final root = Directory(
+    configuredRoot.isEmpty ? Directory.current.path : configuredRoot,
+  ).absolute;
+
+  if (!root.existsSync()) {
+    failures.add('Repository root does not exist: ${root.path}');
+  }
 
   for (final path in _requiredFiles) {
-    final file = File(path);
+    final file = _fileAt(root, path);
     if (!file.existsSync()) {
       failures.add('Required release file is missing: $path');
       continue;
@@ -80,10 +99,10 @@ void main(List<String> args) {
     }
   }
 
-  final pubspec = _readFile('pubspec.yaml', failures);
-  final changelog = _readFile('CHANGELOG.md', failures);
-  final roadmap = _readFile('ROADMAP.md', failures);
-  final manifestText = _readFile(_manifestPath, failures);
+  final pubspec = _readFile(root, 'pubspec.yaml', failures);
+  final changelog = _readFile(root, 'CHANGELOG.md', failures);
+  final roadmap = _readFile(root, 'ROADMAP.md', failures);
+  final manifestText = _readFile(root, _manifestPath, failures);
 
   final version = _readVersion(pubspec, failures);
   final manifest = _readManifest(manifestText, failures);
@@ -120,7 +139,7 @@ void main(List<String> args) {
   final passedChecks = checks.where((check) => check.status == 'passed').length;
   final allManualChecksPassed =
       checks.length == _requiredManualCheckIds.length &&
-          checks.every((check) => check.isStableEvidenceComplete);
+      checks.every((check) => check.isStableEvidenceComplete);
 
   var stableMetadataReady = false;
   if (version != null && changelog != null) {
@@ -134,14 +153,14 @@ void main(List<String> args) {
       failures.isEmpty && allManualChecksPassed && stableMetadataReady;
 
   if (stableMode) {
-    if (version == null || !RegExp(r'^1\.0\.0(?:\+\d+)?$').hasMatch(version)) {
+    if (version == null ||
+        !RegExp(r'^1\.0\.0(?:\+\d+)?$').hasMatch(version)) {
       failures.add(
         'Stable mode requires pubspec.yaml version 1.0.0 (optionally with a build number).',
       );
     }
     if (changelog == null || !changelog.contains('## [1.0.0]')) {
-      failures
-          .add('Stable mode requires a CHANGELOG.md [1.0.0] release section.');
+      failures.add('Stable mode requires a CHANGELOG.md [1.0.0] release section.');
     }
     for (final check in checks) {
       if (!check.isStableEvidenceComplete) {
@@ -158,6 +177,7 @@ void main(List<String> args) {
 
   final result = <String, Object?>{
     'mode': stableMode ? 'stable' : 'candidate',
+    'root': root.path,
     'version': version,
     'candidateGatePassed': failures.isEmpty,
     'readyForStable': readyForStable,
@@ -172,6 +192,7 @@ void main(List<String> args) {
   } else {
     stdout.writeln('2048 Nova release readiness');
     stdout.writeln('Mode: ${stableMode ? 'stable' : 'candidate'}');
+    stdout.writeln('Root: ${root.path}');
     stdout.writeln('Version: ${version ?? 'unknown'}');
     stdout.writeln(
       'Manual evidence: $passedChecks/${_requiredManualCheckIds.length} passed',
@@ -200,8 +221,12 @@ void main(List<String> args) {
   }
 }
 
-String? _readFile(String path, List<String> failures) {
-  final file = File(path);
+File _fileAt(Directory root, String relativePath) {
+  return File.fromUri(root.uri.resolve(relativePath));
+}
+
+String? _readFile(Directory root, String path, List<String> failures) {
+  final file = _fileAt(root, path);
   if (!file.existsSync()) {
     return null;
   }
@@ -349,8 +374,7 @@ List<_ManualCheck> _validateManifest({
     }
   }
 
-  final missingIds =
-      _requiredManualCheckIds.where((id) => !seenIds.contains(id));
+  final missingIds = _requiredManualCheckIds.where((id) => !seenIds.contains(id));
   for (final id in missingIds) {
     failures.add('Missing required manual check id: $id');
   }
