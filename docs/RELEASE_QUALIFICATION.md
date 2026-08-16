@@ -132,3 +132,15 @@ When every real-world qualification item is genuinely complete:
 10. Tag and publish only that qualified commit.
 
 A stable tag should never be used as a substitute for the evidence above.
+
+## Automated gate regression fixtures
+
+The release gate itself is regression-tested through `test/release_readiness_cli_test.dart`. The maintenance CLI accepts `--root=<path>` so tests can construct isolated temporary repository fixtures without mutating the real checkout:
+
+```bash
+dart run tool/release_readiness.dart --root=<fixture-path> --json
+```
+
+The fixture option exists for testability only. It does not turn synthetic metadata into real release evidence. The suite exercises candidate success, complete stable success, stable refusal with pending evidence, package/manifest candidate mismatch, false `passed` entries without evidence/timestamps, and missing required qualification IDs. See [`RELEASE_GATE_TESTING.md`](RELEASE_GATE_TESTING.md).
+
+Current accepted source `57c6312ee26eed0cea8597ebf6417d442cf988cc` passed permanent CI run `31932367464` with **200/200 tests**. The live candidate still reports **0/13** real-world qualification items complete, so strict stable mode correctly remains closed.
