@@ -156,10 +156,7 @@ void main() {
       expect(workflow, contains('- pubspec.lock'));
       expect(
         workflow,
-        anyOf(
-          contains('actions/checkout@v6'),
-          contains('actions/checkout@v7'),
-        ),
+        anyOf(contains('actions/checkout@v6'), contains('actions/checkout@v7')),
       );
     });
 
@@ -173,10 +170,7 @@ void main() {
       expect(workflow, contains('Expected to find fonts for'));
       expect(
         workflow,
-        anyOf(
-          contains('actions/checkout@v6'),
-          contains('actions/checkout@v7'),
-        ),
+        anyOf(contains('actions/checkout@v6'), contains('actions/checkout@v7')),
       );
     });
 
