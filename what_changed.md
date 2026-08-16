@@ -13,10 +13,10 @@
 - **Creator / branding:** Sanskar / **Made by the Sanskar**
 - **Commit email used by repository automation:** `sanskarin@outlook.in`
 - **License:** MIT
-- **Current phase:** Phase 24 — Version 1.5 current-line migration and release-contract hardening complete; permanent CI is green at 211 tests; the hosted Android/Linux/Windows/macOS/unsigned-iOS matrix is green; 13 real-world qualification checks remain before stable promotion
-- **Latest Version 1.5 native-matrix source:** `4d4fe634624b069834786a2aaad356e356281c44` — `docs(android): clarify application id and qualification signing`
-- **Permanent Version 1.5 CI evidence:** run `31940994228`, job `95150049412` — SUCCESS, 211/211 tests, analyzer clean, candidate gate passed, strict stable gate correctly closed, solver smoke passed, Web release passed
-- **Version 1.5 native build evidence:** Platform Builds run `31940994252` — Android, Linux, Windows, macOS, and unsigned iOS jobs all SUCCESS with checksummed artifacts retained for 14 days
+- **Current phase:** Phase 25 — Version 1.5 dependency/toolchain and supply-chain maintenance hardening complete; permanent CI is green at 215 tests; the post-maintenance Android/Linux/Windows/macOS/unsigned-iOS matrix is green; 13 real-world qualification checks remain before stable promotion
+- **Latest Version 1.5 native-matrix source:** `a719321725ab818edb9f443a8cebdc86ad4fae47` — `ci: requalify native builds after Phase 25`
+- **Permanent Version 1.5 CI evidence:** run `31943081231`, job `95154949822` — SUCCESS, 215/215 tests, analyzer clean under `flutter_lints 6`, candidate gate passed, strict stable gate correctly closed, solver smoke passed, Web release passed
+- **Version 1.5 native build evidence:** Platform Builds run `31943081259` — Android, Linux, Windows, macOS, and unsigned iOS jobs all SUCCESS with checksummed artifacts retained for 14 days
 - **Manual qualification boundary:** `0/13` real-world evidence items are passed; no physical-device, assistive-technology, external-handler, long-session, signing/provisioning, or store-distribution evidence has been synthesized
 
 ---
@@ -4689,3 +4689,17 @@ Date: **2026-08-16**
 - Added docs/SUPPLY_CHAIN.md and synchronized README, DEVELOPMENT, DEPENDENCIES, SECURITY, documentation index, and CHANGELOG.
 - Validation passed dependency resolution, canonical formatting, static analysis under flutter_lints 6, the complete Flutter test suite, Version 1.5 candidate gate, expected-closed stable gate, deterministic solver smoke, and warning-enforced Web release build before push.
 - Real-device/accessibility/handler/signing qualification remains 0/13; no hosted automation evidence was substituted for those checks.
+
+
+---
+
+## Phase 25 final hosted verification — maintained toolchain and native matrix
+
+Date: **2026-08-16**
+
+- Final requalification source: `a719321725ab818edb9f443a8cebdc86ad4fae47`.
+- Permanent CI run `31943081231`, job `95154949822`: SUCCESS with dependency/generated metadata synchronization, canonical formatting, zero analyzer issues under `flutter_lints 6`, **215/215 tests**, Version 1.5 candidate gate, expected-closed stable gate, deterministic solver smoke, and warning-enforced Web release build all passing.
+- Platform Builds run `31943081259`: Android job `95154950015`, Linux job `95154950051`, Windows job `95154950020`, and macOS + unsigned iOS job `95154950021` all SUCCESS.
+- Five fresh checksummed hosted artifacts were retained for Android, Linux x64, Windows x64, macOS, and unsigned iOS; archive IDs and GitHub artifact digests are recorded in `docs/RELEASE_ARTIFACTS.md` and `docs/PHASE_25_VERIFICATION.md`.
+- This evidence verifies the maintained Dart/Flutter dependency floor and supply-chain hardening across hosted targets. It does **not** satisfy physical-device, assistive-technology, external-handler, long-session, native-branding, signing/provisioning, or store-distribution checks.
+- `docs/release_qualification.json` therefore remains intentionally at **0/13** real-world checks passed.
