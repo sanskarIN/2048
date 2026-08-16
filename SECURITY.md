@@ -4,7 +4,7 @@
 
 ## Supported version
 
-The repository is currently on the `0.9.0+1` release-candidate line. Security fixes are applied to the active `main` development line. There is not yet a separately maintained long-term-support release branch.
+The repository is currently maintained on the **Version 1.5** line (`1.5.0+15` candidate metadata). Security fixes are applied to the active `main` development line. There is not yet a separately maintained long-term-support release branch.
 
 ## Reporting a vulnerability
 
@@ -125,7 +125,7 @@ The automated iOS release build is intentionally `--no-codesign`; real distribut
 
 ## Dependencies
 
-Runtime dependencies are intentionally small. Challenge Codes use only Dart/Flutter primitives and add no third-party runtime package. Dependabot is configured for ongoing update discovery, while dependency changes still require compatibility, license, privacy, and build review.
+Runtime dependencies are intentionally small. Challenge Code encoding uses project/Dart primitives, while presentation and platform integrations remain narrowly scoped. Dependabot monitors Pub, Android Gradle, and GitHub Actions dependencies, and the pull-request dependency-review workflow rejects newly introduced high-severity vulnerable dependency changes. Dependency changes still require compatibility, license, privacy, analyzer, test, and build review.
 
 If a dependency advisory affects this project, include the exact package/version and practical reachable impact in the report when possible.
 
