@@ -70,6 +70,7 @@ The complete documentation map is [`docs/README.md`](docs/README.md). Important 
 | Verification | [`docs/VERIFICATION.md`](docs/VERIFICATION.md) |
 | Troubleshooting | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
 | Release qualification gate | [`docs/RELEASE_QUALIFICATION.md`](docs/RELEASE_QUALIFICATION.md) |
+| Release gate regression testing | [`docs/RELEASE_GATE_TESTING.md`](docs/RELEASE_GATE_TESTING.md) |
 | Release checklist | [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md) |
 | Branding | [`docs/BRANDING.md`](docs/BRANDING.md) |
 | Dependencies | [`docs/DEPENDENCIES.md`](docs/DEPENDENCIES.md) |
