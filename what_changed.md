@@ -13,10 +13,10 @@
 - **Creator / branding:** Sanskar / **Made by the Sanskar**
 - **Commit email used by repository automation:** `sanskarin@outlook.in`
 - **License:** MIT
-- **Current phase:** Phase 25 — Version 1.5 dependency/toolchain and supply-chain maintenance hardening complete; permanent CI is green at 215 tests; the post-maintenance Android/Linux/Windows/macOS/unsigned-iOS matrix is green; 13 real-world qualification checks remain before stable promotion
-- **Latest Version 1.5 native-matrix source:** `a719321725ab818edb9f443a8cebdc86ad4fae47` — `ci: requalify native builds after Phase 25`
-- **Permanent Version 1.5 CI evidence:** run `31943081231`, job `95154949822` — SUCCESS, 215/215 tests, analyzer clean under `flutter_lints 6`, candidate gate passed, strict stable gate correctly closed, solver smoke passed, Web release passed
-- **Version 1.5 native build evidence:** Platform Builds run `31943081259` — Android, Linux, Windows, macOS, and unsigned iOS jobs all SUCCESS with checksummed artifacts retained for 14 days
+- **Current phase:** Phase 26 — GitHub Actions runtime hardening complete; permanent CI is green at 216 tests; checkout v7 is verified across Ubuntu/Windows/macOS native runners; Dependency Review v5 is verified on a real pull-request event; 13 real-world qualification checks remain before stable promotion
+- **Latest Version 1.5 native-matrix source:** `bd11a4bdeec6115f132d6b2d2cebef0be34d74f7` — `ci: use checkout v7 in native matrix`
+- **Permanent Version 1.5 CI evidence:** run `31943741993`, job `95156594200` — SUCCESS, 216/216 tests, analyzer clean, checkout v7, candidate gate passed, strict stable gate correctly closed, solver smoke passed, Web release passed
+- **Version 1.5 native build evidence:** Platform Builds run `31943702153` — Android, Linux, Windows, macOS, and unsigned iOS jobs all SUCCESS using checkout v7 with checksummed artifacts retained for 14 days
 - **Manual qualification boundary:** `0/13` real-world evidence items are passed; no physical-device, assistive-technology, external-handler, long-session, signing/provisioning, or store-distribution evidence has been synthesized
 
 ---
@@ -4703,3 +4703,19 @@ Date: **2026-08-16**
 - Five fresh checksummed hosted artifacts were retained for Android, Linux x64, Windows x64, macOS, and unsigned iOS; archive IDs and GitHub artifact digests are recorded in `docs/RELEASE_ARTIFACTS.md` and `docs/PHASE_25_VERIFICATION.md`.
 - This evidence verifies the maintained Dart/Flutter dependency floor and supply-chain hardening across hosted targets. It does **not** satisfy physical-device, assistive-technology, external-handler, long-session, native-branding, signing/provisioning, or store-distribution checks.
 - `docs/release_qualification.json` therefore remains intentionally at **0/13** real-world checks passed.
+
+
+---
+
+## Phase 26 — GitHub Actions runtime hardening (2026-08-16)
+
+- Migrated every maintained repository checkout step from `actions/checkout@v6` to `actions/checkout@v7` in granular workflow commits.
+- Migrated pull-request dependency review from `actions/dependency-review-action@v4` to `@v5`.
+- Added a strict repository-integrity regression rejecting checkout v4/v5/v6 and requiring the v7/v5 maintained baseline; the current suite is **216 tests**.
+- The initial guarded migration run `31943480975` successfully passed formatting, analysis, 216 tests, release gates, solver smoke, and Web release before its final push was rejected solely because the workflow token lacked permission to modify another workflow file.
+- Recovered by applying the already-validated workflow changes directly through GitHub, keeping a temporary compatibility assertion during the staged migration and restoring the strict assertion after all permanent workflows had moved to v7.
+- Permanent CI run `31943741993`, job `95156594200`, then passed on the strict migrated repository state using runner `2.336.0`, Flutter `3.47.0`, Dart `3.13.0`, checkout v7, **216/216 tests**, release gates, solver smoke, and Web release.
+- Platform Builds run `31943702153` proved checkout v7 and successful release build/package/checksum/upload behavior on Android, Linux, Windows, macOS, and unsigned iOS.
+- Disposable PR #8 exercised the real pull-request path; Dependency Review run `31943963173`, job `95157100528`, passed with `actions/checkout@v7` and `actions/dependency-review-action@v5`, then the PR was closed without merge.
+- Phase 26 hosted artifact IDs/digests and detailed evidence are recorded in `docs/PHASE_26_VERIFICATION.md` and `docs/RELEASE_ARTIFACTS.md`.
+- Real-device/accessibility/handler/signing qualification remains **0/13**; no CI or hosted-build result was substituted for manual evidence.
