@@ -20,10 +20,10 @@ class ReplayEvent {
   final Direction? direction;
 
   Map<String, Object?> toJson() => {
-        'kind': kind.name,
-        'elapsedMilliseconds': elapsedMilliseconds,
-        if (direction != null) 'direction': direction!.name,
-      };
+    'kind': kind.name,
+    'elapsedMilliseconds': elapsedMilliseconds,
+    if (direction != null) 'direction': direction!.name,
+  };
 
   factory ReplayEvent.fromJson(Map<String, Object?> json) {
     final rawKind = json['kind'];
@@ -94,8 +94,8 @@ class ReplayCapture {
     required this.startsAtSessionStart,
     this.overflowed = false,
     Iterable<ReplayEvent> events = const [],
-  })  : initialState = initialState.copy(),
-        events = List<ReplayEvent>.from(events) {
+  }) : initialState = initialState.copy(),
+       events = List<ReplayEvent>.from(events) {
     _validateHeader();
     if (this.events.length > maxEvents) {
       throw const FormatException('Replay event limit exceeded');
@@ -130,40 +130,40 @@ class ReplayCapture {
   }
 
   bool appendMove(Direction direction, DateTime at) => _append(
-        ReplayEvent(
-          kind: ReplayEventKind.move,
-          elapsedMilliseconds: _elapsedAt(at),
-          direction: direction,
-        ),
-      );
+    ReplayEvent(
+      kind: ReplayEventKind.move,
+      elapsedMilliseconds: _elapsedAt(at),
+      direction: direction,
+    ),
+  );
 
   bool appendUndo(DateTime at) => _append(
-        ReplayEvent(
-          kind: ReplayEventKind.undo,
-          elapsedMilliseconds: _elapsedAt(at),
-        ),
-      );
+    ReplayEvent(
+      kind: ReplayEventKind.undo,
+      elapsedMilliseconds: _elapsedAt(at),
+    ),
+  );
 
   bool appendContinueAfterWin(DateTime at) => _append(
-        ReplayEvent(
-          kind: ReplayEventKind.continueAfterWin,
-          elapsedMilliseconds: _elapsedAt(at),
-        ),
-      );
+    ReplayEvent(
+      kind: ReplayEventKind.continueAfterWin,
+      elapsedMilliseconds: _elapsedAt(at),
+    ),
+  );
 
   bool appendStatusRefresh(DateTime at) => _append(
-        ReplayEvent(
-          kind: ReplayEventKind.statusRefresh,
-          elapsedMilliseconds: _elapsedAt(at),
-        ),
-      );
+    ReplayEvent(
+      kind: ReplayEventKind.statusRefresh,
+      elapsedMilliseconds: _elapsedAt(at),
+    ),
+  );
 
   Map<String, Object?> toJson() => {
-        'initialState': initialState.toJson(),
-        'startsAtSessionStart': startsAtSessionStart,
-        'overflowed': overflowed,
-        'events': events.map((event) => event.toJson()).toList(),
-      };
+    'initialState': initialState.toJson(),
+    'startsAtSessionStart': startsAtSessionStart,
+    'overflowed': overflowed,
+    'events': events.map((event) => event.toJson()).toList(),
+  };
 
   factory ReplayCapture.fromJson(Map<String, Object?> json) {
     final rawInitial = json['initialState'];
