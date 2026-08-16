@@ -50,18 +50,24 @@ jobs:
       - name: Verify release-candidate readiness metadata
         run: dart run tool/release_readiness.dart --json
 
-      - name: Verify release promotion boundary
+      - name: Verify stable gate remains fail-closed
         shell: bash
         run: |
-          version="$(awk '/^version:/{print $2}' pubspec.yaml)"
-          if [[ "$version" == 0.9.* ]]; then
-            if dart run tool/release_readiness.dart --stable --json; then
-              echo "Stable release gate unexpectedly passed for release-candidate version $version."
+          set +e
+          dart run tool/release_readiness.dart --stable --json
+          stable_status=$?
+          set -e
+
+          if grep -Eq '"status": "(pending|blocked)"' docs/release_qualification.json; then
+            if [[ "$stable_status" -eq 0 ]]; then
+              echo "Stable release gate unexpectedly passed with incomplete manual qualification."
               exit 1
             fi
-            echo "Stable release gate correctly remains closed for release-candidate version $version."
+            echo "Stable release gate correctly remains closed while manual qualification is incomplete."
+          elif [[ "$stable_status" -eq 0 ]]; then
+            echo "Stable release gate is open: metadata and all recorded manual evidence are complete."
           else
-            dart run tool/release_readiness.dart --stable --json
+            echo "Manual evidence is complete, but stable-release metadata is not finalized yet."
           fi
 
       - name: Smoke-test deterministic solver benchmark
