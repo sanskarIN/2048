@@ -119,19 +119,19 @@ void main(List<String> args) {
   }
 
   if (roadmap != null &&
-      !roadmap.contains('Remaining release qualification before `1.0.0`')) {
+      !roadmap.contains('Remaining release qualification before `1.5.0`')) {
     failures.add(
-      'ROADMAP.md must preserve the explicit pre-1.0 release qualification boundary.',
+      'ROADMAP.md must preserve the explicit pre-1.5 release qualification boundary.',
     );
   }
 
   if (version != null) {
     final acceptableCandidate = RegExp(
-      r'^(?:0\.9\.\d+|1\.0\.0)(?:\+\d+)?$',
+      r'^1\.5\.\d+(?:\+\d+)?$',
     ).hasMatch(version);
     if (!acceptableCandidate) {
       failures.add(
-        'pubspec version must remain in the 0.9.x release-candidate line or be 1.0.0 while using this gate; found $version.',
+        'pubspec version must remain in the 1.5.x current release line while using this gate; found $version.',
       );
     }
   }
@@ -144,23 +144,23 @@ void main(List<String> args) {
   var stableMetadataReady = false;
   if (version != null && changelog != null) {
     stableMetadataReady = RegExp(
-          r'^1\.0\.0(?:\+\d+)?$',
+          r'^1\.5\.0(?:\+\d+)?$',
         ).hasMatch(version) &&
-        changelog.contains('## [1.0.0]');
+        changelog.contains('## [1.5.0]');
   }
 
   final readyForStable =
       failures.isEmpty && allManualChecksPassed && stableMetadataReady;
 
   if (stableMode) {
-    if (version == null || !RegExp(r'^1\.0\.0(?:\+\d+)?$').hasMatch(version)) {
+    if (version == null || !RegExp(r'^1\.5\.0(?:\+\d+)?$').hasMatch(version)) {
       failures.add(
-        'Stable mode requires pubspec.yaml version 1.0.0 (optionally with a build number).',
+        'Stable mode requires pubspec.yaml version 1.5.0 (optionally with a build number).',
       );
     }
-    if (changelog == null || !changelog.contains('## [1.0.0]')) {
+    if (changelog == null || !changelog.contains('## [1.5.0]')) {
       failures
-          .add('Stable mode requires a CHANGELOG.md [1.0.0] release section.');
+          .add('Stable mode requires a CHANGELOG.md [1.5.0] release section.');
     }
     for (final check in checks) {
       if (!check.isStableEvidenceComplete) {
