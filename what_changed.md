@@ -2,22 +2,22 @@
 
 > This file is the primary continuity/progress record for the repository. Objective test/build evidence is recorded here instead of relying on chat history.
 
-## 2026-08-14 — 0.9.0 release-candidate implementation and verification
+## Current repository state — Version 1.5
 
 ### Project
 
 - **Project:** 2048 Nova
-- **Version:** `0.9.0+1`
+- **Version:** `1.5.0+15`
 - **Repository:** https://github.com/sanskarIN/2048
 - **Branch:** `main`
 - **Creator / branding:** Sanskar / **Made by the Sanskar**
 - **Commit email used by repository automation:** `sanskarin@outlook.in`
 - **License:** MIT
-- **Current phase:** Phase 23 — reproducible Flutter metadata, warning-free Web assets, generated-plugin integrity, and retained checksummed native qualification artifacts complete; 13 real-world checks remain before 1.0.0
-- **Latest runtime/native integration commit used by Phase 23 native build verification:** `1d445c7b8291260e974a1d0132c9417f1132b48e` — `build: generate Flutter platform runners`
-- **Latest release-pipeline commit used by retained native artifact verification:** `5b22795d5aba661bd587e7bcbf2ae6442c8b4b3a` — `ci: retain checksummed native qualification artifacts`
-- **Latest test-fix commit used by the final quality gate:** `f3e7aaec6404139951425144cb1fb4d2fda66e27` — `test: scroll lazy mode list before asserting offscreen entries`
-- **Latest documentation commit before this log refresh:** `3d5988f1a7a29d38dbd72602e2c489d5975c7b5b` — `docs: update changelog for release candidate verification`
+- **Current phase:** Phase 24 — Version 1.5 current-line migration and release-contract hardening complete; permanent CI is green at 211 tests; the hosted Android/Linux/Windows/macOS/unsigned-iOS matrix is green; 13 real-world qualification checks remain before stable promotion
+- **Latest Version 1.5 native-matrix source:** `4d4fe634624b069834786a2aaad356e356281c44` — `docs(android): clarify application id and qualification signing`
+- **Permanent Version 1.5 CI evidence:** run `31940994228`, job `95150049412` — SUCCESS, 211/211 tests, analyzer clean, candidate gate passed, strict stable gate correctly closed, solver smoke passed, Web release passed
+- **Version 1.5 native build evidence:** Platform Builds run `31940994252` — Android, Linux, Windows, macOS, and unsigned iOS jobs all SUCCESS with checksummed artifacts retained for 14 days
+- **Manual qualification boundary:** `0/13` real-world evidence items are passed; no physical-device, assistive-technology, external-handler, long-session, signing/provisioning, or store-distribution evidence has been synthesized
 
 ---
 
@@ -4657,3 +4657,19 @@ This changes no manual release evidence. The real qualification manifest remains
 - `a730b2d` — docs: align release gate fixtures with Version 1.5
 - `9f36700` — docs: align release checklist with Version 1.5
 - `75a3c78` — docs: record Version 1.5 migration and fixes
+
+
+---
+
+## Phase 24 final verification — Version 1.5 hosted quality and native matrix
+
+Date: **2026-08-16**
+
+- Current package metadata: `1.5.0+15`; runtime marketing version: `1.5.0`.
+- Permanent CI source `4d4fe634624b069834786a2aaad356e356281c44`, run `31940994228`, job `95150049412`: SUCCESS.
+- CI evidence: Flutter 3.47.0 stable / Dart 3.13.0, formatter 98 files with 0 changes, analyzer `No issues found`, **211/211 tests passed**, Version 1.5 candidate gate passed, strict stable gate remained fail-closed, deterministic solver smoke passed, and Web release build completed without the missing Cupertino icon-font warning.
+- Native Platform Builds run `31940994252`: Android job `95150049652`, Linux job `95150049660`, Windows job `95150049634`, and Apple job `95150049606` all SUCCESS.
+- Five checksummed qualification artifacts were uploaded for Android, Linux x64, Windows x64, macOS, and unsigned iOS. Their GitHub artifact archive digests are recorded in `docs/RELEASE_ARTIFACTS.md`.
+- Hosted compilation/package success is **not** physical-device or store-distribution qualification. `docs/release_qualification.json` remains intentionally at **0/13** passed real-world checks.
+- Temporary Version 1.5 migration automation was removed after successful use; the repository retains only permanent release/CI tooling.
+- Repository-writing automation for this phase explicitly uses `Sanskar <sanskarin@outlook.in>`.
