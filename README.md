@@ -18,6 +18,8 @@ The normal game is offline-first. It does not require an account, subscription, 
 
 The repository is currently on the **`0.9.0+1` release-candidate line**. Automated quality and native build evidence is documented, while physical-device, real screen-reader, signing/provisioning, long-session, and store-release qualification remain explicit manual boundaries before a stable 1.0.0 claim.
 
+Release promotion is now fail-closed: `dart run tool/release_readiness.dart` validates candidate metadata and the evidence manifest, while `dart run tool/release_readiness.dart --stable` refuses promotion until the package is actually `1.0.0`, the changelog has a stable release section, and every required real-world qualification item has recorded passed evidence. See [`docs/RELEASE_QUALIFICATION.md`](docs/RELEASE_QUALIFICATION.md).
+
 ## Features
 
 - Deterministic, UI-independent 2048 engine with correct one-merge-per-source-tile behavior.
@@ -67,7 +69,8 @@ The complete documentation map is [`docs/README.md`](docs/README.md). Important 
 | Testing | [`docs/TESTING.md`](docs/TESTING.md) |
 | Verification | [`docs/VERIFICATION.md`](docs/VERIFICATION.md) |
 | Troubleshooting | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
-| Release qualification | [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md) |
+| Release qualification gate | [`docs/RELEASE_QUALIFICATION.md`](docs/RELEASE_QUALIFICATION.md) |
+| Release checklist | [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md) |
 | Branding | [`docs/BRANDING.md`](docs/BRANDING.md) |
 | Dependencies | [`docs/DEPENDENCIES.md`](docs/DEPENDENCIES.md) |
 | Chronological implementation log | [`what_changed.md`](what_changed.md) |
