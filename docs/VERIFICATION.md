@@ -2,6 +2,66 @@
 
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
+## Phase 24 — Version 1.5 current line and hosted native matrix
+
+Date: **2026-08-16**
+
+Current Version 1.5 package/runtime metadata:
+
+```text
+Package: 1.5.0+15
+Marketing/runtime version: 1.5.0
+```
+
+Permanent quality source:
+
+```text
+Commit: 4d4fe634624b069834786a2aaad356e356281c44
+CI run: 31940994228
+CI job: 95150049412
+Result: SUCCESS
+Runner: Ubuntu 24.04.4 LTS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Flutter metadata drift: PASS
+Formatting: PASS — 98 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 211/211
+Candidate readiness: PASS — candidateGatePassed=true; readyForStable=false; 0/13 manual evidence complete
+Stable promotion boundary: PASS — strict stable mode correctly remained closed with incomplete real-world evidence
+Solver smoke benchmark: PASS
+WASM dry run: PASS
+Missing icon-font warning guard: PASS
+Web release: PASS — build/web
+```
+
+Version 1.5 hosted native matrix:
+
+```text
+Commit: 4d4fe634624b069834786a2aaad356e356281c44
+Platform Builds run: 31940994252
+Android job 95150049652: SUCCESS
+Linux job 95150049660: SUCCESS
+Windows job 95150049634: SUCCESS
+macOS + unsigned iOS job 95150049606: SUCCESS
+Artifact count: 5
+```
+
+Accepted hosted artifact archives:
+
+| Artifact | ID | Size | GitHub artifact digest |
+| --- | ---: | ---: | --- |
+| `nova-2048-android-release` | 9262064041 | 25,409,571 bytes | `sha256:777c912745e7c3fdbdbe6f682699e0edbee9d32e0144dd3d7e72c87f25a5bd00` |
+| `nova-2048-linux-x64-release` | 9262027429 | 10,396,713 bytes | `sha256:187975b54ec73f23b49fc8e50f6cd7c5f2e044f551ce153603c13cd75273422a` |
+| `nova-2048-windows-x64-release` | 9262041028 | 12,655,269 bytes | `sha256:5d53a9c534b3327b5881087b2f5a9c2d744b841de70e20f9e05115f1f8f18ac1` |
+| `nova-2048-macos-release` | 9262077872 | 18,739,219 bytes | `sha256:15cb2d98188fcd0718c382244be0f527a41b5799fc59d5cef57173b2be10097f` |
+| `nova-2048-ios-unsigned-release` | 9262078294 | 8,710,168 bytes | `sha256:b09afe7ae21b7563d5407e80de17458e2e5d66e557b591db6aea47bca5b6ac1c` |
+
+All five artifacts expire on **2026-08-30** under the 14-day retention policy. Each job also produced the repository-workflow payload SHA-256 sidecar described in `RELEASE_ARTIFACTS.md`.
+
+This matrix is objective hosted compilation/package evidence. It does **not** mark any real-world qualification item passed. Physical Android/iOS testing, representative input/responsive checks, assistive-technology passes, long sessions, real-target transport/import flows, external handlers, native branding review, and production signing/provisioning/store metadata remain governed by `release_qualification.json`, which is still **0/13** complete.
+
 ## Phase 23 — Reproducible metadata, warning-free Web, and retained native artifacts
 
 Date: **2026-08-16**
