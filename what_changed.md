@@ -13,10 +13,10 @@
 - **Creator / branding:** Sanskar / **Made by the Sanskar**
 - **Commit email used by repository automation:** `sanskarin@outlook.in`
 - **License:** MIT
-- **Current phase:** Phase 26 — GitHub Actions runtime hardening complete; permanent CI is green at 216 tests; checkout v7 is verified across Ubuntu/Windows/macOS native runners; Dependency Review v5 is verified on a real pull-request event; 13 real-world qualification checks remain before stable promotion
-- **Latest Version 1.5 native-matrix source:** `bd11a4bdeec6115f132d6b2d2cebef0be34d74f7` — `ci: use checkout v7 in native matrix`
-- **Permanent Version 1.5 CI evidence:** run `31943741993`, job `95156594200` — SUCCESS, 216/216 tests, analyzer clean, checkout v7, candidate gate passed, strict stable gate correctly closed, solver smoke passed, Web release passed
-- **Version 1.5 native build evidence:** Platform Builds run `31943702153` — Android, Linux, Windows, macOS, and unsigned iOS jobs all SUCCESS using checkout v7 with checksummed artifacts retained for 14 days
+- **Current phase:** Phase 27 — Android toolchain compatibility qualification complete; AGP 9.1.0 + Kotlin 2.4.10 + Gradle 9.7.0 is the protected hosted-build baseline; permanent CI is green at 217 tests; AGP 9.3.1 remains explicitly deferred under issue #10; 13 real-world qualification checks remain before stable promotion
+- **Latest accepted Version 1.5 native-matrix source:** `b5ddc657880826bb8a0a5621ff03a99050350342` — `build(android): adopt safe Kotlin and Gradle updates`
+- **Permanent Version 1.5 CI evidence:** run `31945071057`, job `95159704902` — SUCCESS, 217/217 tests, analyzer clean, protected Android toolchain baseline, candidate gate passed, strict stable gate correctly closed, solver smoke passed, Web release passed
+- **Version 1.5 native build evidence:** Platform Builds run `31944999081` — Android, Linux, Windows, macOS, and unsigned iOS jobs all SUCCESS with the accepted Android toolchain and checksummed artifacts retained for 14 days
 - **Manual qualification boundary:** `0/13` real-world evidence items are passed; no physical-device, assistive-technology, external-handler, long-session, signing/provisioning, or store-distribution evidence has been synthesized
 
 ---
@@ -4719,3 +4719,21 @@ Date: **2026-08-16**
 - Disposable PR #8 exercised the real pull-request path; Dependency Review run `31943963173`, job `95157100528`, passed with `actions/checkout@v7` and `actions/dependency-review-action@v5`, then the PR was closed without merge.
 - Phase 26 hosted artifact IDs/digests and detailed evidence are recorded in `docs/PHASE_26_VERIFICATION.md` and `docs/RELEASE_ARTIFACTS.md`.
 - Real-device/accessibility/handler/signing qualification remains **0/13**; no CI or hosted-build result was substituted for manual evidence.
+
+
+---
+
+## Phase 27 — Android toolchain compatibility qualification (2026-08-16)
+
+- Evaluated Android build-tool updates as coordinated compatibility sets instead of blindly merging independent Dependabot PRs.
+- PR #9 tested AGP 9.3.1 + Kotlin 2.4.10 + Gradle 9.7.0. Normal Flutter CI, Dependency Review, and non-Android hosted targets passed, but Android release lint failed on the normal JDK 17 baseline in `:url_launcher_android:lintVitalAnalyzeRelease` with a `java.util.List.removeLast()` `NoSuchMethodError`.
+- A branch-only Temurin JDK 21 diagnostic then passed the exact AGP 9.3.1 stack, including Android release lint/APK/checksum/artifact upload. The project did not promote that workaround because AGP 9.3 still documents JDK 17 compatibility; release lint was never disabled.
+- Opened issue #10 as the explicit AGP 9.3 follow-up and closed PR #9 plus the standalone Dependabot AGP PR #3 without merge.
+- Kept stable `file_picker 11.0.2`; the relevant built-in-Kotlin cleanup remains on its 12.0.0 prerelease line, so Version 1.5 does not replace a stable runtime dependency with a beta merely to suppress a forward-looking build warning.
+- PR #11 isolated the safe subset: AGP remained 9.1.0, Kotlin moved to 2.4.10, and Gradle moved to 9.7.0. Dependency Review v5, complete CI, Android JDK-17 release APK, Linux, Windows, macOS, unsigned iOS, checksum creation, and artifact uploads all passed before merge.
+- Merged PR #11 as `b5ddc657880826bb8a0a5621ff03a99050350342`; standalone Dependabot Kotlin/Gradle PRs #6 and #7 were closed as superseded.
+- Post-merge Platform Builds run `31944999081` passed Android job `95159531941`, Linux `95159531882`, Windows `95159531908`, and macOS + unsigned iOS `95159531916`.
+- Added repository-integrity coverage at `4f17442920026fdfef2c342707883c0454558195` that pins AGP 9.1.0, Kotlin 2.4.10, and Gradle 9.7.0 and explicitly rejects AGP 9.3.1 while issue #10 remains unresolved.
+- Permanent CI run `31945071057`, job `95159704902`, passed formatter, analyzer, **217/217 tests**, Version 1.5 candidate gate, expected-closed stable gate, deterministic solver smoke, WASM dry run, and Web release build.
+- Added `docs/ANDROID_TOOLCHAIN.md` and `docs/PHASE_27_VERIFICATION.md` with upgrade policy, failure/diagnostic evidence, accepted artifact digests, and revisit criteria.
+- Real-device/accessibility/handler/signing qualification remains **0/13**; no hosted toolchain result was substituted for manual evidence.
