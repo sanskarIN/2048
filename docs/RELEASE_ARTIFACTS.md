@@ -168,3 +168,18 @@ Accepted Platform Builds run: **31940994252**, source `4d4fe634624b069834786a2aa
 | `nova-2048-ios-unsigned-release` | 9262078294 | 8,710,168 bytes | `sha256:b09afe7ae21b7563d5407e80de17458e2e5d66e557b591db6aea47bca5b6ac1c` |
 
 Every Version 1.5 build, package, checksum, and upload step completed successfully. The artifacts expire on **2026-08-30**. As with the Phase 23 set, these are qualification inputs and hosted-build evidence only; they do not change the **0/13** real-world qualification status.
+
+
+## Phase 25 accepted Version 1.5 maintenance artifact set
+
+Accepted Platform Builds run: **31943081259**, source `a719321725ab818edb9f443a8cebdc86ad4fae47`.
+
+| Artifact | ID | Size | GitHub artifact digest |
+| --- | ---: | ---: | --- |
+| `nova-2048-android-release` | 9262595224 | 25,409,424 bytes | `sha256:3659e74e5701ffc88d97fdf6f794f99e798c72b7e220388ed874581d875ba599` |
+| `nova-2048-linux-x64-release` | 9262555485 | 10,396,428 bytes | `sha256:8d44c26c652302d42b9514ceda46d07d4453a2ad19ee0a125251ae8ac86ff2d7` |
+| `nova-2048-windows-x64-release` | 9262569444 | 12,655,196 bytes | `sha256:d791a3d130282fc00ace3a4138a888812cdd28418b1010de26509948bae6e009` |
+| `nova-2048-macos-release` | 9262587395 | 18,739,179 bytes | `sha256:92535dfac0f4dcee76ee3955660ff1e70f40861b0b36ee581ad36bfa73444211` |
+| `nova-2048-ios-unsigned-release` | 9262587677 | 8,709,412 bytes | `sha256:47a467df783846b2ce67aa1e0e0320d9482ad6aba42bcc1f6e7e4da04bcad04a` |
+
+Every Phase 25 hosted native dependency-sync, build, package, checksum, and upload step completed successfully. These artifacts expire on **2026-08-30**. They are hosted qualification inputs only and do not change the **0/13** real-world stable-release qualification status.
