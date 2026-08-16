@@ -3,6 +3,14 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  const checkoutRevision = '3d3c42e5aac5ba805825da76410c181273ba90b1';
+  const flutterActionRevision =
+      '1a449444c387b1966244ae4d4f8c696479add0b2';
+  const dependencyReviewRevision =
+      'a1d282b36b6f3519aa1f3fc636f609c47dddb294';
+  const uploadArtifactRevision =
+      '043fb46d1a93c77aae656e7c1c64a875d1fc6a0a';
+
   group('repository integrity', () {
     test('Cupertino icon dependency is declared and locked compatibly', () {
       final pubspec = File('pubspec.yaml').readAsStringSync();
@@ -52,7 +60,10 @@ void main() {
         expect(dependabot, contains('package-ecosystem: $ecosystem'));
       }
       expect(dependabot, isNot(contains('- dependencies')));
-      expect(dependencyReview, contains('actions/dependency-review-action@v5'));
+      expect(
+        dependencyReview,
+        contains('actions/dependency-review-action@$dependencyReviewRevision'),
+      );
       expect(dependencyReview, contains('fail-on-severity: high'));
     });
 
@@ -61,9 +72,89 @@ void main() {
         '.github/workflows/dependency-review.yml',
       ).readAsStringSync();
 
-      expect(workflow, contains('actions/checkout@v7'));
-      expect(workflow, contains('actions/dependency-review-action@v5'));
+      expect(
+        workflow,
+        contains('actions/checkout@$checkoutRevision'),
+      );
+      expect(
+        workflow,
+        contains('actions/dependency-review-action@$dependencyReviewRevision'),
+      );
       expect(workflow, contains('fail-on-severity: high'));
+    });
+
+    test('remote workflow actions are pinned to immutable commit revisions', () {
+      final workflowFiles = Directory('.github/workflows')
+          .listSync()
+          .whereType<File>()
+          .where((file) => file.path.endsWith('.yml'))
+          .toList();
+      final immutableUse = RegExp(
+        r'^\s*(?:-\s*)?uses:\s*[^@\s]+@[0-9a-f]{40}(?:\s+#\s+.+)?\s*$',
+      );
+
+      expect(workflowFiles, isNotEmpty);
+      for (final workflow in workflowFiles) {
+        for (final line in workflow.readAsLinesSync()) {
+          if (!line.contains('uses:') || line.contains('uses: ./')) {
+            continue;
+          }
+          expect(
+            immutableUse.hasMatch(line),
+            isTrue,
+            reason: '${workflow.path} has a mutable action reference: $line',
+          );
+        }
+      }
+    });
+
+    test('critical workflow action revisions match the qualified baseline', () {
+      final workflows = Directory('.github/workflows')
+          .listSync()
+          .whereType<File>()
+          .where((file) => file.path.endsWith('.yml'))
+          .map((file) => file.readAsStringSync())
+          .join('\n');
+
+      expect(workflows, contains('actions/checkout@$checkoutRevision'));
+      expect(workflows, contains('subosito/flutter-action@$flutterActionRevision'));
+      expect(
+        workflows,
+        contains('actions/dependency-review-action@$dependencyReviewRevision'),
+      );
+      expect(
+        workflows,
+        contains('actions/upload-artifact@$uploadArtifactRevision'),
+      );
+    });
+
+    test('branding generator Python environment is fully version pinned', () {
+      final requirements = File(
+        'tool/branding-requirements.txt',
+      ).readAsLinesSync();
+      final workflow = File(
+        '.github/workflows/bootstrap-branding.yml',
+      ).readAsStringSync();
+      final packagePin = RegExp(r'^[a-z0-9_-]+==[^=\s]+$', caseSensitive: false);
+      final packages = requirements
+          .map((line) => line.trim())
+          .where((line) => line.isNotEmpty && !line.startsWith('#'))
+          .toList();
+
+      expect(packages, isNotEmpty);
+      for (final package in packages) {
+        expect(
+          packagePin.hasMatch(package),
+          isTrue,
+          reason: 'Branding dependency is not exactly version-pinned: $package',
+        );
+      }
+      expect(packages, contains('cairosvg==2.9.0'));
+      expect(packages, contains('pillow==12.3.0'));
+      expect(
+        workflow,
+        contains('--requirement tool/branding-requirements.txt'),
+      );
     });
 
     test('CODEOWNERS covers release and platform policy', () {
@@ -158,21 +249,10 @@ void main() {
       expect(workflowFiles, isNotEmpty);
       for (final workflow in workflowFiles) {
         final source = workflow.readAsStringSync();
-        expect(
-          source,
-          isNot(contains('actions/checkout@v4')),
-          reason: '${workflow.path} still uses checkout v4',
-        );
-        expect(
-          source,
-          isNot(contains('actions/checkout@v5')),
-          reason: '${workflow.path} still uses checkout v5',
-        );
-        expect(
-          source,
-          isNot(contains('actions/checkout@v6')),
-          reason: '${workflow.path} still uses checkout v6',
-        );
+        expect(source, isNot(contains('actions/checkout@v4')));
+        expect(source, isNot(contains('actions/checkout@v5')));
+        expect(source, isNot(contains('actions/checkout@v6')));
+        expect(source, isNot(contains('actions/checkout@v7')));
       }
     });
 
@@ -183,7 +263,7 @@ void main() {
 
       expect(workflow, contains('- pubspec.yaml'));
       expect(workflow, contains('- pubspec.lock'));
-      expect(workflow, contains('actions/checkout@v7'));
+      expect(workflow, contains('actions/checkout@$checkoutRevision'));
     });
 
     test('CI rejects Flutter metadata drift and missing Web icon fonts', () {
@@ -194,7 +274,7 @@ void main() {
         contains('git diff --exit-code -- pubspec.lock analysis_options.yaml'),
       );
       expect(workflow, contains('Expected to find fonts for'));
-      expect(workflow, contains('actions/checkout@v7'));
+      expect(workflow, contains('actions/checkout@$checkoutRevision'));
     });
 
     test('CI supports explicit maintainer dispatch', () {
@@ -208,7 +288,10 @@ void main() {
         '.github/workflows/platform-builds.yml',
       ).readAsStringSync();
 
-      expect(workflow, contains('actions/upload-artifact@v7'));
+      expect(
+        workflow,
+        contains('actions/upload-artifact@$uploadArtifactRevision'),
+      );
       expect(workflow, contains('if-no-files-found: error'));
       expect(workflow, contains('retention-days: 14'));
       for (final artifact in <String>[
