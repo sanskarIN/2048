@@ -2,6 +2,55 @@
 
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
+## Phase 27 — Android toolchain compatibility qualification
+
+Date: **2026-08-16**
+
+Accepted Android baseline:
+
+```text
+AGP: 9.1.0
+Kotlin Android: 2.4.10
+Gradle: 9.7.0
+Normal hosted Android Java baseline: JDK 17
+```
+
+Permanent quality evidence after adding the baseline regression:
+
+```text
+Commit: 4f17442920026fdfef2c342707883c0454558195
+CI run: 31945071057
+CI job: 95159704902
+Result: SUCCESS
+Runner: 2.336.0 / Ubuntu 24.04.4 LTS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+Formatting: PASS — 98 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 217/217
+Candidate readiness: PASS — candidateGatePassed=true; readyForStable=false; 0/13 manual evidence complete
+Stable promotion boundary: PASS — strict stable mode correctly remained closed
+Solver smoke benchmark: PASS
+WASM dry run: PASS
+Missing icon-font warning guard: PASS
+Web release: PASS — build/web
+```
+
+Post-merge hosted native matrix:
+
+```text
+Source: b5ddc657880826bb8a0a5621ff03a99050350342
+Platform Builds run: 31944999081
+Android job 95159531941: SUCCESS
+Linux job 95159531882: SUCCESS
+Windows job 95159531908: SUCCESS
+macOS + unsigned iOS job 95159531916: SUCCESS
+```
+
+AGP 9.3.1 is intentionally deferred. PR #9 failed Android release lint on JDK 17 but passed a branch-only JDK 21 diagnostic; issue #10 tracks the upstream/toolchain mismatch. The accepted safe subset was merged through PR #11. Focused evidence is in [`PHASE_27_VERIFICATION.md`](PHASE_27_VERIFICATION.md) and policy/revisit criteria are in [`ANDROID_TOOLCHAIN.md`](ANDROID_TOOLCHAIN.md).
+
+Real-world stable qualification remains **0/13**.
+
 ## Phase 26 — GitHub Actions runtime hardening
 
 Date: **2026-08-16**
