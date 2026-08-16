@@ -8,9 +8,51 @@ void main() {
       final pubspec = File('pubspec.yaml').readAsStringSync();
       final lockfile = File('pubspec.lock').readAsStringSync();
 
-      expect(pubspec, contains('cupertino_icons: 1.0.8'));
+      expect(pubspec, contains('cupertino_icons: 1.0.9'));
       expect(lockfile, contains('name: cupertino_icons'));
-      expect(lockfile, contains('version: "1.0.8"'));
+      expect(lockfile, contains('version: "1.0.9"'));
+    });
+
+    test('declared SDK floor matches maintained dependencies', () {
+      final pubspec = File('pubspec.yaml').readAsStringSync();
+
+      expect(pubspec, contains('sdk: ">=3.9.0 <4.0.0"'));
+      expect(pubspec, contains('flutter: ">=3.35.0"'));
+      expect(pubspec, contains('shared_preferences: ^2.5.5'));
+      expect(pubspec, contains('flutter_lints: ^6.0.0'));
+    });
+
+    test('supply-chain automation covers maintained dependency ecosystems', () {
+      final dependabot = File('.github/dependabot.yml').readAsStringSync();
+      final dependencyReview = File(
+        '.github/workflows/dependency-review.yml',
+      ).readAsStringSync();
+
+      for (final ecosystem in <String>['pub', 'gradle', 'github-actions']) {
+        expect(dependabot, contains('package-ecosystem: $ecosystem'));
+      }
+      expect(dependabot, isNot(contains('- dependencies')));
+      expect(dependencyReview, contains('actions/dependency-review-action@v4'));
+      expect(dependencyReview, contains('fail-on-severity: high'));
+    });
+
+    test('CODEOWNERS covers release and platform policy', () {
+      final owners = File('.github/CODEOWNERS').readAsStringSync();
+
+      expect(owners, contains('* @sanskarIN'));
+      expect(owners, contains('/.github/ @sanskarIN'));
+      expect(owners, contains('/pubspec.yaml @sanskarIN'));
+      expect(owners, contains('/docs/RELEASE* @sanskarIN'));
+      expect(owners, contains('/android/ @sanskarIN'));
+      expect(owners, contains('/ios/ @sanskarIN'));
+    });
+
+    test('security policy tracks the current Version 1.5 line', () {
+      final policy = File('SECURITY.md').readAsStringSync();
+
+      expect(policy, contains('Version 1.5'));
+      expect(policy, contains('supportramsandesh@gmail.com'));
+      expect(policy, contains('dependency-review'));
     });
 
     test('runtime version matches pubspec marketing version', () {
@@ -32,17 +74,18 @@ void main() {
     });
 
     test(
-        'CI stable boundary is qualification-driven, not version-prefix driven',
-        () {
-      final workflow = File('.github/workflows/ci.yml').readAsStringSync();
+      'CI stable boundary is qualification-driven, not version-prefix driven',
+      () {
+        final workflow = File('.github/workflows/ci.yml').readAsStringSync();
 
-      expect(workflow, isNot(contains('version == 0.9.*')));
-      expect(workflow, contains('pending|blocked'));
-      expect(
-        workflow,
-        contains('Stable release gate correctly remains closed'),
-      );
-    });
+        expect(workflow, isNot(contains('version == 0.9.*')));
+        expect(workflow, contains('pending|blocked'));
+        expect(
+          workflow,
+          contains('Stable release gate correctly remains closed'),
+        );
+      },
+    );
 
     test('macOS generated registrant includes file picker', () {
       final registrant = File(
