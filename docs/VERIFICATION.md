@@ -2,6 +2,43 @@
 
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
+## Phase 28 — Workflow and supply-chain reproducibility hardening
+
+Date: **2026-08-16**
+
+```text
+Quality source: 234576b9e0872ca09c47cd43f47eb6d36a88e4b7
+CI run: 31948413257
+CI job: 95167995837
+Result: SUCCESS
+Runner: 2.336.0 / Ubuntu 24.04.4 LTS
+Flutter: 3.47.0 stable (frozen in workflows)
+Dart: 3.13.0
+Formatting: PASS — 99 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 225/225
+Candidate readiness: PASS — candidateGatePassed=true; readyForStable=false; 0/13 manual evidence complete
+Stable promotion boundary: PASS — strict stable mode correctly remained closed
+Solver smoke benchmark: PASS
+WASM dry run: PASS
+Web release: PASS — build/web
+Read-only checkout credentials: not persisted
+Flutter composite cache steps: skipped
+```
+
+```text
+Native source: f694f508057ebcf1e91a825a90cc764398051647
+Platform Builds run: 31948335974
+Android job 95167849002: SUCCESS — explicit Temurin JDK 17
+Linux job 95167849014: SUCCESS
+Windows job 95167848969: SUCCESS
+macOS + unsigned iOS job 95167849007: SUCCESS
+```
+
+Immutable Dependency Review proof: PR #13 (closed without merge), run `31947619961`, job `95166040339` — SUCCESS. Branding generator proof: run `31947463847`, job `95165649555` — SUCCESS. Focused evidence is in [`PHASE_28_VERIFICATION.md`](PHASE_28_VERIFICATION.md) and executable-policy details are in [`WORKFLOW_SECURITY.md`](WORKFLOW_SECURITY.md).
+
+GitHub currently reports `main` unprotected; issue #12 tracks the required repository ruleset change. AGP issue #10 remains open. Real-world stable qualification remains **0/13**.
+
 ## Phase 27 — Android toolchain compatibility qualification
 
 Date: **2026-08-16**
