@@ -33,6 +33,10 @@ flutter pub get
 
 Android runner files are under `android/`. Branding exports include launcher icons and launch-background assets.
 
+### Maintained build-tool baseline
+
+Version 1.5 currently pins AGP **9.1.0**, Kotlin Android **2.4.10**, and Gradle **9.7.0**. The accepted combination is protected by repository-integrity tests. AGP 9.3.1 is intentionally deferred after its release-lint path failed on the normal JDK 17 baseline even though a branch-only JDK 21 diagnostic succeeded. See [`ANDROID_TOOLCHAIN.md`](ANDROID_TOOLCHAIN.md) and GitHub issue #10 before changing these versions.
+
 ### Development prerequisites
 
 Typical Flutter Android development requires:
