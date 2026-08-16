@@ -137,7 +137,9 @@ void main() {
 
       for (final workflow in workflowFiles) {
         final source = workflow.readAsStringSync();
-        if (!source.contains('subosito/flutter-action@$flutterActionRevision')) {
+        if (!source.contains(
+          'subosito/flutter-action@$flutterActionRevision',
+        )) {
           continue;
         }
         flutterWorkflowCount += 1;
