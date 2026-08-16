@@ -25,7 +25,8 @@ Completed in the current release-candidate line:
 - Permanent CI now formats `tool/` together with application/tests, runs the release-candidate readiness gate, and smoke-runs the deterministic solver benchmark in addition to the existing analyzer/tests/Web release build.
 - Phase 23 makes Flutter-managed metadata reproducible, includes the Cupertino icon font without Web warnings, verifies generated plugin registration, uses checkout v6, and guards these repository contracts with focused tests.
 - Native hosted builds now package SHA-256 sidecars and retain five short-lived qualification artifacts for Android, Linux, Windows, macOS, and unsigned iOS; artifacts remain inputs to manual qualification rather than substitutes for it.
-- Release-readiness CLI regression fixtures exercise both opening and fail-closed branches end to end, including a fully qualified synthetic stable fixture plus malformed/incomplete evidence rejection; maintained CI is now 207/207 tests after Phase 23 repository-integrity coverage.
+- Permanent CI also exposes an explicit maintainer dispatch path, regression guarded so bot-authored documentation/generator heads can be verified without relying on recursive workflow-token pushes.
+- Release-readiness CLI regression fixtures exercise both opening and fail-closed branches end to end, including a fully qualified synthetic stable fixture plus malformed/incomplete evidence rejection; maintained CI is now 208/208 tests after Phase 23 repository-integrity and explicit-dispatch coverage.
 
 Remaining release qualification before `1.0.0`:
 
