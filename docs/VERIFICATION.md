@@ -2,6 +2,69 @@
 
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
+## Phase 25 — Dependency/toolchain and supply-chain maintenance hardening
+
+Date: **2026-08-16**
+
+Current maintained package/toolchain contract:
+
+```text
+Package: 1.5.0+15
+Marketing/runtime version: 1.5.0
+Dart floor: >=3.9.0 <4.0.0
+Flutter floor: >=3.35.0
+cupertino_icons: 1.0.9
+shared_preferences: ^2.5.5
+flutter_lints: ^6.0.0
+```
+
+Permanent quality source:
+
+```text
+Commit: a719321725ab818edb9f443a8cebdc86ad4fae47
+CI run: 31943081231
+CI job: 95154949822
+Result: SUCCESS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+Metadata drift: PASS
+Formatting: PASS
+Static analysis: PASS — No issues found under flutter_lints 6
+Tests: PASS — 215/215
+Candidate readiness: PASS — candidateGatePassed=true; readyForStable=false; 0/13 manual evidence complete
+Stable promotion boundary: PASS — strict stable mode correctly remained closed
+Solver smoke benchmark: PASS
+WASM dry run: PASS
+Missing icon-font warning guard: PASS
+Web release: PASS — build/web
+```
+
+Post-maintenance hosted native matrix:
+
+```text
+Commit: a719321725ab818edb9f443a8cebdc86ad4fae47
+Platform Builds run: 31943081259
+Android job 95154950015: SUCCESS
+Linux job 95154950051: SUCCESS
+Windows job 95154950020: SUCCESS
+macOS + unsigned iOS job 95154950021: SUCCESS
+Artifact count: 5
+```
+
+Accepted Phase 25 hosted artifact archives:
+
+| Artifact | ID | Size | GitHub artifact digest |
+| --- | ---: | ---: | --- |
+| `nova-2048-android-release` | 9262595224 | 25,409,424 bytes | `sha256:3659e74e5701ffc88d97fdf6f794f99e798c72b7e220388ed874581d875ba599` |
+| `nova-2048-linux-x64-release` | 9262555485 | 10,396,428 bytes | `sha256:8d44c26c652302d42b9514ceda46d07d4453a2ad19ee0a125251ae8ac86ff2d7` |
+| `nova-2048-windows-x64-release` | 9262569444 | 12,655,196 bytes | `sha256:d791a3d130282fc00ace3a4138a888812cdd28418b1010de26509948bae6e009` |
+| `nova-2048-macos-release` | 9262587395 | 18,739,179 bytes | `sha256:92535dfac0f4dcee76ee3955660ff1e70f40861b0b36ee581ad36bfa73444211` |
+| `nova-2048-ios-unsigned-release` | 9262587677 | 8,709,412 bytes | `sha256:47a467df783846b2ce67aa1e0e0320d9482ad6aba42bcc1f6e7e4da04bcad04a` |
+
+All five artifacts expire on **2026-08-30** under the 14-day retention policy. The focused evidence record is [`PHASE_25_VERIFICATION.md`](PHASE_25_VERIFICATION.md).
+
+This remains hosted verification only. Real-device/accessibility/handler/signing qualification is still **0/13** and is not inferred from CI or unsigned builds.
+
 ## Phase 24 — Version 1.5 current line and hosted native matrix
 
 Date: **2026-08-16**
