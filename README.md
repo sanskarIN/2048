@@ -20,6 +20,8 @@ The repository is currently on the **`0.9.0+1` release-candidate line**. Automat
 
 Release promotion is now fail-closed: `dart run tool/release_readiness.dart` validates candidate metadata and the evidence manifest, while `dart run tool/release_readiness.dart --stable` refuses promotion until the package is actually `1.0.0`, the changelog has a stable release section, and every required real-world qualification item has recorded passed evidence. See [`docs/RELEASE_QUALIFICATION.md`](docs/RELEASE_QUALIFICATION.md).
 
+Hosted native release builds are now packaged as short-lived checksummed qualification artifacts for Android, Linux, Windows, macOS, and unsigned iOS. They provide reproducible inputs for real-target testing but do not replace the 13 manual evidence records. See [`docs/RELEASE_ARTIFACTS.md`](docs/RELEASE_ARTIFACTS.md).
+
 ## Features
 
 - Deterministic, UI-independent 2048 engine with correct one-merge-per-source-tile behavior.
@@ -70,6 +72,7 @@ The complete documentation map is [`docs/README.md`](docs/README.md). Important 
 | Verification | [`docs/VERIFICATION.md`](docs/VERIFICATION.md) |
 | Troubleshooting | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
 | Release qualification gate | [`docs/RELEASE_QUALIFICATION.md`](docs/RELEASE_QUALIFICATION.md) |
+| Native qualification artifacts | [`docs/RELEASE_ARTIFACTS.md`](docs/RELEASE_ARTIFACTS.md) |
 | Release gate regression testing | [`docs/RELEASE_GATE_TESTING.md`](docs/RELEASE_GATE_TESTING.md) |
 | Release checklist | [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md) |
 | Branding | [`docs/BRANDING.md`](docs/BRANDING.md) |
