@@ -35,10 +35,10 @@ class SolverBenchmarkSummary {
       cases.fold(0, (total, result) => total + result.exploredNodes);
 
   int get peakTile => cases.fold(
-        0,
-        (highest, result) =>
-            result.highestTile > highest ? result.highestTile : highest,
-      );
+    0,
+    (highest, result) =>
+        result.highestTile > highest ? result.highestTile : highest,
+  );
 
   double get averageScore => cases.isEmpty ? 0 : totalScore / cases.length;
 
