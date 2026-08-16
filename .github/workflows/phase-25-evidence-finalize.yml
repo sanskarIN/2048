@@ -1,0 +1,70 @@
+name: Phase 25 evidence finalizer
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/phase-25-evidence-finalize.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Configure commit identity
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+
+      - name: Apply verified Phase 25 evidence updates
+        run: python3 tool/phase25_evidence_finalize.py
+
+      - name: Commit continuity refresh
+        run: |
+          git add what_changed.md
+          git commit -m "docs: refresh Phase 25 current-state evidence"
+
+      - name: Commit compact verification record
+        run: |
+          git add docs/VERIFICATION.md
+          git commit -m "docs: record Phase 25 current verification"
+
+      - name: Commit hosted artifact evidence
+        run: |
+          git add docs/RELEASE_ARTIFACTS.md
+          git commit -m "docs: record Phase 25 hosted artifacts"
+
+      - name: Commit documentation index update
+        run: |
+          git add docs/README.md
+          git commit -m "docs: index Phase 25 verification record"
+
+      - name: Remove temporary finalizer script
+        run: |
+          git rm tool/phase25_evidence_finalize.py
+          git commit -m "chore: remove Phase 25 evidence finalizer script"
+
+      - name: Remove temporary finalizer workflow
+        run: |
+          git rm .github/workflows/phase-25-evidence-finalize.yml
+          git commit -m "chore: remove Phase 25 evidence finalizer workflow"
+
+      - name: Verify clean finalizer result
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git status --short
+            exit 1
+          fi
+
+      - name: Push finalized Phase 25 evidence
+        run: git push origin HEAD:main
