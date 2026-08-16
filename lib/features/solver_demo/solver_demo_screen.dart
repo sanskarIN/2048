@@ -165,7 +165,8 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                     ),
                     _Metric(
                       label: l10n.text('Search nodes'),
-                      value: _session.strategy == AutoplayStrategy.expectimax &&
+                      value:
+                          _session.strategy == AutoplayStrategy.expectimax &&
                               _session.lastDecisionNodes > 0
                           ? '${_session.lastDecisionNodes}'
                           : '—',
@@ -189,8 +190,8 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                     _session.isComplete
                         ? 'Auto Play demo complete'
                         : _running
-                            ? 'Auto Play demo running'
-                            : 'Auto Play demo paused',
+                        ? 'Auto Play demo running'
+                        : 'Auto Play demo paused',
                   ),
                   child: Wrap(
                     spacing: 10,
@@ -253,8 +254,8 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
                           'The sandbox has no legal move remaining. Reset the seed to replay the same deterministic demonstration.',
                         )
                       : l10n.isHindi
-                          ? 'सीड: ${_session.seed} · एंडलेस 4×4 सैंडबॉक्स · ${_strategyLabel(_session.strategy, l10n)} · रणनीति बदलने पर सैंडबॉक्स रुकता है लेकिन बोर्ड या RNG रीसेट नहीं होता।'
-                          : 'Seed: ${_session.seed} · Endless 4×4 sandbox · ${_strategyLabel(_session.strategy, l10n)} · changing strategy pauses the sandbox without resetting its board or RNG.',
+                      ? 'सीड: ${_session.seed} · एंडलेस 4×4 सैंडबॉक्स · ${_strategyLabel(_session.strategy, l10n)} · रणनीति बदलने पर सैंडबॉक्स रुकता है लेकिन बोर्ड या RNG रीसेट नहीं होता।'
+                      : 'Seed: ${_session.seed} · Endless 4×4 sandbox · ${_strategyLabel(_session.strategy, l10n)} · changing strategy pauses the sandbox without resetting its board or RNG.',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
@@ -277,8 +278,9 @@ class _SolverDemoScreenState extends State<SolverDemoScreen> {
   }
 
   static String _speedLabel(Duration duration, NovaLocalizations l10n) {
-    final count =
-        duration.inMilliseconds == 1000 ? 1 : 1000 ~/ duration.inMilliseconds;
+    final count = duration.inMilliseconds == 1000
+        ? 1
+        : 1000 ~/ duration.inMilliseconds;
     return l10n.isHindi
         ? '$count चाल / सेकंड'
         : '$count move${count == 1 ? '' : 's'} / sec';
