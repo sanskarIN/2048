@@ -6,6 +6,7 @@ on:
     paths:
       - lib/**
       - test/**
+      - tool/**
       - .github/workflows/format-code.yml
   workflow_dispatch:
 
@@ -36,19 +37,19 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Format Dart sources and tests
-        run: dart format lib test
+      - name: Format Dart sources, tests, and tools
+        run: dart format lib test tool
 
       - name: Commit formatting changes
         run: |
-          git add lib test
+          git add lib test tool
           if git diff --cached --quiet; then
             echo "No Dart formatting changes were required."
             exit 0
           fi
           git config user.name "Sanskar"
           git config user.email "sanskarin@outlook.in"
-          git commit -m "style: format Dart sources and tests"
+          git commit -m "style: format Dart sources tests and tools"
           git reset --hard HEAD
           git clean -fd
           git pull --rebase origin main
