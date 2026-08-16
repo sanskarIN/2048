@@ -5,6 +5,9 @@ All notable changes to this project are documented here.
 ## [Unreleased]
 
 ### Added
+- Pull-request dependency review for Pub, Android Gradle, and GitHub Actions dependency surfaces, failing on newly introduced high-severity vulnerable dependency changes.
+- Repository CODEOWNERS coverage for default, release, dependency, automation, and platform-sensitive paths.
+- Dedicated supply-chain maintenance documentation covering SDK floors, Dependabot, dependency review, lockfile policy, code ownership, and dependency acceptance checks.
 - Version 1.5 package/runtime metadata (`1.5.0+15`) with regression coverage that keeps the runtime marketing version synchronized with `pubspec.yaml`.
 - Version 1.5 release-gate regression coverage rejecting legacy 0.9 candidates while preserving fail-closed manual qualification.
 - Eight repository-integrity regressions covering dependency/lock pairing, macOS FilePicker registration, Flutter analysis migration exclusions, checkout runtime policy, dependency-lock triggers, CI metadata/font guards, and native artifact publishing contracts.
@@ -61,18 +64,21 @@ All notable changes to this project are documented here.
 - Friendly copy fallback when an approved external destination cannot be opened by the platform.
 
 ### Changed
+- Version 1.5 now declares Dart `>=3.9.0 <4.0.0` and Flutter `>=3.35.0`, matching the maintained dependency floor.
+- Updated direct maintenance pins to `cupertino_icons 1.0.9`, `shared_preferences ^2.5.5`, and `flutter_lints ^6.0.0`; current stable `file_picker`, `qr_flutter`, and `url_launcher` pins remain unchanged.
+- Dependabot now covers Pub, Android Gradle, and GitHub Actions without depending on a repository label that is not guaranteed to exist.
 - The maintained package line is now Version 1.5 (`1.5.0+15` candidate metadata, `1.5.0` marketing version) with the qualification manifest and release policy aligned to the same target.
 - Windows version-resource fallback metadata now matches Version 1.5 instead of the old template fallback.
 - Repository-owned workflows now use `actions/checkout@v6`; platform artifacts use `actions/upload-artifact@v7`.
 - Permanent CI now supports explicit maintainer `workflow_dispatch`, guarded by a repository-integrity regression for verification of bot-authored heads.
 - Dependency-lock automation watches dependency metadata, while permanent CI fails when `flutter pub get` changes the committed lockfile or Flutter-managed analysis options.
 - `analysis_options.yaml` explicitly carries Flutter 3.47 generated-platform exclusions instead of being silently migrated during CI.
-- Maintained CI now passes 208/208 tests, 98-file formatting, metadata drift checks, release gates, solver smoke, and a warning-enforced Web build.
+- Maintained CI now passes 215/215 tests, 98-file formatting, metadata drift checks, release gates, solver smoke, and a warning-enforced Web build.
 - `tool/release_readiness.dart` now accepts `--root=<path>` for isolated regression fixtures, while normal repository-root behavior and the real 13-item qualification boundary remain unchanged.
 - Current maintained CI evidence now passes 200/200 tests and 97-file formatting on the fixture-tested release-gate source.
-- Permanent CI now formats `tool/`, validates release-candidate metadata, proves the stable gate remains closed on the `0.9.x` line, smoke-runs both deterministic solver strategies, and then produces the Web release build.
+- Permanent CI formats `tool/`, validates Version 1.5 candidate metadata, proves the stable gate remains fail-closed while real-world qualification is incomplete, smoke-runs both deterministic solver strategies, and then produces the Web release build.
 - Formatter automation now covers `lib/`, `test/`, and `tool/` so maintenance CLIs cannot drift outside canonical Dart formatting.
-- Stable `1.0.0` promotion criteria are machine-enforced instead of depending only on prose checklists; pending real-world checks remain explicit rather than being fabricated from hosted automation.
+- Stable Version 1.5 promotion criteria are machine-enforced instead of depending only on prose checklists; pending real-world checks remain explicit rather than being fabricated from hosted automation.
 - `GameEngine.move` accepts an optional event time so deterministic replay reconstruction can reproduce timed status rules without spectator wall-clock dependence.
 - Move Replay now links to Full Replay Archive, including from its no-live-game state so received spectator archives can be opened without creating or replacing player progress.
 - Game Backup imports receive incomplete replay capture because sender-side earlier actions are not present; they are never mislabeled as complete full-session histories.
