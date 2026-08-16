@@ -1,6 +1,6 @@
 # Release Gate Regression Testing
 
-The stable-release gate is a release-engineering safety boundary, so it is tested against temporary repository fixtures rather than only against the current live `0.9.x` checkout.
+The stable-release gate is a release-engineering safety boundary, so it is tested against temporary repository fixtures rather than only against the current live `1.5.x` checkout.
 
 ## Fixture support
 
@@ -23,9 +23,9 @@ dart run tool/release_readiness.dart --stable --json
 
 `test/release_readiness_cli_test.dart` exercises the actual CLI process against generated temporary fixtures. The focused scenarios are:
 
-1. A valid `0.9.0+1` release candidate passes candidate mode while remaining not ready for stable promotion.
-2. A complete `1.0.0+1` fixture with a `[1.0.0]` changelog section and passed evidence for all 13 required checks succeeds in strict stable mode.
-3. A nominal `1.0.0` fixture with pending manual evidence is rejected by strict stable mode.
+1. A valid `1.5.0+15` release candidate passes candidate mode while remaining not ready for stable promotion.
+2. A complete `1.5.0+1` fixture with a `[1.5.0]` changelog section and passed evidence for all 13 required checks succeeds in strict stable mode.
+3. A nominal `1.5.0` fixture with pending manual evidence is rejected by strict stable mode.
 4. A qualification-manifest candidate that disagrees with `pubspec.yaml` is rejected.
 5. A check marked `passed` without evidence or a timestamp is rejected.
 6. A manifest missing one of the required stable check IDs is rejected.
