@@ -51,6 +51,19 @@ jobs:
       - name: Verify dependency lockfile is synchronized
         run: git diff --exit-code -- pubspec.lock
       - run: flutter build apk --release
+      - name: Create Android checksum
+        run: >-
+          sha256sum build/app/outputs/flutter-apk/app-release.apk
+          > build/app/outputs/flutter-apk/app-release.apk.sha256
+      - name: Upload Android qualification artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: nova-2048-android-release
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/flutter-apk/app-release.apk.sha256
+          if-no-files-found: error
+          retention-days: 14
 
   linux:
     name: Linux release
@@ -73,6 +86,19 @@ jobs:
           linux/flutter/generated_plugin_registrant.cc
           linux/flutter/generated_plugins.cmake
       - run: flutter build linux --release
+      - name: Package Linux release and checksum
+        run: |
+          tar -C build/linux/x64/release -czf nova-2048-linux-x64.tar.gz bundle
+          sha256sum nova-2048-linux-x64.tar.gz > nova-2048-linux-x64.tar.gz.sha256
+      - name: Upload Linux qualification artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: nova-2048-linux-x64-release
+          path: |
+            nova-2048-linux-x64.tar.gz
+            nova-2048-linux-x64.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 14
 
   windows:
     name: Windows release
@@ -93,6 +119,21 @@ jobs:
           windows/flutter/generated_plugin_registrant.cc
           windows/flutter/generated_plugins.cmake
       - run: flutter build windows --release
+      - name: Package Windows release and checksum
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath nova-2048-windows-x64.zip -Force
+          $hash = (Get-FileHash nova-2048-windows-x64.zip -Algorithm SHA256).Hash.ToLower()
+          "$hash  nova-2048-windows-x64.zip" | Out-File -Encoding ascii nova-2048-windows-x64.zip.sha256
+      - name: Upload Windows qualification artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: nova-2048-windows-x64-release
+          path: |
+            nova-2048-windows-x64.zip
+            nova-2048-windows-x64.zip.sha256
+          if-no-files-found: error
+          retention-days: 14
 
   apple:
     name: macOS and unsigned iOS release
@@ -115,3 +156,33 @@ jobs:
         run: flutter build macos --release
       - name: Build iOS release without signing
         run: flutter build ios --release --no-codesign
+      - name: Package Apple releases and checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          macos_app="$(find build/macos/Build/Products/Release -maxdepth 1 -type d -name '*.app' -print -quit)"
+          ios_app="$(find build/ios/iphoneos -maxdepth 1 -type d -name '*.app' -print -quit)"
+          test -n "$macos_app"
+          test -n "$ios_app"
+          ditto -c -k --sequesterRsrc --keepParent "$macos_app" nova-2048-macos-release.zip
+          ditto -c -k --sequesterRsrc --keepParent "$ios_app" nova-2048-ios-unsigned-release.zip
+          shasum -a 256 nova-2048-macos-release.zip > nova-2048-macos-release.zip.sha256
+          shasum -a 256 nova-2048-ios-unsigned-release.zip > nova-2048-ios-unsigned-release.zip.sha256
+      - name: Upload macOS qualification artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: nova-2048-macos-release
+          path: |
+            nova-2048-macos-release.zip
+            nova-2048-macos-release.zip.sha256
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload unsigned iOS qualification artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: nova-2048-ios-unsigned-release
+          path: |
+            nova-2048-ios-unsigned-release.zip
+            nova-2048-ios-unsigned-release.zip.sha256
+          if-no-files-found: error
+          retention-days: 14
