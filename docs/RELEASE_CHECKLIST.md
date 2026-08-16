@@ -1,6 +1,6 @@
 # Release Checklist
 
-2048 Nova remains on the `0.9.0+1` release-candidate line. Automated checks below can verify repository behavior and build configuration; they do not replace physical-device, assistive-technology, clipboard/handler, signing, or store-distribution qualification.
+2048 Nova remains on the `1.5.0+15` release-candidate line. Automated checks below can verify repository behavior and build configuration; they do not replace physical-device, assistive-technology, clipboard/handler, signing, or store-distribution qualification.
 
 ## Automated release-candidate gate
 
@@ -10,7 +10,7 @@ Current objective evidence is recorded in `docs/VERIFICATION.md` and `what_chang
 - [x] `flutter analyze`
 - [x] `flutter test --coverage`
 - [x] `dart run tool/release_readiness.dart --json` validates candidate metadata/manifest structure
-- [x] Permanent CI proves strict `--stable` remains fail-closed while the package is `0.9.x`
+- [x] Permanent CI proves strict `--stable` remains fail-closed while the package is `1.5.x`
 - [x] `dart run tool/solver_benchmark.dart 8` smoke-runs both deterministic Auto Play strategies
 - [x] `flutter build web --release`
 - [x] `flutter pub get` leaves `pubspec.lock` and `analysis_options.yaml` unchanged in permanent CI
@@ -60,7 +60,7 @@ The exact latest CI/native evidence for the Challenge Code production state is r
 
 ## Manual device and interaction qualification
 
-Complete these before promoting to `1.0.0`:
+Complete these before promoting to `1.5.0`:
 
 - [ ] Verify core moves, scoring, spawning, win/continue, and no-double-merge behavior through real interaction
 - [ ] Verify save/resume across app termination and relaunch on representative devices
@@ -135,7 +135,7 @@ Complete these before promoting to `1.0.0`:
 - [ ] Review dependency/update state deliberately; do not upgrade blindly immediately before release
 - [ ] Document any remaining known limitations, including non-cryptographic Challenge Code checksums, same-code divergence after different move sequences, bounded Replay history, plain-JSON clipboard backup, imported-game unranked policy, and the heuristic rather than guaranteed-optimal Auto Play solver
 - [ ] `dart run tool/release_readiness.dart --stable` exits successfully on the exact release commit
-- [ ] Promote version/tag to `1.0.0` only after the stable-release criteria are satisfied
+- [ ] Promote version/tag to `1.5.0` only after the stable-release criteria are satisfied
 
 ## English/Hindi localization qualification
 
@@ -177,7 +177,7 @@ Automated and source checks covered by the Phase 19 implementation and focused s
 - [x] Full Replay Archive controls and trust copy have Hindi localization regression coverage.
 - [x] Move Replay can navigate to the Full Replay Archive workspace even when no live game exists.
 
-Manual checks still required before `1.0.0`:
+Manual checks still required before `1.5.0`:
 
 - [ ] Verify large replay copy, open, and manual-entry behavior using real Android, iOS, Web, Windows, macOS, and Linux clipboard environments where supported.
 - [ ] Verify a long complete replay can scrub, step, play or pause, change speed, and leave the route without lingering timer behavior.
@@ -189,7 +189,7 @@ Manual checks still required before `1.0.0`:
 
 ## Phase 20 Game Backup file checks
 
-Do not mark stable `1.0.0` ready until representative real environments verify:
+Do not mark stable `1.5.0` ready until representative real environments verify:
 
 - [ ] `.nova2048` Save/Save As success and cancellation;
 - [ ] `.nova2048` export/import round trip into a fresh app session;
@@ -207,7 +207,7 @@ Hosted compilation is evidence of build compatibility, not completion of these i
 
 ## Phase 21 Challenge Code QR manual gate
 
-Before stable `1.0.0`, verify generated Challenge Code QR behavior on representative Android, iOS, Web, Windows, macOS, and Linux displays where practical. Check that the displayed QR decodes to the exact visible `NOVA1` text using external camera/scanner apps, remains readable under light/dark surrounding themes and practical brightness/glare conditions, does not overflow narrow layouts or clip adjacent large text, exposes understandable screen-reader semantics, and never requests camera permission.
+Before stable `1.5.0`, verify generated Challenge Code QR behavior on representative Android, iOS, Web, Windows, macOS, and Linux displays where practical. Check that the displayed QR decodes to the exact visible `NOVA1` text using external camera/scanner apps, remains readable under light/dark surrounding themes and practical brightness/glare conditions, does not overflow narrow layouts or clip adjacent large text, exposes understandable screen-reader semantics, and never requests camera permission.
 
 Also confirm that QR-scanned text still goes through ordinary Challenge Code validation/replacement protection and that users can always fall back to selectable/copyable/manual text. Do not mark QR display as authentication or as an in-app scanning capability.
 
@@ -215,14 +215,14 @@ Also confirm that QR-scanned text still goes through ordinary Challenge Code val
 
 Automated Phase 21 acceptance is complete on source `2678e65824ca088c4ba93342bc8737fc18ec7708`: CI `31877515001` passed formatting, analysis, 194/194 tests, Web release, and WASM dry run; Platform Builds `31877514960` passed Android, Linux, Windows, macOS, and unsigned iOS.
 
-Before stable `1.0.0`, manually verify the QR on representative physical/real displays using external camera/scanner applications. Confirm exact `NOVA1` text recovery, practical scan reliability across brightness/glare/density/orientation, fixed black-on-white QR presentation inside light/dark themes, large-text/narrow-layout behavior, screen-reader semantics, and the selectable/copyable/manual text fallback. Confirm 2048 Nova requests no camera permission for rendering and that scanned text still enters the ordinary Challenge Code validation/replacement flow.
+Before stable `1.5.0`, manually verify the QR on representative physical/real displays using external camera/scanner applications. Confirm exact `NOVA1` text recovery, practical scan reliability across brightness/glare/density/orientation, fixed black-on-white QR presentation inside light/dark themes, large-text/narrow-layout behavior, screen-reader semantics, and the selectable/copyable/manual text fallback. Confirm 2048 Nova requests no camera permission for rendering and that scanned text still enters the ordinary Challenge Code validation/replacement flow.
 
 All earlier physical-device lifecycle/gameplay, clipboard/platform handler, Game Backup file/document provider, replay, accessibility, native branding, signing/provisioning/notarization, and store/package review checks remain required. Automated completion does not authorize a stable-release promotion by itself.
 
 ## Release-gate regression safety
 
 - [x] Candidate-mode success path is exercised through the real CLI against an isolated fixture repository.
-- [x] Strict stable-mode success path is exercised with synthetic complete `1.0.0` metadata and all 13 evidence records.
+- [x] Strict stable-mode success path is exercised with synthetic complete `1.5.0` metadata and all 13 evidence records.
 - [x] Strict stable mode is verified to fail when real-world evidence remains pending.
 - [x] Candidate/package mismatch is rejected.
 - [x] False `passed` evidence without a timestamp/evidence body is rejected.
