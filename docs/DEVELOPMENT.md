@@ -4,7 +4,7 @@ This document describes the repository workflow for developing 2048 Nova without
 
 ## Requirements
 
-Install a stable Flutter SDK and the native toolchain required by the platform you intend to run. GitHub Actions currently verifies with the stable Flutter channel; current release evidence is recorded in [`VERIFICATION.md`](VERIFICATION.md).
+Install Flutter **3.35 or newer** with Dart **3.9 or newer**, plus the native toolchain required by the platform you intend to run. These floors match `pubspec.yaml` and the maintained Version 1.5 dependency set. GitHub Actions verifies with the current stable Flutter channel; current release evidence is recorded in [`VERIFICATION.md`](VERIFICATION.md).
 
 Check your environment:
 
