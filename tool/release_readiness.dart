@@ -139,7 +139,7 @@ void main(List<String> args) {
   final passedChecks = checks.where((check) => check.status == 'passed').length;
   final allManualChecksPassed =
       checks.length == _requiredManualCheckIds.length &&
-      checks.every((check) => check.isStableEvidenceComplete);
+          checks.every((check) => check.isStableEvidenceComplete);
 
   var stableMetadataReady = false;
   if (version != null && changelog != null) {
@@ -153,14 +153,14 @@ void main(List<String> args) {
       failures.isEmpty && allManualChecksPassed && stableMetadataReady;
 
   if (stableMode) {
-    if (version == null ||
-        !RegExp(r'^1\.0\.0(?:\+\d+)?$').hasMatch(version)) {
+    if (version == null || !RegExp(r'^1\.0\.0(?:\+\d+)?$').hasMatch(version)) {
       failures.add(
         'Stable mode requires pubspec.yaml version 1.0.0 (optionally with a build number).',
       );
     }
     if (changelog == null || !changelog.contains('## [1.0.0]')) {
-      failures.add('Stable mode requires a CHANGELOG.md [1.0.0] release section.');
+      failures
+          .add('Stable mode requires a CHANGELOG.md [1.0.0] release section.');
     }
     for (final check in checks) {
       if (!check.isStableEvidenceComplete) {
@@ -374,7 +374,8 @@ List<_ManualCheck> _validateManifest({
     }
   }
 
-  final missingIds = _requiredManualCheckIds.where((id) => !seenIds.contains(id));
+  final missingIds =
+      _requiredManualCheckIds.where((id) => !seenIds.contains(id));
   for (final id in missingIds) {
     failures.add('Missing required manual check id: $id');
   }

@@ -72,7 +72,7 @@ void main() {
     await write(
       'CHANGELOG.md',
       '# Changelog\n\n## [Unreleased]\n'
-      '${stableMetadata ? '\n## [1.0.0]\n' : ''}',
+          '${stableMetadata ? '\n## [1.0.0]\n' : ''}',
     );
     await write(
       'ROADMAP.md',
@@ -87,9 +87,8 @@ void main() {
                 'title': 'Qualification for $id',
                 'status': passedEvidence ? 'passed' : 'pending',
                 'evidence': passedEvidence ? 'Verified fixture evidence' : '',
-                'updatedAt': passedEvidence
-                    ? '2026-08-16T12:30:00+05:30'
-                    : null,
+                'updatedAt':
+                    passedEvidence ? '2026-08-16T12:30:00+05:30' : null,
               },
             )
             .toList(growable: false);
@@ -126,7 +125,8 @@ void main() {
     );
   }
 
-  test('candidate fixture passes while stable readiness remains false', () async {
+  test('candidate fixture passes while stable readiness remains false',
+      () async {
     final root = await fixture();
 
     final result = await runGate(root);
@@ -150,7 +150,8 @@ void main() {
 
     final result = await runGate(root, stable: true);
 
-    expect(result.process.exitCode, 0, reason: result.process.stderr.toString());
+    expect(result.process.exitCode, 0,
+        reason: result.process.stderr.toString());
     expect(result.json['mode'], 'stable');
     expect(result.json['candidateGatePassed'], isTrue);
     expect(result.json['readyForStable'], isTrue);
