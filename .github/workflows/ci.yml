@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 25
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -63,5 +63,12 @@ jobs:
       - name: Smoke-test deterministic solver benchmark
         run: dart run tool/solver_benchmark.dart 8
 
-      - name: Build web release
-        run: flutter build web --release
+      - name: Build web release without missing-font warnings
+        shell: bash
+        run: |
+          set -o pipefail
+          flutter build web --release 2>&1 | tee web-build.log
+          if grep -F "Expected to find fonts for" web-build.log; then
+            echo "Web build completed with a missing icon-font asset warning."
+            exit 1
+          fi
