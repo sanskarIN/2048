@@ -12,8 +12,8 @@ class GameState {
     this.hasAcknowledgedWin = false,
     this.rngState = 0,
     DateTime? startedAt,
-  })  : bestScore = bestScore < score ? score : bestScore,
-        startedAt = startedAt ?? DateTime.now();
+  }) : bestScore = bestScore < score ? score : bestScore,
+       startedAt = startedAt ?? DateTime.now();
 
   static const schemaVersion = 1;
 
@@ -32,33 +32,33 @@ class GameState {
       board.expand((row) => row).fold(0, (a, b) => a > b ? a : b);
 
   GameState copy() => GameState(
-        board: [
-          for (final row in board) [...row],
-        ],
-        config: config,
-        score: score,
-        bestScore: bestScore,
-        moves: moves,
-        totalMerges: totalMerges,
-        status: status,
-        hasAcknowledgedWin: hasAcknowledgedWin,
-        rngState: rngState,
-        startedAt: startedAt,
-      );
+    board: [
+      for (final row in board) [...row],
+    ],
+    config: config,
+    score: score,
+    bestScore: bestScore,
+    moves: moves,
+    totalMerges: totalMerges,
+    status: status,
+    hasAcknowledgedWin: hasAcknowledgedWin,
+    rngState: rngState,
+    startedAt: startedAt,
+  );
 
   Map<String, Object?> toJson() => {
-        'schema': schemaVersion,
-        'board': board,
-        'config': config.toJson(),
-        'score': score,
-        'bestScore': bestScore,
-        'moves': moves,
-        'totalMerges': totalMerges,
-        'status': status.name,
-        'hasAcknowledgedWin': hasAcknowledgedWin,
-        'rngState': rngState,
-        'startedAt': startedAt.toIso8601String(),
-      };
+    'schema': schemaVersion,
+    'board': board,
+    'config': config.toJson(),
+    'score': score,
+    'bestScore': bestScore,
+    'moves': moves,
+    'totalMerges': totalMerges,
+    'status': status.name,
+    'hasAcknowledgedWin': hasAcknowledgedWin,
+    'rngState': rngState,
+    'startedAt': startedAt.toIso8601String(),
+  };
 
   factory GameState.fromJson(Map<String, Object?> json) {
     final schema = _optionalInt(json['schema'], 'save schema') ?? 0;
@@ -140,8 +140,9 @@ class GameState {
     if (startedAtRaw != null && startedAtRaw is! String) {
       throw const FormatException('Invalid game start time');
     }
-    final startedAt =
-        startedAtRaw is String ? DateTime.tryParse(startedAtRaw) : null;
+    final startedAt = startedAtRaw is String
+        ? DateTime.tryParse(startedAtRaw)
+        : null;
     if (startedAtRaw != null && startedAt == null) {
       throw const FormatException('Invalid game start time');
     }
