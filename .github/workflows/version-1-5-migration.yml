@@ -26,176 +26,8 @@ jobs:
           git config user.name "Sanskar"
           git config user.email "sanskarin@outlook.in"
 
-      - name: Apply Version 1.5 source and documentation migration
-        shell: bash
-        run: |
-          python3 <<'PY'
-          from pathlib import Path
-          import json
-
-          def read(path):
-              return Path(path).read_text(encoding='utf-8')
-
-          def write(path, text):
-              Path(path).write_text(text, encoding='utf-8')
-
-          def replace_required(path, old, new, count=-1):
-              text = read(path)
-              if old not in text:
-                  raise SystemExit(f'Expected text not found in {path}: {old!r}')
-              text = text.replace(old, new, count)
-              write(path, text)
-
-          replace_required('pubspec.yaml', 'version: 0.9.0+1', 'version: 1.5.0+15', 1)
-          replace_required(
-              'lib/core/constants/project_info.dart',
-              "static const version = '0.9.0';",
-              "static const version = '1.5.0';",
-              1,
-          )
-
-          manifest_path = Path('docs/release_qualification.json')
-          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
-          manifest['candidate'] = '1.5.0+15'
-          manifest_path.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
-
-          gate_path = 'tool/release_readiness.dart'
-          gate = read(gate_path)
-          replacements = {
-              'Remaining release qualification before `1.0.0`': 'Remaining release qualification before `1.5.0`',
-              'explicit pre-1.0 release qualification boundary': 'explicit pre-1.5 release qualification boundary',
-              "r'^(?:0\\.9\\.\\d+|1\\.0\\.0)(?:\\+\\d+)?$'": "r'^1\\.5\\.\\d+(?:\\+\\d+)?$'",
-              'pubspec version must remain in the 0.9.x release-candidate line or be 1.0.0 while using this gate; found $version.': 'pubspec version must remain in the 1.5.x current release line while using this gate; found $version.',
-              "r'^1\\.0\\.0(?:\\+\\d+)?$'": "r'^1\\.5\\.0(?:\\+\\d+)?$'",
-              '## [1.0.0]': '## [1.5.0]',
-              'Stable mode requires pubspec.yaml version 1.0.0 (optionally with a build number).': 'Stable mode requires pubspec.yaml version 1.5.0 (optionally with a build number).',
-              'Stable mode requires a CHANGELOG.md [1.0.0] release section.': 'Stable mode requires a CHANGELOG.md [1.5.0] release section.',
-          }
-          for old, new in replacements.items():
-              if old not in gate:
-                  raise SystemExit(f'Expected release-gate text not found: {old!r}')
-              gate = gate.replace(old, new)
-          write(gate_path, gate)
-
-          test_path = 'test/release_readiness_cli_test.dart'
-          test_text = read(test_path)
-          for old, new in [
-              ("String version = '0.9.0+1'", "String version = '1.5.0+15'"),
-              ("'\\n## [1.0.0]\\n'", "'\\n## [1.5.0]\\n'"),
-              ('Remaining release qualification before `1.0.0`', 'Remaining release qualification before `1.5.0`'),
-              ("expect(result.json['version'], '0.9.0+1');", "expect(result.json['version'], '1.5.0+15');"),
-              ("version: '1.0.0+1'", "version: '1.5.0+15'"),
-              ("fixture(version: '1.0.0', stableMetadata: true)", "fixture(version: '1.5.0', stableMetadata: true)"),
-              ("fixture(candidate: '0.9.9+1')", "fixture(candidate: '1.5.99+99')"),
-          ]:
-              if old not in test_text:
-                  raise SystemExit(f'Expected test fixture text not found: {old!r}')
-              test_text = test_text.replace(old, new)
-          insert_marker = "  test('candidate mismatch is rejected', () async {"
-          regression = """  test('legacy 0.9 candidate is rejected after the 1.5 migration', () async {\n    final root = await fixture(version: '0.9.99+99');\n\n    final result = await runGate(root);\n\n    expect(result.process.exitCode, 1);\n    expect(result.json['candidateGatePassed'], isFalse);\n    expect(\n      (result.json['failures'] as List<dynamic>).join('\\n'),\n      contains('1.5.x current release line'),\n    );\n  });\n\n"""
-          if insert_marker not in test_text:
-              raise SystemExit('Could not locate release-gate regression insertion point')
-          test_text = test_text.replace(insert_marker, regression + insert_marker, 1)
-          write(test_path, test_text)
-
-          integrity_path = 'test/repository_integrity_test.dart'
-          integrity = read(integrity_path)
-          marker = "    test('macOS generated registrant includes file picker', () {"
-          new_tests = """    test('runtime version matches pubspec marketing version', () {\n      final pubspec = File('pubspec.yaml').readAsStringSync();\n      final projectInfo = File(\n        'lib/core/constants/project_info.dart',\n      ).readAsStringSync();\n      final match = RegExp(\n        r'^version:\\s*([^+\\s]+)(?:\\+\\d+)?\\s*$',\n        multiLine: true,\n      ).firstMatch(pubspec);\n\n      expect(match, isNotNull);\n      final marketingVersion = match!.group(1)!;\n      expect(\n        projectInfo,\n        contains(\"static const version = '$marketingVersion';\"),\n      );\n    });\n\n    test('CI stable boundary is qualification-driven, not version-prefix driven', () {\n      final workflow = File('.github/workflows/ci.yml').readAsStringSync();\n\n      expect(workflow, isNot(contains('version == 0.9.*')));\n      expect(workflow, contains('pending|blocked'));
-      expect(\n        workflow,\n        contains('Stable release gate correctly remains closed'),\n      );\n    });\n\n"""
-          if marker not in integrity:
-              raise SystemExit('Could not locate repository-integrity insertion point')
-          integrity = integrity.replace(marker, new_tests + marker, 1)
-          write(integrity_path, integrity)
-
-          replace_required(
-              'windows/runner/Runner.rc',
-              '#define VERSION_AS_NUMBER 1,0,0,0',
-              '#define VERSION_AS_NUMBER 1,5,0,15',
-              1,
-          )
-          replace_required(
-              'windows/runner/Runner.rc',
-              '#define VERSION_AS_STRING "1.0.0"',
-              '#define VERSION_AS_STRING "1.5.0"',
-              1,
-          )
-
-          readme_path = 'README.md'
-          readme = read(readme_path)
-          old = 'The repository is currently on the **`0.9.0+1` release-candidate line**. Automated quality and native build evidence is documented, while physical-device, real screen-reader, signing/provisioning, long-session, and store-release qualification remain explicit manual boundaries before a stable 1.0.0 claim.'
-          new = 'The repository is currently on the **`1.5.0+15` Version 1.5 line**. Automated quality and native build evidence remains required, while physical-device, real screen-reader, signing/provisioning, long-session, and store-release qualification stay explicit manual boundaries before a qualified stable-release claim.'
-          if old not in readme:
-              raise SystemExit('README current-version paragraph not found')
-          readme = readme.replace(old, new, 1)
-          old = 'Release promotion is now fail-closed: `dart run tool/release_readiness.dart` validates candidate metadata and the evidence manifest, while `dart run tool/release_readiness.dart --stable` refuses promotion until the package is actually `1.0.0`, the changelog has a stable release section, and every required real-world qualification item has recorded passed evidence. See [`docs/RELEASE_QUALIFICATION.md`](docs/RELEASE_QUALIFICATION.md).'
-          new = 'Release promotion remains fail-closed: `dart run tool/release_readiness.dart` validates Version 1.5 candidate metadata and the evidence manifest, while `dart run tool/release_readiness.dart --stable` refuses promotion until the package is the `1.5.0` stable target, the changelog has a matching stable release section, and every required real-world qualification item has recorded passed evidence. See [`docs/RELEASE_QUALIFICATION.md`](docs/RELEASE_QUALIFICATION.md).'
-          if old not in readme:
-              raise SystemExit('README stable-gate paragraph not found')
-          readme = readme.replace(old, new, 1)
-          write(readme_path, readme)
-
-          roadmap_path = 'ROADMAP.md'
-          roadmap = read(roadmap_path)
-          for old, new in [
-              ('## 0.9.x — Release-candidate hardening', '## 1.5.x — Current Version 1.5 hardening'),
-              ('Remaining release qualification before `1.0.0`', 'Remaining release qualification before `1.5.0`'),
-              ('## 1.0.0 — First stable release', '## 1.5.0 — Qualified stable release target'),
-              ('`1.0.0`', '`1.5.0`'),
-          ]:
-              if old not in roadmap:
-                  raise SystemExit(f'Expected roadmap text not found: {old!r}')
-              roadmap = roadmap.replace(old, new)
-          write(roadmap_path, roadmap)
-
-          qualification_path = 'docs/RELEASE_QUALIFICATION.md'
-          qualification = read(qualification_path)
-          qualification = qualification.replace('`1.0.0`', '`1.5.0`')
-          qualification = qualification.replace('[1.0.0]', '[1.5.0]')
-          qualification = qualification.replace('`0.9.x`', '`1.5.x`')
-          qualification = qualification.replace('0.9.x release-candidate line', '1.5.x current Version 1.5 line')
-          qualification = qualification.replace('final `1.0.0` version/build number', 'final `1.5.0` version/build number')
-          qualification = qualification.replace('The live candidate still reports **0/13** real-world qualification items complete', 'The live Version 1.5 candidate still reports **0/13** real-world qualification items complete')
-          write(qualification_path, qualification)
-
-          for path in ['docs/RELEASE_GATE_TESTING.md', 'docs/RELEASE_CHECKLIST.md']:
-              text = read(path)
-              text = text.replace('0.9.0+1', '1.5.0+15')
-              text = text.replace('0.9.x', '1.5.x')
-              text = text.replace('1.0.0', '1.5.0')
-              write(path, text)
-
-          changelog_path = 'CHANGELOG.md'
-          changelog = read(changelog_path)
-          added_marker = '### Added\n'
-          if added_marker not in changelog:
-              raise SystemExit('CHANGELOG Added section not found')
-          changelog = changelog.replace(
-              added_marker,
-              added_marker
-              + '- Version 1.5 package/runtime metadata (`1.5.0+15`) with regression coverage that keeps the runtime marketing version synchronized with `pubspec.yaml`.\n'
-              + '- Version 1.5 release-gate regression coverage rejecting legacy 0.9 candidates while preserving fail-closed manual qualification.\n',
-              1,
-          )
-          first_fixed = """### Fixed\n- Missing Cupertino icon-font asset in Web release builds by explicitly pinning `cupertino_icons 1.0.8`; CI now fails if the missing-font warning returns.\n- Generated macOS `file_picker` registration so Game Backup file transport has the expected native plugin registration on macOS.\n\n"""
-          if first_fixed not in changelog:
-              raise SystemExit('Expected duplicate early Fixed section not found')
-          changelog = changelog.replace(first_fixed, '', 1)
-          second_fixed = '### Fixed\n- Prevented directional engine write logic from falling through switch cases.\n'
-          merged_fixed = """### Fixed\n- Removed release automation assumptions that treated every non-0.9 version as already stable-qualified; candidate CI is now independent from real-device stable qualification while the strict stable gate remains fail-closed.\n- Missing Cupertino icon-font asset in Web release builds by explicitly pinning `cupertino_icons 1.0.8`; CI now fails if the missing-font warning returns.\n- Generated macOS `file_picker` registration so Game Backup file transport has the expected native plugin registration on macOS.\n- Prevented directional engine write logic from falling through switch cases.\n"""
-          if second_fixed not in changelog:
-              raise SystemExit('Main CHANGELOG Fixed section not found')
-          changelog = changelog.replace(second_fixed, merged_fixed, 1)
-          changed_marker = '### Changed\n'
-          changelog = changelog.replace(
-              changed_marker,
-              changed_marker
-              + '- The maintained package line is now Version 1.5 (`1.5.0+15` candidate metadata, `1.5.0` marketing version) with the qualification manifest and release policy aligned to the same target.\n'
-              + '- Windows version-resource fallback metadata now matches Version 1.5 instead of the old template fallback.\n',
-              1,
-          )
-          write(changelog_path, changelog)
-          PY
+      - name: Apply Version 1.5 migration
+        run: python3 tool/version_1_5_migrate.py
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -253,14 +85,14 @@ jobs:
       - name: Run complete tests
         run: flutter test
 
-      - name: Verify Version 1.5 candidate release gate
+      - name: Verify Version 1.5 candidate gate
         run: dart run tool/release_readiness.dart --json
 
-      - name: Verify stable gate remains closed without real evidence
+      - name: Verify stable gate remains closed without manual evidence
         shell: bash
         run: |
           if dart run tool/release_readiness.dart --stable --json; then
-            echo "Stable gate unexpectedly opened before manual qualification."
+            echo "Stable gate unexpectedly opened before real-world qualification."
             exit 1
           fi
 
@@ -270,10 +102,11 @@ jobs:
           set -o pipefail
           flutter build web --release 2>&1 | tee web-build.log
           if grep -F "Expected to find fonts for" web-build.log; then
+            echo "Web build emitted a missing icon-font warning."
             exit 1
           fi
 
-      - name: Record Version 1.5 migration in continuity log
+      - name: Record Version 1.5 continuity
         shell: bash
         env:
           START_SHA: ${{ github.sha }}
@@ -284,11 +117,11 @@ jobs:
             echo
             echo "- Promoted current package metadata from 0.9.0+1 to 1.5.0+15 and runtime marketing metadata to 1.5.0."
             echo "- Fixed permanent CI so automated candidate health is not incorrectly coupled to already-complete stable manual qualification."
-            echo "- Migrated the fail-closed release gate, its process-level fixtures, qualification manifest, roadmap, release policy, release checklist, and README to Version 1.5."
-            echo "- Added repository-integrity regression coverage for package/runtime version synchronization and qualification-driven CI behavior."
-            echo "- Corrected Windows resource fallback version metadata and consolidated the duplicate CHANGELOG Fixed headings."
-            echo "- Preserved all 13 physical-device/accessibility/handler/signing qualification items as pending; no synthetic manual evidence was invented."
-            echo "- Version 1.5 migration validation passed formatter, analyzer, complete Flutter tests, candidate gate, expected-closed stable gate, and Web release build before push."
+            echo "- Migrated the fail-closed release gate, process-level fixtures, qualification manifest, roadmap, release policy, release checklist, and README to Version 1.5."
+            echo "- Added integrity regressions for package/runtime version synchronization and qualification-driven CI behavior."
+            echo "- Corrected Windows resource fallback version metadata and consolidated duplicate CHANGELOG Fixed headings."
+            echo "- Preserved all 13 real-device/accessibility/handler/signing qualification items as pending; no synthetic evidence was invented."
+            echo "- Migration validation passed formatting, analysis, the complete Flutter test suite, candidate gate, expected-closed stable gate, and Web release build before push."
             echo
             echo "### Migration commits"
             echo
@@ -297,5 +130,5 @@ jobs:
           git add what_changed.md
           git commit -m "docs: record Version 1.5 migration continuity"
 
-      - name: Push Version 1.5 migration commits
+      - name: Push migration commits
         run: git push origin HEAD:main
