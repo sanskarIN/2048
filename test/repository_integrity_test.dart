@@ -44,6 +44,13 @@ void main() {
         ),
       );
       expect(wrapper, contains('gradle-9.7.0-all.zip'));
+      expect(
+        wrapper,
+        contains(
+          'distributionSha256Sum='
+          'a9ecb5ac5c2ca40691e6527724d11d0b43b8c0a52825b77c09899f2a72d2d2bf',
+        ),
+      );
       expect(settings, isNot(contains('version "9.3.1"')));
     });
 
