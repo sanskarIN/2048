@@ -2,14 +2,24 @@
 
 2048 Nova keeps dependency and automation maintenance fail-closed where practical while preserving a small runtime dependency surface.
 
-## Maintained toolchain floor
+## Maintained toolchain floor and qualified SDK
 
 Version 1.5 declares:
 
 - Dart: `>=3.9.0 <4.0.0`
 - Flutter: `>=3.35.0`
 
-These floors match the maintained direct dependency set instead of advertising SDK versions that cannot resolve it. Permanent CI still tests the current stable Flutter channel.
+Those package floors describe compatibility. The maintained GitHub workflows separately freeze the currently qualified hosted SDK at **Flutter 3.47.0** instead of resolving whichever release later occupies the stable channel.
+
+Every workflow that executes the pinned `subosito/flutter-action` supplies:
+
+```yaml
+channel: stable
+flutter-version: 3.47.0
+cache: false
+```
+
+`cache: false` is deliberate. The qualified composite action contains a moving `actions/cache@v5` reference when its cache path is enabled. Disabling that path prevents an otherwise SHA-pinned workflow from executing mutable transitive Action code. Repository-integrity coverage requires all five Flutter workflows to retain the exact SDK and disabled action cache.
 
 ## Direct dependency policy
 
@@ -38,6 +48,16 @@ Phase 28 qualified these revisions:
 `test/repository_integrity_test.dart` rejects mutable remote `uses:` references and checks the currently qualified critical revisions. A version label such as `# v7` is documentation only; the SHA is the code identity actually executed.
 
 A future Action upgrade should update the SHA and version comment together, pass Dependency Review where applicable, pass permanent CI, and run the relevant native/build automation before acceptance.
+
+## Verified Gradle distribution
+
+The accepted Android baseline remains AGP 9.1.0, Kotlin Android 2.4.10, and Gradle 9.7.0. The wrapper configuration now verifies the downloaded Gradle 9.7.0 complete distribution with:
+
+```text
+distributionSha256Sum=a9ecb5ac5c2ca40691e6527724d11d0b43b8c0a52825b77c09899f2a72d2d2bf
+```
+
+This checksum is the official Gradle 9.7.0 `-all` distribution SHA-256. Repository-integrity coverage requires both the 9.7.0 URL and this exact checksum, so changing only the remote ZIP URL cannot silently bypass the expected distribution identity.
 
 ## Reproducible branding-generator environment
 
@@ -96,14 +116,16 @@ Before accepting a dependency or executable workflow update:
 3. review release notes and breaking changes;
 4. review licenses and privacy/network behavior;
 5. use an immutable Action revision for remote workflow code;
-6. regenerate and inspect the application lockfile when Pub metadata changes;
-7. run formatter and static analysis;
-8. run the complete Flutter test suite;
-9. run candidate/stable release-gate checks;
-10. run the deterministic solver smoke benchmark;
-11. build Web release without missing-font warnings;
-12. run relevant Android/Linux/Windows/macOS/iOS hosted builds for runtime/plugin/workflow changes;
-13. keep real-device/signing qualification separate from hosted build evidence.
+6. freeze the qualified Flutter SDK and avoid hidden mutable transitive Action paths;
+7. verify external build distributions with available publisher checksums;
+8. regenerate and inspect the application lockfile when Pub metadata changes;
+9. run formatter and static analysis;
+10. run the complete Flutter test suite;
+11. run candidate/stable release-gate checks;
+12. run the deterministic solver smoke benchmark;
+13. build Web release without missing-font warnings;
+14. run relevant Android/Linux/Windows/macOS/iOS hosted builds for runtime/plugin/workflow changes;
+15. keep real-device/signing qualification separate from hosted build evidence.
 
 ## Stable-release boundary
 
