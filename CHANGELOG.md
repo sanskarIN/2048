@@ -5,6 +5,7 @@ All notable changes to this project are documented here.
 ## [Unreleased]
 
 ### Added
+- Process-level release-gate regression coverage with six temporary-repository fixtures spanning candidate success, stable success, pending-evidence refusal, candidate mismatch, incomplete passed evidence, and missing required IDs.
 - Evidence-backed release qualification with `docs/release_qualification.json`, covering the exact 13 real-device/accessibility/handler/branding/distribution checks that must be completed before stable promotion.
 - `tool/release_readiness.dart` candidate/stable CLI with JSON output, required-file/version/manifest validation, evidence/timestamp enforcement, and a fail-closed `--stable` mode.
 - Dedicated `docs/RELEASE_QUALIFICATION.md` procedure for recording verifiable manual evidence and promoting the exact qualified commit.
@@ -56,6 +57,8 @@ All notable changes to this project are documented here.
 - Friendly copy fallback when an approved external destination cannot be opened by the platform.
 
 ### Changed
+- `tool/release_readiness.dart` now accepts `--root=<path>` for isolated regression fixtures, while normal repository-root behavior and the real 13-item qualification boundary remain unchanged.
+- Current maintained CI evidence now passes 200/200 tests and 97-file formatting on the fixture-tested release-gate source.
 - Permanent CI now formats `tool/`, validates release-candidate metadata, proves the stable gate remains closed on the `0.9.x` line, smoke-runs both deterministic solver strategies, and then produces the Web release build.
 - Formatter automation now covers `lib/`, `test/`, and `tool/` so maintenance CLIs cannot drift outside canonical Dart formatting.
 - Stable `1.0.0` promotion criteria are machine-enforced instead of depending only on prose checklists; pending real-world checks remain explicit rather than being fabricated from hosted automation.
