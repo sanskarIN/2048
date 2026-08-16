@@ -626,7 +626,7 @@ The Web compiler retained the known non-fatal Cupertino icon-font warning while 
 
 ## Phase 23 repository-integrity evidence
 
-Phase 23 adds `test/repository_integrity_test.dart` with **7 source/repository contract tests**, increasing the maintained suite from 200 to **207 tests**.
+Phase 23 adds `test/repository_integrity_test.dart` with **8 source/repository contract tests**, increasing the maintained suite from 200 to **208 tests**.
 
 The added cases verify:
 
@@ -636,14 +636,15 @@ The added cases verify:
 4. permanent workflows no longer use `actions/checkout@v4` or `@v5`;
 5. dependency-lock automation watches dependency metadata and uses checkout v6;
 6. CI rejects Flutter-managed metadata drift and fails if the missing Web icon-font warning returns;
-7. native builds declare all five checksummed qualification artifacts, hard-fail on missing files, and use bounded retention.
+7. native builds declare all five checksummed qualification artifacts, hard-fail on missing files, and use bounded retention;
+8. permanent CI exposes `workflow_dispatch` so maintainers can explicitly verify a bot-authored/documentation head when GitHub intentionally suppresses recursive workflow-token push triggers.
 
-Accepted permanent CI run `31934191150`, job `95133484471`, on source `a93542ecae7713214f7f3e4e11a03c647e880129` reports:
+Final accepted permanent CI run `31934616568`, job `95134494782`, on source `1f48ebc947596915be3104aa5da56eb6ad291fff` reports:
 
 ```text
 Formatting: PASS — 98 files, 0 changed
 Analysis: PASS — No issues found
-Tests: PASS — 207/207
+Tests: PASS — 208/208
 Metadata drift guard: PASS
 Release-candidate gate: PASS
 Stable-boundary assertion: PASS
