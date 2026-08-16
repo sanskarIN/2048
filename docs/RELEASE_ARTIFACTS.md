@@ -137,3 +137,19 @@ dart run tool/release_readiness.dart --stable
 ```
 
 That command must pass on the exact commit intended for release, after real evidence has been recorded and stable release metadata is correct.
+
+## Phase 23 accepted hosted artifact set
+
+Accepted Platform Builds run: **31934181987**, source `5b22795d5aba661bd587e7bcbf2ae6442c8b4b3a`.
+
+| Artifact | ID | Size | GitHub artifact digest |
+| --- | ---: | ---: | --- |
+| `nova-2048-android-release` | 9260209072 | 25,409,651 bytes | `sha256:d88a691dd33bcb3e12544f5fb9b35f623cd5890fe96e74dcefe8af4ada75df5d` |
+| `nova-2048-linux-x64-release` | 9260177318 | 10,396,367 bytes | `sha256:8556a5d31017faa4ff7f8c128e097aafc5664cf36e219075ea24499bc58dfcef` |
+| `nova-2048-windows-x64-release` | 9260197932 | 12,655,196 bytes | `sha256:9ac4fcc2ce969139e9412466f7d568c361a84b666d0812184b1c671a0966e463` |
+| `nova-2048-macos-release` | 9260232848 | 18,739,502 bytes | `sha256:20f52591cb0c3cbd5da330b129a98c03831388d2f8dceadf90d760cf7c7193dc` |
+| `nova-2048-ios-unsigned-release` | 9260233269 | 8,709,732 bytes | `sha256:44a0adb2482ef422637eb241659a54fc0b7ed59c343ee7d8e104920783e03721` |
+
+Every build, package, checksum, and upload step completed successfully. These GitHub artifact digests cover the stored Actions artifact archives; each artifact also contains the payload-level SHA-256 sidecar created by the workflow.
+
+The artifacts expire on **2026-08-30** under the configured 14-day retention policy. Expiration does not invalidate the source/build evidence recorded here, but future manual qualification should use a current artifact from the exact commit being qualified when practical.
