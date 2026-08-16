@@ -1,4 +1,4 @@
-# Phase 25 requalification trigger: dependency/toolchain maintenance is validated on every hosted native target.
+# Phase 27 experiment: Android uses JDK 21 to isolate an AGP 9.3 lint crash seen on JDK 17.
 name: Platform Builds
 
 on:
@@ -44,6 +44,11 @@ jobs:
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v7
+      - name: Use JDK 21 for the AGP 9.3 compatibility experiment
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
