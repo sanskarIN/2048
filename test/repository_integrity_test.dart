@@ -88,6 +88,12 @@ void main() {
       expect(workflow, contains('actions/checkout@v6'));
     });
 
+    test('CI supports explicit maintainer dispatch', () {
+      final workflow = File('.github/workflows/ci.yml').readAsStringSync();
+
+      expect(workflow, contains('workflow_dispatch:'));
+    });
+
     test('native builds publish checksummed qualification artifacts', () {
       final workflow = File(
         '.github/workflows/platform-builds.yml',
