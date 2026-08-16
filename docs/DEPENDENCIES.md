@@ -20,6 +20,14 @@ Flutter provides:
 
 The project does not add a separate state-management framework; `ChangeNotifier` and `InheritedNotifier` are sufficient for the current application architecture.
 
+### cupertino_icons
+
+Pinned at **1.0.8**. The package supplies the Cupertino icon font referenced by Flutter/Cupertino icon data. Phase 23 made the dependency explicit after the Web compiler correctly reported that Cupertino icon data was referenced while the font asset was absent.
+
+Version 1.0.8 is intentionally pinned for the current release-candidate SDK range (`>=3.3.0 <4.0.0`) rather than blindly adopting a newer release with a higher Dart SDK floor. It adds no networking, analytics, account, persistence, or platform permission behavior.
+
+The permanent Web gate now fails if Flutter again emits `Expected to find fonts for`, and repository-integrity tests verify the declaration and resolved lockfile entry remain synchronized.
+
 ### shared_preferences
 
 Used for small local project-owned values such as:
@@ -133,7 +141,7 @@ Provides baseline static-analysis rules, supplemented by project-specific analyz
 
 2048 Nova is an application, so `pubspec.lock` is committed. This improves reproducibility across local development and CI.
 
-A dedicated GitHub Actions workflow can resolve/commit lockfile changes, while Dependabot provides update discovery. Dependency updates still require analyzer/test/build verification.
+A dedicated GitHub Actions workflow automatically resolves/commits lockfile changes when dependency metadata changes and can also be manually dispatched. Permanent CI independently fails when `flutter pub get` would change the committed lockfile, while Dependabot provides update discovery. Dependency updates still require analyzer/test/build verification.
 
 ## Dependency-review checklist
 
