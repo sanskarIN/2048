@@ -24,9 +24,11 @@ This directory is the user, technical, development, platform, and release docume
 | [`PRIVACY.md`](PRIVACY.md) | Offline-first data behavior, language/localization, clipboard, external links, local storage, both replay systems, Auto Play, Backup, and Challenge Code privacy. |
 | [`DEVELOPMENT.md`](DEVELOPMENT.md) | Development environment, repository layout, localization practices, local workflow, testing, and contribution practices. |
 | [`PLATFORMS.md`](PLATFORMS.md) | Android/iOS/Web/Windows/macOS/Linux setup, build commands, hosted verification, locale behavior, and signing/distribution boundaries. |
+| [`ANDROID_TOOLCHAIN.md`](ANDROID_TOOLCHAIN.md) | Maintained AGP/Kotlin/Gradle baseline, AGP 9.3 deferral evidence, upgrade acceptance rules, and revisit criteria. |
 | [`CI_CD.md`](CI_CD.md) | Permanent GitHub Actions workflows, quality gates, native build matrix, and automation boundaries. |
 | [`TESTING.md`](TESTING.md) | Automated test strategy, regression areas, and current evidence. |
 | [`VERIFICATION.md`](VERIFICATION.md) | Compact current automated verification record. |
+| [`PHASE_27_VERIFICATION.md`](PHASE_27_VERIFICATION.md) | Focused Android toolchain experiment, AGP 9.3 deferral, accepted Kotlin/Gradle subset, 217-test, and post-merge native-matrix evidence. |
 | [`PHASE_26_VERIFICATION.md`](PHASE_26_VERIFICATION.md) | Focused checkout v7, Dependency Review v5, 216-test, Web, and cross-platform Actions-runtime verification record. |
 | [`PHASE_25_VERIFICATION.md`](PHASE_25_VERIFICATION.md) | Focused Version 1.5 SDK/dependency, supply-chain, 215-test, Web, and post-maintenance native-matrix verification record. |
 | [`PHASE_18_VERIFICATION.md`](PHASE_18_VERIFICATION.md) | Focused Phase 18 bounded-expectimax, 161-test, Web/WASM, and native-matrix acceptance record. |
