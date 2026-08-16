@@ -153,3 +153,18 @@ Accepted Platform Builds run: **31934181987**, source `5b22795d5aba661bd587e7bcb
 Every build, package, checksum, and upload step completed successfully. These GitHub artifact digests cover the stored Actions artifact archives; each artifact also contains the payload-level SHA-256 sidecar created by the workflow.
 
 The artifacts expire on **2026-08-30** under the configured 14-day retention policy. Expiration does not invalidate the source/build evidence recorded here, but future manual qualification should use a current artifact from the exact commit being qualified when practical.
+
+
+## Phase 24 accepted Version 1.5 hosted artifact set
+
+Accepted Platform Builds run: **31940994252**, source `4d4fe634624b069834786a2aaad356e356281c44`.
+
+| Artifact | ID | Size | GitHub artifact digest |
+| --- | ---: | ---: | --- |
+| `nova-2048-android-release` | 9262064041 | 25,409,571 bytes | `sha256:777c912745e7c3fdbdbe6f682699e0edbee9d32e0144dd3d7e72c87f25a5bd00` |
+| `nova-2048-linux-x64-release` | 9262027429 | 10,396,713 bytes | `sha256:187975b54ec73f23b49fc8e50f6cd7c5f2e044f551ce153603c13cd75273422a` |
+| `nova-2048-windows-x64-release` | 9262041028 | 12,655,269 bytes | `sha256:5d53a9c534b3327b5881087b2f5a9c2d744b841de70e20f9e05115f1f8f18ac1` |
+| `nova-2048-macos-release` | 9262077872 | 18,739,219 bytes | `sha256:15cb2d98188fcd0718c382244be0f527a41b5799fc59d5cef57173b2be10097f` |
+| `nova-2048-ios-unsigned-release` | 9262078294 | 8,710,168 bytes | `sha256:b09afe7ae21b7563d5407e80de17458e2e5d66e557b591db6aea47bca5b6ac1c` |
+
+Every Version 1.5 build, package, checksum, and upload step completed successfully. The artifacts expire on **2026-08-30**. As with the Phase 23 set, these are qualification inputs and hosted-build evidence only; they do not change the **0/13** real-world qualification status.
