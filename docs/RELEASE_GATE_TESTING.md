@@ -38,4 +38,19 @@ Fixture tests prove that the gate accepts and rejects metadata correctly. They d
 
 ## Verification record
 
-The accepted CI run for this regression expansion is recorded in `docs/VERIFICATION.md` and `what_changed.md` after the permanent CI workflow completes successfully. Historical Phase 22 evidence remains valid for the earlier gate implementation, but the newer run supersedes its automated test count for the current source state.
+Accepted current-source evidence:
+
+```text
+Source: 57c6312ee26eed0cea8597ebf6417d442cf988cc
+CI run: 31932367464
+CI job: 95129044532
+Formatting: PASS — 97 files, 0 changed
+Analysis: PASS — No issues found
+Tests: PASS — 200/200, including all 6 gate fixture scenarios
+Candidate gate: PASS — 0/13 real-world checks complete; readyForStable=false
+Stable boundary: PASS — current RC refused exactly as intended
+Solver smoke: PASS
+Web/WASM verification: PASS
+```
+
+Historical Phase 22 evidence remains valid for the first gate implementation, while this run supersedes its automated test count for the current source state. Full details are also recorded in `docs/VERIFICATION.md` and `what_changed.md`.
