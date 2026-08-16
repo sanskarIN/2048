@@ -10,16 +10,16 @@ extension AppLanguageX on AppLanguage {
   String get storageValue => name;
 
   String get label => switch (this) {
-        AppLanguage.system => 'System default',
-        AppLanguage.english => 'English',
-        AppLanguage.hindi => 'हिन्दी',
-      };
+    AppLanguage.system => 'System default',
+    AppLanguage.english => 'English',
+    AppLanguage.hindi => 'हिन्दी',
+  };
 
   Locale? get locale => switch (this) {
-        AppLanguage.system => null,
-        AppLanguage.english => const Locale('en'),
-        AppLanguage.hindi => const Locale('hi'),
-      };
+    AppLanguage.system => null,
+    AppLanguage.english => const Locale('en'),
+    AppLanguage.hindi => const Locale('hi'),
+  };
 
   static AppLanguage parse(Object? value) {
     if (value is String) {
@@ -58,24 +58,24 @@ class NovaLocalizations {
   }
 
   String modeName(GameMode mode) => text(switch (mode) {
-        GameMode.classic => 'Classic',
-        GameMode.quick => 'Quick',
-        GameMode.extended => 'Extended',
-        GameMode.challenge => 'Challenge',
-        GameMode.endless => 'Endless',
-        GameMode.target => 'Target',
-        GameMode.timeChallenge => 'Time Challenge',
-        GameMode.moveLimit => 'Move Limit',
-        GameMode.daily => 'Daily Challenge',
-        GameMode.zen => 'Zen',
-      });
+    GameMode.classic => 'Classic',
+    GameMode.quick => 'Quick',
+    GameMode.extended => 'Extended',
+    GameMode.challenge => 'Challenge',
+    GameMode.endless => 'Endless',
+    GameMode.target => 'Target',
+    GameMode.timeChallenge => 'Time Challenge',
+    GameMode.moveLimit => 'Move Limit',
+    GameMode.daily => 'Daily Challenge',
+    GameMode.zen => 'Zen',
+  });
 
   String directionName(Direction direction) => text(switch (direction) {
-        Direction.up => 'Up',
-        Direction.down => 'Down',
-        Direction.left => 'Left',
-        Direction.right => 'Right',
-      });
+    Direction.up => 'Up',
+    Direction.down => 'Down',
+    Direction.left => 'Left',
+    Direction.right => 'Right',
+  });
 
   String boardSize(int size) =>
       isHindi ? '$size × $size बोर्ड' : '$size × $size board';
