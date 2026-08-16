@@ -213,10 +213,11 @@ class _GameScreenState extends State<GameScreen> {
     final message = hint == null
         ? l10n.text('No valid move found.')
         : l10n.isHindi
-            ? '${l10n.directionName(hint)} की ओर प्रयास करें।'
-            : 'Try ${l10n.directionName(hint).toUpperCase()}.';
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+        ? '${l10n.directionName(hint)} की ओर प्रयास करें।'
+        : 'Try ${l10n.directionName(hint).toUpperCase()}.';
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _performMove(Direction direction) async {
@@ -379,17 +380,17 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   String _label(GameMode mode) => switch (mode) {
-        GameMode.classic => 'Classic 4×4',
-        GameMode.quick => 'Quick 3×3',
-        GameMode.extended => 'Extended 5×5',
-        GameMode.challenge => 'Challenge 6×6',
-        GameMode.endless => 'Endless',
-        GameMode.target => 'Target',
-        GameMode.timeChallenge => 'Time Challenge',
-        GameMode.moveLimit => 'Move Limit',
-        GameMode.daily => 'Daily Challenge',
-        GameMode.zen => 'Zen',
-      };
+    GameMode.classic => 'Classic 4×4',
+    GameMode.quick => 'Quick 3×3',
+    GameMode.extended => 'Extended 5×5',
+    GameMode.challenge => 'Challenge 6×6',
+    GameMode.endless => 'Endless',
+    GameMode.target => 'Target',
+    GameMode.timeChallenge => 'Time Challenge',
+    GameMode.moveLimit => 'Move Limit',
+    GameMode.daily => 'Daily Challenge',
+    GameMode.zen => 'Zen',
+  };
 }
 
 class _Metric extends StatelessWidget {
@@ -411,10 +412,9 @@ class _Metric extends StatelessWidget {
               Text(label, style: Theme.of(context).textTheme.labelSmall),
               Text(
                 '$value',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
             ],
           ),
