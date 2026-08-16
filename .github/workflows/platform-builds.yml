@@ -48,6 +48,8 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
+      - name: Verify dependency lockfile is synchronized
+        run: git diff --exit-code -- pubspec.lock
       - run: flutter build apk --release
 
   linux:
@@ -64,6 +66,12 @@ jobs:
           cache: true
       - run: flutter config --enable-linux-desktop
       - run: flutter pub get
+      - name: Verify Linux generated dependency files are synchronized
+        run: >-
+          git diff --exit-code --
+          pubspec.lock
+          linux/flutter/generated_plugin_registrant.cc
+          linux/flutter/generated_plugins.cmake
       - run: flutter build linux --release
 
   windows:
@@ -78,6 +86,12 @@ jobs:
           cache: true
       - run: flutter config --enable-windows-desktop
       - run: flutter pub get
+      - name: Verify Windows generated dependency files are synchronized
+        run: >-
+          git diff --exit-code --
+          pubspec.lock
+          windows/flutter/generated_plugin_registrant.cc
+          windows/flutter/generated_plugins.cmake
       - run: flutter build windows --release
 
   apple:
@@ -92,6 +106,11 @@ jobs:
           cache: true
       - run: flutter config --enable-macos-desktop
       - run: flutter pub get
+      - name: Verify Apple generated dependency files are synchronized
+        run: >-
+          git diff --exit-code --
+          pubspec.lock
+          macos/Flutter/GeneratedPluginRegistrant.swift
       - name: Build macOS release
         run: flutter build macos --release
       - name: Build iOS release without signing
