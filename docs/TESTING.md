@@ -623,3 +623,33 @@ Overall: SUCCESS
 ```
 
 The Web compiler retained the known non-fatal Cupertino icon-font warning while still producing `build/web`. These fixture tests verify release-gate behavior; they do not substitute for physical-device, assistive-technology, real-handler, signing/provisioning, branding, or distribution qualification.
+
+## Phase 23 repository-integrity evidence
+
+Phase 23 adds `test/repository_integrity_test.dart` with **7 source/repository contract tests**, increasing the maintained suite from 200 to **207 tests**.
+
+The added cases verify:
+
+1. `cupertino_icons 1.0.8` is declared and locked;
+2. macOS generated registration contains `FilePickerPlugin`;
+3. Flutter analysis excludes every generated platform tree required by the current Flutter migration;
+4. permanent workflows no longer use `actions/checkout@v4` or `@v5`;
+5. dependency-lock automation watches dependency metadata and uses checkout v6;
+6. CI rejects Flutter-managed metadata drift and fails if the missing Web icon-font warning returns;
+7. native builds declare all five checksummed qualification artifacts, hard-fail on missing files, and use bounded retention.
+
+Accepted permanent CI run `31934191150`, job `95133484471`, on source `a93542ecae7713214f7f3e4e11a03c647e880129` reports:
+
+```text
+Formatting: PASS — 98 files, 0 changed
+Analysis: PASS — No issues found
+Tests: PASS — 207/207
+Metadata drift guard: PASS
+Release-candidate gate: PASS
+Stable-boundary assertion: PASS
+Solver smoke benchmark: PASS
+WASM dry run: PASS
+Warning-enforced Web release: PASS
+```
+
+The repository-integrity tests complement rather than replace the real-device/manual qualification manifest.
