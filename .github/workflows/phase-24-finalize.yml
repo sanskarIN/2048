@@ -1,0 +1,61 @@
+name: Phase 24 documentation finalizer
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/phase-24-finalize.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Configure commit identity
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+
+      - name: Apply verified Phase 24 documentation updates
+        run: python3 tool/phase24_finalize.py
+
+      - name: Commit continuity summary
+        run: |
+          git add what_changed.md
+          git commit -m "docs: refresh Phase 24 continuity summary"
+
+      - name: Commit verification record
+        run: |
+          git add docs/VERIFICATION.md
+          git commit -m "docs: record Phase 24 current verification"
+
+      - name: Commit Version 1.5 artifact evidence
+        run: |
+          git add docs/RELEASE_ARTIFACTS.md
+          git commit -m "docs: record Version 1.5 native artifacts"
+
+      - name: Remove temporary finalizer script
+        run: |
+          git rm tool/phase24_finalize.py
+          git commit -m "chore: remove Phase 24 finalizer script"
+
+      - name: Remove temporary finalizer workflow
+        run: |
+          git rm .github/workflows/phase-24-finalize.yml
+          git commit -m "chore: remove Phase 24 finalizer workflow"
+
+      - name: Verify clean finalizer result
+        run: git status --porcelain | grep -q . && exit 1 || true
+
+      - name: Push Phase 24 documentation commits
+        run: git push origin HEAD:main
