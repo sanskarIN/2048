@@ -4631,3 +4631,29 @@ The documentation helper completed successfully and removed itself, but its clea
 Commit `8997945b11e0db749ad24dbb434d3f3ef8c3dc5e` adds `workflow_dispatch` to permanent CI. Commit `1f48ebc947596915be3104aa5da56eb6ad291fff` adds the eighth repository-integrity regression so that manual dispatch support cannot silently disappear. The normal push-triggered CI on `1f48ebc947596915be3104aa5da56eb6ad291fff` then passed 208/208 tests, metadata drift, formatting, analysis, both release-gate directions, solver smoke, WASM dry run, and the warning-enforced Web release build.
 
 This changes no manual release evidence. The real qualification manifest remains 0/13 passed, and stable `1.0.0` remains intentionally unavailable.
+
+## Phase 24 — Version 1.5 current-line migration and release-contract hardening (2026-08-16)
+
+- Promoted current package metadata from 0.9.0+1 to 1.5.0+15 and runtime marketing metadata to 1.5.0.
+- Fixed permanent CI so automated candidate health is not incorrectly coupled to already-complete stable manual qualification.
+- Migrated the fail-closed release gate, process-level fixtures, qualification manifest, roadmap, release policy, release checklist, and README to Version 1.5.
+- Added integrity regressions for package/runtime version synchronization and qualification-driven CI behavior.
+- Corrected Windows resource fallback version metadata and consolidated duplicate CHANGELOG Fixed headings.
+- Preserved all 13 real-device/accessibility/handler/signing qualification items as pending; no synthetic evidence was invented.
+- Migration validation passed dependency resolution, formatting, analysis, the complete Flutter test suite, candidate gate, expected-closed stable gate, and Web release build before push.
+
+### Migration commits
+
+- `a001d52` — chore: set package version to 1.5.0+15
+- `e99f126` — chore: set runtime version to 1.5.0
+- `0c976b5` — chore: align qualification candidate with Version 1.5
+- `8741b4d` — fix: migrate release gate to Version 1.5
+- `60ebac0` — test: cover Version 1.5 release gate
+- `e2bca6b` — test: guard Version 1.5 metadata integrity
+- `899a4f0` — fix: align Windows fallback version metadata
+- `1101297` — docs: mark Version 1.5 as current
+- `db3ef32` — docs: migrate roadmap to Version 1.5
+- `e6ec820` — docs: align qualification policy with Version 1.5
+- `a730b2d` — docs: align release gate fixtures with Version 1.5
+- `9f36700` — docs: align release checklist with Version 1.5
+- `75a3c78` — docs: record Version 1.5 migration and fixes
