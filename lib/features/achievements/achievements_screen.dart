@@ -69,8 +69,8 @@ class AchievementsScreen extends StatelessWidget {
                         Text(
                           item.unlocked
                               ? l10n.isHindi
-                                  ? '${l10n.text('Unlocked')} ${_date(item.unlockedAt!)}'
-                                  : 'Unlocked ${_date(item.unlockedAt!)}'
+                                    ? '${l10n.text('Unlocked')} ${_date(item.unlockedAt!)}'
+                                    : 'Unlocked ${_date(item.unlockedAt!)}'
                               : '$progress / ${item.threshold}',
                           style: Theme.of(context).textTheme.labelMedium,
                         ),
