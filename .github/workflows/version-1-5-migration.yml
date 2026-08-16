@@ -35,6 +35,9 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Resolve dependencies before formatting
+        run: flutter pub get
+
       - name: Format changed Dart sources
         run: dart format tool/release_readiness.dart test/release_readiness_cli_test.dart test/repository_integrity_test.dart lib/core/constants/project_info.dart
 
@@ -71,10 +74,8 @@ jobs:
             exit 1
           fi
 
-      - name: Install dependencies and verify generated metadata
-        run: |
-          flutter pub get
-          git diff --exit-code -- pubspec.lock analysis_options.yaml
+      - name: Verify generated metadata remains synchronized
+        run: git diff --exit-code -- pubspec.lock analysis_options.yaml
 
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed lib test tool
@@ -121,7 +122,7 @@ jobs:
             echo "- Added integrity regressions for package/runtime version synchronization and qualification-driven CI behavior."
             echo "- Corrected Windows resource fallback version metadata and consolidated duplicate CHANGELOG Fixed headings."
             echo "- Preserved all 13 real-device/accessibility/handler/signing qualification items as pending; no synthetic evidence was invented."
-            echo "- Migration validation passed formatting, analysis, the complete Flutter test suite, candidate gate, expected-closed stable gate, and Web release build before push."
+            echo "- Migration validation passed dependency resolution, formatting, analysis, the complete Flutter test suite, candidate gate, expected-closed stable gate, and Web release build before push."
             echo
             echo "### Migration commits"
             echo
