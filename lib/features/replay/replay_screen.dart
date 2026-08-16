@@ -141,29 +141,27 @@ class _ReplayScreenState extends State<ReplayScreen> {
         child: _loadError != null
             ? _ErrorState(onRetry: _retry)
             : frames == null
-                ? const Center(child: CircularProgressIndicator())
-                : frames.isEmpty
-                    ? _EmptyState(
-                        onStart: () => Navigator.pushNamed(context, '/modes'))
-                    : _ReplayBody(
-                        frames: frames,
-                        index: _index,
-                        running: _running,
-                        interval: _interval,
-                        reducedMotion: controller.settings.reducedMotion,
-                        onTogglePlayback: _togglePlayback,
-                        onPrevious:
-                            _index > 0 ? () => _moveTo(_index - 1) : null,
-                        onNext: _index < frames.length - 1
-                            ? () => _moveTo(_index + 1)
-                            : null,
-                        onFirst: _index > 0 ? () => _moveTo(0) : null,
-                        onLatest: _index < frames.length - 1
-                            ? () => _moveTo(frames.length - 1)
-                            : null,
-                        onSliderChanged: (value) => _moveTo(value.round()),
-                        onSpeedChanged: _changeSpeed,
-                      ),
+            ? const Center(child: CircularProgressIndicator())
+            : frames.isEmpty
+            ? _EmptyState(onStart: () => Navigator.pushNamed(context, '/modes'))
+            : _ReplayBody(
+                frames: frames,
+                index: _index,
+                running: _running,
+                interval: _interval,
+                reducedMotion: controller.settings.reducedMotion,
+                onTogglePlayback: _togglePlayback,
+                onPrevious: _index > 0 ? () => _moveTo(_index - 1) : null,
+                onNext: _index < frames.length - 1
+                    ? () => _moveTo(_index + 1)
+                    : null,
+                onFirst: _index > 0 ? () => _moveTo(0) : null,
+                onLatest: _index < frames.length - 1
+                    ? () => _moveTo(frames.length - 1)
+                    : null,
+                onSliderChanged: (value) => _moveTo(value.round()),
+                onSpeedChanged: _changeSpeed,
+              ),
       ),
     );
   }
@@ -217,8 +215,8 @@ class _ReplayBody extends StatelessWidget {
     final replayDescription = retainedStart == 0
         ? l10n.text('Replay includes the retained start of this game.')
         : l10n.isHindi
-            ? 'अनडू हिस्ट्री सीमित है, इसलिए यह रिप्ले चाल $retainedStart से शुरू होता है और सबसे हाल की सुरक्षित टाइमलाइन दिखाता है।'
-            : 'Undo history is bounded, so this replay begins at move $retainedStart and shows the most recent retained timeline.';
+        ? 'अनडू हिस्ट्री सीमित है, इसलिए यह रिप्ले चाल $retainedStart से शुरू होता है और सबसे हाल की सुरक्षित टाइमलाइन दिखाता है।'
+        : 'Undo history is bounded, so this replay begins at move $retainedStart and shows the most recent retained timeline.';
 
     return SingleChildScrollView(
       child: Center(
@@ -370,8 +368,9 @@ class _ReplayBody extends StatelessWidget {
   }
 
   static String _speedLabel(Duration duration, NovaLocalizations l10n) {
-    final count =
-        duration.inMilliseconds == 1000 ? 1 : 1000 ~/ duration.inMilliseconds;
+    final count = duration.inMilliseconds == 1000
+        ? 1
+        : 1000 ~/ duration.inMilliseconds;
     return l10n.isHindi
         ? '$count फ्रेम / सेकंड'
         : '$count frame${count == 1 ? '' : 's'} / sec';
