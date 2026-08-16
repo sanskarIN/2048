@@ -144,3 +144,9 @@ dart run tool/release_readiness.dart --root=<fixture-path> --json
 The fixture option exists for testability only. It does not turn synthetic metadata into real release evidence. The suite exercises candidate success, complete stable success, stable refusal with pending evidence, package/manifest candidate mismatch, false `passed` entries without evidence/timestamps, and missing required qualification IDs. See [`RELEASE_GATE_TESTING.md`](RELEASE_GATE_TESTING.md).
 
 Current accepted source `57c6312ee26eed0cea8597ebf6417d442cf988cc` passed permanent CI run `31932367464` with **200/200 tests**. The live candidate still reports **0/13** real-world qualification items complete, so strict stable mode correctly remains closed.
+
+## Hosted qualification artifacts
+
+The permanent native build matrix now publishes short-lived checksummed outputs documented in [`RELEASE_ARTIFACTS.md`](RELEASE_ARTIFACTS.md). Use those outputs when they help perform a real target check against a known source commit.
+
+Artifact existence, hosted compilation, checksum generation, and upload success **do not** mark any manual manifest item passed. Evidence must still describe what was exercised on the representative real environment. An unsigned iOS artifact is compilation/package evidence only until real signing/provisioning and device/distribution checks are completed.
