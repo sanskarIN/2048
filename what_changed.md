@@ -13,7 +13,7 @@
 - **Creator / branding:** Sanskar / **Made by the Sanskar**
 - **Commit email used by repository automation:** `sanskarin@outlook.in`
 - **License:** MIT
-- **Current phase:** Phase 22 — evidence-backed release qualification and fail-closed stable promotion gate complete; manual/device qualification remains before 1.0.0
+- **Current phase:** Phase 22 — evidence-backed release qualification plus 200-test release-gate regression hardening complete; manual/device qualification remains before 1.0.0
 - **Latest production-code commit used by native build verification:** `eacdb9dc04b4467271f98ce2104e60daf0124f6d` — `fix: use portable page transition builders`
 - **Latest test-fix commit used by the final quality gate:** `f3e7aaec6404139951425144cb1fb4d2fda66e27` — `test: scroll lazy mode list before asserting offscreen entries`
 - **Latest documentation commit before this log refresh:** `3d5988f1a7a29d38dbd72602e2c489d5975c7b5b` — `docs: update changelog for release candidate verification`
@@ -4473,3 +4473,58 @@ README, documentation index, CI/CD guide, release checklist, changelog, roadmap,
 ### Remaining stable-release boundary
 
 The project is intentionally **not** marked `1.0.0`. All 13 real-world evidence items remain pending until actually performed. The stable gate prevents missing manual checks from being silently converted into a stable-release claim by a version edit alone.
+
+---
+
+## 2026-08-16 — Phase 22 regression expansion: fixture-tested stable-release gate
+
+After the initial fail-closed gate was accepted at 194 tests, the gate itself was hardened with real process/filesystem regression fixtures instead of relying only on the live release-candidate invocation.
+
+### Code and test commits
+
+```text
+9fe63472a59d4af77c92ef3da6232c96960c3134  feat: make release readiness gate fixture-testable
+8b8ba77a8afbf90d93f8d05170435dce4140f309  test: cover release readiness promotion boundaries
+28a48c0e7c7d99c4407d6e86b8ac8ed122188fc8  style: format Dart sources tests and tools
+57c6312ee26eed0cea8597ebf6417d442cf988cc  docs: document release gate regression fixtures
+```
+
+`tool/release_readiness.dart` gained `--root=<path>` so automated tests can point the actual CLI at temporary repository fixtures. Normal invocation still validates the real checkout. JSON output now also reports the resolved root, and duplicate/nonexistent fixture-root errors fail closed.
+
+`test/release_readiness_cli_test.dart` adds six end-to-end scenarios:
+
+1. valid 0.9.0+1 candidate succeeds while stable readiness remains false;
+2. complete 1.0.0+1 fixture with all 13 passed evidence records succeeds in strict stable mode;
+3. stable metadata with pending evidence is refused;
+4. manifest/package candidate mismatch is refused;
+5. `passed` status without evidence/timestamp is refused;
+6. a missing required manual-check ID is refused.
+
+The stable-success fixture is intentionally synthetic. It proves the gate is capable of opening when every declared condition is satisfied; it does not claim those real checks were performed.
+
+### Accepted current-source automated verification
+
+Permanent CI run `31932367464`, job `95129044532`, verified source `57c6312ee26eed0cea8597ebf6417d442cf988cc`.
+
+```text
+Runner: Ubuntu 24.04.4 LTS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+DevTools: 2.60.0
+Formatting: PASS — 97 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 200/200
+Release-gate fixture scenarios: PASS — 6/6
+Candidate gate: PASS — candidateGatePassed=true; readyForStable=false; 0/13 manual evidence complete
+Stable boundary: PASS — strict --stable correctly rejected the live 0.9.0+1 candidate
+Solver benchmark: PASS — Heuristic + Expectimax, seeds 2048/4096/8192/20260815, 8 moves each
+WASM dry run: PASS
+Web release: PASS — build/web
+```
+
+The Web build retained the existing non-fatal Cupertino icon-font warning but completed successfully. No Flutter gameplay/runtime source changed in this expansion, so Phase 21 remains the latest native runtime build evidence.
+
+### Release status after regression expansion
+
+The codeable release-engineering boundary is now tested in both directions. The real manifest remains **0/13**, and strict stable mode therefore remains intentionally closed. Physical Android/iOS, representative input/responsive behavior, real assistive technology, long sessions, Auto Play/Challenge Code/replay/backup on real targets, external handlers, native branding, signing/provisioning, privacy/store metadata, and distribution qualification must still be performed before changing the project to stable `1.0.0`.
+
