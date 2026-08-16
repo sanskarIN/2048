@@ -28,6 +28,22 @@ void main() {
       );
     });
 
+    test('Flutter analysis excludes generated platform trees', () {
+      final options = File('analysis_options.yaml').readAsStringSync();
+
+      for (final exclude in <String>[
+        'build/**',
+        'android/**',
+        'ios/**',
+        'web/**',
+        'windows/**',
+        'macos/**',
+        'linux/**',
+      ]) {
+        expect(options, contains('- $exclude'));
+      }
+    });
+
     test('repository workflows no longer use deprecated checkout runtimes', () {
       final workflowFiles = Directory('.github/workflows')
           .listSync()
@@ -61,10 +77,13 @@ void main() {
       expect(workflow, contains('actions/checkout@v6'));
     });
 
-    test('CI rejects stale locks and missing Web icon fonts', () {
+    test('CI rejects Flutter metadata drift and missing Web icon fonts', () {
       final workflow = File('.github/workflows/ci.yml').readAsStringSync();
 
-      expect(workflow, contains('git diff --exit-code -- pubspec.lock'));
+      expect(
+        workflow,
+        contains('git diff --exit-code -- pubspec.lock analysis_options.yaml'),
+      );
       expect(workflow, contains('Expected to find fonts for'));
       expect(workflow, contains('actions/checkout@v6'));
     });
