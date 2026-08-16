@@ -5,6 +5,9 @@ All notable changes to this project are documented here.
 ## [Unreleased]
 
 ### Added
+- Evidence-backed release qualification with `docs/release_qualification.json`, covering the exact 13 real-device/accessibility/handler/branding/distribution checks that must be completed before stable promotion.
+- `tool/release_readiness.dart` candidate/stable CLI with JSON output, required-file/version/manifest validation, evidence/timestamp enforcement, and a fail-closed `--stable` mode.
+- Dedicated `docs/RELEASE_QUALIFICATION.md` procedure for recording verifiable manual evidence and promoting the exact qualified commit.
 - Offline high-contrast **Challenge Code QR rendering** using pinned `qr_flutter 4.1.0`; the QR contains the exact existing `NOVA1` text and adds no camera permission, scanner, account, cloud transfer, or authentication semantics.
 - Responsive `ChallengeCodeQr` presentation with a 260-logical-pixel cap, narrow-layout containment, white background/black modules, semantic labeling, and local render-error fallback.
 - Five focused Phase 21 QR regressions covering exact payload handoff, scan contrast/semantics, narrow/wide sizing, Hindi screen copy, and Hindi trust/accessibility guidance.
@@ -53,6 +56,9 @@ All notable changes to this project are documented here.
 - Friendly copy fallback when an approved external destination cannot be opened by the platform.
 
 ### Changed
+- Permanent CI now formats `tool/`, validates release-candidate metadata, proves the stable gate remains closed on the `0.9.x` line, smoke-runs both deterministic solver strategies, and then produces the Web release build.
+- Formatter automation now covers `lib/`, `test/`, and `tool/` so maintenance CLIs cannot drift outside canonical Dart formatting.
+- Stable `1.0.0` promotion criteria are machine-enforced instead of depending only on prose checklists; pending real-world checks remain explicit rather than being fabricated from hosted automation.
 - `GameEngine.move` accepts an optional event time so deterministic replay reconstruction can reproduce timed status rules without spectator wall-clock dependence.
 - Move Replay now links to Full Replay Archive, including from its no-live-game state so received spectator archives can be opened without creating or replacing player progress.
 - Game Backup imports receive incomplete replay capture because sender-side earlier actions are not present; they are never mislabeled as complete full-session histories.
