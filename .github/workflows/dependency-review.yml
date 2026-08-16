@@ -1,3 +1,5 @@
+# Phase 28 disposable validation change: this comment exists only to exercise the
+# SHA-pinned pull-request dependency-review workflow and will not be merged.
 name: Dependency Review
 
 on:
