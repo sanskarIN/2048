@@ -79,7 +79,8 @@ void main() {
       '# Roadmap\n\nRemaining release qualification before `1.5.0`\n',
     );
 
-    final manifestChecks = checks ??
+    final manifestChecks =
+        checks ??
         _requiredCheckIds
             .map(
               (id) => <String, Object?>{
@@ -87,8 +88,9 @@ void main() {
                 'title': 'Qualification for $id',
                 'status': passedEvidence ? 'passed' : 'pending',
                 'evidence': passedEvidence ? 'Verified fixture evidence' : '',
-                'updatedAt':
-                    passedEvidence ? '2026-08-16T12:30:00+05:30' : null,
+                'updatedAt': passedEvidence
+                    ? '2026-08-16T12:30:00+05:30'
+                    : null,
               },
             )
             .toList(growable: false);
@@ -119,27 +121,26 @@ void main() {
     expect(result.stdout, isNotEmpty, reason: result.stderr.toString());
     final decoded = jsonDecode(result.stdout as String);
     expect(decoded, isA<Map<String, dynamic>>());
-    return (
-      process: result,
-      json: decoded as Map<String, dynamic>,
-    );
+    return (process: result, json: decoded as Map<String, dynamic>);
   }
 
-  test('candidate fixture passes while stable readiness remains false',
-      () async {
-    final root = await fixture();
+  test(
+    'candidate fixture passes while stable readiness remains false',
+    () async {
+      final root = await fixture();
 
-    final result = await runGate(root);
+      final result = await runGate(root);
 
-    expect(result.process.exitCode, 0);
-    expect(result.json['mode'], 'candidate');
-    expect(result.json['version'], '1.5.0+15');
-    expect(result.json['candidateGatePassed'], isTrue);
-    expect(result.json['readyForStable'], isFalse);
-    expect(result.json['manualChecksPassed'], 0);
-    expect(result.json['manualChecksRequired'], 13);
-    expect(result.json['failures'], isEmpty);
-  });
+      expect(result.process.exitCode, 0);
+      expect(result.json['mode'], 'candidate');
+      expect(result.json['version'], '1.5.0+15');
+      expect(result.json['candidateGatePassed'], isTrue);
+      expect(result.json['readyForStable'], isFalse);
+      expect(result.json['manualChecksPassed'], 0);
+      expect(result.json['manualChecksRequired'], 13);
+      expect(result.json['failures'], isEmpty);
+    },
+  );
 
   test('stable fixture passes with complete metadata and evidence', () async {
     final root = await fixture(
@@ -150,8 +151,11 @@ void main() {
 
     final result = await runGate(root, stable: true);
 
-    expect(result.process.exitCode, 0,
-        reason: result.process.stderr.toString());
+    expect(
+      result.process.exitCode,
+      0,
+      reason: result.process.stderr.toString(),
+    );
     expect(result.json['mode'], 'stable');
     expect(result.json['candidateGatePassed'], isTrue);
     expect(result.json['readyForStable'], isTrue);
