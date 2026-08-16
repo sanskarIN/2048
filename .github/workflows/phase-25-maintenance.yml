@@ -1,3 +1,4 @@
+# One-off guarded migration; removed automatically after a successful Phase 25 push.
 name: Phase 25 maintenance
 
 on:
@@ -122,6 +123,7 @@ jobs:
             echo "- Raised the maintained Version 1.5 toolchain floor to Dart >=3.9 and Flutter >=3.35 so pubspec no longer advertises SDKs that cannot resolve the maintained direct dependency set."
             echo "- Updated cupertino_icons to 1.0.9, shared_preferences to ^2.5.5, and flutter_lints to ^6.0.0 while keeping file_picker 11.0.2, qr_flutter 4.1.0, and url_launcher ^6.3.2."
             echo "- Migrated repository Dart formatting to the canonical Dart 3.9+ formatter style and kept formatting-only changes isolated in per-file commits."
+            echo "- Fixed three unnecessary-underscore findings exposed by flutter_lints 6 in Achievements, Modes, and Statistics separator callbacks."
             echo "- Added four repository-integrity regressions for SDK/dependency floors, supply-chain automation, CODEOWNERS, and the Version 1.5 security policy."
             echo "- Added docs/SUPPLY_CHAIN.md and synchronized README, DEVELOPMENT, DEPENDENCIES, SECURITY, documentation index, and CHANGELOG."
             echo "- Validation passed dependency resolution, canonical formatting, static analysis under flutter_lints 6, the complete Flutter test suite, Version 1.5 candidate gate, expected-closed stable gate, deterministic solver smoke, and warning-enforced Web release build before push."
