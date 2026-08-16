@@ -117,8 +117,9 @@ class LocalStore {
           repaired = true;
         }
       }
-      final limited =
-          states.length <= 50 ? states : states.sublist(states.length - 50);
+      final limited = states.length <= 50
+          ? states
+          : states.sublist(states.length - 50);
       if (limited.length != states.length) repaired = true;
       if (repaired) {
         await prefs.setString(
@@ -158,8 +159,9 @@ class LocalStore {
       }
       final normalized = _normalizeDailyHistory(records);
       if (normalized.length != records.length) repaired = true;
-      final limited =
-          normalized.length <= 60 ? normalized : normalized.sublist(0, 60);
+      final limited = normalized.length <= 60
+          ? normalized
+          : normalized.sublist(0, 60);
       if (limited.length != normalized.length) repaired = true;
       if (repaired) {
         await prefs.setString(
@@ -176,8 +178,9 @@ class LocalStore {
 
   Future<void> saveDailyHistory(List<DailyRecord> records) async {
     final normalized = _normalizeDailyHistory(records);
-    final limited =
-        normalized.length <= 60 ? normalized : normalized.sublist(0, 60);
+    final limited = normalized.length <= 60
+        ? normalized
+        : normalized.sublist(0, 60);
     await (await _prefs).setString(
       _dailyHistoryKey,
       jsonEncode(limited.map((record) => record.toJson()).toList()),
@@ -188,8 +191,9 @@ class LocalStore {
     final bySeed = <int, DailyRecord>{};
     for (final record in records) {
       final previous = bySeed[record.seed];
-      bySeed[record.seed] =
-          previous == null ? record : _mergeDailyRecords(previous, record);
+      bySeed[record.seed] = previous == null
+          ? record
+          : _mergeDailyRecords(previous, record);
     }
     final normalized = bySeed.values.toList()
       ..sort((a, b) => b.seed.compareTo(a.seed));
@@ -197,18 +201,21 @@ class LocalStore {
   }
 
   DailyRecord _mergeDailyRecords(DailyRecord a, DailyRecord b) {
-    final scoreSource = b.score > a.score ||
+    final scoreSource =
+        b.score > a.score ||
             (b.score == a.score && b.updatedAt.isAfter(a.updatedAt))
         ? b
         : a;
-    final updatedAt =
-        a.updatedAt.isAfter(b.updatedAt) ? a.updatedAt : b.updatedAt;
+    final updatedAt = a.updatedAt.isAfter(b.updatedAt)
+        ? a.updatedAt
+        : b.updatedAt;
     return DailyRecord(
       seed: a.seed,
       score: scoreSource.score,
       moves: scoreSource.moves,
-      highestTile:
-          a.highestTile > b.highestTile ? a.highestTile : b.highestTile,
+      highestTile: a.highestTile > b.highestTile
+          ? a.highestTile
+          : b.highestTile,
       completed: a.completed || b.completed,
       won: a.won || b.won,
       updatedAt: updatedAt,
