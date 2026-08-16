@@ -5,6 +5,9 @@ All notable changes to this project are documented here.
 ## [Unreleased]
 
 ### Added
+- Phase 28 workflow-execution security and focused verification documentation covering immutable Action revisions, frozen Flutter/JDK toolchains, credential persistence, verified Gradle distribution, pinned branding tooling, and repository-setting boundaries.
+- Workflow-security regressions for least-privilege checkout, explicit Android JDK 17, rejection of privileged PR-target/write-all patterns, and repository-writing identity/no-force-push policy.
+- Repository-integrity regressions for immutable remote Actions, exact qualified revisions, frozen Flutter 3.47.0/cache policy, exact branding Python pins, and the official Gradle 9.7.0 distribution checksum.
 - Dedicated Android toolchain compatibility policy and Phase 27 verification record covering the rejected AGP 9.3/JDK-17 path, JDK-21 diagnostic, accepted safe subset, and final artifacts.
 - Repository-integrity regression pinning the accepted AGP 9.1.0 / Kotlin 2.4.10 / Gradle 9.7.0 baseline and rejecting AGP 9.3.1 while issue #10 remains open.
 - Pull-request dependency review for Pub, Android Gradle, and GitHub Actions dependency surfaces, failing on newly introduced high-severity vulnerable dependency changes.
@@ -66,6 +69,12 @@ All notable changes to this project are documented here.
 - Friendly copy fallback when an approved external destination cannot be opened by the platform.
 
 ### Changed
+- Permanent workflow `uses:` references now execute reviewed 40-character commit SHAs rather than moving major-version tags; human-readable version comments remain for maintenance clarity.
+- All Flutter workflows now use exact Flutter 3.47.0 with composite-action caching disabled; the nested cache steps are skipped rather than executing the composite action's moving `actions/cache@v5` path.
+- Read-only CI, Dependency Review, and native checkouts no longer persist Git credentials after checkout; repository-writing workflows retain only the credential needed for their explicit push purpose.
+- Android hosted builds now install explicit Temurin JDK 17 through immutable setup-java and verify the Gradle 9.7.0 complete distribution with the publisher SHA-256.
+- Branding export now installs an exactly pinned Python build-time environment from `tool/branding-requirements.txt` instead of floating CairoSVG/Pillow packages.
+- Maintained CI now passes 225/225 tests, 99-file formatting, metadata drift checks, release gates, solver smoke, and a warning-enforced Web build.
 - Android build tooling now uses AGP 9.1.0, Kotlin Android 2.4.10, and Gradle 9.7.0 after a coordinated safe-subset qualification on JDK 17 and all hosted targets.
 - AGP 9.3.1 is intentionally deferred under issue #10: its Android release lint failed on JDK 17 but passed a branch-only JDK 21 diagnostic; release lint was not disabled and the project Java baseline was not raised solely as a workaround.
 - Stable `file_picker 11.0.2` remains in Version 1.5 while the relevant built-in-Kotlin cleanup is still on the package's 12.0.0 prerelease line.
@@ -80,7 +89,6 @@ All notable changes to this project are documented here.
 - Permanent CI now supports explicit maintainer `workflow_dispatch`, guarded by a repository-integrity regression for verification of bot-authored heads.
 - Dependency-lock automation watches dependency metadata, while permanent CI fails when `flutter pub get` changes the committed lockfile or Flutter-managed analysis options.
 - `analysis_options.yaml` explicitly carries Flutter 3.47 generated-platform exclusions instead of being silently migrated during CI.
-- Maintained CI now passes 217/217 tests, 98-file formatting, metadata drift checks, release gates, solver smoke, and a warning-enforced Web build.
 - `tool/release_readiness.dart` now accepts `--root=<path>` for isolated regression fixtures, while normal repository-root behavior and the real 13-item qualification boundary remain unchanged.
 - Current maintained CI evidence now passes 200/200 tests and 97-file formatting on the fixture-tested release-gate source.
 - Permanent CI formats `tool/`, validates Version 1.5 candidate metadata, proves the stable gate remains fail-closed while real-world qualification is incomplete, smoke-runs both deterministic solver strategies, and then produces the Web release build.
