@@ -13,6 +13,37 @@ void main() {
       expect(lockfile, contains('version: "1.0.8"'));
     });
 
+    test('runtime version matches pubspec marketing version', () {
+      final pubspec = File('pubspec.yaml').readAsStringSync();
+      final projectInfo = File(
+        'lib/core/constants/project_info.dart',
+      ).readAsStringSync();
+      final match = RegExp(
+        r'^version:\s*([^+\s]+)(?:\+\d+)?\s*$',
+        multiLine: true,
+      ).firstMatch(pubspec);
+
+      expect(match, isNotNull);
+      final marketingVersion = match!.group(1)!;
+      expect(
+        projectInfo,
+        contains("static const version = '$marketingVersion';"),
+      );
+    });
+
+    test(
+        'CI stable boundary is qualification-driven, not version-prefix driven',
+        () {
+      final workflow = File('.github/workflows/ci.yml').readAsStringSync();
+
+      expect(workflow, isNot(contains('version == 0.9.*')));
+      expect(workflow, contains('pending|blocked'));
+      expect(
+        workflow,
+        contains('Stable release gate correctly remains closed'),
+      );
+    });
+
     test('macOS generated registrant includes file picker', () {
       final registrant = File(
         'macos/Flutter/GeneratedPluginRegistrant.swift',
