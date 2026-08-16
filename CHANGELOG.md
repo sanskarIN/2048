@@ -5,7 +5,7 @@ All notable changes to this project are documented here.
 ## [Unreleased]
 
 ### Added
-- Seven repository-integrity regressions covering dependency/lock pairing, macOS FilePicker registration, Flutter analysis migration exclusions, checkout runtime policy, dependency-lock triggers, CI metadata/font guards, and native artifact publishing contracts.
+- Eight repository-integrity regressions covering dependency/lock pairing, macOS FilePicker registration, Flutter analysis migration exclusions, checkout runtime policy, dependency-lock triggers, CI metadata/font guards, and native artifact publishing contracts.
 - Checksummed 14-day native qualification artifacts for Android, Linux x64, Windows x64, macOS, and unsigned iOS, with hard failure when expected package files are absent.
 - Process-level release-gate regression coverage with six temporary-repository fixtures spanning candidate success, stable success, pending-evidence refusal, candidate mismatch, incomplete passed evidence, and missing required IDs.
 - Evidence-backed release qualification with `docs/release_qualification.json`, covering the exact 13 real-device/accessibility/handler/branding/distribution checks that must be completed before stable promotion.
@@ -64,9 +64,10 @@ All notable changes to this project are documented here.
 
 ### Changed
 - Repository-owned workflows now use `actions/checkout@v6`; platform artifacts use `actions/upload-artifact@v7`.
+- Permanent CI now supports explicit maintainer `workflow_dispatch`, guarded by a repository-integrity regression for verification of bot-authored heads.
 - Dependency-lock automation watches dependency metadata, while permanent CI fails when `flutter pub get` changes the committed lockfile or Flutter-managed analysis options.
 - `analysis_options.yaml` explicitly carries Flutter 3.47 generated-platform exclusions instead of being silently migrated during CI.
-- Maintained CI now passes 207/207 tests, 98-file formatting, metadata drift checks, release gates, solver smoke, and a warning-enforced Web build.
+- Maintained CI now passes 208/208 tests, 98-file formatting, metadata drift checks, release gates, solver smoke, and a warning-enforced Web build.
 - `tool/release_readiness.dart` now accepts `--root=<path>` for isolated regression fixtures, while normal repository-root behavior and the real 13-item qualification boundary remain unchanged.
 - Current maintained CI evidence now passes 200/200 tests and 97-file formatting on the fixture-tested release-gate source.
 - Permanent CI now formats `tool/`, validates release-candidate metadata, proves the stable gate remains closed on the `0.9.x` line, smoke-runs both deterministic solver strategies, and then produces the Web release build.
