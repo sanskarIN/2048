@@ -22,41 +22,52 @@ void main() {
       }
     });
 
-    test('permanent workflows reject high-risk trigger and permission patterns', () {
-      final workflows = Directory('.github/workflows')
-          .listSync()
-          .whereType<File>()
-          .where((file) => file.path.endsWith('.yml'));
+    test(
+      'permanent workflows reject high-risk trigger and permission patterns',
+      () {
+        final workflows = Directory('.github/workflows')
+            .listSync()
+            .whereType<File>()
+            .where((file) => file.path.endsWith('.yml'));
 
-      for (final workflow in workflows) {
-        final source = workflow.readAsStringSync();
-        expect(
-          source,
-          isNot(contains('pull_request_target:')),
-          reason: '${workflow.path} must not execute privileged PR-target code',
-        );
-        expect(
-          source,
-          isNot(contains('write-all')),
-          reason: '${workflow.path} must not request blanket write permissions',
-        );
-      }
-    });
+        for (final workflow in workflows) {
+          final source = workflow.readAsStringSync();
+          expect(
+            source,
+            isNot(contains('pull_request_target:')),
+            reason:
+                '${workflow.path} must not execute privileged PR-target code',
+          );
+          expect(
+            source,
+            isNot(contains('write-all')),
+            reason:
+                '${workflow.path} must not request blanket write permissions',
+          );
+        }
+      },
+    );
 
-    test('repository-writing workflows preserve identity and avoid force pushes', () {
-      for (final path in <String>[
-        '.github/workflows/bootstrap-branding.yml',
-        '.github/workflows/bootstrap-platforms.yml',
-        '.github/workflows/format-code.yml',
-        '.github/workflows/lock-dependencies.yml',
-      ]) {
-        final source = File(path).readAsStringSync();
-        expect(source, contains('contents: write'));
-        expect(source, contains('git config user.name "Sanskar"'));
-        expect(source, contains('git config user.email "sanskarin@outlook.in"'));
-        expect(source, isNot(contains('git push --force')));
-        expect(source, isNot(contains('git push -f')));
-      }
-    });
+    test(
+      'repository-writing workflows preserve identity and avoid force pushes',
+      () {
+        for (final path in <String>[
+          '.github/workflows/bootstrap-branding.yml',
+          '.github/workflows/bootstrap-platforms.yml',
+          '.github/workflows/format-code.yml',
+          '.github/workflows/lock-dependencies.yml',
+        ]) {
+          final source = File(path).readAsStringSync();
+          expect(source, contains('contents: write'));
+          expect(source, contains('git config user.name "Sanskar"'));
+          expect(
+            source,
+            contains('git config user.email "sanskarin@outlook.in"'),
+          );
+          expect(source, isNot(contains('git push --force')));
+          expect(source, isNot(contains('git push -f')));
+        }
+      },
+    );
   });
 }
