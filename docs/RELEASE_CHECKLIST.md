@@ -13,6 +13,12 @@ Current objective evidence is recorded in `docs/VERIFICATION.md` and `what_chang
 - [x] Permanent CI proves strict `--stable` remains fail-closed while the package is `0.9.x`
 - [x] `dart run tool/solver_benchmark.dart 8` smoke-runs both deterministic Auto Play strategies
 - [x] `flutter build web --release`
+- [x] `flutter pub get` leaves `pubspec.lock` and `analysis_options.yaml` unchanged in permanent CI
+- [x] Warning-enforced Web build contains the Cupertino icon font and does not emit the missing-font warning
+- [x] Native jobs verify generated dependency/plugin registration files stay synchronized
+- [x] macOS generated plugin registration includes `FilePickerPlugin` for Game Backup file transport
+- [x] Android/Linux/Windows/macOS/unsigned-iOS outputs are packaged with payload SHA-256 sidecars
+- [x] Five native qualification artifacts upload successfully with hard failure on missing output files and 14-day retention
 - [x] Android release APK builds on the configured hosted runner
 - [x] Linux release builds on the configured hosted runner
 - [x] Windows release builds on the configured hosted runner
