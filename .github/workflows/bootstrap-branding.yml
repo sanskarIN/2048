@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -53,15 +53,11 @@ jobs:
                       width, height = current.size
                   render_png(path, width, height)
 
-          # Android launcher icons: preserve each density's template size.
           replace_template_pngs('android/app/src/main/res/mipmap-*/ic_launcher.png')
-
-          # Apple launcher icons and the native iOS launch image.
           replace_template_pngs('ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png')
           replace_template_pngs('ios/Runner/Assets.xcassets/LaunchImage.imageset/*.png')
           replace_template_pngs('macos/Runner/Assets.xcassets/AppIcon.appiconset/*.png')
 
-          # Windows multi-resolution ICO.
           buffer = BytesIO()
           cairosvg.svg2png(
               bytestring=svg,
@@ -78,7 +74,6 @@ jobs:
               sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)],
           )
 
-          # Web/PWA and reusable high-resolution source export.
           render_png('web/icons/Icon-192.png', 192)
           render_png('web/icons/Icon-512.png', 512)
           render_png('web/icons/Icon-maskable-192.png', 192)
