@@ -8,9 +8,9 @@ void main() {
       final log = File('what_changed.md').readAsStringSync();
 
       expect(log, contains('**Current phase:** Phase 29'));
-      expect(log, contains('232/232 tests'));
-      expect(log, contains('105 files formatter-clean'));
-      expect(log, contains('32016750775'));
+      expect(log, contains('235/235 tests'));
+      expect(log, contains('106 files formatter-clean'));
+      expect(log, contains('32018055661'));
       expect(log, contains('32015893841'));
     });
 
@@ -21,7 +21,7 @@ void main() {
 
       expect(phase29, greaterThanOrEqualTo(0));
       expect(phase28, greaterThan(phase29));
-      expect(verification, contains('Tests: PASS — 232/232'));
+      expect(verification, contains('Tests: PASS — 235/235'));
     });
 
     test('roadmap and changelog expose the current CI baseline', () {
@@ -30,10 +30,10 @@ void main() {
 
       expect(
         roadmap,
-        contains('Phase 29 current maintained CI is 232/232 tests'),
+        contains('Phase 29 current maintained CI is 235/235 tests'),
       );
       expect(roadmap, isNot(contains('maintained CI is now 208/208 tests')));
-      expect(changelog, contains('Maintained CI now passes 232/232 tests'));
+      expect(changelog, contains('Maintained CI now passes 235/235 tests'));
     });
   });
 }

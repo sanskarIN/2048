@@ -51,6 +51,26 @@ Platform Builds run `32015893841`:
 - macOS + unsigned iOS release — job `95345267946`: **SUCCESS**;
 - expected release packages/checksums and qualification artifact uploads completed successfully.
 
+## Post-finalization permanent CI
+
+Final audit source:
+
+`657cfb986090a15429ebb38ddf8196b02095f9e4` — `docs: record final Version 1.5 source audit`
+
+Permanent CI run `32018055661`, job `95351676619`: **SUCCESS**.
+
+- Flutter **3.47.0 stable** / Dart **3.13.0**;
+- **106** Dart files formatter-clean;
+- analyzer: **No issues found**;
+- **235/235 tests passed**, including all three `current_release_state_test.dart` drift checks;
+- candidate release gate: **passed**;
+- strict stable gate: correctly remained **closed** with **0/13** manual checks;
+- deterministic solver smoke benchmark: **passed**;
+- WASM dry run: **passed**;
+- Web release build: **passed**.
+
+This supersedes the 232-test Phase 29 CI count only for the current finalized candidate tree; the earlier run remains valid historical evidence for the timestamp-hardening source itself.
+
 ## Final source audit
 
 Repository search at finalization found no tracked `TODO`, `FIXME`, or `UnimplementedError` placeholders.

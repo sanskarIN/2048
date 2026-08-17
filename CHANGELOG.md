@@ -74,7 +74,7 @@ All notable changes to this project are documented here.
 - Read-only CI, Dependency Review, and native checkouts no longer persist Git credentials after checkout; repository-writing workflows retain only the credential needed for their explicit push purpose.
 - Android hosted builds now install explicit Temurin JDK 17 through immutable setup-java and verify the Gradle 9.7.0 complete distribution with the publisher SHA-256.
 - Branding export now installs an exactly pinned Python build-time environment from `tool/branding-requirements.txt` instead of floating CairoSVG/Pillow packages.
-- Maintained CI now passes 232/232 tests, 105-file formatting, metadata drift checks, release gates, solver smoke, and a warning-enforced Web build after Phase 29 timestamp/release-evidence hardening.
+- Final Version 1.5 candidate CI passes 235/235 tests, 106-file formatting, metadata drift checks, release gates, solver smoke, current-state drift regressions, and a warning-enforced Web build after Phase 29 timestamp/release-evidence hardening.
 - Android build tooling now uses AGP 9.1.0, Kotlin Android 2.4.10, and Gradle 9.7.0 after a coordinated safe-subset qualification on JDK 17 and all hosted targets.
 - AGP 9.3.1 is intentionally deferred under issue #10: its Android release lint failed on JDK 17 but passed a branch-only JDK 21 diagnostic; release lint was not disabled and the project Java baseline was not raised solely as a workaround.
 - Stable `file_picker 11.0.2` remains in Version 1.5 while the relevant built-in-Kotlin cleanup is still on the package's 12.0.0 prerelease line.

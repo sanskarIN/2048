@@ -2,6 +2,30 @@
 
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
+## Final Version 1.5 release-candidate verification
+
+Date: **2026-08-17**
+
+```text
+Final audit source: 657cfb986090a15429ebb38ddf8196b02095f9e4
+CI run: 32018055661
+CI job: 95351676619
+Result: SUCCESS
+Runner: 2.336.0 / Ubuntu 24.04.4 LTS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+Formatting: PASS — 106 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 235/235
+Candidate readiness: PASS — candidateGatePassed=true; readyForStable=false; 0/13 manual evidence complete
+Stable promotion boundary: PASS — strict stable mode correctly remained closed
+Solver smoke benchmark: PASS
+WASM dry run: PASS
+Web release: PASS — build/web
+```
+
+This run verifies the finalized Phase 29 tree together with the permanent current-release-state drift regressions. The Phase 29 232-test record below remains historical evidence for the timestamp-hardening source before the three final state-consistency tests were added.
+
 ## Phase 29 — Cross-platform timestamp and release-evidence integrity hardening
 
 Date: **2026-08-17**

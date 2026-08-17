@@ -26,7 +26,7 @@ Completed in the current release-candidate line:
 - Phase 23 makes Flutter-managed metadata reproducible, includes the Cupertino icon font without Web warnings, verifies generated plugin registration, uses checkout v6, and guards these repository contracts with focused tests.
 - Native hosted builds now package SHA-256 sidecars and retain five short-lived qualification artifacts for Android, Linux, Windows, macOS, and unsigned iOS; artifacts remain inputs to manual qualification rather than substitutes for it.
 - Permanent CI also exposes an explicit maintainer dispatch path, regression guarded so bot-authored documentation/generator heads can be verified without relying on recursive workflow-token pushes.
-- Release-readiness CLI regression fixtures exercise both opening and fail-closed branches end to end, including a fully qualified synthetic stable fixture plus malformed/incomplete evidence rejection. Phase 29 current maintained CI is 232/232 tests with 105 Dart files formatter-clean, UTC-normalized portable timestamps, and explicit-offset release-evidence validation.
+- Release-readiness CLI regression fixtures exercise both opening and fail-closed branches end to end, including a fully qualified synthetic stable fixture plus malformed/incomplete evidence rejection. Final Version 1.5 candidate CI is 235/235 tests with 106 Dart files formatter-clean; Phase 29 UTC-normalized portable timestamps, explicit-offset release-evidence validation, and current-state drift regressions are all covered.
 
 Remaining release qualification before `1.5.0`:
 
