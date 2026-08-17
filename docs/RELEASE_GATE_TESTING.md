@@ -24,13 +24,36 @@ dart run tool/release_readiness.dart --stable --json
 `test/release_readiness_cli_test.dart` exercises the actual CLI process against generated temporary fixtures. The focused scenarios are:
 
 1. A valid `1.5.0+15` release candidate passes candidate mode while remaining not ready for stable promotion.
-2. A complete `1.5.0+1` fixture with a `[1.5.0]` changelog section and passed evidence for all 13 required checks succeeds in strict stable mode.
+2. A complete `1.5.0+1` fixture with a `[1.5.0]` changelog section and passed evidence for all 13 required checks succeeds in strict stable mode; its evidence timestamps use an explicit numeric offset.
 3. A nominal `1.5.0` fixture with pending manual evidence is rejected by strict stable mode.
 4. A qualification-manifest candidate that disagrees with `pubspec.yaml` is rejected.
 5. A check marked `passed` without evidence or a timestamp is rejected.
 6. A manifest missing one of the required stable check IDs is rejected.
 
-These tests are intentionally file-system/process level. They protect argument parsing, root resolution, required-file checks, version parsing, JSON decoding, manifest validation, evidence policy, stable metadata requirements, exit codes, and JSON output together instead of mocking those boundaries independently.
+`test/release_evidence_timestamp_test.dart` adds a focused release-evidence timestamp boundary:
+
+7. A check marked `passed` with evidence but with timezone-less `updatedAt` text such as `2026-08-17T14:30:00` is rejected. Release evidence must identify an absolute instant through `Z` or an explicit numeric UTC offset.
+
+These tests are intentionally file-system/process level. They protect argument parsing, root resolution, required-file checks, version parsing, JSON decoding, manifest validation, evidence policy, absolute timestamp requirements, stable metadata requirements, exit codes, and JSON output together instead of mocking those boundaries independently.
+
+## Why evidence timestamps require a timezone
+
+Manual release evidence may be recorded on Android, iOS, Windows, macOS, Linux, or Web qualification systems located in different time zones. A timestamp without `Z` or an offset is only a local wall-clock label and can be interpreted differently by another machine.
+
+Accepted examples include:
+
+```text
+2026-08-17T09:00:00Z
+2026-08-17T14:30:00+05:30
+```
+
+An ambiguous value such as this is rejected:
+
+```text
+2026-08-17T14:30:00
+```
+
+This rule applies to release qualification evidence. Legacy player-save timestamp compatibility is documented separately in [`PORTABLE_TIMESTAMPS.md`](PORTABLE_TIMESTAMPS.md).
 
 ## Trust boundary
 
@@ -38,19 +61,6 @@ Fixture tests prove that the gate accepts and rejects metadata correctly. They d
 
 ## Verification record
 
-Accepted current-source evidence:
+Historical accepted-source evidence remains preserved in `VERIFICATION.md`, the phase verification documents, and `what_changed.md`. Current Phase 29 verification records the portable timestamp and absolute release-evidence regression additions together with the latest permanent CI and native-build evidence.
 
-```text
-Source: 57c6312ee26eed0cea8597ebf6417d442cf988cc
-CI run: 31932367464
-CI job: 95129044532
-Formatting: PASS — 97 files, 0 changed
-Analysis: PASS — No issues found
-Tests: PASS — 200/200, including all 6 gate fixture scenarios
-Candidate gate: PASS — 0/13 real-world checks complete; readyForStable=false
-Stable boundary: PASS — current RC refused exactly as intended
-Solver smoke: PASS
-Web/WASM verification: PASS
-```
-
-Historical Phase 22 evidence remains valid for the first gate implementation, while this run supersedes its automated test count for the current source state. Full details are also recorded in `docs/VERIFICATION.md` and `what_changed.md`.
+The live Version 1.5 qualification manifest remains **0/13** real-world checks complete, so strict stable promotion remains intentionally fail-closed.
