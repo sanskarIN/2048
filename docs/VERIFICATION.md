@@ -2,6 +2,41 @@
 
 This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
+## Phase 29 — Cross-platform timestamp and release-evidence integrity hardening
+
+Date: **2026-08-17**
+
+```text
+Quality source: 32d50735065cb4ec084990ccfe178d16ba5f0c79
+CI run: 32016750775
+CI job: 95347802636
+Result: SUCCESS
+Runner: 2.336.0 / Ubuntu 24.04.4 LTS
+Flutter: 3.47.0 stable
+Dart: 3.13.0
+Formatting: PASS — 105 files, 0 changed
+Static analysis: PASS — No issues found
+Tests: PASS — 232/232
+Candidate readiness: PASS — candidateGatePassed=true; readyForStable=false; 0/13 manual evidence complete
+Stable promotion boundary: PASS — strict stable mode correctly remained closed
+Solver smoke benchmark: PASS
+WASM dry run: PASS
+Web release: PASS — build/web
+```
+
+```text
+Native source: 439a4441ebd2b36c4e1b6e0700d6f3d3359bd016
+Platform Builds run: 32015893841
+Android job 95345268019: SUCCESS — JDK 17, release APK, checksum, artifact upload
+Linux job 95345268049: SUCCESS — release bundle, checksum, artifact upload
+Windows job 95345268000: SUCCESS — release bundle, checksum, artifact upload
+macOS + unsigned iOS job 95345267946: SUCCESS — both release builds, checksums, artifact uploads
+```
+
+Phase 29 normalizes persisted game-start, Backup export, Full Replay export, and Daily record timestamps to absolute UTC while retaining legacy timezone-less game-state readability. The release gate also rejects timezone-less passed-evidence timestamps so future qualification evidence always identifies an absolute instant. Focused details are in [`PHASE_29_VERIFICATION.md`](PHASE_29_VERIFICATION.md) and [`PORTABLE_TIMESTAMPS.md`](PORTABLE_TIMESTAMPS.md).
+
+GitHub issue #10 remains the explicit AGP 9.3/JDK-17 compatibility hold and issue #12 remains the repository-settings protection task. Real-world stable qualification remains **0/13**; no physical-device, assistive-technology, signing, or store evidence is inferred from hosted automation.
+
 ## Phase 28 — Workflow and supply-chain reproducibility hardening
 
 Date: **2026-08-16**

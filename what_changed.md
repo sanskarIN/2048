@@ -13,10 +13,10 @@
 - **Creator / branding:** Sanskar / **Made by the Sanskar**
 - **Commit email used by repository automation:** `sanskarin@outlook.in`
 - **License:** MIT
-- **Current phase:** Phase 28 — workflow and supply-chain reproducibility hardening complete; permanent CI is green at 225 tests with immutable Action revisions, Flutter 3.47.0, disabled composite-action cache execution, least-privilege checkout credentials, explicit Android Temurin 17, verified Gradle 9.7 distribution checksum, and pinned branding-generator dependencies; AGP issue #10 and repository-protection issue #12 remain explicit; 13 real-world qualification checks remain before stable promotion
-- **Latest accepted Version 1.5 native-matrix source:** `f694f508057ebcf1e91a825a90cc764398051647` — `ci(android): pin hosted JDK 17 runtime`
-- **Permanent Version 1.5 CI evidence:** run `31948413257`, job `95167995837` — SUCCESS, 225/225 tests, 99 files formatter-clean, analyzer clean, Flutter 3.47.0, candidate gate passed, strict stable gate correctly closed, solver smoke passed, WASM/Web release passed
-- **Version 1.5 native build evidence:** Platform Builds run `31948335974` — Android, Linux, Windows, macOS, and unsigned iOS jobs all SUCCESS with immutable workflow revisions, frozen Flutter 3.47.0, read-only checkout credential persistence disabled, explicit Android JDK 17, checksummed packaging, and 14-day qualification artifacts
+- **Current phase:** Phase 29 — cross-platform timestamp and release-evidence integrity hardening complete; permanent CI is green at 232 tests with 105 Dart files formatter-clean, analyzer-clean Flutter 3.47.0 / Dart 3.13.0, UTC-normalized persisted/portable timestamps, explicit-offset release evidence enforcement, and a fail-closed 0/13 stable qualification boundary; AGP issue #10 and repository-protection issue #12 remain explicit
+- **Latest accepted Version 1.5 native-matrix source:** `439a4441ebd2b36c4e1b6e0700d6f3d3359bd016` — `fix: normalize daily record timestamps to utc`
+- **Permanent Version 1.5 CI evidence:** run `32016750775`, job `95347802636` — SUCCESS, 232/232 tests, 105 files formatter-clean, analyzer clean, Flutter 3.47.0 / Dart 3.13.0, candidate gate passed, strict stable gate correctly closed at 0/13 manual evidence, solver smoke passed, WASM dry run passed, Web release passed
+- **Version 1.5 native build evidence:** Platform Builds run `32015893841` — Android job `95345268019`, Linux `95345268049`, Windows `95345268000`, and macOS + unsigned iOS `95345267946` all SUCCESS with checksummed qualification artifacts
 - **Manual qualification boundary:** `0/13` real-world evidence items are passed; no physical-device, assistive-technology, external-handler, long-session, signing/provisioning, or store-distribution evidence has been synthesized
 
 ---
