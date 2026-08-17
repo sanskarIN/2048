@@ -252,7 +252,7 @@ class ReplayArchive {
     return jsonEncode({
       'format': format,
       'version': version,
-      'exportedAt': (exportedAt ?? DateTime.now().toUtc()).toIso8601String(),
+      'exportedAt': (exportedAt ?? DateTime.now()).toUtc().toIso8601String(),
       'capture': capture.toJson(),
     });
   }
