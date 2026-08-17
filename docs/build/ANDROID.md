@@ -1,10 +1,10 @@
 # Android Build Guide
 
-This guide covers every Android artifact type that is practical for the current 2048 Nova Flutter project: debug APK, profile APK, release APK, ABI-split release APKs, and release Android App Bundle (`.aab`).
+This guide covers the Android artifact types supported by the current 2048 Nova Flutter project: debug APK, profile APK, universal release APK, ABI-split release APKs, and release Android App Bundle (`.aab`).
 
 ## Repository baseline
 
-The current Version 1.5 Android baseline is intentionally maintained as:
+The current Version 1.5 Android baseline is:
 
 - Flutter hosted CI: **3.47.0**
 - JDK hosted CI: **Temurin 17**
@@ -13,19 +13,20 @@ The current Version 1.5 Android baseline is intentionally maintained as:
 - Gradle: **9.7.0**
 - Android application ID: `com.sanskarin.nova_2048`
 
-Do not casually upgrade the toolchain values as independent settings. See [`../ANDROID_TOOLCHAIN.md`](../ANDROID_TOOLCHAIN.md) and GitHub issue #10 for the AGP 9.3.x deferral evidence.
+Do not casually upgrade these as independent values. See [`../ANDROID_TOOLCHAIN.md`](../ANDROID_TOOLCHAIN.md) and GitHub issue #10 for the AGP 9.3.x deferral evidence.
 
 ## Current release-signing state
 
-The tracked `android/app/build.gradle.kts` deliberately maps the Android `release` build type to the **debug signing configuration** so public hosted CI can compile and package release-mode code without storing a private production keystore.
+The tracked `android/app/build.gradle.kts` deliberately maps the Android `release` build type to the **debug signing configuration** so public hosted CI can compile/package release-mode code without storing a private production keystore.
 
-That means:
+Therefore:
 
-- `flutter build apk --release` produces an optimized release-mode APK, but in the current repository configuration it is **qualification/debug-key signed**, not a production Play signing identity;
-- `flutter build appbundle --release` uses the same tracked release signing configuration unless you intentionally supply a separate secure production configuration;
-- a successful hosted release APK must not be described as the final production-signed Play artifact.
+- `flutter build apk --release` produces an optimized release-mode APK, but with the repository's qualification/debug signing identity;
+- `flutter build appbundle --release` produces an optimized release-mode AAB under the same tracked qualification signing configuration;
+- both APK and AAB are now built and checksummed by the hosted `Platform Builds` workflow;
+- neither hosted artifact should be described as the final production Play signing identity.
 
-Before public store distribution, replace/override that qualification signing path with a secure production upload/signing setup outside committed secrets, then rebuild and re-qualify the exact production-signed artifact.
+Before public store distribution, configure a secure production upload/signing path outside committed secrets, rebuild from the exact intended release commit, and re-qualify that production-signed output.
 
 ## Prerequisites
 
@@ -34,8 +35,8 @@ Install:
 - Flutter SDK;
 - Android SDK and platform/build tools;
 - JDK compatible with the maintained Android toolchain;
-- Android licenses;
-- optional emulator or physical device for installation/testing.
+- accepted Android SDK licenses;
+- optional emulator or physical Android device for installation/testing.
 
 Verify:
 
@@ -46,7 +47,7 @@ flutter doctor -v
 flutter devices
 ```
 
-Install project dependencies:
+Install dependencies:
 
 ```bash
 flutter pub get
@@ -60,13 +61,13 @@ Build:
 flutter build apk --debug
 ```
 
-Expected output:
+Output:
 
 ```text
 build/app/outputs/flutter-apk/app-debug.apk
 ```
 
-Use a debug APK only for development/debugging. It is larger/slower and should not be presented as the production release artifact.
+Use only for development/debugging.
 
 ## Profile APK
 
@@ -76,15 +77,15 @@ Build:
 flutter build apk --profile
 ```
 
-Expected output:
+Output:
 
 ```text
 build/app/outputs/flutter-apk/app-profile.apk
 ```
 
-Profile mode is intended for performance investigation on supported hardware. Do not treat it as the public release package.
+Profile mode is for performance investigation on supported hardware; it is not the final public release package.
 
-## Release APK
+## Universal release APK
 
 Build:
 
@@ -92,32 +93,34 @@ Build:
 flutter build apk --release
 ```
 
-Expected output:
+Output:
 
 ```text
 build/app/outputs/flutter-apk/app-release.apk
 ```
 
-This is the Android artifact currently built by `.github/workflows/platform-builds.yml` for hosted qualification. In the tracked project configuration it uses the debug signing key intentionally for qualification, while still compiling Flutter/Android code in release mode.
+This is directly installable on compatible Android devices and is one of the two Android release outputs qualified by the hosted native matrix.
 
-### CI-compatible checksum
+### APK checksum
 
-On Linux:
+Linux:
 
 ```bash
 sha256sum build/app/outputs/flutter-apk/app-release.apk \
   > build/app/outputs/flutter-apk/app-release.apk.sha256
 ```
 
-Verify later with:
+PowerShell:
 
-```bash
-sha256sum -c build/app/outputs/flutter-apk/app-release.apk.sha256
+```powershell
+$path = "build/app/outputs/flutter-apk/app-release.apk"
+$hash = (Get-FileHash $path -Algorithm SHA256).Hash.ToLower()
+"$hash  app-release.apk" | Out-File -Encoding ascii "$path.sha256"
 ```
 
 ## ABI-split release APKs
 
-Build smaller architecture-specific APKs with:
+Build:
 
 ```bash
 flutter build apk --release --split-per-abi
@@ -129,19 +132,9 @@ Inspect:
 build/app/outputs/flutter-apk/
 ```
 
-Typical Flutter outputs include architecture-specific APKs for the configured Android target ABIs, such as ARM 32-bit, ARM 64-bit, and x86-64. Exact filenames/architectures should be read from the generated directory because Flutter/toolchain defaults can evolve.
+Use split APKs only when the distribution path knows which ABI each user/device needs. Exact generated filenames/ABIs should be read from the output directory because Flutter/toolchain defaults can evolve.
 
-When Flutter applies ABI-specific version-code offsets, do not assume every split has the exact same effective version code as the universal APK; inspect generated package metadata when that matters to a distribution workflow.
-
-### When to use split APKs
-
-Use split APKs when:
-
-- you control which ABI each package is delivered to;
-- a distribution service accepts separate APKs;
-- you want smaller per-device downloads.
-
-Do not send one architecture-specific APK to users whose devices may require another ABI.
+When Flutter applies ABI-specific version-code offsets, do not assume every split has the same effective version code as the universal APK; inspect generated package metadata when that matters.
 
 ## Release Android App Bundle (AAB)
 
@@ -151,15 +144,15 @@ Build:
 flutter build appbundle --release
 ```
 
-Expected output:
+Output:
 
 ```text
 build/app/outputs/bundle/release/app-release.aab
 ```
 
-Use an AAB for Google Play-style distribution. An AAB is a publishing bundle from which device-specific APKs are generated; it is not normally installed directly by tapping it on a device.
+Use an AAB for Google Play-style distribution. An AAB is a publishing bundle from which device-specific APKs are produced; it is not normally installed directly by tapping it on a device.
 
-The current hosted `Platform Builds` workflow does **not** publish an AAB qualification artifact. If the release channel requires AAB, build it from the same candidate commit, apply the intended production signing/upload configuration, and qualify that exact output before store submission.
+The hosted `Platform Builds` workflow now builds this AAB from the same source/toolchain as the release APK and uploads it in the `nova-2048-android-release` qualification artifact.
 
 ### AAB checksum
 
@@ -178,71 +171,93 @@ $hash = (Get-FileHash $path -Algorithm SHA256).Hash.ToLower()
 "$hash  app-release.aab" | Out-File -Encoding ascii "$path.sha256"
 ```
 
+## Hosted Android qualification artifact
+
+The current native workflow publishes:
+
+```text
+nova-2048-android-release
+  app-release.apk
+  app-release.apk.sha256
+  app-release.aab
+  app-release.aab.sha256
+```
+
+`if-no-files-found: error` prevents a missing APK/AAB from silently producing a successful empty artifact.
+
 ## Clean rebuild
 
-When diagnosing stale Android outputs:
+When diagnosing stale Android output:
 
 ```bash
 flutter clean
 flutter pub get
 flutter build apk --release
+flutter build appbundle --release
 ```
 
-If Gradle/toolchain state is suspected, inspect `flutter doctor -v`, `java -version`, Gradle/AGP/Kotlin versions, and the repository's Android toolchain documentation before deleting or regenerating runner configuration.
+If Gradle/toolchain state is suspected, inspect `flutter doctor -v`, `java -version`, Gradle/AGP/Kotlin versions, and the repository Android toolchain policy before deleting/regenerating runner configuration.
 
 ## Installing an APK for testing
 
-With a connected device recognized by Android tooling, a generated APK may be installed using standard Android/ADB workflows. For normal Flutter development, the simplest route is often:
+For normal Flutter development:
 
 ```bash
 flutter run -d <android-device-id>
 ```
 
-For release qualification, install the exact release artifact intended for testing rather than assuming a debug run proves release behavior.
+For release qualification, install/test the exact release APK artifact intended for qualification rather than assuming a debug run proves release behavior.
 
-## Version overrides
+The AAB itself is not the normal direct-install artifact; use the release APK for direct sideload testing unless your store/bundle workflow intentionally generates installable APKs from the AAB.
 
-Source version is defined in `pubspec.yaml`. Flutter also supports build-time overrides:
+## Version/build overrides
+
+Source version is defined in `pubspec.yaml`.
+
+Flutter also supports build-time overrides:
 
 ```bash
 flutter build apk --release --build-name=1.5.0 --build-number=15
 flutter build appbundle --release --build-name=1.5.0 --build-number=15
 ```
 
-For official project releases, update and validate repository metadata instead of relying only on local command-line overrides.
+For official releases, keep repository metadata aligned rather than relying only on local overrides.
 
-## Signing boundary
+## Production signing boundary
 
-A locally generated release artifact is not automatically equivalent to a production-signed Play release.
+A locally/hosted generated release artifact is not automatically equivalent to a production-signed Play release.
 
 Production Android distribution may require:
 
 - a private upload/signing key;
-- Gradle signing configuration or store-managed app signing;
-- secure passwords/aliases;
-- Play Console application/listing configuration.
+- secure Gradle signing configuration or store-managed app signing;
+- protected passwords/aliases;
+- Play Console app/listing configuration.
 
-Never commit a private keystore, keystore password, key password, or secret signing property file to this public repository.
+Never commit:
 
-The repository's hosted qualification workflow intentionally avoids pretending that CI compilation supplies your private production identity. Changing from the tracked debug-key qualification signing to production signing is itself a release-sensitive change and the resulting artifact must be tested.
+- private `.jks`/keystore files;
+- keystore passwords;
+- key passwords;
+- private signing properties;
+- store API credentials.
 
-## Play Store preparation boundary
+If production signing is added locally or in protected CI, treat the resulting package as a different release-sensitive artifact and re-test it.
 
-Before store publication, separately verify:
+## APK versus AAB decision
 
-- package/application ID `com.sanskarin.nova_2048` remains the intended store identity;
-- app version/build number;
-- min/target SDK requirements;
-- launcher icon and splash presentation;
-- signing/upload key configuration;
-- privacy/store declarations;
-- screenshots/listing text;
-- physical-device lifecycle and save/resume;
-- TalkBack/accessibility behavior;
-- Challenge Code QR/copy/paste behavior;
-- Backup/file-provider behavior.
+Use **APK** when you need:
 
-See `docs/release_qualification.json` and [`../RELEASE_QUALIFICATION.md`](../RELEASE_QUALIFICATION.md).
+- direct installation/sideloading;
+- device/manual qualification;
+- a distribution channel that accepts APKs.
+
+Use **AAB** when you need:
+
+- Google Play-style publishing;
+- store-generated device-specific APK delivery.
+
+Use **split APKs** only when your delivery path explicitly manages ABIs.
 
 ## Common failures
 
@@ -254,41 +269,53 @@ Run:
 flutter doctor -v
 ```
 
-Resolve the Android toolchain items Flutter reports before retrying.
+Resolve Android toolchain items before retrying.
 
 ### Wrong Java runtime
-
-Check:
 
 ```bash
 java -version
 flutter doctor -v
 ```
 
-Current hosted Android qualification uses Temurin JDK 17. Do not switch the project baseline merely to hide a Gradle/lint failure without updating and validating the documented toolchain policy.
+Hosted Android qualification uses Temurin JDK 17.
 
 ### Gradle/AGP/Kotlin failure
 
-Consult [`../ANDROID_TOOLCHAIN.md`](../ANDROID_TOOLCHAIN.md). The project has explicit regression coverage around its accepted Android versions.
+Consult [`../ANDROID_TOOLCHAIN.md`](../ANDROID_TOOLCHAIN.md). The project has explicit regression coverage for its accepted Android versions.
 
-### Build succeeds but installation fails
+### Build succeeds but APK installation fails
 
-Check the target device architecture, Android version, signing state, existing installed package/signature, available storage, and whether you built an ABI-specific APK incompatible with the device.
+Check:
 
-A production-signed build and the current debug-key qualification build have different signing identities. Android may reject an in-place update if an installed package with the same application ID was signed by a different key; uninstall/reinstall or use the correct upgrade-signing lineage as appropriate to the test scenario.
+- target device Android version;
+- target ABI if using split APKs;
+- available storage;
+- installed package/signature lineage;
+- whether an existing package with the same application ID was signed by a different key.
+
+The current qualification build and a future production-signed build may use different signing identities, so Android can reject an in-place update across mismatched signatures.
+
+### AAB builds but cannot be directly installed
+
+That is expected. AAB is a publishing bundle, not normally a tap-to-install package.
 
 ## Release verification checklist
 
 Before distributing an Android artifact:
 
 1. `flutter pub get` completes without unintended lockfile drift.
-2. Formatter/analyzer/tests pass.
-3. `flutter build apk --release` or `flutter build appbundle --release` succeeds.
-4. Signing identity/state is explicitly known; do not confuse tracked debug-key qualification signing with production signing.
-5. SHA-256 is generated and verified for the packaged artifact.
-6. Exact release artifact is installed/tested on representative physical Android devices.
-7. Lifecycle, background/foreground, save/resume, orientation, gestures, and long-session behavior are tested.
-8. TalkBack/large-text/Hindi behavior is checked.
-9. Native icon/splash appearance is reviewed.
-10. Production signing is configured outside Git and the production-signed artifact is re-tested.
-11. Required release evidence is recorded before stable promotion.
+2. Formatter, analyzer, and tests pass.
+3. Candidate release-readiness check passes.
+4. `flutter build apk --release` succeeds.
+5. `flutter build appbundle --release` succeeds when AAB distribution is intended.
+6. Signing identity/state is explicitly known.
+7. SHA-256 sidecars are generated and verified.
+8. The exact release APK is tested on representative physical Android devices.
+9. Lifecycle, save/resume, gestures, orientation, long-session, Challenge Code, Backup, Replay, and external-handler behavior are checked.
+10. TalkBack, large-text, high-contrast, reduced-motion, and Hindi behavior are checked.
+11. Native launcher icon/splash presentation is reviewed.
+12. Production signing is configured outside Git and the exact production-signed artifact is re-tested.
+13. Required real-world release evidence is recorded before stable promotion.
+
+See [`../RELEASE_QUALIFICATION.md`](../RELEASE_QUALIFICATION.md), [`../RELEASE_ARTIFACTS.md`](../RELEASE_ARTIFACTS.md), and [`SIGNING_AND_DISTRIBUTION.md`](SIGNING_AND_DISTRIBUTION.md).
