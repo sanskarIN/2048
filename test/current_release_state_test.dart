@@ -24,9 +24,10 @@ void main() {
       expect(verification, contains('Tests: PASS — 235/235'));
     });
 
-    test('roadmap and changelog expose the current CI baseline', () {
+    test('roadmap, changelog, and About expose the current release line', () {
       final roadmap = File('ROADMAP.md').readAsStringSync();
       final changelog = File('CHANGELOG.md').readAsStringSync();
+      final about = File('lib/features/about/about_screen.dart').readAsStringSync();
 
       expect(
         roadmap,
@@ -37,6 +38,8 @@ void main() {
         changelog,
         contains('Final Version 1.5 candidate CI passes 235/235 tests'),
       );
+      expect(about, contains('Version \${ProjectInfo.version} release candidate'));
+      expect(about, isNot(contains('Release candidate 0.9')));
     });
   });
 }
