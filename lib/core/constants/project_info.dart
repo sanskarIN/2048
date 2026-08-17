@@ -9,6 +9,7 @@ abstract final class ProjectInfo {
   static const githubProfile = 'https://www.github.com/sanskarIN';
   static const linkedIn = 'https://www.linkedin.com/in/sanskarIN';
   static const buyMeACoffee = 'https://buymeacoffee.com/sanskarIN';
+  static const gumroad = 'https://ramsandesh.gumroad.com';
   static const businessEmailPrimary = 'sanskarin@outlook.in';
   static const businessEmailSecondary = 'sanskarin.business@gmail.com';
   static const supportEmail = 'supportramsandesh@gmail.com';
