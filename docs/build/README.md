@@ -21,6 +21,7 @@ This directory contains the detailed build instructions for every executable or 
 | Signing/distribution | [`SIGNING_AND_DISTRIBUTION.md`](SIGNING_AND_DISTRIBUTION.md) | Android/Apple/Windows/Linux/Web signing, notarization, store, and secret-management boundaries |
 | Build troubleshooting | [`BUILD_TROUBLESHOOTING.md`](BUILD_TROUBLESHOOTING.md) | Cross-platform environment, dependency, signing, runtime-bundle, and checksum troubleshooting |
 | Release build checklist | [`RELEASE_BUILD_CHECKLIST.md`](RELEASE_BUILD_CHECKLIST.md) | Cross-platform source, build, packaging, signing, real-target, and stable-gate checklist |
+| Final executable/code audit | [`FINAL_EXECUTABLE_AUDIT.md`](FINAL_EXECUTABLE_AUDIT.md) | Latest hosted APK/AAB, desktop, Apple, Web, analyzer/test evidence and remaining release boundaries |
 
 The cross-platform overview and artifact matrix are in [`../BUILDING_EXECUTABLES.md`](../BUILDING_EXECUTABLES.md).
 
