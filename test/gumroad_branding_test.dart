@@ -53,7 +53,10 @@ void main() {
         'assets/branding/ramsandesh_gumroad_badge.svg',
       ).readAsStringSync();
 
-      expect(badge, contains('<title id="title">Ramsandesh on Gumroad</title>'));
+      expect(
+        badge,
+        contains('<title id="title">Ramsandesh on Gumroad</title>'),
+      );
       expect(badge, contains('<desc id="desc">'));
       expect(badge, contains('ramsandesh.gumroad.com'));
       expect(badge, isNot(contains('href="http')));
