@@ -23,6 +23,8 @@ This directory is the user, technical, development, platform, and release docume
 | [`ACCESSIBILITY.md`](ACCESSIBILITY.md) | Implemented accessibility features and remaining manual assistive-technology checks, including localized semantics. |
 | [`PRIVACY.md`](PRIVACY.md) | Offline-first data behavior, language/localization, clipboard, external links, local storage, both replay systems, Auto Play, Backup, and Challenge Code privacy. |
 | [`DEVELOPMENT.md`](DEVELOPMENT.md) | Development environment, repository layout, localization practices, local workflow, testing, and contribution practices. |
+| [`BUILDING_EXECUTABLES.md`](BUILDING_EXECUTABLES.md) | Complete artifact matrix and release-build handbook for Android APK/AAB, iOS app/IPA, Web/PWA, Windows, macOS, Linux, packaging, checksums, signing boundaries, and qualification. |
+| [`build/README.md`](build/README.md) | Dedicated per-platform build manuals and packaging/checksum guide. |
 | [`PLATFORMS.md`](PLATFORMS.md) | Android/iOS/Web/Windows/macOS/Linux setup, build commands, hosted verification, locale behavior, and signing/distribution boundaries. |
 | [`ANDROID_TOOLCHAIN.md`](ANDROID_TOOLCHAIN.md) | Maintained AGP/Kotlin/Gradle baseline, AGP 9.3 deferral evidence, upgrade acceptance rules, and revisit criteria. |
 | [`CI_CD.md`](CI_CD.md) | Permanent GitHub Actions workflows, quality gates, native build matrix, and automation boundaries. |
@@ -76,6 +78,7 @@ A feature should not be documented as ranked/trusted when its source policy make
 - **Application routes/localization delegates:** `lib/app/nova_app.dart`.
 - **Current package/version:** `pubspec.yaml`.
 - **Automated quality gates:** `.github/workflows/`.
+- **Executable/distribution build documentation:** `BUILDING_EXECUTABLES.md` plus `build/`; actual hosted commands remain in `.github/workflows/ci.yml` and `.github/workflows/platform-builds.yml`.
 - **Hosted native qualification artifacts:** `.github/workflows/platform-builds.yml`; handling policy is `RELEASE_ARTIFACTS.md`.
 - **Stable-release evidence gate:** `tool/release_readiness.dart` plus `release_qualification.json`; human procedure is `RELEASE_QUALIFICATION.md`.
 
