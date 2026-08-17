@@ -30,10 +30,13 @@ void main() {
 
       expect(
         roadmap,
-        contains('Phase 29 current maintained CI is 235/235 tests'),
+        contains('Final Version 1.5 candidate CI is 235/235 tests'),
       );
       expect(roadmap, isNot(contains('maintained CI is now 208/208 tests')));
-      expect(changelog, contains('Maintained CI now passes 235/235 tests'));
+      expect(
+        changelog,
+        contains('Final Version 1.5 candidate CI passes 235/235 tests'),
+      );
     });
   });
 }
