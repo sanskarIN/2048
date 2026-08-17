@@ -26,7 +26,7 @@ class GameBackup {
     return jsonEncode({
       'format': format,
       'version': version,
-      'exportedAt': (exportedAt ?? DateTime.now().toUtc()).toIso8601String(),
+      'exportedAt': (exportedAt ?? DateTime.now()).toUtc().toIso8601String(),
       'game': state.toJson(),
     });
   }
