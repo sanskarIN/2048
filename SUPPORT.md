@@ -10,6 +10,7 @@ This file explains where to ask for help with 2048 Nova and what information mak
 - Feature requests: use the repository feature-request template.
 - Documentation improvements: use the documentation issue template.
 - Support email: **supportramsandesh@gmail.com**
+- Gumroad storefront: **https://ramsandesh.gumroad.com**
 
 Before filing a setup/build issue, check [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md), [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md), and the current [`docs/VERIFICATION.md`](docs/VERIFICATION.md).
 
@@ -59,6 +60,19 @@ The Challenge Code checksum is not secret/authentication material. Security repo
 - Business: **sanskarin.business@gmail.com**
 - GitHub profile: https://www.github.com/sanskarIN
 - LinkedIn: https://www.linkedin.com/in/sanskarIN
+- Gumroad: **https://ramsandesh.gumroad.com**
+
+## Gumroad storefront
+
+<a href="https://ramsandesh.gumroad.com">
+  <img src="assets/branding/ramsandesh_gumroad_badge.svg" alt="Ramsandesh on Gumroad" width="310" />
+</a>
+
+The highlighted Ramsandesh Gumroad storefront is available at:
+
+**https://ramsandesh.gumroad.com**
+
+The repository uses an original storefront badge rather than claiming that the project is officially endorsed by Gumroad.
 
 ## Buy Me a Coffee
 
