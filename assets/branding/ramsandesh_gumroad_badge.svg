@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="140" viewBox="0 0 620 140" role="img" aria-labelledby="title desc">
+  <title id="title">Ramsandesh on Gumroad</title>
+  <desc id="desc">Original repository badge linking to the Ramsandesh Gumroad storefront.</desc>
+  <defs>
+    <linearGradient id="storeGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff90e8"/>
+      <stop offset="1" stop-color="#8ac7ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="620" height="140" rx="28" fill="#242423"/>
+  <rect x="18" y="18" width="104" height="104" rx="24" fill="url(#storeGradient)"/>
+  <path d="M48 45h44l10 18v36a8 8 0 0 1-8 8H46a8 8 0 0 1-8-8V63l10-18Zm2 10-5 9h50l-5-9H50Zm0 20v21h40V75H50Z" fill="#242423"/>
+  <text x="148" y="59" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="800" fill="#ffffff">RAMSANDESH ON GUMROAD</text>
+  <text x="148" y="94" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="600" fill="#f2f2f2">ramsandesh.gumroad.com</text>
+  <text x="148" y="119" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#cfcfcf">Storefront • Books • Digital releases</text>
+</svg>
