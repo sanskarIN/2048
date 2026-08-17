@@ -31,6 +31,7 @@ This directory is the user, technical, development, platform, and release docume
 | [`CI_CD.md`](CI_CD.md) | Permanent GitHub Actions workflows, quality gates, native build matrix, and automation boundaries. |
 | [`WORKFLOW_SECURITY.md`](WORKFLOW_SECURITY.md) | Immutable Action revisions, frozen Flutter/JDK execution, least-privilege checkout credentials, reproducibility limits, and repository-setting boundaries. |
 | [`TESTING.md`](TESTING.md) | Automated test strategy, regression areas, and current evidence. |
+| [`FINAL_RELEASE_CANDIDATE_AUDIT.md`](FINAL_RELEASE_CANDIDATE_AUDIT.md) | Final Version 1.5 source audit, post-finalization 235-test/106-file CI evidence, native-build evidence, and the remaining real-world stable-release boundaries. |
 | [`VERIFICATION.md`](VERIFICATION.md) | Compact current automated verification record. |
 | [`PHASE_29_VERIFICATION.md`](PHASE_29_VERIFICATION.md) | Portable UTC timestamp hardening, Time Challenge cross-timezone integrity, absolute release-evidence timestamp enforcement, focused regressions, permanent CI, and native-matrix evidence. |
 | [`PHASE_28_VERIFICATION.md`](PHASE_28_VERIFICATION.md) | Focused immutable-workflow, frozen-toolchain, least-privilege, 225-test, Dependency Review, branding, and native-matrix evidence. |
@@ -91,11 +92,12 @@ When a document and source code disagree, review current source/tests and correc
 
 For current release confidence, consult in this order:
 
-1. [`VERIFICATION.md`](VERIFICATION.md) for the compact latest confirmed automated state.
-2. [`PHASE_29_VERIFICATION.md`](PHASE_29_VERIFICATION.md) for the latest focused timestamp/release-evidence hardening acceptance record.
-3. [`TESTING.md`](TESTING.md) for coverage intent and regression areas.
-4. [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) for automated plus remaining manual qualification.
-5. [`../what_changed.md`](../what_changed.md) for the complete chronological record, including intermediate failures and fixes.
+1. [`FINAL_RELEASE_CANDIDATE_AUDIT.md`](FINAL_RELEASE_CANDIDATE_AUDIT.md) for the final Version 1.5 source-controlled audit and post-finalization CI/native evidence.
+2. [`VERIFICATION.md`](VERIFICATION.md) for the compact latest confirmed automated state.
+3. [`PHASE_29_VERIFICATION.md`](PHASE_29_VERIFICATION.md) for the focused timestamp/release-evidence hardening acceptance record.
+4. [`TESTING.md`](TESTING.md) for coverage intent and regression areas.
+5. [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) for automated plus remaining manual qualification.
+6. [`../what_changed.md`](../what_changed.md) for the complete chronological record, including intermediate failures and fixes.
 
 ## Project identity
 
