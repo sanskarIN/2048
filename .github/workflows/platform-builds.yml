@@ -39,7 +39,7 @@ concurrency:
 
 jobs:
   android:
-    name: Android release APK
+    name: Android release APK and AAB
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -59,18 +59,23 @@ jobs:
       - run: flutter pub get
       - name: Verify dependency lockfile is synchronized
         run: git diff --exit-code -- pubspec.lock
-      - run: flutter build apk --release
-      - name: Create Android checksum
-        run: >-
-          sha256sum build/app/outputs/flutter-apk/app-release.apk
-          > build/app/outputs/flutter-apk/app-release.apk.sha256
-      - name: Upload Android qualification artifact
+      - name: Build Android release APK
+        run: flutter build apk --release
+      - name: Build Android release App Bundle
+        run: flutter build appbundle --release
+      - name: Create Android checksums
+        run: |
+          sha256sum build/app/outputs/flutter-apk/app-release.apk > build/app/outputs/flutter-apk/app-release.apk.sha256
+          sha256sum build/app/outputs/bundle/release/app-release.aab > build/app/outputs/bundle/release/app-release.aab.sha256
+      - name: Upload Android qualification artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: nova-2048-android-release
           path: |
             build/app/outputs/flutter-apk/app-release.apk
             build/app/outputs/flutter-apk/app-release.apk.sha256
+            build/app/outputs/bundle/release/app-release.aab
+            build/app/outputs/bundle/release/app-release.aab.sha256
           if-no-files-found: error
           retention-days: 14
 
