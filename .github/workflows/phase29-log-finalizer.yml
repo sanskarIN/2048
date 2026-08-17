@@ -1,0 +1,78 @@
+name: Phase 29 Documentation Finalizer
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .phase29-log.md
+      - .github/workflows/phase29-log-finalizer.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase29-documentation-finalizer
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Append Phase 29 continuity and changelog records
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          marker = '## Phase 29 — cross-platform timestamp and release-evidence integrity hardening'
+          payload_path = Path('.phase29-log.md')
+          continuity_path = Path('what_changed.md')
+          changelog_path = Path('CHANGELOG.md')
+
+          payload = payload_path.read_text(encoding='utf-8').strip()
+          continuity = continuity_path.read_text(encoding='utf-8')
+          if marker not in continuity:
+              continuity = continuity.rstrip() + '\n\n' + payload + '\n'
+              continuity_path.write_text(continuity, encoding='utf-8')
+
+          changelog = changelog_path.read_text(encoding='utf-8')
+          bullets = [
+              '- Cross-platform timestamp serialization now records game starts, Game Backup/Full Replay export metadata, and Daily record update times as absolute UTC instants while preserving legacy game-state readability.',
+              '- Release qualification now rejects timezone-less passed-evidence timestamps and requires an explicit UTC (`Z`) or numeric offset before evidence can satisfy the stable gate.',
+          ]
+          missing = [bullet for bullet in bullets if bullet not in changelog]
+          if missing:
+              anchor = '### Fixed\n'
+              if anchor not in changelog:
+                  raise SystemExit('CHANGELOG.md is missing the Unreleased Fixed section')
+              changelog = changelog.replace(
+                  anchor,
+                  anchor + ''.join(f'{bullet}\n' for bullet in missing),
+                  1,
+              )
+              changelog_path.write_text(changelog, encoding='utf-8')
+          PY
+
+      - name: Remove temporary finalizer inputs
+        run: rm -f .phase29-log.md .github/workflows/phase29-log-finalizer.yml
+
+      - name: Commit Phase 29 records
+        shell: bash
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+          git add CHANGELOG.md what_changed.md .phase29-log.md .github/workflows/phase29-log-finalizer.yml
+          if git diff --cached --quiet; then
+            echo "Phase 29 records were already finalized."
+            exit 0
+          fi
+          git commit -m "docs: finalize Phase 29 continuity records"
+          git pull --rebase origin main
+          git push origin HEAD:main
