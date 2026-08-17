@@ -12,6 +12,7 @@ This directory contains the detailed build instructions for every executable or 
 | Windows | [`WINDOWS.md`](WINDOWS.md) | native `.exe` plus required runtime bundle |
 | macOS | [`MACOS.md`](MACOS.md) | `.app` application bundle |
 | Linux | [`LINUX.md`](LINUX.md) | native executable plus required libraries/data bundle |
+| Output names/paths | [`OUTPUT_PATHS.md`](OUTPUT_PATHS.md) | Exact current runner binary names, application IDs, bundle names, output directories, and CI archive names |
 | Packaging | [`PACKAGING_AND_CHECKSUMS.md`](PACKAGING_AND_CHECKSUMS.md) | ZIP/TAR qualification archives and SHA-256 sidecars |
 
 The cross-platform overview and artifact matrix are in [`../BUILDING_EXECUTABLES.md`](../BUILDING_EXECUTABLES.md).
