@@ -21,6 +21,38 @@ class SupportScreen extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
+                  const Icon(Icons.storefront_rounded, size: 56),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Ramsandesh on Gumroad',
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  const SelectableText(
+                    ProjectInfo.gumroad,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  Semantics(
+                    button: true,
+                    label: 'Open Ramsandesh on Gumroad',
+                    child: FilledButton.icon(
+                      onPressed: () =>
+                          openExternal(context, ProjectInfo.gumroad),
+                      icon: const Icon(Icons.open_in_new_rounded),
+                      label: const Text('Open Gumroad'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
                   const Icon(Icons.coffee_rounded, size: 56),
                   const SizedBox(height: 12),
                   Text(
