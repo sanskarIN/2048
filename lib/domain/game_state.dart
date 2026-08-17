@@ -57,7 +57,7 @@ class GameState {
     'status': status.name,
     'hasAcknowledgedWin': hasAcknowledgedWin,
     'rngState': rngState,
-    'startedAt': startedAt.toIso8601String(),
+    'startedAt': startedAt.toUtc().toIso8601String(),
   };
 
   factory GameState.fromJson(Map<String, Object?> json) {
