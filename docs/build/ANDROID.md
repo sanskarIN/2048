@@ -11,8 +11,21 @@ The current Version 1.5 Android baseline is intentionally maintained as:
 - Android Gradle Plugin: **9.1.0**
 - Kotlin Android: **2.4.10**
 - Gradle: **9.7.0**
+- Android application ID: `com.sanskarin.nova_2048`
 
-Do not casually upgrade these as independent values. See [`../ANDROID_TOOLCHAIN.md`](../ANDROID_TOOLCHAIN.md) and GitHub issue #10 for the AGP 9.3.x deferral evidence.
+Do not casually upgrade the toolchain values as independent settings. See [`../ANDROID_TOOLCHAIN.md`](../ANDROID_TOOLCHAIN.md) and GitHub issue #10 for the AGP 9.3.x deferral evidence.
+
+## Current release-signing state
+
+The tracked `android/app/build.gradle.kts` deliberately maps the Android `release` build type to the **debug signing configuration** so public hosted CI can compile and package release-mode code without storing a private production keystore.
+
+That means:
+
+- `flutter build apk --release` produces an optimized release-mode APK, but in the current repository configuration it is **qualification/debug-key signed**, not a production Play signing identity;
+- `flutter build appbundle --release` uses the same tracked release signing configuration unless you intentionally supply a separate secure production configuration;
+- a successful hosted release APK must not be described as the final production-signed Play artifact.
+
+Before public store distribution, replace/override that qualification signing path with a secure production upload/signing setup outside committed secrets, then rebuild and re-qualify the exact production-signed artifact.
 
 ## Prerequisites
 
@@ -85,7 +98,7 @@ Expected output:
 build/app/outputs/flutter-apk/app-release.apk
 ```
 
-This is the Android artifact currently built by `.github/workflows/platform-builds.yml` for hosted qualification.
+This is the Android artifact currently built by `.github/workflows/platform-builds.yml` for hosted qualification. In the tracked project configuration it uses the debug signing key intentionally for qualification, while still compiling Flutter/Android code in release mode.
 
 ### CI-compatible checksum
 
@@ -118,6 +131,8 @@ build/app/outputs/flutter-apk/
 
 Typical Flutter outputs include architecture-specific APKs for the configured Android target ABIs, such as ARM 32-bit, ARM 64-bit, and x86-64. Exact filenames/architectures should be read from the generated directory because Flutter/toolchain defaults can evolve.
 
+When Flutter applies ABI-specific version-code offsets, do not assume every split has the exact same effective version code as the universal APK; inspect generated package metadata when that matters to a distribution workflow.
+
 ### When to use split APKs
 
 Use split APKs when:
@@ -143,6 +158,8 @@ build/app/outputs/bundle/release/app-release.aab
 ```
 
 Use an AAB for Google Play-style distribution. An AAB is a publishing bundle from which device-specific APKs are generated; it is not normally installed directly by tapping it on a device.
+
+The current hosted `Platform Builds` workflow does **not** publish an AAB qualification artifact. If the release channel requires AAB, build it from the same candidate commit, apply the intended production signing/upload configuration, and qualify that exact output before store submission.
 
 ### AAB checksum
 
@@ -207,13 +224,13 @@ Production Android distribution may require:
 
 Never commit a private keystore, keystore password, key password, or secret signing property file to this public repository.
 
-The repository's hosted qualification workflow intentionally avoids pretending that CI compilation supplies your private production identity.
+The repository's hosted qualification workflow intentionally avoids pretending that CI compilation supplies your private production identity. Changing from the tracked debug-key qualification signing to production signing is itself a release-sensitive change and the resulting artifact must be tested.
 
 ## Play Store preparation boundary
 
 Before store publication, separately verify:
 
-- package/application ID;
+- package/application ID `com.sanskarin.nova_2048` remains the intended store identity;
 - app version/build number;
 - min/target SDK requirements;
 - launcher icon and splash presentation;
@@ -258,6 +275,8 @@ Consult [`../ANDROID_TOOLCHAIN.md`](../ANDROID_TOOLCHAIN.md). The project has ex
 
 Check the target device architecture, Android version, signing state, existing installed package/signature, available storage, and whether you built an ABI-specific APK incompatible with the device.
 
+A production-signed build and the current debug-key qualification build have different signing identities. Android may reject an in-place update if an installed package with the same application ID was signed by a different key; uninstall/reinstall or use the correct upgrade-signing lineage as appropriate to the test scenario.
+
 ## Release verification checklist
 
 Before distributing an Android artifact:
@@ -265,10 +284,11 @@ Before distributing an Android artifact:
 1. `flutter pub get` completes without unintended lockfile drift.
 2. Formatter/analyzer/tests pass.
 3. `flutter build apk --release` or `flutter build appbundle --release` succeeds.
-4. SHA-256 is generated and verified for the packaged artifact.
-5. Exact release artifact is installed/tested on representative physical Android devices.
-6. Lifecycle, background/foreground, save/resume, orientation, gestures, and long-session behavior are tested.
-7. TalkBack/large-text/Hindi behavior is checked.
-8. Native icon/splash appearance is reviewed.
-9. Production signing is configured outside Git.
-10. Required release evidence is recorded before stable promotion.
+4. Signing identity/state is explicitly known; do not confuse tracked debug-key qualification signing with production signing.
+5. SHA-256 is generated and verified for the packaged artifact.
+6. Exact release artifact is installed/tested on representative physical Android devices.
+7. Lifecycle, background/foreground, save/resume, orientation, gestures, and long-session behavior are tested.
+8. TalkBack/large-text/Hindi behavior is checked.
+9. Native icon/splash appearance is reviewed.
+10. Production signing is configured outside Git and the production-signed artifact is re-tested.
+11. Required release evidence is recorded before stable promotion.
