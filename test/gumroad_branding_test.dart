@@ -14,7 +14,10 @@ void main() {
       expect(source, contains("static const gumroad = '$gumroadUrl';"));
     });
 
-    test('About and Support expose the canonical Gumroad destination', () {
+    test('Home About and Support expose the Gumroad destination', () {
+      final home = File(
+        'lib/features/home/home_screen.dart',
+      ).readAsStringSync();
       final about = File(
         'lib/features/about/about_screen.dart',
       ).readAsStringSync();
@@ -22,6 +25,9 @@ void main() {
         'lib/features/support/support_screen.dart',
       ).readAsStringSync();
 
+      expect(home, contains('ProjectInfo.gumroad'));
+      expect(home, contains('Ramsandesh on Gumroad'));
+      expect(home, contains('Icons.storefront_rounded'));
       expect(about, contains('ProjectInfo.gumroad'));
       expect(about, contains('Icons.storefront_rounded'));
       expect(support, contains('ProjectInfo.gumroad'));
