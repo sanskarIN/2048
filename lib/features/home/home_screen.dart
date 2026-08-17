@@ -116,6 +116,16 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Semantics(
               button: true,
+              label: 'Open Ramsandesh on Gumroad',
+              child: FilledButton.tonalIcon(
+                onPressed: () => openExternal(context, ProjectInfo.gumroad),
+                icon: const Icon(Icons.storefront_rounded),
+                label: const Text('Ramsandesh on Gumroad'),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Semantics(
+              button: true,
               label: l10n.text('Support Sanskar on Buy Me a Coffee'),
               child: OutlinedButton.icon(
                 onPressed: () =>
