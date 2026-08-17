@@ -12,9 +12,13 @@ This directory contains the detailed build instructions for every executable or 
 | Windows | [`WINDOWS.md`](WINDOWS.md) | native `.exe` plus required runtime bundle |
 | macOS | [`MACOS.md`](MACOS.md) | `.app` application bundle |
 | Linux | [`LINUX.md`](LINUX.md) | native executable plus required libraries/data bundle |
+| Host prerequisites | [`HOST_PREREQUISITES.md`](HOST_PREREQUISITES.md) | Per-target host OS, SDK/toolchain requirements, CI host mapping, and diagnostic commands |
 | Quick commands | [`QUICK_COMMANDS.md`](QUICK_COMMANDS.md) | Compact build command reference for every supported target |
 | Output names/paths | [`OUTPUT_PATHS.md`](OUTPUT_PATHS.md) | Exact current runner binary names, application IDs, bundle names, output directories, and CI archive names |
+| CI parity | [`CI_PARITY.md`](CI_PARITY.md) | Local commands mapped to permanent quality/native GitHub Actions workflows |
 | Packaging | [`PACKAGING_AND_CHECKSUMS.md`](PACKAGING_AND_CHECKSUMS.md) | ZIP/TAR qualification archives and SHA-256 sidecars |
+| Signing/distribution | [`SIGNING_AND_DISTRIBUTION.md`](SIGNING_AND_DISTRIBUTION.md) | Android/Apple/Windows/Linux/Web signing, notarization, store, and secret-management boundaries |
+| Build troubleshooting | [`BUILD_TROUBLESHOOTING.md`](BUILD_TROUBLESHOOTING.md) | Cross-platform environment, dependency, signing, runtime-bundle, and checksum troubleshooting |
 | Release build checklist | [`RELEASE_BUILD_CHECKLIST.md`](RELEASE_BUILD_CHECKLIST.md) | Cross-platform source, build, packaging, signing, real-target, and stable-gate checklist |
 
 The cross-platform overview and artifact matrix are in [`../BUILDING_EXECUTABLES.md`](../BUILDING_EXECUTABLES.md).
