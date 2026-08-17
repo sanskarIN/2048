@@ -46,18 +46,37 @@ Replay event timing itself remains stored as bounded elapsed milliseconds from t
 
 Daily records remain local history and are not included in Game Backup imports. This normalization is a persistence-consistency hardening measure rather than a change to Daily Challenge ranking or seed semantics.
 
+### Release qualification evidence
+
+Manual release evidence in `docs/release_qualification.json` must use an `updatedAt` timestamp that identifies an absolute instant. The release-readiness gate now rejects a timezone-less value such as:
+
+```text
+2026-08-17T14:30:00
+```
+
+and accepts ISO-8601 timestamps with an explicit UTC or numeric offset, for example:
+
+```text
+2026-08-17T09:00:00Z
+2026-08-17T14:30:00+05:30
+```
+
+This prevents future physical-device, accessibility, signing, and distribution evidence from depending on the timezone of whichever machine happens to validate the manifest. The requirement was tightened while the manifest still had no passed manual checks, so no accepted real-world evidence had to be rewritten or discarded.
+
 ## Backward compatibility
 
-The parser intentionally continues to accept older timezone-less ISO-8601 timestamp strings. Rejecting them would make existing saved data unnecessarily unreadable.
+The game-state parser intentionally continues to accept older timezone-less ISO-8601 timestamp strings. Rejecting them would make existing saved data unnecessarily unreadable.
 
 Compatibility behavior is therefore:
 
-1. an older timezone-less timestamp can still be parsed using the existing parser;
+1. an older timezone-less game timestamp can still be parsed using the existing parser;
 2. the restored game remains usable under the same compatibility rules as before;
 3. when that state is serialized again, the timestamp is emitted in UTC with `Z`;
 4. newly created/exported data is unambiguous across time zones.
 
 Because an older exported string omitted its original timezone, software cannot reconstruct timezone information that was never recorded. The compatibility path avoids inventing an offset while ensuring all future writes are normalized.
+
+Release qualification evidence is different: future `passed` evidence is an audit record rather than legacy player state, so its timestamp is required to carry an explicit timezone/offset instead of using the player-save compatibility rule.
 
 ## Time Challenge behavior
 
@@ -67,14 +86,15 @@ Regression coverage verifies that a serialized/restored timed game still remains
 
 ## Schema compatibility
 
-This hardening does **not** require a GameState, Game Backup, Replay Archive, or Daily history schema/version bump because:
+This hardening does **not** require a GameState, Game Backup, Replay Archive, Daily history, or release-qualification manifest schema/version bump because:
 
 - the JSON field names and types are unchanged;
-- ISO-8601 text with `Z` is already accepted by the existing parsers;
-- old timezone-less values remain accepted;
+- ISO-8601 text with `Z` is already accepted by the existing game/protocol parsers;
+- old timezone-less game-state values remain accepted;
+- the manual evidence manifest had no passed records that depended on timezone-less timestamps;
 - deterministic state structure is unchanged.
 
-A future protocol change that changes field meaning or stops accepting existing valid data should use the normal explicit version/migration process.
+A future protocol change that changes field meaning or stops accepting existing valid player data should use the normal explicit version/migration process.
 
 ## Tests
 
@@ -84,7 +104,9 @@ Focused regression coverage lives in:
 - `test/portable_export_timestamp_test.dart` — Game Backup and Full Replay export metadata UTC normalization;
 - `test/legacy_timestamp_compatibility_test.dart` — old timezone-less saves remain readable and serialize back as UTC;
 - `test/timed_restore_timestamp_test.dart` — restored Time Challenge expiration preserves the same absolute deadline;
-- `test/daily_record_utc_test.dart` — directly constructed Daily record metadata serializes as an absolute UTC instant.
+- `test/daily_record_utc_test.dart` — directly constructed Daily record metadata serializes as an absolute UTC instant;
+- `test/release_evidence_timestamp_test.dart` — timezone-less passed release evidence is rejected;
+- `test/release_readiness_cli_test.dart` — stable fixture evidence with an explicit numeric offset remains accepted.
 
 ## Non-portable local metadata
 
@@ -94,7 +116,7 @@ Some application metadata, such as achievement unlock display timestamps, is loc
 
 UTC normalization prevents timezone ambiguity. It is **not** authentication, anti-cheat protection, cryptographic signing, or proof that a user-supplied portable timestamp is truthful.
 
-Game Backup imports remain unranked, Full Replay imports remain spectator-only, and validation/ranking boundaries documented elsewhere remain unchanged.
+Game Backup imports remain unranked, Full Replay imports remain spectator-only, and validation/ranking boundaries documented elsewhere remain unchanged. Release evidence still requires truthful human qualification; an explicit offset only makes its recorded time unambiguous.
 
 Related documentation:
 
