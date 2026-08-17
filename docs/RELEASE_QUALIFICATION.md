@@ -30,7 +30,7 @@ Stable mode exits with a failure unless all of the following are true:
 - `CHANGELOG.md` contains a `## [1.5.0]` release section;
 - every required qualification item in `docs/release_qualification.json` has status `passed`;
 - every passed item contains non-empty evidence;
-- every passed item contains a valid ISO-8601 `updatedAt` timestamp;
+- every passed item contains a valid ISO-8601 `updatedAt` timestamp with an explicit UTC (`Z`) or numeric offset;
 - the candidate value in the qualification manifest exactly matches the package version;
 - all required release, support, security, roadmap, CI, and continuity files exist and are non-empty.
 
@@ -50,7 +50,9 @@ The current schema version is `1`. Each entry has:
 - `title` — human-readable qualification scope;
 - `status` — one of `pending`, `passed`, or `blocked`;
 - `evidence` — concise evidence that another maintainer can verify;
-- `updatedAt` — ISO-8601 timestamp for the latest qualification result.
+- `updatedAt` — ISO-8601 timestamp for the latest qualification result, with an explicit UTC (`Z`) or numeric timezone offset.
+
+Timezone-less evidence timestamps such as `2026-08-17T14:30:00` are rejected because they do not identify one unambiguous instant across machines and time zones. Use values such as `2026-08-17T09:00:00Z` or `2026-08-17T14:30:00+05:30` instead.
 
 Do not mark an item `passed` merely because a widget or unit test covers similar behavior. These entries exist specifically for checks that require representative real environments or external handlers.
 
@@ -120,7 +122,7 @@ The CI gate intentionally runs candidate mode, not `--stable`, while the project
 
 When every real-world qualification item is genuinely complete:
 
-1. Update each manifest item to `passed` with verifiable evidence and an ISO-8601 timestamp.
+1. Update each manifest item to `passed` with verifiable evidence and an ISO-8601 timestamp containing explicit `Z` or a numeric timezone offset.
 2. Resolve every release-blocking defect discovered during qualification.
 3. Change `pubspec.yaml` to the final `1.5.0` version/build number.
 4. Change the manifest `candidate` field to exactly the same version.
@@ -135,18 +137,18 @@ A stable tag should never be used as a substitute for the evidence above.
 
 ## Automated gate regression fixtures
 
-The release gate itself is regression-tested through `test/release_readiness_cli_test.dart`. The maintenance CLI accepts `--root=<path>` so tests can construct isolated temporary repository fixtures without mutating the real checkout:
+The release gate itself is regression-tested through `test/release_readiness_cli_test.dart` and the focused timestamp fixture in `test/release_evidence_timestamp_test.dart`. The maintenance CLI accepts `--root=<path>` so tests can construct isolated temporary repository fixtures without mutating the real checkout:
 
 ```bash
 dart run tool/release_readiness.dart --root=<fixture-path> --json
 ```
 
-The fixture option exists for testability only. It does not turn synthetic metadata into real release evidence. The suite exercises candidate success, complete stable success, stable refusal with pending evidence, package/manifest candidate mismatch, false `passed` entries without evidence/timestamps, and missing required qualification IDs. See [`RELEASE_GATE_TESTING.md`](RELEASE_GATE_TESTING.md).
+The fixture option exists for testability only. It does not turn synthetic metadata into real release evidence. The suite exercises candidate success, complete stable success with explicit-offset timestamps, stable refusal with pending evidence, package/manifest candidate mismatch, false `passed` entries without evidence/timestamps, rejection of ambiguous timezone-less passed evidence, and missing required qualification IDs. See [`RELEASE_GATE_TESTING.md`](RELEASE_GATE_TESTING.md).
 
-Current accepted source `57c6312ee26eed0cea8597ebf6417d442cf988cc` passed permanent CI run `31932367464` with **200/200 tests**. The live Version 1.5 candidate still reports **0/13** real-world qualification items complete, so strict stable mode correctly remains closed.
+Historical automated evidence remains recorded in [`VERIFICATION.md`](VERIFICATION.md), the phase verification documents, and `what_changed.md`. The live Version 1.5 candidate still reports **0/13** real-world qualification items complete, so strict stable mode correctly remains closed.
 
 ## Hosted qualification artifacts
 
-The permanent native build matrix now publishes short-lived checksummed outputs documented in [`RELEASE_ARTIFACTS.md`](RELEASE_ARTIFACTS.md). Use those outputs when they help perform a real target check against a known source commit.
+The permanent native build matrix publishes short-lived checksummed outputs documented in [`RELEASE_ARTIFACTS.md`](RELEASE_ARTIFACTS.md). Use those outputs when they help perform a real target check against a known source commit.
 
 Artifact existence, hosted compilation, checksum generation, and upload success **do not** mark any manual manifest item passed. Evidence must still describe what was exercised on the representative real environment. An unsigned iOS artifact is compilation/package evidence only until real signing/provisioning and device/distribution checks are completed.
