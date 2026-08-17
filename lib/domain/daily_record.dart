@@ -49,7 +49,7 @@ class DailyRecord {
     'highestTile': highestTile,
     'completed': completed,
     'won': won,
-    'updatedAt': updatedAt.toIso8601String(),
+    'updatedAt': updatedAt.toUtc().toIso8601String(),
   };
 
   factory DailyRecord.fromJson(Map<String, Object?> json) {
