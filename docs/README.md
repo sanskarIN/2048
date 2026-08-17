@@ -16,7 +16,7 @@ This directory is the user, technical, development, platform, and release docume
 | [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md) | Shareable seeded challenge format, deterministic behavior, validation, checksum, and trust model. |
 | [`LOCALIZATION.md`](LOCALIZATION.md) | English/Hindi locale architecture, persisted language selection, fallback rules, contributor guidance, privacy, and accessibility boundaries. |
 | [`DATA_STORAGE.md`](DATA_STORAGE.md) | Local storage keys, save schemas, bounded collections, corruption recovery, replay capture persistence, and reset behavior. |
-| [`PORTABLE_TIMESTAMPS.md`](PORTABLE_TIMESTAMPS.md) | UTC serialization for game/session/export/Daily timestamps, cross-timezone portability, legacy compatibility, and Time Challenge deadline integrity. |
+| [`PORTABLE_TIMESTAMPS.md`](PORTABLE_TIMESTAMPS.md) | UTC serialization for game/session/export/Daily timestamps, cross-timezone portability, legacy compatibility, Time Challenge deadline integrity, and absolute release-evidence timestamps. |
 | [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md) | Portable current-game backup format, clipboard workflow, strict validation, and unranked-import policy. |
 | [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md) | Full-session deterministic replay capture, portable JSON protocol, 4,096-event bound, spectator-only import, validation, privacy, and trust model. |
 | [`HINT_SOLVER.md`](HINT_SOLVER.md) | Deterministic heuristic Hint plus isolated Heuristic/Expectimax Auto Play behavior and limitations. |
@@ -32,6 +32,7 @@ This directory is the user, technical, development, platform, and release docume
 | [`WORKFLOW_SECURITY.md`](WORKFLOW_SECURITY.md) | Immutable Action revisions, frozen Flutter/JDK execution, least-privilege checkout credentials, reproducibility limits, and repository-setting boundaries. |
 | [`TESTING.md`](TESTING.md) | Automated test strategy, regression areas, and current evidence. |
 | [`VERIFICATION.md`](VERIFICATION.md) | Compact current automated verification record. |
+| [`PHASE_29_VERIFICATION.md`](PHASE_29_VERIFICATION.md) | Portable UTC timestamp hardening, Time Challenge cross-timezone integrity, absolute release-evidence timestamp enforcement, focused regressions, permanent CI, and native-matrix evidence. |
 | [`PHASE_28_VERIFICATION.md`](PHASE_28_VERIFICATION.md) | Focused immutable-workflow, frozen-toolchain, least-privilege, 225-test, Dependency Review, branding, and native-matrix evidence. |
 | [`PHASE_27_VERIFICATION.md`](PHASE_27_VERIFICATION.md) | Focused Android toolchain experiment, AGP 9.3 deferral, accepted Kotlin/Gradle subset, 217-test, and post-merge native-matrix evidence. |
 | [`PHASE_26_VERIFICATION.md`](PHASE_26_VERIFICATION.md) | Focused checkout v7, Dependency Review v5, 216-test, Web, and cross-platform Actions-runtime verification record. |
@@ -91,9 +92,10 @@ When a document and source code disagree, review current source/tests and correc
 For current release confidence, consult in this order:
 
 1. [`VERIFICATION.md`](VERIFICATION.md) for the compact latest confirmed automated state.
-2. [`TESTING.md`](TESTING.md) for coverage intent and regression areas.
-3. [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) for automated plus remaining manual qualification.
-4. [`../what_changed.md`](../what_changed.md) for the complete chronological record, including intermediate failures and fixes.
+2. [`PHASE_29_VERIFICATION.md`](PHASE_29_VERIFICATION.md) for the latest focused timestamp/release-evidence hardening acceptance record.
+3. [`TESTING.md`](TESTING.md) for coverage intent and regression areas.
+4. [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) for automated plus remaining manual qualification.
+5. [`../what_changed.md`](../what_changed.md) for the complete chronological record, including intermediate failures and fixes.
 
 ## Project identity
 
