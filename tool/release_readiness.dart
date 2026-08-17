@@ -347,10 +347,11 @@ List<_ManualCheck> _validateManifest({
     DateTime? parsedUpdatedAt;
     if (updatedAt is String && updatedAt.trim().isNotEmpty) {
       parsedUpdatedAt = DateTime.tryParse(updatedAt);
-      if (parsedUpdatedAt == null) {
+      if (parsedUpdatedAt == null || !parsedUpdatedAt.isUtc) {
         failures.add(
-          'Manual check "$id" updatedAt must be an ISO-8601 timestamp.',
+          'Manual check "$id" updatedAt must be an ISO-8601 timestamp with an explicit UTC or numeric offset.',
         );
+        parsedUpdatedAt = null;
       }
     }
 
