@@ -8,12 +8,14 @@ This directory contains the detailed build instructions for every executable or 
 | --- | --- | --- |
 | Android | [`ANDROID.md`](ANDROID.md) | APK, split APKs, Android App Bundle (`.aab`) |
 | iOS | [`IOS.md`](IOS.md) | unsigned `.app`, signed/exported `.ipa` when Apple signing is configured |
-| Web / PWA | [`WEB.md`](WEB.md) | deployable `build/web/` static bundle |
+| Web / PWA | [`WEB.md`](WEB.md) | deployable `build/web/` static bundle, plus optional Wasm build path |
 | Windows | [`WINDOWS.md`](WINDOWS.md) | native `.exe` plus required runtime bundle |
 | macOS | [`MACOS.md`](MACOS.md) | `.app` application bundle |
 | Linux | [`LINUX.md`](LINUX.md) | native executable plus required libraries/data bundle |
+| Quick commands | [`QUICK_COMMANDS.md`](QUICK_COMMANDS.md) | Compact build command reference for every supported target |
 | Output names/paths | [`OUTPUT_PATHS.md`](OUTPUT_PATHS.md) | Exact current runner binary names, application IDs, bundle names, output directories, and CI archive names |
 | Packaging | [`PACKAGING_AND_CHECKSUMS.md`](PACKAGING_AND_CHECKSUMS.md) | ZIP/TAR qualification archives and SHA-256 sidecars |
+| Release build checklist | [`RELEASE_BUILD_CHECKLIST.md`](RELEASE_BUILD_CHECKLIST.md) | Cross-platform source, build, packaging, signing, real-target, and stable-gate checklist |
 
 The cross-platform overview and artifact matrix are in [`../BUILDING_EXECUTABLES.md`](../BUILDING_EXECUTABLES.md).
 
@@ -65,7 +67,7 @@ Cross-compiling Flutter desktop targets from a different desktop OS is not the r
 
 ## CI relationship
 
-`.github/workflows/platform-builds.yml` is the source of truth for the repository's hosted native qualification builds. `.github/workflows/ci.yml` is the source of truth for the permanent Web release build and quality gate.
+`.github/workflows/platform-builds.yml` is the source of truth for the repository's hosted native qualification builds. `.github/workflows/ci.yml` is the source of truth for the permanent standard Web release build and quality gate.
 
 The CI artifacts are qualification inputs rather than a substitute for physical-device, accessibility, signing, provisioning, notarization, store, or external-handler testing.
 
