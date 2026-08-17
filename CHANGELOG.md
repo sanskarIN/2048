@@ -126,6 +126,8 @@ All notable changes to this project are documented here.
 - Repository documentation now distinguishes configured/compiled platform support from real-device, assistive-technology, clipboard-handler, signing/provisioning, and store-release qualification.
 
 ### Fixed
+- Cross-platform timestamp serialization now records game starts, Game Backup/Full Replay export metadata, and Daily record update times as absolute UTC instants while preserving legacy game-state readability.
+- Release qualification now rejects timezone-less passed-evidence timestamps and requires an explicit UTC (`Z`) or numeric offset before evidence can satisfy the stable gate.
 - Removed release automation assumptions that treated every non-0.9 version as already stable-qualified; candidate CI is now independent from real-device stable qualification while the strict stable gate remains fail-closed.
 - Missing Cupertino icon-font asset in Web release builds by explicitly pinning `cupertino_icons 1.0.8`; CI now fails if the missing-font warning returns.
 - Generated macOS `file_picker` registration so Game Backup file transport has the expected native plugin registration on macOS.
