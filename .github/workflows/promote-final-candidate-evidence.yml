@@ -1,0 +1,45 @@
+name: Final Candidate Evidence Promoter
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/promote-final-candidate-evidence.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: final-candidate-evidence-promoter
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Promote final candidate evidence
+        run: python3 .github/scripts/promote_final_candidate_evidence.py
+
+      - name: Remove temporary promoter inputs
+        run: rm -f .github/workflows/promote-final-candidate-evidence.yml .github/scripts/promote_final_candidate_evidence.py
+
+      - name: Commit promoted final evidence
+        shell: bash
+        run: |
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+          git add CHANGELOG.md ROADMAP.md docs/VERIFICATION.md docs/FINAL_RELEASE_CANDIDATE_AUDIT.md what_changed.md test/current_release_state_test.dart .github/workflows/promote-final-candidate-evidence.yml .github/scripts/promote_final_candidate_evidence.py
+          if git diff --cached --quiet; then
+            echo "Final candidate evidence is already promoted."
+            exit 0
+          fi
+          git commit -m "docs: promote final Version 1.5 verification evidence"
+          git pull --rebase origin main
+          git push origin HEAD:main
