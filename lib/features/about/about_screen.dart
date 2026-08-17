@@ -70,6 +70,18 @@ class AboutScreen extends StatelessWidget {
               ),
             ),
           ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.storefront_rounded),
+              title: const Text(
+                'Gumroad',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
+              subtitle: const Text(ProjectInfo.gumroad),
+              trailing: const Icon(Icons.open_in_new_rounded),
+              onTap: () => openExternal(context, ProjectInfo.gumroad),
+            ),
+          ),
           for (final item in links)
             Card(
               child: ListTile(
