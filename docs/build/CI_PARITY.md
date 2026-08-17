@@ -1,6 +1,6 @@
 # Local Build and Hosted CI Parity
 
-This page maps local build commands to the repository's permanent GitHub Actions workflows. Use it when you want a local build to resemble the accepted hosted qualification process as closely as practical.
+This page maps local commands to the repository's permanent GitHub Actions workflows. Use it when you want a local build to resemble hosted qualification as closely as practical.
 
 ## Permanent quality CI
 
@@ -16,7 +16,7 @@ Current hosted Flutter version:
 3.47.0
 ```
 
-The quality job performs, in order:
+The quality job performs:
 
 ```bash
 flutter pub get
@@ -30,11 +30,9 @@ dart run tool/solver_benchmark.dart 8
 flutter build web --release
 ```
 
-The Web step additionally guards against the repository's known missing icon-font warning.
+The Web step also fails on the repository's guarded missing icon-font warning.
 
 ## Local quality approximation
-
-From the repository root:
 
 ```bash
 flutter pub get
@@ -47,7 +45,7 @@ dart run tool/solver_benchmark.dart 8
 flutter build web --release
 ```
 
-The stable readiness command is intentionally stricter:
+The stricter stable command is:
 
 ```bash
 dart run tool/release_readiness.dart --stable --json
@@ -63,7 +61,7 @@ Workflow:
 .github/workflows/platform-builds.yml
 ```
 
-It runs native qualification on separate hosts so each desktop/mobile toolchain is native to its supported environment.
+It runs native qualification on separate hosted operating systems so each native desktop/mobile toolchain builds on an appropriate host.
 
 ## Android parity
 
@@ -74,19 +72,33 @@ Hosted environment includes:
 - Temurin JDK 17;
 - project lockfile verification.
 
-Core local equivalent:
+Local equivalent:
 
 ```bash
 flutter pub get
 git diff --exit-code -- pubspec.lock
 flutter build apk --release
+flutter build appbundle --release
 ```
 
-Hosted packaging:
+Hosted checksums:
 
 ```bash
 sha256sum build/app/outputs/flutter-apk/app-release.apk \
   > build/app/outputs/flutter-apk/app-release.apk.sha256
+
+sha256sum build/app/outputs/bundle/release/app-release.aab \
+  > build/app/outputs/bundle/release/app-release.aab.sha256
+```
+
+Hosted artifact:
+
+```text
+nova-2048-android-release
+  app-release.apk
+  app-release.apk.sha256
+  app-release.aab
+  app-release.aab.sha256
 ```
 
 Remember that the tracked Android release build type currently uses debug signing for public qualification. Hosted success is not production Play signing.
@@ -179,30 +191,39 @@ shasum -a 256 nova-2048-ios-unsigned-release.zip > nova-2048-ios-unsigned-releas
 
 This is intentionally not a signed IPA flow.
 
-## Builds not currently permanent native CI artifacts
+## Web parity
 
-The following are documented buildable formats/options but are not the permanent native qualification artifacts currently uploaded by `platform-builds.yml`:
+Permanent quality CI builds:
 
-- Android App Bundle (`flutter build appbundle --release`);
+```bash
+flutter build web --release
+```
+
+The generated `build/web/` directory is not currently uploaded as a retained CI artifact, but build success is part of the permanent quality gate.
+
+## Builds not currently permanent qualification artifacts
+
+The following are buildable/documented options but are not retained permanent qualification artifacts:
+
 - Android ABI-split APK set;
 - signed iOS IPA (`flutter build ipa --release`);
 - Web Wasm build (`flutter build web --wasm`);
 - Windows installer/MSIX-style packaging;
-- macOS notarized/store package;
+- macOS DMG/PKG/notarized/store packaging;
 - Linux `.deb`, `.rpm`, Snap, Flatpak, or AppImage packages.
 
-The first four can be built with Flutter/toolchain support as documented, but production use should gain explicit repository qualification if adopted as release outputs. The installer/package formats listed for desktop/Linux are not currently configured project release artifacts and must not be advertised as maintained outputs until implemented and tested.
+Android AAB is no longer in this list: it is now built/checksummed together with the release APK by the hosted Android job.
 
 ## Generated-file integrity
 
-Hosted jobs fail if certain Flutter-managed tracked files change during dependency resolution/build preparation. Locally, inspect:
+Hosted jobs fail if selected Flutter-managed tracked files change unexpectedly during dependency resolution/build preparation. Locally inspect:
 
 ```bash
 git status --short
 git diff
 ```
 
-A toolchain upgrade may legitimately regenerate tracked files; if so, review and commit the changes intentionally together with relevant tests/docs rather than allowing hidden drift.
+A deliberate toolchain/dependency upgrade may legitimately regenerate tracked files. Review and commit such changes intentionally together with relevant tests/docs.
 
 ## Why local and CI can differ
 
@@ -218,7 +239,7 @@ Differences can arise from:
 - archive metadata/timestamps;
 - platform runner changes.
 
-A local success does not override a failing permanent CI job, and a hosted compile success does not replace real-device qualification.
+A local success does not override failing permanent CI, and hosted compilation does not replace real-device qualification.
 
 ## Recommended evidence order
 
