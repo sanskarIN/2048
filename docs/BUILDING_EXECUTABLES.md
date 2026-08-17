@@ -1,8 +1,8 @@
 # Building Executables and Distribution Artifacts
 
-This is the master build handbook for **2048 Nova**. It explains how to build every platform currently configured in this repository and distinguishes runnable executables, installable packages, deployable bundles, CI qualification archives, and store/distribution packages.
+This is the master build handbook for **2048 Nova**. It documents how to produce every executable, installable package, application bundle, deployable Web bundle, and CI qualification archive that the current repository supports.
 
-The repository supports Flutter targets for:
+The configured Flutter targets are:
 
 - Android
 - iOS
@@ -13,76 +13,64 @@ The repository supports Flutter targets for:
 
 For platform-specific detail, use the dedicated guides in [`docs/build/`](build/README.md).
 
-> A successful local or hosted build proves compilation/package generation for that configuration. It does not by itself prove physical-device behavior, store acceptance, signing/provisioning, notarization, accessibility, external-handler behavior, or stable-release qualification.
+> A successful build proves that the selected source/configuration can produce that artifact on the selected toolchain. It does **not** by itself prove physical-device behavior, accessibility, production signing, provisioning, notarization, store acceptance, long-session behavior, or stable-release qualification.
 
-## Current project baseline
+## 1. Current project baseline
 
-The package metadata in `pubspec.yaml` currently defines:
+`pubspec.yaml` currently defines:
 
 - package: `nova_2048`
-- application version: `1.5.0+15`
-- Dart floor: `>=3.9.0 <4.0.0`
-- Flutter floor: `>=3.35.0`
+- version: `1.5.0+15`
+- Dart: `>=3.9.0 <4.0.0`
+- Flutter: `>=3.35.0`
 
-Permanent CI currently freezes Flutter **3.47.0** for reproducible hosted verification. Android hosted builds use Temurin **JDK 17**. The maintained Android toolchain baseline is documented in [`ANDROID_TOOLCHAIN.md`](ANDROID_TOOLCHAIN.md).
+Permanent hosted CI currently uses:
 
-For the closest local reproduction of current hosted evidence, use Flutter 3.47.0 and the target-specific toolchain described below.
+- Flutter **3.47.0**
+- Dart supplied by that Flutter SDK
+- Android JDK **Temurin 17**
+- Android Gradle Plugin **9.1.0**
+- Kotlin Android **2.4.10**
+- Gradle **9.7.0**
 
-## Artifact matrix
+For the closest local reproduction of hosted evidence, use Flutter 3.47.0 and the target-specific prerequisites documented in [`build/HOST_PREREQUISITES.md`](build/HOST_PREREQUISITES.md).
 
-| Target | Primary command | Main output | Artifact kind | Host required |
-| --- | --- | --- | --- | --- |
-| Android debug APK | `flutter build apk --debug` | `build/app/outputs/flutter-apk/app-debug.apk` | Installable APK | Windows/macOS/Linux with Android SDK |
-| Android profile APK | `flutter build apk --profile` | `build/app/outputs/flutter-apk/app-profile.apk` | Installable/profile APK | Windows/macOS/Linux with Android SDK |
-| Android release APK | `flutter build apk --release` | `build/app/outputs/flutter-apk/app-release.apk` | Release APK | Windows/macOS/Linux with Android SDK |
-| Android split APKs | `flutter build apk --release --split-per-abi` | `build/app/outputs/flutter-apk/` | ABI-specific APKs | Windows/macOS/Linux with Android SDK |
-| Android App Bundle | `flutter build appbundle --release` | `build/app/outputs/bundle/release/app-release.aab` | Play distribution bundle | Windows/macOS/Linux with Android SDK |
-| iOS unsigned app | `flutter build ios --release --no-codesign` | `build/ios/iphoneos/Runner.app` | Unsigned iOS app bundle | macOS + Xcode |
-| iOS signed IPA | `flutter build ipa --release` | `build/ios/ipa/` | Signed/exported IPA when signing is configured | macOS + Xcode + Apple signing |
-| Web release | `flutter build web --release` | `build/web/` | Deployable static Web/PWA bundle | Windows/macOS/Linux |
-| Windows release | `flutter build windows --release` | `build/windows/x64/runner/Release/` | Native EXE plus required runtime files | Windows + Visual Studio C++ workload |
-| macOS release | `flutter build macos --release` | `build/macos/Build/Products/Release/*.app` | macOS `.app` bundle | macOS + Xcode |
-| Linux release | `flutter build linux --release` | `build/linux/x64/release/bundle/` | Native Linux executable plus libraries/data | Linux + GTK/native toolchain |
+## 2. What the repository can build
 
-The exact output names can vary if Flutter changes generated runner naming or a platform configuration is deliberately renamed. Always inspect the generated output directory after a toolchain upgrade.
+| Target | Build command | Primary output | Current repository status |
+| --- | --- | --- | --- |
+| Android debug APK | `flutter build apk --debug` | `app-debug.apk` | documented local build |
+| Android profile APK | `flutter build apk --profile` | `app-profile.apk` | documented local build |
+| Android release APK | `flutter build apk --release` | `app-release.apk` | **CI-qualified build path** |
+| Android split APKs | `flutter build apk --release --split-per-abi` | ABI-specific APKs | documented local build |
+| Android App Bundle | `flutter build appbundle --release` | `app-release.aab` | **CI-qualified build path** |
+| iOS unsigned release app | `flutter build ios --release --no-codesign` | `Runner.app` | **CI-qualified build path** |
+| iOS signed IPA | `flutter build ipa --release` | `build/ios/ipa/` | documented when Apple signing is configured |
+| Web release | `flutter build web --release` | `build/web/` | **CI-qualified build path** |
+| Windows release | `flutter build windows --release` | `.exe` + runtime bundle | **CI-qualified build path** |
+| macOS release | `flutter build macos --release` | `.app` bundle | **CI-qualified build path** |
+| Linux release | `flutter build linux --release` | ELF executable + runtime bundle | **CI-qualified build path** |
 
-## Build modes
+See [`build/SUPPORTED_ARTIFACTS.md`](build/SUPPORTED_ARTIFACTS.md) for the explicit supported/not-maintained artifact inventory.
 
-Flutter commonly supports three build modes:
+## 3. Host operating-system requirements
 
-### Debug
+Flutter native desktop/mobile builds are not treated as arbitrary cross-compilation targets by this repository.
 
-Use for development and local debugging. Debug builds include debugging support and are not intended for public release.
+| Target | Build host |
+| --- | --- |
+| Android | Windows, macOS, or Linux with Android SDK/JDK |
+| iOS | macOS with Xcode |
+| Web | Windows, macOS, or Linux |
+| Windows | Windows with Visual Studio C++ desktop workload |
+| macOS | macOS with Xcode |
+| Linux | Linux with GTK/native build dependencies |
 
-```bash
-flutter run
-flutter build apk --debug
-```
+Use the repository's GitHub Actions matrix when you do not have every native host locally.
 
-### Profile
+## 4. Clean checkout preparation
 
-Use for performance analysis on supported targets. Profile builds are not final public-release packages.
-
-```bash
-flutter build apk --profile
-```
-
-### Release
-
-Use for optimized distribution/qualification artifacts.
-
-```bash
-flutter build apk --release
-flutter build web --release
-flutter build windows --release
-flutter build macos --release
-flutter build linux --release
-flutter build ios --release --no-codesign
-```
-
-## Clean checkout build procedure
-
-For release troubleshooting and reproducibility, prefer a clean checkout rather than relying on old generated files.
+From a clean machine or clean working copy:
 
 ```bash
 git clone https://github.com/sanskarIN/2048.git
@@ -92,167 +80,412 @@ flutter doctor -v
 flutter pub get
 ```
 
-Before a fresh rebuild:
+For a fresh rebuild:
 
 ```bash
 flutter clean
 flutter pub get
 ```
 
-Then run the platform command from this guide.
+Do not delete committed platform runner folders merely to fix a stale build. `flutter clean` removes generated build output while preserving source-controlled runner configuration.
 
-Do not routinely delete committed platform runner files. `flutter clean` removes generated build outputs, not the source runner configuration.
+## 5. Quality checks before release builds
 
-## Pre-build verification
-
-Before producing a release artifact, run the repository quality checks:
+Run:
 
 ```bash
 dart format --output=none --set-exit-if-changed lib test tool
 flutter analyze
-flutter test
-```
-
-For Web parity with permanent CI:
-
-```bash
+flutter test --coverage
+dart run tool/release_readiness.dart --json
+dart run tool/solver_benchmark.dart 8
 flutter build web --release
 ```
 
-For candidate release metadata:
+Verify dependency metadata did not drift unexpectedly:
 
 ```bash
-dart run tool/release_readiness.dart --json
+git diff --exit-code -- pubspec.lock analysis_options.yaml
 ```
 
-For a stable release candidate only after all manual qualification is complete:
+The strict stable gate is intentionally expected to fail while real-world evidence is incomplete:
 
 ```bash
 dart run tool/release_readiness.dart --stable --json
 ```
 
-The strict stable command is intentionally expected to fail while required manual evidence remains pending.
+Do not weaken that gate simply to publish a binary.
 
-## Dependency integrity
+# Android
 
-Install dependencies with:
+## 6. Android debug APK
 
 ```bash
-flutter pub get
+flutter build apk --debug
 ```
 
-Then verify the lockfile did not drift unexpectedly:
+Output:
 
-```bash
-git diff --exit-code -- pubspec.lock
+```text
+build/app/outputs/flutter-apk/app-debug.apk
 ```
 
-Platform builds can update generated plugin registration files. If a build modifies tracked generated files, inspect the diff instead of silently discarding or committing it.
+Use only for development/debugging.
 
-## Platform guides
-
-- [`build/ANDROID.md`](build/ANDROID.md) — APKs, split APKs, AAB, Android signing boundaries, installation, checksum, and troubleshooting.
-- [`build/IOS.md`](build/IOS.md) — simulator/device concepts, unsigned `.app`, signed archive/IPA, provisioning, export boundaries, and verification.
-- [`build/WEB.md`](build/WEB.md) — release Web bundle, local serving, base path, PWA/static hosting, compression, and deployment checks.
-- [`build/WINDOWS.md`](build/WINDOWS.md) — native `.exe` bundle, required adjacent files, ZIP packaging, signing/installer boundary, and verification.
-- [`build/MACOS.md`](build/MACOS.md) — `.app` bundle, ZIP packaging, signing/notarization boundary, and verification.
-- [`build/LINUX.md`](build/LINUX.md) — ELF executable bundle, native prerequisites, tarball packaging, permissions, and verification.
-- [`build/PACKAGING_AND_CHECKSUMS.md`](build/PACKAGING_AND_CHECKSUMS.md) — repository-compatible packaging and SHA-256 verification for all hosted qualification artifacts.
-
-## Android artifact choices
-
-Use **APK** when you need a directly installable Android package for testing, sideloading, or a distribution channel that accepts APKs.
-
-Use **split APKs** when you explicitly want smaller architecture-specific packages. Each split is usable only on a compatible ABI.
-
-Use **AAB** for Google Play-style store distribution. An AAB is not normally installed directly like an APK; a store or bundle tooling produces device-specific APKs from it.
-
-The current hosted `Platform Builds` workflow qualifies a release APK and stores its SHA-256 sidecar. It does not currently publish an AAB as a permanent CI qualification artifact.
-
-## Apple artifact choices
-
-The repository's hosted Apple workflow intentionally builds:
+## 7. Android profile APK
 
 ```bash
-flutter build macos --release
+flutter build apk --profile
+```
+
+Output:
+
+```text
+build/app/outputs/flutter-apk/app-profile.apk
+```
+
+Use for supported performance investigation, not public release.
+
+## 8. Android universal release APK
+
+```bash
+flutter build apk --release
+```
+
+Output:
+
+```text
+build/app/outputs/flutter-apk/app-release.apk
+```
+
+This artifact can be directly installed/sideloaded on compatible Android devices.
+
+### SHA-256
+
+Linux:
+
+```bash
+sha256sum build/app/outputs/flutter-apk/app-release.apk \
+  > build/app/outputs/flutter-apk/app-release.apk.sha256
+```
+
+PowerShell:
+
+```powershell
+$path = "build/app/outputs/flutter-apk/app-release.apk"
+$hash = (Get-FileHash $path -Algorithm SHA256).Hash.ToLower()
+"$hash  app-release.apk" | Out-File -Encoding ascii "$path.sha256"
+```
+
+## 9. Android ABI-split release APKs
+
+```bash
+flutter build apk --release --split-per-abi
+```
+
+Outputs are written under:
+
+```text
+build/app/outputs/flutter-apk/
+```
+
+Use split APKs only when your distribution process knows which ABI each user/device needs. Inspect the generated filenames rather than assuming a fixed architecture list forever.
+
+## 10. Android App Bundle (AAB)
+
+```bash
+flutter build appbundle --release
+```
+
+Output:
+
+```text
+build/app/outputs/bundle/release/app-release.aab
+```
+
+An AAB is a store publishing bundle. It is not normally installed directly by tapping the file on a device; a store/bundle tool derives device-specific APKs from it.
+
+### SHA-256
+
+Linux:
+
+```bash
+sha256sum build/app/outputs/bundle/release/app-release.aab \
+  > build/app/outputs/bundle/release/app-release.aab.sha256
+```
+
+PowerShell:
+
+```powershell
+$path = "build/app/outputs/bundle/release/app-release.aab"
+$hash = (Get-FileHash $path -Algorithm SHA256).Hash.ToLower()
+"$hash  app-release.aab" | Out-File -Encoding ascii "$path.sha256"
+```
+
+## 11. Android signing state
+
+The tracked `android/app/build.gradle.kts` deliberately maps `release` to the **debug signing configuration** for public hosted qualification. Therefore the hosted release APK/AAB prove optimized release compilation and packaging, but they are **not production Play signing identities**.
+
+For production Android distribution:
+
+1. create/use a private upload/signing key;
+2. keep keystore files and passwords outside Git;
+3. configure a production signing path securely;
+4. rebuild APK/AAB from the exact intended release commit;
+5. re-run tests and real-device qualification against the production-signed artifact;
+6. record its checksum and release evidence.
+
+Never commit private keystores, passwords, aliases, signing certificates, or store credentials.
+
+See [`build/ANDROID.md`](build/ANDROID.md) and [`build/SIGNING_AND_DISTRIBUTION.md`](build/SIGNING_AND_DISTRIBUTION.md).
+
+# iOS
+
+## 12. Unsigned iOS release application
+
+Requires macOS + Xcode.
+
+```bash
 flutter build ios --release --no-codesign
 ```
 
-The iOS result is an **unsigned `Runner.app` qualification build**, zipped by CI. It is not an App Store-ready IPA.
+Expected output location:
 
-A distributable iOS IPA requires an Apple Developer signing/provisioning configuration and an export flow such as:
+```text
+build/ios/iphoneos/Runner.app
+```
+
+The repository CI packages this unsigned `.app` only as compilation/qualification input. It is not an App Store-ready IPA.
+
+## 13. Signed/exported IPA
+
+After Apple signing/provisioning is correctly configured:
 
 ```bash
 flutter build ipa --release
 ```
 
-Never commit signing certificates, private keys, provisioning profiles, App Store credentials, or secret export material to this public repository.
+Output directory:
 
-## Desktop artifact choices
+```text
+build/ios/ipa/
+```
 
-### Windows
+The exact exported IPA name can depend on the Apple/Xcode export configuration.
 
-`flutter build windows --release` produces a release directory containing the main `.exe` plus Flutter/runtime DLLs and application data. **Do not distribute only the `.exe`**; keep the generated release directory together unless you build a proper installer/package that includes every required runtime file.
+A signed iOS release requires external Apple signing/provisioning material. Never commit private certificates, private keys, provisioning secrets, App Store Connect keys, or authentication tokens.
 
-### macOS
+# Web / PWA
 
-`flutter build macos --release` produces a `.app` bundle. A `.app` is a directory bundle even though Finder presents it as one application. Preserve the bundle structure when zipping, signing, notarizing, or distributing it.
+## 14. Web release
 
-### Linux
+```bash
+flutter build web --release
+```
 
-`flutter build linux --release` produces a `bundle/` directory containing the native executable plus libraries and data. **Do not copy only the executable** unless you have independently packaged all required shared libraries/data and verified the result.
+Output:
 
-## Web artifact choice
+```text
+build/web/
+```
 
-Web does not produce a traditional `.exe`. `flutter build web --release` produces the complete static deployment directory under `build/web/`.
+Web does not produce a traditional `.exe`. Deploy the **entire** generated directory.
 
-Deploy the **contents of the generated Web directory together**. Do not copy only `index.html` or only the generated JavaScript/WASM-related assets.
+Do not distribute only `index.html`; generated JavaScript/Wasm assets, Flutter bootstrap files, icons, manifests, and other assets must remain together.
 
-## Repository CI artifact parity
+For the repository's optional Wasm-oriented path, see [`build/WEB.md`](build/WEB.md).
 
-`.github/workflows/platform-builds.yml` currently creates these short-lived qualification artifacts:
+# Windows
 
-- `nova-2048-android-release` — release APK + SHA-256
-- `nova-2048-linux-x64-release` — `nova-2048-linux-x64.tar.gz` + SHA-256
-- `nova-2048-windows-x64-release` — `nova-2048-windows-x64.zip` + SHA-256
-- `nova-2048-macos-release` — zipped `.app` + SHA-256
-- `nova-2048-ios-unsigned-release` — zipped unsigned iOS `.app` + SHA-256
+## 15. Windows native release
 
-These are retained temporarily as qualification inputs. See [`RELEASE_ARTIFACTS.md`](RELEASE_ARTIFACTS.md).
+Requires Windows with Flutter's Visual Studio C++ desktop prerequisites.
 
-## Build number and version
+```powershell
+flutter config --enable-windows-desktop
+flutter pub get
+flutter build windows --release
+```
 
-The Flutter version is declared in `pubspec.yaml`:
+Current output directory:
+
+```text
+build/windows/x64/runner/Release/
+```
+
+Current main binary:
+
+```text
+nova_2048.exe
+```
+
+**Do not distribute only the EXE.** The generated release directory contains required Flutter/runtime DLLs and application data.
+
+Repository CI packages the complete directory as:
+
+```text
+nova-2048-windows-x64.zip
+nova-2048-windows-x64.zip.sha256
+```
+
+MSI/MSIX/third-party installer creation is not currently a maintained project output. If added later, it requires its own reproducible packaging, signing, testing, and documentation.
+
+# macOS
+
+## 16. macOS release application
+
+Requires macOS + Xcode.
+
+```bash
+flutter config --enable-macos-desktop
+flutter pub get
+flutter build macos --release
+```
+
+Current expected product:
+
+```text
+build/macos/Build/Products/Release/2048 Nova.app
+```
+
+The `.app` is a directory bundle even though Finder presents it as one application. Preserve the bundle structure.
+
+Repository CI packages it with `ditto` as:
+
+```text
+nova-2048-macos-release.zip
+nova-2048-macos-release.zip.sha256
+```
+
+DMG/PKG creation, Developer ID signing, notarization, and Mac App Store packaging are separate distribution concerns and are not currently automated repository outputs.
+
+# Linux
+
+## 17. Linux native release
+
+The hosted Ubuntu baseline installs:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y ninja-build libgtk-3-dev liblzma-dev
+```
+
+Then:
+
+```bash
+flutter config --enable-linux-desktop
+flutter pub get
+flutter build linux --release
+```
+
+Current output bundle:
+
+```text
+build/linux/x64/release/bundle/
+```
+
+Current main executable:
+
+```text
+nova_2048
+```
+
+**Do not distribute only the ELF executable.** Keep the generated libraries and data with it.
+
+Repository CI packages the complete bundle as:
+
+```text
+nova-2048-linux-x64.tar.gz
+nova-2048-linux-x64.tar.gz.sha256
+```
+
+`.deb`, `.rpm`, AppImage, Snap, and Flatpak are not currently maintained project outputs.
+
+# CI and qualification artifacts
+
+## 18. Permanent quality CI
+
+`.github/workflows/ci.yml` verifies:
+
+- dependency/metadata synchronization;
+- formatting;
+- analyzer;
+- tests with coverage;
+- candidate release readiness;
+- fail-closed stable gate behavior;
+- deterministic solver benchmark;
+- Web release build.
+
+## 19. Native Platform Builds
+
+`.github/workflows/platform-builds.yml` builds native release outputs on native hosted runners.
+
+Current uploaded qualification artifacts are:
+
+```text
+nova-2048-android-release
+  app-release.apk
+  app-release.apk.sha256
+  app-release.aab
+  app-release.aab.sha256
+
+nova-2048-linux-x64-release
+  nova-2048-linux-x64.tar.gz
+  nova-2048-linux-x64.tar.gz.sha256
+
+nova-2048-windows-x64-release
+  nova-2048-windows-x64.zip
+  nova-2048-windows-x64.zip.sha256
+
+nova-2048-macos-release
+  nova-2048-macos-release.zip
+  nova-2048-macos-release.zip.sha256
+
+nova-2048-ios-unsigned-release
+  nova-2048-ios-unsigned-release.zip
+  nova-2048-ios-unsigned-release.zip.sha256
+```
+
+These are retained for a bounded period as qualification inputs. They are not proof of real-device/store acceptance.
+
+See [`RELEASE_ARTIFACTS.md`](RELEASE_ARTIFACTS.md) and [`build/CI_PARITY.md`](build/CI_PARITY.md).
+
+# Versioning
+
+## 20. Build name and build number
+
+Current source metadata:
 
 ```yaml
 version: 1.5.0+15
 ```
 
-The semantic version is before `+`; the build number is after `+`.
+- `1.5.0` = build/release name
+- `15` = build number/version code input
 
-You can also override values for a build without editing the file when the target/toolchain supports Flutter's standard flags:
+Flutter supports build-time overrides for relevant targets, for example:
 
 ```bash
 flutter build apk --release --build-name=1.5.0 --build-number=15
 flutter build appbundle --release --build-name=1.5.0 --build-number=15
 ```
 
-For official repository releases, keep source metadata, release notes, changelog, evidence manifest, and the intended tag aligned rather than relying on a one-off local override.
+For official repository releases, keep `pubspec.yaml`, changelog, release evidence, documentation, and the intended tag aligned instead of relying on a one-off local override.
 
-## Checksums
+# Packaging integrity
 
-A SHA-256 checksum helps detect accidental corruption or unexpected artifact replacement after packaging. It is not a code-signing identity and does not prove who authored the artifact.
+## 21. Verify checksums
 
 Linux:
 
 ```bash
-sha256sum artifact-file
+sha256sum -c artifact.sha256
 ```
 
 macOS:
 
 ```bash
-shasum -a 256 artifact-file
+shasum -a 256 -c artifact.sha256
 ```
 
 PowerShell:
@@ -261,74 +494,90 @@ PowerShell:
 Get-FileHash .\artifact-file -Algorithm SHA256
 ```
 
-Repository-compatible packaging/checksum commands are in [`build/PACKAGING_AND_CHECKSUMS.md`](build/PACKAGING_AND_CHECKSUMS.md).
+A SHA-256 checksum detects unexpected file changes/corruption. It is **not** a digital signature and does not prove publisher identity.
 
-## Signing and secrets
+# Troubleshooting
 
-Keep all private signing material outside Git:
-
-- Android keystores and passwords
-- Apple certificates/private keys
-- Apple provisioning profiles
-- notarization credentials
-- Windows code-signing certificates/private keys
-- store API keys/tokens
-
-Use secure local secret storage or protected CI secrets when signing is eventually automated.
-
-## What a successful build does not prove
-
-A green build does not replace:
-
-- real Android/iOS lifecycle testing;
-- real touch/orientation/keyboard/focus testing;
-- TalkBack/VoiceOver/Narrator/browser screen-reader qualification;
-- Hindi pronunciation/layout checks;
-- long-session Daily/Timed/Move Limit/Undo testing;
-- Challenge Code cross-device QR/copy/paste qualification;
-- Replay/Backup real-handler qualification;
-- browser/email/file-provider handler checks;
-- launcher icon/splash review;
-- distribution signing/provisioning/store metadata review.
-
-These remain tracked in `docs/release_qualification.json` and [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md).
-
-## Recommended release build order
-
-1. Start from the exact candidate commit.
-2. Confirm a clean worktree.
-3. Run `flutter pub get` and verify lockfile integrity.
-4. Run formatter, analyzer, and tests.
-5. Run candidate release-readiness metadata checks.
-6. Build Web release.
-7. Build the target's native release artifact.
-8. Package the complete required runtime bundle.
-9. Generate SHA-256.
-10. Verify the checksum from the packaged artifact.
-11. Test on representative real targets.
-12. Record real qualification evidence.
-13. Configure signing/provisioning outside the repository.
-14. Re-run strict stable readiness on the exact intended release commit.
-15. Only then tag/publish the stable release.
-
-## Troubleshooting entry points
-
-If a build fails:
+## 22. First diagnostic sequence
 
 ```bash
+flutter --version
 flutter doctor -v
 flutter clean
 flutter pub get
+dart format --output=none --set-exit-if-changed lib test tool
 flutter analyze
 flutter test
 ```
 
-Then consult:
+Then run only the target build that is failing.
 
+Useful guides:
+
+- [`build/BUILD_TROUBLESHOOTING.md`](build/BUILD_TROUBLESHOOTING.md)
 - [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)
-- [`PLATFORMS.md`](PLATFORMS.md)
-- [`ANDROID_TOOLCHAIN.md`](ANDROID_TOOLCHAIN.md) for Android Gradle/JDK issues
-- [`CI_CD.md`](CI_CD.md) for hosted workflow parity
-- [`VERIFICATION.md`](VERIFICATION.md) for current accepted evidence
+- [`ANDROID_TOOLCHAIN.md`](ANDROID_TOOLCHAIN.md)
+- [`build/HOST_PREREQUISITES.md`](build/HOST_PREREQUISITES.md)
+- [`build/OUTPUT_PATHS.md`](build/OUTPUT_PATHS.md)
+- [`build/PACKAGING_AND_CHECKSUMS.md`](build/PACKAGING_AND_CHECKSUMS.md)
 
-Do not "fix" release failures by disabling linting, validation, signing checks, dependency integrity checks, or release-readiness safeguards merely to obtain an artifact.
+Do not fix build failures by disabling analyzer/lints, release-readiness safeguards, signing checks, or dependency-integrity checks merely to obtain an artifact.
+
+# Final release procedure
+
+## 23. Recommended order
+
+1. Start from the exact intended release commit.
+2. Confirm a clean worktree.
+3. Confirm Flutter/toolchain versions.
+4. Run `flutter pub get` and inspect any generated-file drift.
+5. Run formatter, analyzer, and all tests.
+6. Run candidate release-readiness verification.
+7. Build Web release.
+8. Build the intended native/store artifact.
+9. Package the **complete** runtime bundle where the platform requires multiple files.
+10. Generate and verify SHA-256.
+11. Test the exact built artifact on representative real targets.
+12. Perform accessibility, lifecycle, long-session, file/clipboard/handler, branding, and platform-specific checks.
+13. Configure production signing/provisioning outside Git.
+14. Rebuild and re-test the exact production-signed artifact when signing changes the package.
+15. Record truthful real-world evidence.
+16. Run `dart run tool/release_readiness.dart --stable --json` on the exact intended release commit.
+17. Only after the stable gate passes should a qualified stable release be tagged/published.
+
+## 24. What a green build still does not prove
+
+Hosted/local build success does not replace:
+
+- physical Android/iOS lifecycle testing;
+- real touch, orientation, keyboard, focus, and responsive-layout checks;
+- TalkBack, VoiceOver, Narrator, or browser screen-reader qualification;
+- Hindi pronunciation/layout checks;
+- long-session Daily/Timed/Move Limit/Undo testing;
+- Challenge Code QR/copy/paste cross-device qualification;
+- Replay and Backup real-handler qualification;
+- browser/email/file-provider/clipboard handler checks;
+- native launcher icon/splash review;
+- Android/iOS production signing/provisioning;
+- macOS notarization when used;
+- Windows publisher signing when used;
+- store listing/declaration/acceptance review.
+
+Those remain tracked by `docs/release_qualification.json` and [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md).
+
+# Detailed platform documentation
+
+- [`build/ANDROID.md`](build/ANDROID.md)
+- [`build/IOS.md`](build/IOS.md)
+- [`build/WEB.md`](build/WEB.md)
+- [`build/WINDOWS.md`](build/WINDOWS.md)
+- [`build/MACOS.md`](build/MACOS.md)
+- [`build/LINUX.md`](build/LINUX.md)
+- [`build/HOST_PREREQUISITES.md`](build/HOST_PREREQUISITES.md)
+- [`build/QUICK_COMMANDS.md`](build/QUICK_COMMANDS.md)
+- [`build/OUTPUT_PATHS.md`](build/OUTPUT_PATHS.md)
+- [`build/SUPPORTED_ARTIFACTS.md`](build/SUPPORTED_ARTIFACTS.md)
+- [`build/CI_PARITY.md`](build/CI_PARITY.md)
+- [`build/PACKAGING_AND_CHECKSUMS.md`](build/PACKAGING_AND_CHECKSUMS.md)
+- [`build/SIGNING_AND_DISTRIBUTION.md`](build/SIGNING_AND_DISTRIBUTION.md)
+- [`build/RELEASE_BUILD_CHECKLIST.md`](build/RELEASE_BUILD_CHECKLIST.md)
