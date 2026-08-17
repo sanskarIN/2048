@@ -16,6 +16,7 @@ This directory is the user, technical, development, platform, and release docume
 | [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md) | Shareable seeded challenge format, deterministic behavior, validation, checksum, and trust model. |
 | [`LOCALIZATION.md`](LOCALIZATION.md) | English/Hindi locale architecture, persisted language selection, fallback rules, contributor guidance, privacy, and accessibility boundaries. |
 | [`DATA_STORAGE.md`](DATA_STORAGE.md) | Local storage keys, save schemas, bounded collections, corruption recovery, replay capture persistence, and reset behavior. |
+| [`PORTABLE_TIMESTAMPS.md`](PORTABLE_TIMESTAMPS.md) | UTC serialization for game/session/export/Daily timestamps, cross-timezone portability, legacy compatibility, and Time Challenge deadline integrity. |
 | [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md) | Portable current-game backup format, clipboard workflow, strict validation, and unranked-import policy. |
 | [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md) | Full-session deterministic replay capture, portable JSON protocol, 4,096-event bound, spectator-only import, validation, privacy, and trust model. |
 | [`HINT_SOLVER.md`](HINT_SOLVER.md) | Deterministic heuristic Hint plus isolated Heuristic/Expectimax Auto Play behavior and limitations. |
@@ -69,6 +70,7 @@ A feature should not be documented as ranked/trusted when its source policy make
 - **Bounded Move Replay timeline:** `lib/domain/replay_timeline.dart`.
 - **Full Replay Archive protocol/player:** `lib/domain/replay_archive.dart`.
 - **Full replay capture orchestration:** `lib/app/state/app_controller.dart` and `lib/data/local_store.dart`.
+- **Portable/persisted timestamp normalization:** `lib/domain/game_state.dart`, `lib/domain/game_backup.dart`, `lib/domain/replay_archive.dart`, and `lib/domain/daily_record.dart`.
 - **Auto Play sandbox:** `lib/domain/autoplay_session.dart`.
 - **Advanced solver:** `lib/domain/expectimax_solver.dart`.
 - **Solver benchmark library:** `lib/domain/solver_benchmark.dart`.
