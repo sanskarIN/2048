@@ -40,6 +40,12 @@ The export timestamp is metadata rather than ranking/gameplay authority, but kee
 
 Replay event timing itself remains stored as bounded elapsed milliseconds from the captured initial game state. The UTC initial-state timestamp makes that baseline portable without changing the deterministic replay protocol.
 
+### Daily Challenge history
+
+`DailyRecord.fromState()` already creates `updatedAt` in UTC. `DailyRecord.toJson()` additionally normalizes any supplied `updatedAt` value to UTC before serialization so direct construction or future callers cannot reintroduce timezone-less Daily history metadata.
+
+Daily records remain local history and are not included in Game Backup imports. This normalization is a persistence-consistency hardening measure rather than a change to Daily Challenge ranking or seed semantics.
+
 ## Backward compatibility
 
 The parser intentionally continues to accept older timezone-less ISO-8601 timestamp strings. Rejecting them would make existing saved data unnecessarily unreadable.
@@ -61,10 +67,10 @@ Regression coverage verifies that a serialized/restored timed game still remains
 
 ## Schema compatibility
 
-This hardening does **not** require a GameState, Game Backup, or Replay Archive schema/version bump because:
+This hardening does **not** require a GameState, Game Backup, Replay Archive, or Daily history schema/version bump because:
 
 - the JSON field names and types are unchanged;
-- ISO-8601 text with `Z` is already accepted by the existing parser;
+- ISO-8601 text with `Z` is already accepted by the existing parsers;
 - old timezone-less values remain accepted;
 - deterministic state structure is unchanged.
 
@@ -77,7 +83,12 @@ Focused regression coverage lives in:
 - `test/portable_timestamp_test.dart` — game-start UTC normalization and same-instant round trip;
 - `test/portable_export_timestamp_test.dart` — Game Backup and Full Replay export metadata UTC normalization;
 - `test/legacy_timestamp_compatibility_test.dart` — old timezone-less saves remain readable and serialize back as UTC;
-- `test/timed_restore_timestamp_test.dart` — restored Time Challenge expiration preserves the same absolute deadline.
+- `test/timed_restore_timestamp_test.dart` — restored Time Challenge expiration preserves the same absolute deadline;
+- `test/daily_record_utc_test.dart` — directly constructed Daily record metadata serializes as an absolute UTC instant.
+
+## Non-portable local metadata
+
+Some application metadata, such as achievement unlock display timestamps, is local-only and does not participate in Time Challenge expiration, portable Game Backup state, Full Replay Archive reconstruction, Daily seeding, or trusted score calculations. This hardening intentionally stays scoped to timestamp-bearing persistence/protocol structures where absolute-instant behavior is part of the contract.
 
 ## Trust boundary
 
