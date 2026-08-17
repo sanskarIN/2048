@@ -2,21 +2,23 @@
 
 2048 Nova's permanent **Platform Builds** workflow produces short-lived native release artifacts so maintainers can test a known hosted-build output on representative targets without rebuilding an untracked local copy.
 
-These artifacts are **qualification inputs, not automatic qualification evidence**. A successful hosted build proves that the configured target compiled and that the workflow packaged the expected output. It does not prove physical-device behavior, assistive-technology quality, signing/provisioning, store acceptance, long-session behavior, or external-handler behavior. Those boundaries remain governed by [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md) and `release_qualification.json`.
+These artifacts are **qualification inputs, not automatic qualification evidence**. A successful hosted build proves that the configured target compiled and that the workflow packaged the expected output. It does not prove physical-device behavior, assistive-technology quality, production signing/provisioning, store acceptance, long-session behavior, or external-handler behavior. Those boundaries remain governed by [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md) and `release_qualification.json`.
 
-## Artifact set
+## Current artifact set
 
-A successful native matrix publishes five named artifacts:
+A successful native matrix publishes five named GitHub Actions artifacts:
 
-| Artifact | Payload | Distribution status |
+| Artifact | Current payload | Distribution status |
 | --- | --- | --- |
-| `nova-2048-android-release` | release APK + SHA-256 sidecar | unsigned/development qualification input; not a store bundle |
+| `nova-2048-android-release` | release APK + SHA-256 sidecar **and** release AAB + SHA-256 sidecar | release-mode qualification inputs using the repository qualification signing configuration; production store signing remains separate |
 | `nova-2048-linux-x64-release` | `tar.gz` of the Flutter Linux bundle + SHA-256 sidecar | x64 hosted-runner qualification input |
 | `nova-2048-windows-x64-release` | ZIP of the Windows release directory + SHA-256 sidecar | x64 hosted-runner qualification input |
 | `nova-2048-macos-release` | ZIP containing the macOS `.app` bundle + SHA-256 sidecar | hosted-build qualification input; distribution signing/notarization remains separate |
 | `nova-2048-ios-unsigned-release` | ZIP containing the unsigned iOS `.app` bundle + SHA-256 sidecar | compile/package evidence only until signing/provisioning is supplied externally |
 
 The workflow uses `if-no-files-found: error`, so an expected output missing from the build directory fails the job instead of creating an empty artifact that looks successful.
+
+Historical artifact tables later in this document record what the workflow produced at those earlier phases. Older Android artifacts contained APK-only payloads; they remain valid historical evidence and are not rewritten to imply that they contained AABs.
 
 ## Retention
 
@@ -37,11 +39,11 @@ Do not mark a manual qualification item `passed` merely because its correspondin
 
 ## Checksum layers
 
-Each platform package contains a repository-workflow-generated SHA-256 sidecar for its primary payload. GitHub Actions also records a digest for the uploaded artifact archive itself.
+Each current primary payload has a repository-workflow-generated SHA-256 sidecar. GitHub Actions also records a digest for the uploaded artifact archive itself.
 
-These two hashes serve different layers:
+These hashes serve different layers:
 
-1. **Payload sidecar** — verifies the APK/TAR/ZIP produced by the packaging step.
+1. **Payload sidecar** — verifies the APK, AAB, TAR, or ZIP produced by the build/packaging step.
 2. **GitHub artifact digest** — verifies the archive stored and returned by the GitHub Actions artifact service.
 
 They are integrity aids, not signatures or proof of authorship.
@@ -80,9 +82,17 @@ The workflow builds:
 
 ```text
 build/app/outputs/flutter-apk/app-release.apk
+build/app/outputs/bundle/release/app-release.aab
 ```
 
-It uploads the APK directly together with `app-release.apk.sha256`.
+It uploads both files together with:
+
+```text
+app-release.apk.sha256
+app-release.aab.sha256
+```
+
+The tracked release build type currently uses the debug signing configuration for public qualification, so these hosted outputs are not the final production Play signing identity.
 
 ### Linux
 
@@ -154,7 +164,6 @@ Every build, package, checksum, and upload step completed successfully. These Gi
 
 The artifacts expire on **2026-08-30** under the configured 14-day retention policy. Expiration does not invalidate the source/build evidence recorded here, but future manual qualification should use a current artifact from the exact commit being qualified when practical.
 
-
 ## Phase 24 accepted Version 1.5 hosted artifact set
 
 Accepted Platform Builds run: **31940994252**, source `4d4fe634624b069834786a2aaad356e356281c44`.
@@ -168,7 +177,6 @@ Accepted Platform Builds run: **31940994252**, source `4d4fe634624b069834786a2aa
 | `nova-2048-ios-unsigned-release` | 9262078294 | 8,710,168 bytes | `sha256:b09afe7ae21b7563d5407e80de17458e2e5d66e557b591db6aea47bca5b6ac1c` |
 
 Every Version 1.5 build, package, checksum, and upload step completed successfully. The artifacts expire on **2026-08-30**. As with the Phase 23 set, these are qualification inputs and hosted-build evidence only; they do not change the **0/13** real-world qualification status.
-
 
 ## Phase 25 accepted Version 1.5 maintenance artifact set
 
@@ -184,7 +192,6 @@ Accepted Platform Builds run: **31943081259**, source `a719321725ab818edb9f443a8
 
 Every Phase 25 hosted native dependency-sync, build, package, checksum, and upload step completed successfully. These artifacts expire on **2026-08-30**. They are hosted qualification inputs only and do not change the **0/13** real-world stable-release qualification status.
 
-
 ## Phase 26 accepted checkout-v7 hosted artifact set
 
 Accepted Platform Builds run: **31943702153**, source `bd11a4bdeec6115f132d6b2d2cebef0be34d74f7`.
@@ -199,7 +206,6 @@ Accepted Platform Builds run: **31943702153**, source `bd11a4bdeec6115f132d6b2d2
 
 Every Phase 26 checkout-v7 native dependency-sync, build, package, checksum, and upload step completed successfully. These artifacts expire on **2026-08-30**. They remain hosted qualification inputs only and do not change the **0/13** real-world stable-release qualification status.
 
-
 ## Phase 27 accepted Android-toolchain hosted artifact set
 
 Accepted Platform Builds run: **31944999081**, source `b5ddc657880826bb8a0a5621ff03a99050350342`.
@@ -213,7 +219,6 @@ Accepted Platform Builds run: **31944999081**, source `b5ddc657880826bb8a0a5621f
 | `nova-2048-ios-unsigned-release` | 9263081347 | 8,709,456 bytes | `sha256:c775b87f66d1fd48a7f1ef8714350d6f832d93a24e48744925a34c77b4f9812f` |
 
 Every Phase 27 accepted-baseline hosted native dependency-sync, build, package, checksum, and upload step completed successfully. These artifacts expire on **2026-08-30**. They remain hosted qualification inputs only and do not change the **0/13** real-world stable-release qualification status.
-
 
 ## Phase 28 reproducibility-hardened hosted artifact set
 
