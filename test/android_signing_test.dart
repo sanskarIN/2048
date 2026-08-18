@@ -23,14 +23,18 @@ void main() {
 
       expect(gradle, contains('rootProject.file("key.properties")'));
       expect(gradle, contains('val hasDistributionSigning'));
-      expect(gradle, contains('if (hasDistributionSigning)'));
+      expect(gradle, contains('fun requiredSigningProperty'));
+      expect(gradle, contains('value.startsWith("REPLACE_WITH_")'));
+      expect(gradle, contains('val distributionStoreFile'));
+      expect(gradle, contains('rootProject.file(requiredSigningProperty("storeFile"))'));
+      expect(gradle, contains('if (!file.isFile)'));
       expect(gradle, contains('create("release")'));
+      expect(gradle, contains('keyAlias = requiredSigningProperty("keyAlias")'));
+      expect(gradle, contains('keyPassword = requiredSigningProperty("keyPassword")'));
+      expect(gradle, contains('storeFile = distributionStoreFile'));
       expect(
         gradle,
-        contains(
-          'storeFile = keystoreProperties.getProperty("storeFile")?.let { '
-          'rootProject.file(it) }',
-        ),
+        contains('storePassword = requiredSigningProperty("storePassword")'),
       );
       expect(gradle, contains('signingConfigs.getByName("release")'));
       expect(gradle, contains('signingConfigs.getByName("debug")'));
