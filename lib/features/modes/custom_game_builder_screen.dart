@@ -190,7 +190,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
           ),
           const SizedBox(height: 8),
           DropdownButtonFormField<CustomGameStyle>(
-            value: _style,
+            initialValue: _style,
             decoration: InputDecoration(
               labelText: _text('Game style', 'गेम शैली'),
             ),
@@ -204,7 +204,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<int>(
-            value: _size,
+            initialValue: _size,
             decoration: InputDecoration(
               labelText: _text('Board size', 'बोर्ड आकार'),
             ),
@@ -218,7 +218,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<int>(
-            value: _target,
+            initialValue: _target,
             decoration: InputDecoration(
               labelText: _text('Target tile', 'लक्ष्य टाइल'),
             ),
@@ -233,7 +233,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
           if (_style == CustomGameStyle.timed) ...[
             const SizedBox(height: 12),
             DropdownButtonFormField<int>(
-              value: _timeLimit,
+              initialValue: _timeLimit,
               decoration: InputDecoration(
                 labelText: _text('Time limit', 'समय सीमा'),
               ),
@@ -252,7 +252,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
           if (_style == CustomGameStyle.moveLimit) ...[
             const SizedBox(height: 12),
             DropdownButtonFormField<int>(
-              value: _moveLimit,
+              initialValue: _moveLimit,
               decoration: InputDecoration(
                 labelText: _text('Move limit', 'चाल सीमा'),
               ),
