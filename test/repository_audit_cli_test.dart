@@ -36,6 +36,7 @@ const _requiredFixtureFiles = <String>[
   'docs/QUALIFICATION_RECORDER.md',
   'docs/RELEASE_CHECKLIST.md',
   'docs/BUILDING_EXECUTABLES.md',
+  'tool/README.md',
   'tool/release_readiness.dart',
   'tool/record_release_qualification.dart',
   'tool/repository_audit.dart',
