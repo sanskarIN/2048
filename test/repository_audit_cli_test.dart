@@ -75,6 +75,9 @@ void main() {
     String packageVersion = '1.5.0+15',
     String projectVersion = '1.5.0',
     String? candidate,
+    String homepage = 'https://github.com/sanskarIN/2048',
+    String repository = 'https://github.com/sanskarIN/2048',
+    String issueTracker = 'https://github.com/sanskarIN/2048/issues',
     String readme = '# Fixture\n\n[Docs](docs/README.md)\n',
     bool temporaryWorkflow = false,
     bool unclosedFence = false,
@@ -100,7 +103,14 @@ void main() {
           '- **Current phase:** Phase 30 — final fixture\n'
           '- stable qualification boundary remains 0/13\n',
     );
-    await write('pubspec.yaml', 'name: fixture\nversion: $packageVersion\n');
+    await write(
+      'pubspec.yaml',
+      'name: fixture\n'
+          'version: $packageVersion\n'
+          'homepage: $homepage\n'
+          'repository: $repository\n'
+          'issue_tracker: $issueTracker\n',
+    );
     await write(
       'lib/core/constants/project_info.dart',
       "class ProjectInfo {\n  static const version = '$projectVersion';\n}\n",
@@ -179,6 +189,18 @@ void main() {
     expect(
       (result.json['failures'] as List<dynamic>).join('\n'),
       contains('must match pubspec base version'),
+    );
+  });
+
+  test('canonical repository metadata drift is rejected', () async {
+    final root = await fixture(repository: 'https://example.invalid/2048');
+
+    final result = await runAudit(root);
+
+    expect(result.process.exitCode, 1);
+    expect(
+      (result.json['failures'] as List<dynamic>).join('\n'),
+      contains('pubspec repository must be https://github.com/sanskarIN/2048'),
     );
   });
 
