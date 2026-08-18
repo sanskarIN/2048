@@ -103,7 +103,9 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
 
   Future<void> _startPreset(CustomGamePreset preset) async {
     if (!await confirmGameReplacement(context) || !mounted) return;
-    await AppScope.of(context).newGame(preset.toGameConfig());
+    await AppScope.of(
+      context,
+    ).newGame(preset.toGameConfig(), custom: true);
     if (mounted) Navigator.pushReplacementNamed(context, '/game');
   }
 
@@ -306,10 +308,12 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
           ),
           const SizedBox(height: 8),
           if (_loading)
-            const Center(child: Padding(
-              padding: EdgeInsets.all(24),
-              child: CircularProgressIndicator(),
-            ))
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: CircularProgressIndicator(),
+              ),
+            )
           else if (_presets.isEmpty)
             Text(
               _text(
