@@ -18,7 +18,11 @@
 - Custom local play remains trusted gameplay but cannot overwrite built-in per-mode best-score/highest-tile records.
 - Imported backups remain separately unranked and clear custom-session identity.
 - Domain, persistence, widget-flow, reset, and custom-session policy regression coverage.
-- Builder widget tests target the actual `FilledButton`/`OutlinedButton` controls rather than text descendants, keeping hit testing representative of real user actions.
+- Builder widget interactions dismiss focus and ensure the actual button is fully visible before tapping, preserving representative user-action hit testing on the constrained widget-test viewport.
+- Custom identity is preserved when the player restarts from the live game screen, closing a trust-boundary bug that could otherwise convert a restarted custom game into an ordinary built-in-mode session.
+- The live game metrics area exposes a localized English/Hindi **Custom game** chip with semantics while a custom session is active.
+- Saved-preset deletion now requires explicit bilingual confirmation; cancellation leaves both UI and persisted preset data unchanged.
+- Focused tests cover custom restart identity, built-in mode-record isolation, Custom-game disclosure, and delete cancel/confirm behavior.
 - Dedicated architecture/policy documentation in `CUSTOM_GAME_BUILDER.md`.
 
 ## Required before the feature PR can leave draft
@@ -34,14 +38,13 @@
 9. Clear-all-data behavior must remove every custom preset/session key.
 10. New user-facing documentation must explain the custom-vs-built-in record boundary.
 
-## Next polish after the first green CI
+## Next polish after the integrated green CI
 
-- Add an explicit localized **Custom** indicator on the live game screen when a custom session is active.
 - Add edit/duplicate support for an existing saved preset without creating ambiguous duplicate names.
-- Add delete confirmation for saved presets.
 - Add documentation-index entries and user-guide coverage.
 - Add responsive and large-text widget tests for the builder form and saved-preset list.
 - Add targeted semantics tests for the builder controls and saved-preset actions.
+- Decide whether custom sessions need their own aggregate statistics surface before adding any new trusted record category.
 
 ## Deliberately deferred
 
