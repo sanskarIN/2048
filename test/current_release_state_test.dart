@@ -9,7 +9,10 @@ void main() {
 
       expect(log, contains('**Current phase:** Phase 30'));
       expect(log, contains('guarded release-qualification evidence recorder'));
-      expect(log, contains('latest previously accepted full CI/native evidence'));
+      expect(
+        log,
+        contains('latest previously accepted full CI/native evidence'),
+      );
       expect(log, contains('stable qualification boundary remains 0/13'));
       expect(log, contains('235/235 tests'));
       expect(log, contains('106 files formatter-clean'));
@@ -60,10 +63,7 @@ void main() {
       expect(audit, contains('2048 Nova repository integrity audit'));
       expect(audit, contains('Broken local Markdown link'));
       expect(audit, contains('ProjectInfo.version'));
-      expect(
-        ci,
-        contains('dart run tool/repository_audit.dart --json'),
-      );
+      expect(ci, contains('dart run tool/repository_audit.dart --json'));
     });
 
     test('temporary phase 30 finalizer files do not remain', () {

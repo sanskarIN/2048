@@ -99,10 +99,7 @@ void main() {
           '- **Current phase:** Phase 30 — final fixture\n'
           '- stable qualification boundary remains 0/13\n',
     );
-    await write(
-      'pubspec.yaml',
-      'name: fixture\nversion: $packageVersion\n',
-    );
+    await write('pubspec.yaml', 'name: fixture\nversion: $packageVersion\n');
     await write(
       'lib/core/constants/project_info.dart',
       "class ProjectInfo {\n  static const version = '$projectVersion';\n}\n",
@@ -112,17 +109,7 @@ void main() {
       '${const JsonEncoder.withIndent('  ').convert(<String, Object?>{
         'schemaVersion': 1,
         'candidate': candidate ?? packageVersion,
-        'manualChecks': _manualCheckIds
-            .map(
-              (id) => <String, Object?>{
-                'id': id,
-                'title': 'Qualification for $id',
-                'status': 'pending',
-                'evidence': '',
-                'updatedAt': null,
-              },
-            )
-            .toList(growable: false),
+        'manualChecks': _manualCheckIds.map((id) => <String, Object?>{'id': id, 'title': 'Qualification for $id', 'status': 'pending', 'evidence': '', 'updatedAt': null}).toList(growable: false),
       })}\n',
     );
 
@@ -158,7 +145,11 @@ void main() {
 
     final result = await runAudit(root);
 
-    expect(result.process.exitCode, 0, reason: result.process.stderr.toString());
+    expect(
+      result.process.exitCode,
+      0,
+      reason: result.process.stderr.toString(),
+    );
     expect(result.json['passed'], isTrue);
     expect(result.json['failures'], isEmpty);
   });

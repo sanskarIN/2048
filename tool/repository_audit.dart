@@ -203,7 +203,9 @@ void _auditReleaseState(Directory root, List<String> failures) {
   try {
     final decoded = jsonDecode(manifestText);
     if (decoded is! Map<String, dynamic>) {
-      failures.add('docs/release_qualification.json must contain a JSON object.');
+      failures.add(
+        'docs/release_qualification.json must contain a JSON object.',
+      );
     } else {
       final candidate = decoded['candidate'];
       if (candidate != packageVersion) {
@@ -225,7 +227,9 @@ void _auditReleaseState(Directory root, List<String> failures) {
   }
 
   if (!continuity.contains('**Current phase:** Phase 30')) {
-    failures.add('what_changed.md must identify Phase 30 as the current phase.');
+    failures.add(
+      'what_changed.md must identify Phase 30 as the current phase.',
+    );
   }
   if (!continuity.contains('stable qualification boundary remains 0/13')) {
     failures.add(
@@ -361,8 +365,9 @@ FileSystemEntity _entityAt(Directory root, String relativePath) {
     followLinks: false,
   );
   return switch (type) {
-    FileSystemEntityType.directory =>
-      Directory.fromUri(root.uri.resolve('$relativePath/')),
+    FileSystemEntityType.directory => Directory.fromUri(
+      root.uri.resolve('$relativePath/'),
+    ),
     _ => File.fromUri(root.uri.resolve(relativePath)),
   };
 }
