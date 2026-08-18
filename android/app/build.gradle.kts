@@ -59,6 +59,7 @@ android {
             // without putting credentials or keystores in Git. Hosted qualification builds
             // intentionally fall back to the debug key so release-mode compilation can still
             // be verified in CI without distribution credentials.
+            // Final verification PRs exercise this tracked release configuration in native CI.
             signingConfig = if (hasDistributionSigning) {
                 signingConfigs.getByName("release")
             } else {
