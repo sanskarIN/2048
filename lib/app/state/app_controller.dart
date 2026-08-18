@@ -238,6 +238,7 @@ class AppController extends ChangeNotifier {
   bool _winCounted = false;
   bool _moveInProgress = false;
   bool _currentGameUnranked = false;
+  bool _currentGameCustom = false;
   ReplayCapture? _replayCapture;
 
   final List<Achievement> achievements = [
@@ -344,6 +345,7 @@ class AppController extends ChangeNotifier {
   bool get hasGame => game != null;
   bool get canUndo => !_moveInProgress && _undo.isNotEmpty;
   bool get currentGameIsUnranked => game != null && _currentGameUnranked;
+  bool get currentGameIsCustom => game != null && _currentGameCustom;
   ReplayCapture? get replayCapture => _replayCapture;
 
   Future<void> initialize() async {
@@ -357,6 +359,7 @@ class AppController extends ChangeNotifier {
     final storedReplayCapture = await store.loadReplayCapture();
     _currentGameUnranked =
         game != null && await store.loadCurrentGameUnranked();
+    _currentGameCustom = game != null && await store.loadCurrentGameCustom();
     var repairedSession = false;
     if (game != null) {
       _engine = GameEngine(config: game!.config);
@@ -409,13 +412,14 @@ class AppController extends ChangeNotifier {
     if (repairedSession) await _persist();
   }
 
-  Future<void> newGame(GameConfig config) async {
+  Future<void> newGame(GameConfig config, {bool custom = false}) async {
     if (_moveInProgress) return;
     _engine = GameEngine(config: config);
     game = _engine!.createGame(bestScore: stats.bestScore);
     _replayCapture = ReplayCapture.start(game!);
     _undo.clear();
     _currentGameUnranked = false;
+    _currentGameCustom = custom;
     _sessionCounted = true;
     _winCounted = false;
     stats.gamesPlayed += 1;
@@ -559,12 +563,14 @@ class AppController extends ChangeNotifier {
     _replayCapture = ReplayCapture.incomplete(restored);
     _undo.clear();
     _currentGameUnranked = true;
+    _currentGameCustom = false;
     _sessionCounted = false;
     _winCounted = true;
     await store.saveGame(restored);
     await store.saveUndoHistory(_undo);
     await store.saveReplayCapture(_replayCapture!);
     await store.saveCurrentGameUnranked(true);
+    await store.saveCurrentGameCustom(false);
     notifyListeners();
   }
 
@@ -575,6 +581,7 @@ class AppController extends ChangeNotifier {
     _undo.clear();
     _replayCapture = null;
     _currentGameUnranked = false;
+    _currentGameCustom = false;
     await store.clearGame();
     notifyListeners();
   }
@@ -589,6 +596,7 @@ class AppController extends ChangeNotifier {
     settings = AppSettings();
     stats = PlayerStats();
     _currentGameUnranked = false;
+    _currentGameCustom = false;
     _sessionCounted = false;
     _winCounted = false;
     for (final achievement in achievements) {
@@ -668,6 +676,7 @@ class AppController extends ChangeNotifier {
     if (game != null) {
       await store.saveGame(game!);
       await store.saveCurrentGameUnranked(_currentGameUnranked);
+      await store.saveCurrentGameCustom(_currentGameCustom);
     }
     await store.saveUndoHistory(_undo);
     if (_replayCapture != null) {
@@ -708,6 +717,7 @@ class AppController extends ChangeNotifier {
   }
 
   bool _updateModeRecord(GameState state) {
+    if (_currentGameCustom) return false;
     final mode = state.config.mode;
     final existing = stats.existingRecordFor(mode);
     final record = existing ?? ModeRecord();
