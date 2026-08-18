@@ -15,6 +15,7 @@ class LocalStore {
   static const _achievementsKey = 'nova.achievements.v1';
   static const _dailyHistoryKey = 'nova.daily_history.v1';
   static const _gameUnrankedKey = 'nova.current_game_unranked.v1';
+  static const _gameCustomKey = 'nova.current_game_custom.v1';
   static const _replayCaptureKey = 'nova.replay_capture.v1';
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
@@ -34,6 +35,7 @@ class LocalStore {
         await prefs.remove(_gameKey);
         await prefs.remove(_undoKey);
         await prefs.remove(_gameUnrankedKey);
+        await prefs.remove(_gameCustomKey);
         await prefs.remove(_replayCaptureKey);
         return null;
       }
@@ -42,6 +44,7 @@ class LocalStore {
       await prefs.remove(_gameKey);
       await prefs.remove(_undoKey);
       await prefs.remove(_gameUnrankedKey);
+      await prefs.remove(_gameCustomKey);
       await prefs.remove(_replayCaptureKey);
       return null;
     }
@@ -84,6 +87,18 @@ class LocalStore {
     final value = prefs.get(_gameUnrankedKey);
     if (value is bool) return value;
     if (value != null) await prefs.remove(_gameUnrankedKey);
+    return false;
+  }
+
+  Future<void> saveCurrentGameCustom(bool value) async {
+    await (await _prefs).setBool(_gameCustomKey, value);
+  }
+
+  Future<bool> loadCurrentGameCustom() async {
+    final prefs = await _prefs;
+    final value = prefs.get(_gameCustomKey);
+    if (value is bool) return value;
+    if (value != null) await prefs.remove(_gameCustomKey);
     return false;
   }
 
@@ -228,6 +243,7 @@ class LocalStore {
     await prefs.remove(_gameKey);
     await prefs.remove(_undoKey);
     await prefs.remove(_gameUnrankedKey);
+    await prefs.remove(_gameCustomKey);
     await prefs.remove(_replayCaptureKey);
   }
 
@@ -241,6 +257,7 @@ class LocalStore {
       _achievementsKey,
       _dailyHistoryKey,
       _gameUnrankedKey,
+      _gameCustomKey,
       _replayCaptureKey,
       CustomPresetStore.storageKey,
     ]) {
