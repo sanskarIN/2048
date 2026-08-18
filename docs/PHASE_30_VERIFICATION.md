@@ -112,7 +112,7 @@ Relevant final-hardening commits include:
 - `5390bb9677e5f009826ce76d7ca73ed37e57d00b` — `chore: guard temporary finalizer cleanup`
 - `aeaab4b7e8aeae98556bd7364de68134ab9df6d6` — `docs: index repository integrity audit`
 
-The formatter commit above is objective evidence that the new audit/test Dart files reached the repository-managed formatter. A newer complete CI result for the final source is **not** claimed here because the connected workflow lookup available during this maintenance pass did not expose direct-push Actions runs. The last explicitly accepted complete CI/native evidence therefore remains the Phase 29 Version 1.5 baseline until a newer maintained run can be retrieved and recorded.
+The formatter commit above is objective evidence that the initial audit/test Dart files reached the repository-managed formatter. A newer complete CI result for the final source is **not** claimed here because the connected workflow lookup available during this maintenance pass did not expose direct-push Actions runs. The last explicitly accepted complete CI/native evidence therefore remains the Phase 29 Version 1.5 baseline until a newer maintained run can be retrieved and recorded.
 
 ### Open-source maintenance hygiene
 
@@ -121,9 +121,39 @@ The final source-controlled pass also added:
 - `.editorconfig` for consistent text handling across editors;
 - `.gitattributes` for text/binary classification;
 - `.github/FUNDING.yml` for the project's existing Buy Me a Coffee and Gumroad destinations;
-- `.github/ISSUE_TEMPLATE/config.yml` to disable unstructured blank issues and route support/security questions to the maintained policies.
+- `.github/ISSUE_TEMPLATE/config.yml` to disable unstructured blank issues and route support/security questions to the maintained policies;
+- `tool/README.md` as the maintainer entry point for repository auditing, release readiness, qualification evidence recording, and deterministic solver benchmarking.
+
+The repository audit now requires the tooling index and scans local Markdown links under `tool/` together with the top-level, `docs/`, and `.github/` documentation surfaces.
 
 No runtime dependency, analytics SDK, advertising SDK, account system, cloud service, camera permission, credential, signing key, or gameplay trust boundary was introduced by these maintenance additions.
+
+### Final release metadata polish
+
+The final metadata pass added canonical package project destinations to `pubspec.yaml`:
+
+- `homepage: https://github.com/sanskarIN/2048`
+- `repository: https://github.com/sanskarIN/2048`
+- `issue_tracker: https://github.com/sanskarIN/2048/issues`
+
+The repository audit and process fixtures now fail if these canonical destinations drift. The project-level integrity suite also guards the community/funding metadata and the canonical package destinations.
+
+Windows and macOS visible copyright metadata previously used the phrase `All rights reserved.` while the source repository is MIT licensed. The phrase did not override the actual `LICENSE`, but it was misleading release-facing wording for an open-source project. It was replaced with `Licensed under the MIT License.` and regression coverage now guards both desktop metadata files against restoring the contradictory wording.
+
+Relevant commits:
+
+- `3fac70fea6a88b0d670d3a6ce57a0389694c8f6a` — `docs: add maintainer tooling index`
+- `4e0e19e4259e3be1234ed3f7045c8371c06b099e` — `chore: audit maintainer tooling documentation`
+- `05a503942d6b31e24e88129ff7ace318efae3529` — `test: include maintainer tooling index in audit fixture`
+- `1c23646fe463e247999164b24895be1e79b4f05d` — `docs: align repository audit scope with tooling index`
+- `f46dd3f493b44e1015391b1c5916859ab45e9e3f` — `chore: add canonical project metadata to pubspec`
+- `0546d9c9e94fff59c39022f2ae4d63fb7f6448b5` — `chore: guard canonical pubspec project metadata`
+- `6fab51132881be0f23c9248928409314be2db20c` — `test: guard canonical pubspec repository metadata`
+- `b8124972be6e46a1abf10d9551412adccf1e962f` — `chore: align Windows copyright metadata with MIT license`
+- `fdb76952d371478b43c9892949bdb29618495c2b` — `chore: align macOS copyright metadata with MIT license`
+- `9f5a79dbb3a19d54a8cf3f2e5e792f6ff0eb723e` — `test: guard final open source release metadata`
+
+The dependency set was not changed by this metadata pass; `pubspec.lock` remains the committed dependency lock source.
 
 ### Deliberate non-changes
 
