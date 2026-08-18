@@ -23,12 +23,38 @@ Use platform secure storage and protected CI secrets when signing automation is 
 
 ### Current repository state
 
-`android/app/build.gradle.kts` currently maps the `release` build type to the debug signing configuration so public hosted CI can verify release-mode compilation without a production keystore.
+`android/app/build.gradle.kts` supports two explicit Android release-signing paths:
 
-Therefore the repository's hosted `app-release.apk` is:
+1. **Distribution signing:** if ignored `android/key.properties` exists, Gradle loads the configured alias/passwords and keystore path and uses a real `release` signing configuration.
+2. **Qualification fallback:** if `android/key.properties` is absent, the release build deliberately uses the debug signing configuration so public hosted CI can verify release-mode compilation without a production keystore.
+
+The safe committed starting point is:
+
+```text
+android/key.properties.example
+```
+
+Copy it to the ignored path:
+
+```text
+android/key.properties
+```
+
+and replace all placeholders. `storeFile` is resolved relative to `android/`, so the template value:
+
+```properties
+storeFile=app/upload-keystore.jks
+```
+
+points to a local `android/app/upload-keystore.jks` file.
+
+`.gitignore` excludes `android/key.properties`, `*.jks`, and `*.keystore`.
+
+Therefore the repository's hosted `app-release.apk` and `app-release.aab` are:
 
 - optimized release-mode application code;
-- suitable as a qualification build input;
+- suitable as qualification build inputs;
+- intentionally built without private distribution credentials;
 - **not the final production Play signing identity**.
 
 ### Production distribution
@@ -37,10 +63,14 @@ Before Google Play or another production channel:
 
 1. establish a production upload/signing key strategy;
 2. keep private key material outside Git;
-3. configure secure signing for the intended environment;
-4. rebuild the APK/AAB from the exact candidate source;
-5. test the exact newly signed artifact;
-6. record distribution metadata and real-device evidence.
+3. copy/fill `android/key.properties.example` into ignored `android/key.properties`;
+4. verify the keystore path/alias/passwords;
+5. rebuild the APK/AAB from the exact candidate source;
+6. verify the resulting signing identity;
+7. test the exact newly signed artifact;
+8. record distribution metadata, checksum, and real-device evidence.
+
+If `android/key.properties` exists but is invalid, fix the signing configuration rather than committing secrets or silently treating a qualification/debug-key package as production-signed.
 
 Do not assume a debug-key qualification APK can upgrade seamlessly to a production-key package already installed with another signature.
 
