@@ -17,16 +17,46 @@ Do not casually upgrade these as independent values. See [`../ANDROID_TOOLCHAIN.
 
 ## Current release-signing state
 
-The tracked `android/app/build.gradle.kts` deliberately maps the Android `release` build type to the **debug signing configuration** so public hosted CI can compile/package release-mode code without storing a private production keystore.
+The tracked `android/app/build.gradle.kts` now supports **optional local distribution signing** without committing private credentials.
 
-Therefore:
+Behavior is explicit:
 
-- `flutter build apk --release` produces an optimized release-mode APK, but with the repository's qualification/debug signing identity;
-- `flutter build appbundle --release` produces an optimized release-mode AAB under the same tracked qualification signing configuration;
-- both APK and AAB are now built and checksummed by the hosted `Platform Builds` workflow;
-- neither hosted artifact should be described as the final production Play signing identity.
+- when ignored `android/key.properties` exists, the release build loads that file and creates the real `release` signing configuration;
+- `storeFile` is resolved relative to the `android/` directory;
+- when `android/key.properties` is absent, hosted/local qualification builds deliberately fall back to the debug signing configuration so public CI can still verify optimized release-mode compilation and packaging;
+- the tracked template is [`../../android/key.properties.example`](../../android/key.properties.example);
+- `.gitignore` excludes `android/key.properties`, `*.jks`, and `*.keystore` so real signing material remains local/private.
 
-Before public store distribution, configure a secure production upload/signing path outside committed secrets, rebuild from the exact intended release commit, and re-qualify that production-signed output.
+Therefore the hosted `Platform Builds` APK/AAB remain qualification artifacts rather than the final production Play signing identity, while a maintainer can produce a production-signed build without editing tracked Gradle source.
+
+### Configure local distribution signing
+
+1. Copy the safe template:
+
+   ```text
+   android/key.properties.example -> android/key.properties
+   ```
+
+2. Put your private keystore in a local ignored location, for example:
+
+   ```text
+   android/app/upload-keystore.jks
+   ```
+
+3. Replace every placeholder in `android/key.properties`:
+
+   ```properties
+   storePassword=<your-store-password>
+   keyPassword=<your-key-password>
+   keyAlias=<your-key-alias>
+   storeFile=app/upload-keystore.jks
+   ```
+
+4. Keep both `android/key.properties` and the keystore outside Git.
+5. Build the exact intended release commit.
+6. Verify the signing identity and test the exact signed artifact on representative devices.
+
+If `android/key.properties` exists but contains incorrect/missing credentials, the signed build should fail rather than silently becoming a valid production package under a different identity.
 
 ## Prerequisites
 
@@ -99,7 +129,7 @@ Output:
 build/app/outputs/flutter-apk/app-release.apk
 ```
 
-This is directly installable on compatible Android devices and is one of the two Android release outputs qualified by the hosted native matrix.
+This is directly installable on compatible Android devices and is one of the two Android release outputs qualified by the hosted native matrix. Its signing identity depends on whether valid local `android/key.properties` was configured as described above.
 
 ### APK checksum
 
@@ -152,7 +182,7 @@ build/app/outputs/bundle/release/app-release.aab
 
 Use an AAB for Google Play-style distribution. An AAB is a publishing bundle from which device-specific APKs are produced; it is not normally installed directly by tapping it on a device.
 
-The hosted `Platform Builds` workflow now builds this AAB from the same source/toolchain as the release APK and uploads it in the `nova-2048-android-release` qualification artifact.
+The hosted `Platform Builds` workflow builds this AAB from the same source/toolchain as the release APK and uploads it in the `nova-2048-android-release` qualification artifact. With no private `android/key.properties` on the hosted runner, this remains the documented qualification/debug-signing fallback rather than a production Play upload identity.
 
 ### AAB checksum
 
@@ -227,22 +257,24 @@ For official releases, keep repository metadata aligned rather than relying only
 
 A locally/hosted generated release artifact is not automatically equivalent to a production-signed Play release.
 
-Production Android distribution may require:
+The repository provides the wiring and safe template for local production signing, but the private inputs remain intentionally external. Production Android distribution may require:
 
 - a private upload/signing key;
-- secure Gradle signing configuration or store-managed app signing;
+- completed `android/key.properties` values;
+- store-managed app signing where applicable;
 - protected passwords/aliases;
 - Play Console app/listing configuration.
 
 Never commit:
 
+- `android/key.properties` with real values;
 - private `.jks`/keystore files;
 - keystore passwords;
 - key passwords;
 - private signing properties;
 - store API credentials.
 
-If production signing is added locally or in protected CI, treat the resulting package as a different release-sensitive artifact and re-test it.
+A package signed with a production key is release-sensitive and must be re-tested. Do not assume a debug-key qualification APK can upgrade seamlessly to a package signed by another identity.
 
 ## APK versus AAB decision
 
@@ -284,6 +316,18 @@ Hosted Android qualification uses Temurin JDK 17.
 
 Consult [`../ANDROID_TOOLCHAIN.md`](../ANDROID_TOOLCHAIN.md). The project has explicit regression coverage for its accepted Android versions.
 
+### Release signing fails
+
+If `android/key.properties` exists, verify:
+
+- every placeholder was replaced;
+- `storeFile` points to the intended keystore relative to `android/`;
+- the alias exists in that keystore;
+- store/key passwords are correct;
+- the keystore was not accidentally moved/deleted.
+
+Remove or rename `android/key.properties` only when you intentionally want the documented qualification/debug-signing fallback rather than distribution signing.
+
 ### Build succeeds but APK installation fails
 
 Check:
@@ -294,7 +338,7 @@ Check:
 - installed package/signature lineage;
 - whether an existing package with the same application ID was signed by a different key.
 
-The current qualification build and a future production-signed build may use different signing identities, so Android can reject an in-place update across mismatched signatures.
+The hosted qualification build and a production-signed build use different signing identities, so Android can reject an in-place update across mismatched signatures.
 
 ### AAB builds but cannot be directly installed
 
@@ -306,16 +350,17 @@ Before distributing an Android artifact:
 
 1. `flutter pub get` completes without unintended lockfile drift.
 2. Formatter, analyzer, and tests pass.
-3. Candidate release-readiness check passes.
-4. `flutter build apk --release` succeeds.
-5. `flutter build appbundle --release` succeeds when AAB distribution is intended.
-6. Signing identity/state is explicitly known.
-7. SHA-256 sidecars are generated and verified.
-8. The exact release APK is tested on representative physical Android devices.
-9. Lifecycle, save/resume, gestures, orientation, long-session, Challenge Code, Backup, Replay, and external-handler behavior are checked.
-10. TalkBack, large-text, high-contrast, reduced-motion, and Hindi behavior are checked.
-11. Native launcher icon/splash presentation is reviewed.
-12. Production signing is configured outside Git and the exact production-signed artifact is re-tested.
-13. Required real-world release evidence is recorded before stable promotion.
+3. Candidate release-readiness and repository-integrity checks pass.
+4. Configure the intended signing identity; for distribution, copy/fill `android/key.properties.example` into ignored `android/key.properties`.
+5. `flutter build apk --release` succeeds.
+6. `flutter build appbundle --release` succeeds when AAB distribution is intended.
+7. Signing identity/state is explicitly verified.
+8. SHA-256 sidecars are generated and verified.
+9. The exact release APK is tested on representative physical Android devices.
+10. Lifecycle, save/resume, gestures, orientation, long-session, Challenge Code, Backup, Replay, and external-handler behavior are checked.
+11. TalkBack, large-text, high-contrast, reduced-motion, and Hindi behavior are checked.
+12. Native launcher icon/splash presentation is reviewed.
+13. The exact production-signed artifact is re-tested after signing/package changes.
+14. Required real-world release evidence is recorded before stable promotion.
 
 See [`../RELEASE_QUALIFICATION.md`](../RELEASE_QUALIFICATION.md), [`../RELEASE_ARTIFACTS.md`](../RELEASE_ARTIFACTS.md), and [`SIGNING_AND_DISTRIBUTION.md`](SIGNING_AND_DISTRIBUTION.md).
