@@ -1847,7 +1847,7 @@ Phase 15 adds exactly **15** cases:
 test/challenge_code_test.dart        10
 test/challenge_code_screen_test.dart  4
 test/widget_smoke_test.dart            1 new Challenge Codes navigation case
-                                      --
+                            --
 Total added                             15
 Final suite                            127
 ```
@@ -4853,3 +4853,30 @@ Platform Builds run `32015893841`: **SUCCESS** across all configured native jobs
 - GitHub issue #12 remains open: `main` branch protection/ruleset enforcement requires GitHub repository settings. It cannot be truthfully implemented by repository files alone through the currently available repository actions.
 
 Phase 29 is complete for automated/source-controlled scope and does not claim that the pending real-world stable-release qualification has been completed.
+
+## Phase 30 — Guarded release qualification recorder
+
+Implemented a dedicated maintainer CLI for safely editing the real-world qualification manifest without weakening the existing fail-closed stable-release gate.
+
+Added:
+
+- `tool/record_release_qualification.dart`
+- `test/release_qualification_recorder_cli_test.dart`
+- `docs/QUALIFICATION_RECORDER.md`
+- `docs/PHASE_30_VERIFICATION.md`
+
+Recorder behavior:
+
+- lists all 13 required qualification IDs without mutating the manifest;
+- requires an explicit supported ID and one of `pending`, `passed`, or `blocked` for mutations;
+- never infers `passed` from hosted CI, compilation, widget tests, or synthetic fixtures;
+- requires non-empty evidence for `passed` and `blocked`;
+- automatically timestamps passed/blocked updates in UTC unless an explicit ISO-8601 `Z`/numeric-offset timestamp is supplied;
+- normalizes explicit timestamps to UTC;
+- resets stale evidence/timestamp when a check returns to `pending`;
+- supports `--dry-run` for non-mutating previews and `--root=<path>` for isolated regression fixtures;
+- rejects malformed manifests, duplicate/missing/unknown qualification IDs, invalid statuses, ambiguous timestamps, and unsafe option combinations.
+
+Process-level regression coverage exercises listing, genuine-evidence recording mechanics, timezone normalization, missing-evidence rejection, timezone-less timestamp rejection, unknown-ID rejection, pending reset behavior, and dry-run non-mutation.
+
+The manual release boundary remains unchanged: `docs/release_qualification.json` still contains no synthesized real-device evidence, and the recorder is only a guarded editing tool. Physical-device, assistive-technology, external-handler, long-session, signing/provisioning, branding presentation, and store-metadata checks must still be performed in representative real environments before stable release promotion.
