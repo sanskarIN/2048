@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Format, analyze, test, release gate, web build
+    name: Format, analyze, test, release gate, repository audit, web build
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -52,6 +52,9 @@ jobs:
 
       - name: Verify release-candidate readiness metadata
         run: dart run tool/release_readiness.dart --json
+
+      - name: Audit repository integrity and local documentation links
+        run: dart run tool/repository_audit.dart --json
 
       - name: Verify stable gate remains fail-closed
         shell: bash
