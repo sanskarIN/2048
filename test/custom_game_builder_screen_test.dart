@@ -64,10 +64,19 @@ void main() {
     final nameField = find.byType(TextField).first;
     await tester.enterText(nameField, 'My Saved Mode');
 
-    await tapVisible(tester, find.text('Save preset'));
+    await tapVisible(
+      tester,
+      find.widgetWithText(OutlinedButton, 'Save preset'),
+    );
 
     expect(controller.game, isNull);
-    expect(find.text('My Saved Mode'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(ListTile),
+        matching: find.text('My Saved Mode'),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('Preset saved.'), findsOneWidget);
     final restored = await CustomPresetStore().load();
     expect(restored, hasLength(1));
@@ -79,7 +88,10 @@ void main() {
   ) async {
     final controller = await pumpBuilder(tester);
 
-    await tapVisible(tester, find.text('Play now'));
+    await tapVisible(
+      tester,
+      find.widgetWithText(FilledButton, 'Play now'),
+    );
 
     expect(find.text('Custom game'), findsOneWidget);
     expect(controller.game, isNotNull);
@@ -96,7 +108,10 @@ void main() {
     final seedField = find.byType(TextField).at(1);
     await tester.enterText(seedField, 'not-a-number');
 
-    await tapVisible(tester, find.text('Play now'));
+    await tapVisible(
+      tester,
+      find.widgetWithText(FilledButton, 'Play now'),
+    );
 
     expect(controller.game, isNull);
     expect(
