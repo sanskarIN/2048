@@ -43,6 +43,7 @@ This directory is the user, technical, development, platform, and release docume
 | [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md) | Evidence manifest, candidate/stable readiness commands, fail-closed promotion rules, and stable-release sequence. |
 | [`QUALIFICATION_RECORDER.md`](QUALIFICATION_RECORDER.md) | Guarded CLI for listing and recording genuine manual qualification evidence without hand-editing JSON. |
 | [`PHASE_30_VERIFICATION.md`](PHASE_30_VERIFICATION.md) | Phase 30 recorder implementation, safety boundaries, regression coverage, and manual-evidence boundary. |
+| [`REPOSITORY_AUDIT.md`](REPOSITORY_AUDIT.md) | Permanent required-file, release-state, temporary-workflow, and repository-local Markdown-link integrity audit used by CI. |
 | [`RELEASE_GATE_TESTING.md`](RELEASE_GATE_TESTING.md) | Process-level fixture coverage for candidate/stable release-gate acceptance and rejection paths. |
 | [`RELEASE_ARTIFACTS.md`](RELEASE_ARTIFACTS.md) | Checksummed hosted native qualification artifacts, retention, verification, packaging, and manual-evidence boundaries. |
 | [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) | Automated and manual qualification checklist before stable release. |
@@ -84,6 +85,7 @@ A feature should not be documented as ranked/trusted when its source policy make
 - **Application routes/localization delegates:** `lib/app/nova_app.dart`.
 - **Current package/version:** `pubspec.yaml`.
 - **Automated quality gates:** `.github/workflows/`.
+- **Repository integrity audit:** `tool/repository_audit.dart`; human scope and maintenance guidance is `REPOSITORY_AUDIT.md`.
 - **Executable/distribution build documentation:** `BUILDING_EXECUTABLES.md` plus `build/`; actual hosted commands remain in `.github/workflows/ci.yml` and `.github/workflows/platform-builds.yml`.
 - **Hosted native qualification artifacts:** `.github/workflows/platform-builds.yml`; handling policy is `RELEASE_ARTIFACTS.md`.
 - **Stable-release evidence gate:** `tool/release_readiness.dart` plus `release_qualification.json`; human procedure is `RELEASE_QUALIFICATION.md`.
