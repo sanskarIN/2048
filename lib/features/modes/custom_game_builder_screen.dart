@@ -78,16 +78,14 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
       final normalizedName = preset.name.toLowerCase();
       final updated = <CustomGamePreset>[
         preset,
-        ..._presets.where(
-          (item) => item.name.toLowerCase() != normalizedName,
-        ),
+        ..._presets.where((item) => item.name.toLowerCase() != normalizedName),
       ];
       await _store.save(updated);
       if (!mounted) return;
-      setState(() => _presets = updated.take(CustomPresetStore.maxPresets).toList());
-      _showMessage(
-        _text('Preset saved.', 'प्रीसेट सेव हो गया।'),
+      setState(
+        () => _presets = updated.take(CustomPresetStore.maxPresets).toList(),
       );
+      _showMessage(_text('Preset saved.', 'प्रीसेट सेव हो गया।'));
     } on FormatException catch (error) {
       _showMessage(_friendlyError(error));
     }
@@ -103,9 +101,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
 
   Future<void> _startPreset(CustomGamePreset preset) async {
     if (!await confirmGameReplacement(context) || !mounted) return;
-    await AppScope.of(
-      context,
-    ).newGame(preset.toGameConfig(), custom: true);
+    await AppScope.of(context).newGame(preset.toGameConfig(), custom: true);
     if (mounted) Navigator.pushReplacementNamed(context, '/game');
   }
 
@@ -277,7 +273,10 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
             controller: _seedController,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              labelText: _text('Deterministic seed (optional)', 'निर्धारक सीड (वैकल्पिक)'),
+              labelText: _text(
+                'Deterministic seed (optional)',
+                'निर्धारक सीड (वैकल्पिक)',
+              ),
               helperText: _text(
                 'Use the same seed and moves to reproduce tile spawns.',
                 'उसी सीड और चालों से टाइल स्पॉन दोहराए जा सकते हैं।',

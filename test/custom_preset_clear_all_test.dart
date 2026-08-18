@@ -9,21 +9,24 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  test('LocalStore clearAll removes custom presets with other app data', () async {
-    final presets = CustomPresetStore();
-    await presets.save([
-      CustomGamePreset.create(
-        name: 'Saved custom mode',
-        style: CustomGameStyle.target,
-        size: 5,
-        target: 4096,
-      ),
-    ]);
-    await LocalStore().saveSettings({'themeMode': 'dark'});
+  test(
+    'LocalStore clearAll removes custom presets with other app data',
+    () async {
+      final presets = CustomPresetStore();
+      await presets.save([
+        CustomGamePreset.create(
+          name: 'Saved custom mode',
+          style: CustomGameStyle.target,
+          size: 5,
+          target: 4096,
+        ),
+      ]);
+      await LocalStore().saveSettings({'themeMode': 'dark'});
 
-    await LocalStore().clearAll();
+      await LocalStore().clearAll();
 
-    expect(await presets.load(), isEmpty);
-    expect(await LocalStore().loadSettings(), isEmpty);
-  });
+      expect(await presets.load(), isEmpty);
+      expect(await LocalStore().loadSettings(), isEmpty);
+    },
+  );
 }

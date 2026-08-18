@@ -67,9 +67,9 @@ void main() {
     final store = CustomPresetStore();
     final restored = await store.load();
     final prefs = await SharedPreferences.getInstance();
-    final repaired = jsonDecode(
-      prefs.getString(CustomPresetStore.storageKey)!,
-    ) as List<dynamic>;
+    final repaired =
+        jsonDecode(prefs.getString(CustomPresetStore.storageKey)!)
+            as List<dynamic>;
 
     expect(restored, hasLength(1));
     expect(restored.single.name, 'Duplicate');

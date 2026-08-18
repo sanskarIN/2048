@@ -131,10 +131,7 @@ class CustomGamePreset {
       size: _requiredInt(json['size'], 'board size'),
       target: _requiredInt(json['target'], 'target tile'),
       moveLimit: _optionalInt(json['moveLimit'], 'move limit'),
-      timeLimitSeconds: _optionalInt(
-        json['timeLimitSeconds'],
-        'time limit',
-      ),
+      timeLimitSeconds: _optionalInt(json['timeLimitSeconds'], 'time limit'),
       seed: _optionalInt(json['seed'], 'random seed'),
     );
   }
