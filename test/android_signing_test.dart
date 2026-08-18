@@ -6,7 +6,9 @@ void main() {
   group('Android distribution signing', () {
     test('real signing inputs remain local and ignored', () {
       final gitignore = File('.gitignore').readAsStringSync();
-      final template = File('android/key.properties.example').readAsStringSync();
+      final template = File(
+        'android/key.properties.example',
+      ).readAsStringSync();
 
       expect(gitignore, contains('android/key.properties'));
       expect(gitignore, contains('*.jks'));
@@ -18,27 +20,39 @@ void main() {
       expect(template, contains('storeFile=app/upload-keystore.jks'));
     });
 
-    test('release build supports local distribution signing with CI fallback', () {
-      final gradle = File('android/app/build.gradle.kts').readAsStringSync();
+    test(
+      'release build supports local distribution signing with CI fallback',
+      () {
+        final gradle = File('android/app/build.gradle.kts').readAsStringSync();
 
-      expect(gradle, contains('rootProject.file("key.properties")'));
-      expect(gradle, contains('val hasDistributionSigning'));
-      expect(gradle, contains('fun requiredSigningProperty'));
-      expect(gradle, contains('value.startsWith("REPLACE_WITH_")'));
-      expect(gradle, contains('val distributionStoreFile'));
-      expect(gradle, contains('rootProject.file(requiredSigningProperty("storeFile"))'));
-      expect(gradle, contains('if (!file.isFile)'));
-      expect(gradle, contains('create("release")'));
-      expect(gradle, contains('keyAlias = requiredSigningProperty("keyAlias")'));
-      expect(gradle, contains('keyPassword = requiredSigningProperty("keyPassword")'));
-      expect(gradle, contains('storeFile = distributionStoreFile'));
-      expect(
-        gradle,
-        contains('storePassword = requiredSigningProperty("storePassword")'),
-      );
-      expect(gradle, contains('signingConfigs.getByName("release")'));
-      expect(gradle, contains('signingConfigs.getByName("debug")'));
-    });
+        expect(gradle, contains('rootProject.file("key.properties")'));
+        expect(gradle, contains('val hasDistributionSigning'));
+        expect(gradle, contains('fun requiredSigningProperty'));
+        expect(gradle, contains('value.startsWith("REPLACE_WITH_")'));
+        expect(gradle, contains('val distributionStoreFile'));
+        expect(
+          gradle,
+          contains('rootProject.file(requiredSigningProperty("storeFile"))'),
+        );
+        expect(gradle, contains('if (!file.isFile)'));
+        expect(gradle, contains('create("release")'));
+        expect(
+          gradle,
+          contains('keyAlias = requiredSigningProperty("keyAlias")'),
+        );
+        expect(
+          gradle,
+          contains('keyPassword = requiredSigningProperty("keyPassword")'),
+        );
+        expect(gradle, contains('storeFile = distributionStoreFile'));
+        expect(
+          gradle,
+          contains('storePassword = requiredSigningProperty("storePassword")'),
+        );
+        expect(gradle, contains('signingConfigs.getByName("release")'));
+        expect(gradle, contains('signingConfigs.getByName("debug")'));
+      },
+    );
 
     test('tracked signing template never contains a private keystore', () {
       expect(File('android/key.properties').existsSync(), isFalse);
