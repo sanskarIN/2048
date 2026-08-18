@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../domain/daily_record.dart';
 import '../domain/game_state.dart';
 import '../domain/replay_archive.dart';
+import 'custom_preset_store.dart';
 
 class LocalStore {
   static const _gameKey = 'nova.current_game.v1';
@@ -241,6 +242,7 @@ class LocalStore {
       _dailyHistoryKey,
       _gameUnrankedKey,
       _replayCaptureKey,
+      CustomPresetStore.storageKey,
     ]) {
       await prefs.remove(key);
     }
