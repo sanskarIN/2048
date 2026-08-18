@@ -1,4 +1,5 @@
 name: Finalize Version 1.5 Evidence Once
+# Registered on main; this maintainer-authored edit triggers the one-shot run.
 
 on:
   push:
