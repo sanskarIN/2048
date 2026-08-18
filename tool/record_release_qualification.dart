@@ -26,17 +26,19 @@ void main(List<String> args) {
   }
 
   final errors = <String>[];
-  final unknown = args.where((arg) {
-    return arg != '--list' &&
-        arg != '--dry-run' &&
-        arg != '--help' &&
-        arg != '-h' &&
-        !arg.startsWith('--root=') &&
-        !arg.startsWith('--id=') &&
-        !arg.startsWith('--status=') &&
-        !arg.startsWith('--evidence=') &&
-        !arg.startsWith('--updated-at=');
-  }).toList(growable: false);
+  final unknown = args
+      .where((arg) {
+        return arg != '--list' &&
+            arg != '--dry-run' &&
+            arg != '--help' &&
+            arg != '-h' &&
+            !arg.startsWith('--root=') &&
+            !arg.startsWith('--id=') &&
+            !arg.startsWith('--status=') &&
+            !arg.startsWith('--evidence=') &&
+            !arg.startsWith('--updated-at=');
+      })
+      .toList(growable: false);
   if (unknown.isNotEmpty) {
     errors.add('Unknown argument(s): ${unknown.join(', ')}');
   }
@@ -167,14 +169,12 @@ void main(List<String> args) {
   );
 }
 
-String? _singleValue(
-  List<String> args,
-  String prefix,
-  List<String> errors,
-) {
+String? _singleValue(List<String> args, String prefix, List<String> errors) {
   final matches = args.where((arg) => arg.startsWith(prefix)).toList();
   if (matches.length > 1) {
-    errors.add('Only one ${prefix.substring(0, prefix.length - 1)} value is allowed.');
+    errors.add(
+      'Only one ${prefix.substring(0, prefix.length - 1)} value is allowed.',
+    );
   }
   if (matches.isEmpty) {
     return null;
@@ -282,9 +282,7 @@ DateTime? _parseExplicitTimestamp(String value, List<String> errors) {
 void _printChecks(List<Map<String, dynamic>> checks) {
   stdout.writeln('2048 Nova manual release qualification');
   for (final check in checks) {
-    stdout.writeln(
-      '- ${check['id']}: ${check['status']} — ${check['title']}',
-    );
+    stdout.writeln('- ${check['id']}: ${check['status']} — ${check['title']}');
   }
 }
 
@@ -305,7 +303,9 @@ void _printHelp() {
   );
   stdout.writeln();
   stdout.writeln('Options:');
-  stdout.writeln('  --list                  Show all required checks and states.');
+  stdout.writeln(
+    '  --list                  Show all required checks and states.',
+  );
   stdout.writeln('  --id=<id>               Required manual-check identifier.');
   stdout.writeln('  --status=<status>       pending, passed, or blocked.');
   stdout.writeln(
@@ -314,8 +314,12 @@ void _printHelp() {
   stdout.writeln(
     '  --updated-at=<time>    Optional explicit ISO-8601 Z/offset timestamp.',
   );
-  stdout.writeln('  --dry-run               Print the changed manifest without writing it.');
-  stdout.writeln('  --root=<path>           Operate on another repository root.');
+  stdout.writeln(
+    '  --dry-run               Print the changed manifest without writing it.',
+  );
+  stdout.writeln(
+    '  --root=<path>           Operate on another repository root.',
+  );
   stdout.writeln('  --help                  Show this help text.');
   stdout.writeln();
   stdout.writeln(
