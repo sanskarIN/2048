@@ -46,105 +46,12 @@ jobs:
           git add lib test tool
           if git diff --cached --quiet; then
             echo "No Dart formatting changes were required."
-          else
-            git config user.name "Sanskar"
-            git config user.email "sanskarin@outlook.in"
-            git commit -m "style: format Dart sources tests and tools"
-            git reset --hard HEAD
-            git clean -fd
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
-
-      - name: Finalize Phase 30 documentation continuity
-        shell: bash
-        run: |
-          git reset --hard HEAD
-          git clean -fd
-          git pull --rebase origin main
-
-          python3 - <<'PY'
-          from pathlib import Path
-
-          def insert_once(path, marker, insertion, sentinel):
-              file = Path(path)
-              text = file.read_text(encoding='utf-8')
-              if sentinel in text:
-                  return False
-              if marker not in text:
-                  raise SystemExit(f'marker not found in {path}: {marker!r}')
-              file.write_text(text.replace(marker, marker + insertion, 1), encoding='utf-8')
-              return True
-
-          changed = False
-          changed |= insert_once(
-              'README.md',
-              '| Release qualification gate | [`docs/RELEASE_QUALIFICATION.md`](docs/RELEASE_QUALIFICATION.md) |',
-              '\n| Qualification evidence recorder | [`docs/QUALIFICATION_RECORDER.md`](docs/QUALIFICATION_RECORDER.md) |',
-              'docs/QUALIFICATION_RECORDER.md',
-          )
-          changed |= insert_once(
-              'docs/README.md',
-              '| [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md) | Evidence manifest, candidate/stable readiness commands, fail-closed promotion rules, and stable-release sequence. |',
-              '\n| [`QUALIFICATION_RECORDER.md`](QUALIFICATION_RECORDER.md) | Guarded CLI for listing and recording genuine manual qualification evidence without hand-editing JSON. |\n| [`PHASE_30_VERIFICATION.md`](PHASE_30_VERIFICATION.md) | Phase 30 recorder implementation, safety boundaries, regression coverage, and manual-evidence boundary. |',
-              'QUALIFICATION_RECORDER.md',
-          )
-          changed |= insert_once(
-              'docs/RELEASE_QUALIFICATION.md',
-              'The source of truth for manual qualification state is:\n\n```text\ndocs/release_qualification.json\n```',
-              '\n\nTo reduce hand-editing mistakes, maintainers may use `dart run tool/record_release_qualification.dart --list` and the guarded mutation commands documented in [`QUALIFICATION_RECORDER.md`](QUALIFICATION_RECORDER.md). The recorder does not perform or infer any real-world check; it only validates and records evidence explicitly supplied by the maintainer.',
-              'record_release_qualification.dart --list',
-          )
-
-          log = Path('what_changed.md')
-          log_text = log.read_text(encoding='utf-8')
-          phase_title = '## Phase 30 — Guarded release qualification recorder'
-          if phase_title not in log_text:
-              entry = '''
-
-## Phase 30 — Guarded release qualification recorder
-
-Implemented a dedicated maintainer CLI for safely editing the real-world qualification manifest without weakening the existing fail-closed stable-release gate.
-
-Added:
-
-- `tool/record_release_qualification.dart`
-- `test/release_qualification_recorder_cli_test.dart`
-- `docs/QUALIFICATION_RECORDER.md`
-- `docs/PHASE_30_VERIFICATION.md`
-
-Recorder behavior:
-
-- lists all 13 required qualification IDs without mutating the manifest;
-- requires an explicit supported ID and one of `pending`, `passed`, or `blocked` for mutations;
-- never infers `passed` from hosted CI, compilation, widget tests, or synthetic fixtures;
-- requires non-empty evidence for `passed` and `blocked`;
-- automatically timestamps passed/blocked updates in UTC unless an explicit ISO-8601 `Z`/numeric-offset timestamp is supplied;
-- normalizes explicit timestamps to UTC;
-- resets stale evidence/timestamp when a check returns to `pending`;
-- supports `--dry-run` for non-mutating previews and `--root=<path>` for isolated regression fixtures;
-- rejects malformed manifests, duplicate/missing/unknown qualification IDs, invalid statuses, ambiguous timestamps, and unsafe option combinations.
-
-Process-level regression coverage exercises listing, genuine-evidence recording mechanics, timezone normalization, missing-evidence rejection, timezone-less timestamp rejection, unknown-ID rejection, pending reset behavior, and dry-run non-mutation.
-
-Documentation now indexes the recorder from the main README, documentation map, and release-qualification procedure.
-
-The manual release boundary remains unchanged: `docs/release_qualification.json` still contains no synthesized real-device evidence, and the recorder is only a guarded editing tool. Physical-device, assistive-technology, external-handler, long-session, signing/provisioning, branding presentation, and store-metadata checks must still be performed in representative real environments before stable release promotion.
-'''
-              log.write_text(log_text.rstrip() + entry + '\n', encoding='utf-8')
-              changed = True
-
-          if not changed:
-              print('Phase 30 documentation continuity already finalized.')
-          PY
-
-          git add README.md docs/README.md docs/RELEASE_QUALIFICATION.md what_changed.md
-          if git diff --cached --quiet; then
-            echo "No Phase 30 documentation continuity changes were required."
             exit 0
           fi
           git config user.name "Sanskar"
           git config user.email "sanskarin@outlook.in"
-          git commit -m "docs: index phase 30 qualification recorder"
+          git commit -m "style: format Dart sources tests and tools"
+          git reset --hard HEAD
+          git clean -fd
           git pull --rebase origin main
           git push origin HEAD:main
