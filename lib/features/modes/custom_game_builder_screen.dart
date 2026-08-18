@@ -91,6 +91,34 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
     }
   }
 
+  Future<void> _confirmDeletePreset(CustomGamePreset preset) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(_text('Delete preset?', 'प्रीसेट हटाएँ?')),
+        content: Text(
+          _text(
+            'Delete "${preset.name}"? This cannot be undone.',
+            '"${preset.name}" हटाएँ? इसे वापस नहीं किया जा सकता।',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(_text('Cancel', 'रद्द करें')),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(_text('Delete', 'हटाएँ')),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      await _deletePreset(preset);
+    }
+  }
+
   Future<void> _deletePreset(CustomGamePreset preset) async {
     final updated = _presets.where((item) => item.name != preset.name).toList();
     await _store.save(updated);
@@ -337,7 +365,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
                       ),
                       IconButton(
                         tooltip: _text('Delete preset', 'प्रीसेट हटाएँ'),
-                        onPressed: () => _deletePreset(preset),
+                        onPressed: () => _confirmDeletePreset(preset),
                         icon: const Icon(Icons.delete_outline_rounded),
                       ),
                     ],
