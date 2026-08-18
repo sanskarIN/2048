@@ -4,6 +4,7 @@ import 'package:nova_2048/app/state/app_controller.dart';
 import 'package:nova_2048/app/state/app_scope.dart';
 import 'package:nova_2048/data/custom_preset_store.dart';
 import 'package:nova_2048/data/local_store.dart';
+import 'package:nova_2048/domain/custom_game_preset.dart';
 import 'package:nova_2048/domain/game_types.dart';
 import 'package:nova_2048/features/modes/custom_game_builder_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -81,6 +82,39 @@ void main() {
     final restored = await CustomPresetStore().load();
     expect(restored, hasLength(1));
     expect(restored.single.name, 'My Saved Mode');
+  });
+
+  testWidgets('delete confirmation cancels or removes only after approval', (
+    tester,
+  ) async {
+    final store = CustomPresetStore();
+    await store.save([
+      CustomGamePreset.create(
+        name: 'Delete Me',
+        style: CustomGameStyle.target,
+        size: 4,
+        target: 2048,
+      ),
+    ]);
+    await pumpBuilder(tester);
+
+    await tapVisible(tester, find.byTooltip('Delete preset'));
+
+    expect(find.text('Delete preset?'), findsOneWidget);
+    expect(find.text('Delete "Delete Me"? This cannot be undone.'), findsOneWidget);
+    await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Delete Me'), findsOneWidget);
+    expect(await store.load(), hasLength(1));
+
+    await tapVisible(tester, find.byTooltip('Delete preset'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Delete Me'), findsNothing);
+    expect(find.text('Preset deleted.'), findsOneWidget);
+    expect(await store.load(), isEmpty);
   });
 
   testWidgets('play now starts the validated default custom target game', (
