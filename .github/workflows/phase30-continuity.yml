@@ -1,20 +1,20 @@
-name: Phase 30 Continuity Update
+name: Phase 30 Documentation Finalizer
 
 on:
   push:
     branches: [main]
     paths:
-      - docs/PHASE_30_VERIFICATION.md
+      - docs/PHASE_30_INDEX_TRIGGER.md
 
 permissions:
   contents: write
 
 concurrency:
-  group: phase30-continuity-${{ github.ref }}
+  group: phase30-documentation-finalizer-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  update:
+  finalize:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -24,47 +24,66 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Append Phase 30 continuity record
+      - name: Finalize indexes, current phase, and remove helper
         shell: bash
         run: |
-          if grep -Fq '## Phase 30 — Guarded release qualification recorder' what_changed.md; then
-            echo 'Phase 30 continuity record already exists.'
-            exit 0
-          fi
+          git pull --rebase origin main
 
-          cat >> what_changed.md <<'EOF'
+          python3 - <<'PY'
+          from pathlib import Path
 
-## Phase 30 — Guarded release qualification recorder
+          def insert_after(path, marker, insertion, sentinel):
+              file = Path(path)
+              text = file.read_text(encoding='utf-8')
+              if sentinel in text:
+                  return
+              if marker not in text:
+                  raise SystemExit(f'marker not found in {path}: {marker!r}')
+              file.write_text(text.replace(marker, marker + insertion, 1), encoding='utf-8')
 
-Implemented a dedicated maintainer CLI for safely editing the real-world qualification manifest without weakening the existing fail-closed stable-release gate.
+          insert_after(
+              'README.md',
+              '| Release qualification gate | [`docs/RELEASE_QUALIFICATION.md`](docs/RELEASE_QUALIFICATION.md) |',
+              '\n| Qualification evidence recorder | [`docs/QUALIFICATION_RECORDER.md`](docs/QUALIFICATION_RECORDER.md) |',
+              'docs/QUALIFICATION_RECORDER.md',
+          )
 
-Added:
+          insert_after(
+              'docs/README.md',
+              '| [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md) | Evidence manifest, candidate/stable readiness commands, fail-closed promotion rules, and stable-release sequence. |',
+              '\n| [`QUALIFICATION_RECORDER.md`](QUALIFICATION_RECORDER.md) | Guarded CLI for listing and recording genuine manual qualification evidence without hand-editing JSON. |\n| [`PHASE_30_VERIFICATION.md`](PHASE_30_VERIFICATION.md) | Phase 30 recorder implementation, safety boundaries, regression coverage, and manual-evidence boundary. |',
+              'QUALIFICATION_RECORDER.md',
+          )
 
-- `tool/record_release_qualification.dart`
-- `test/release_qualification_recorder_cli_test.dart`
-- `docs/QUALIFICATION_RECORDER.md`
-- `docs/PHASE_30_VERIFICATION.md`
+          insert_after(
+              'docs/RELEASE_QUALIFICATION.md',
+              'The source of truth for manual qualification state is:\n\n```text\ndocs/release_qualification.json\n```',
+              '\n\nTo reduce hand-editing mistakes, maintainers may use `dart run tool/record_release_qualification.dart --list` and the guarded mutation commands documented in [`QUALIFICATION_RECORDER.md`](QUALIFICATION_RECORDER.md). The recorder does not perform or infer any real-world check; it only validates and records evidence explicitly supplied by the maintainer.',
+              'record_release_qualification.dart --list',
+          )
 
-Recorder behavior:
+          log = Path('what_changed.md')
+          lines = log.read_text(encoding='utf-8').splitlines()
+          replacement = (
+              '- **Current phase:** Phase 30 — guarded release-qualification evidence recorder implemented, '
+              'formatted, regression-tested in source, documented, and added to the continuity log; '
+              'the latest previously accepted full CI/native evidence remains the Phase 29 Version 1.5 baseline '
+              'until a newer maintained workflow result is explicitly recorded; the stable qualification boundary '
+              'remains 0/13 and GitHub issues #10 and #12 remain explicit'
+          )
+          for index, line in enumerate(lines):
+              if line.startswith('- **Current phase:**'):
+                  lines[index] = replacement
+                  break
+          else:
+              raise SystemExit('Current phase line not found in what_changed.md')
+          log.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          PY
 
-- lists all 13 required qualification IDs without mutating the manifest;
-- requires an explicit supported ID and one of `pending`, `passed`, or `blocked` for mutations;
-- never infers `passed` from hosted CI, compilation, widget tests, or synthetic fixtures;
-- requires non-empty evidence for `passed` and `blocked`;
-- automatically timestamps passed/blocked updates in UTC unless an explicit ISO-8601 `Z`/numeric-offset timestamp is supplied;
-- normalizes explicit timestamps to UTC;
-- resets stale evidence/timestamp when a check returns to `pending`;
-- supports `--dry-run` for non-mutating previews and `--root=<path>` for isolated regression fixtures;
-- rejects malformed manifests, duplicate/missing/unknown qualification IDs, invalid statuses, ambiguous timestamps, and unsafe option combinations.
-
-Process-level regression coverage exercises listing, genuine-evidence recording mechanics, timezone normalization, missing-evidence rejection, timezone-less timestamp rejection, unknown-ID rejection, pending reset behavior, and dry-run non-mutation.
-
-The manual release boundary remains unchanged: `docs/release_qualification.json` still contains no synthesized real-device evidence, and the recorder is only a guarded editing tool. Physical-device, assistive-technology, external-handler, long-session, signing/provisioning, branding presentation, and store-metadata checks must still be performed in representative real environments before stable release promotion.
-EOF
-
-          git add what_changed.md
+          git rm .github/workflows/phase30-continuity.yml docs/PHASE_30_INDEX_TRIGGER.md
+          git add README.md docs/README.md docs/RELEASE_QUALIFICATION.md what_changed.md
           git config user.name 'Sanskar'
           git config user.email 'sanskarin@outlook.in'
-          git commit -m 'docs: record phase 30 qualification recorder'
+          git commit -m 'docs: finalize phase 30 documentation indexes'
           git pull --rebase origin main
           git push origin HEAD:main
