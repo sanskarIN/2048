@@ -64,7 +64,10 @@ void main() {
     final nameField = find.byType(TextField).first;
     await tester.enterText(nameField, 'My Saved Mode');
 
-    await tapVisible(tester, find.widgetWithText(OutlinedButton, 'Save preset'));
+    await tapVisible(
+      tester,
+      find.widgetWithText(OutlinedButton, 'Save preset'),
+    );
 
     expect(controller.game, isNull);
     expect(
