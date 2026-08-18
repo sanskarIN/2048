@@ -37,9 +37,10 @@ void main() {
   }
 
   Future<void> tapVisible(WidgetTester tester, Finder finder) async {
-    final scrollable = find.byType(Scrollable).first;
-    await tester.scrollUntilVisible(finder, 220, scrollable: scrollable);
-    await tester.pump();
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(finder);
+    await tester.pumpAndSettle();
     await tester.tap(finder);
     await tester.pumpAndSettle();
   }
@@ -101,7 +102,10 @@ void main() {
     await tapVisible(tester, find.byTooltip('Delete preset'));
 
     expect(find.text('Delete preset?'), findsOneWidget);
-    expect(find.text('Delete "Delete Me"? This cannot be undone.'), findsOneWidget);
+    expect(
+      find.text('Delete "Delete Me"? This cannot be undone.'),
+      findsOneWidget,
+    );
     await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
     await tester.pumpAndSettle();
 
