@@ -98,6 +98,7 @@ dart format --output=none --set-exit-if-changed lib test tool
 flutter analyze
 flutter test --coverage
 dart run tool/release_readiness.dart --json
+dart run tool/repository_audit.dart --json
 dart run tool/solver_benchmark.dart 8
 flutter build web --release
 ```
@@ -158,7 +159,7 @@ Output:
 build/app/outputs/flutter-apk/app-release.apk
 ```
 
-This artifact can be directly installed/sideloaded on compatible Android devices.
+This artifact can be directly installed/sideloaded on compatible Android devices. Its signing identity depends on whether valid local `android/key.properties` is configured as described in section 11.
 
 ### SHA-256
 
@@ -224,18 +225,31 @@ $hash = (Get-FileHash $path -Algorithm SHA256).Hash.ToLower()
 
 ## 11. Android signing state
 
-The tracked `android/app/build.gradle.kts` deliberately maps `release` to the **debug signing configuration** for public hosted qualification. Therefore the hosted release APK/AAB prove optimized release compilation and packaging, but they are **not production Play signing identities**.
+The tracked `android/app/build.gradle.kts` supports two explicit release-signing paths without committing private credentials:
 
-For production Android distribution:
+1. **Distribution signing:** if ignored `android/key.properties` exists, Gradle loads the configured keystore, alias, and passwords and uses the real `release` signing configuration.
+2. **Qualification fallback:** if `android/key.properties` is absent, the release build deliberately falls back to the debug signing configuration so public hosted CI can verify optimized release-mode compilation and packaging without a private production key.
 
-1. create/use a private upload/signing key;
-2. keep keystore files and passwords outside Git;
-3. configure a production signing path securely;
-4. rebuild APK/AAB from the exact intended release commit;
-5. re-run tests and real-device qualification against the production-signed artifact;
-6. record its checksum and release evidence.
+A safe template is committed at:
 
-Never commit private keystores, passwords, aliases, signing certificates, or store credentials.
+```text
+android/key.properties.example
+```
+
+For local distribution signing:
+
+1. copy `android/key.properties.example` to ignored `android/key.properties`;
+2. keep the real keystore in an ignored/private location such as `android/app/upload-keystore.jks`;
+3. replace all password/alias placeholders;
+4. keep `storeFile` relative to the `android/` directory (the template uses `app/upload-keystore.jks`);
+5. build APK/AAB from the exact intended release commit;
+6. verify the actual signing identity;
+7. re-run tests and real-device qualification against the exact production-signed artifact;
+8. record its checksum and release evidence.
+
+`.gitignore` excludes `android/key.properties`, `*.jks`, and `*.keystore`. Never commit private keystores, passwords, aliases, signing certificates, or store credentials.
+
+Hosted release APK/AAB artifacts intentionally have no private `android/key.properties`, so they remain **qualification/debug-signing artifacts**, not the final production Play signing identity.
 
 See [`build/ANDROID.md`](build/ANDROID.md) and [`build/SIGNING_AND_DISTRIBUTION.md`](build/SIGNING_AND_DISTRIBUTION.md).
 
@@ -412,6 +426,7 @@ nova-2048-linux-x64.tar.gz.sha256
 - analyzer;
 - tests with coverage;
 - candidate release readiness;
+- repository integrity and repository-local Markdown links;
 - fail-closed stable gate behavior;
 - deterministic solver benchmark;
 - Web release build.
@@ -508,6 +523,7 @@ flutter pub get
 dart format --output=none --set-exit-if-changed lib test tool
 flutter analyze
 flutter test
+dart run tool/repository_audit.dart --json
 ```
 
 Then run only the target build that is failing.
@@ -531,16 +547,16 @@ Do not fix build failures by disabling analyzer/lints, release-readiness safegua
 2. Confirm a clean worktree.
 3. Confirm Flutter/toolchain versions.
 4. Run `flutter pub get` and inspect any generated-file drift.
-5. Run formatter, analyzer, and all tests.
-6. Run candidate release-readiness verification.
-7. Build Web release.
-8. Build the intended native/store artifact.
+5. Run formatter, analyzer, all tests, release-candidate readiness, and the repository audit.
+6. Build Web release.
+7. Configure the intended platform production signing/provisioning outside Git; on Android, use ignored `android/key.properties` from the committed template.
+8. Build the intended native/store artifact from the exact candidate.
 9. Package the **complete** runtime bundle where the platform requires multiple files.
 10. Generate and verify SHA-256.
-11. Test the exact built artifact on representative real targets.
-12. Perform accessibility, lifecycle, long-session, file/clipboard/handler, branding, and platform-specific checks.
-13. Configure production signing/provisioning outside Git.
-14. Rebuild and re-test the exact production-signed artifact when signing changes the package.
+11. Verify the artifact's signing identity/state where applicable.
+12. Test the exact built/signed artifact on representative real targets.
+13. Perform accessibility, lifecycle, long-session, file/clipboard/handler, branding, and platform-specific checks.
+14. Rebuild and re-test if any signing/provisioning/package change alters the final artifact.
 15. Record truthful real-world evidence.
 16. Run `dart run tool/release_readiness.dart --stable --json` on the exact intended release commit.
 17. Only after the stable gate passes should a qualified stable release be tagged/published.
