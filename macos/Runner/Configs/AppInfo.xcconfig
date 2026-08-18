@@ -7,4 +7,4 @@ PRODUCT_NAME = 2048 Nova
 PRODUCT_BUNDLE_IDENTIFIER = com.sanskarin.nova2048
 
 // Copyright displayed in application information.
-PRODUCT_COPYRIGHT = Copyright © 2026 Sanskar. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 Sanskar. Licensed under the MIT License.
