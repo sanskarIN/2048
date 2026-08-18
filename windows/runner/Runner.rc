@@ -91,6 +91,7 @@ BEGIN
             VALUE "FileDescription", "2048 Nova" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "nova_2048" "\0"
+            // Keep installed Windows metadata aligned with the repository MIT license.
             VALUE "LegalCopyright", "Copyright (C) 2026 Sanskar. Licensed under the MIT License." "\0"
             VALUE "OriginalFilename", "nova_2048.exe" "\0"
             VALUE "ProductName", "2048 Nova" "\0"
