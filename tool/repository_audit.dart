@@ -48,6 +48,12 @@ const _forbiddenTemporaryPaths = <String>[
   'docs/PHASE_31_TRIGGER.md',
 ];
 
+const _canonicalPubspecMetadata = <String, String>{
+  'homepage': 'https://github.com/sanskarIN/2048',
+  'repository': 'https://github.com/sanskarIN/2048',
+  'issue_tracker': 'https://github.com/sanskarIN/2048/issues',
+};
+
 void main(List<String> args) {
   final jsonMode = args.contains('--json');
   final helpMode = args.contains('--help') || args.contains('-h');
@@ -191,6 +197,19 @@ void _auditReleaseState(Directory root, List<String> failures) {
   }
   final packageVersion = versionMatch.group(1)!;
   final baseVersion = packageVersion.split('+').first;
+
+  for (final metadata in _canonicalPubspecMetadata.entries) {
+    final match = RegExp(
+      '^${RegExp.escape(metadata.key)}:\\s*(\\S+)\\s*\$',
+      multiLine: true,
+    ).firstMatch(pubspec);
+    final actual = match?.group(1);
+    if (actual != metadata.value) {
+      failures.add(
+        'pubspec ${metadata.key} must be ${metadata.value}; found ${actual ?? 'missing'}.',
+      );
+    }
+  }
 
   final projectVersionMatch = RegExp(
     r"static const version = '([^']+)';",
