@@ -50,7 +50,7 @@ android {
     }
 
     defaultConfig {
-        // Stable Android application ID for 2048 Nova.
+        // Stable Android application ID for 2048 Nova; this comment-only branch marks final verification.
         applicationId = "com.sanskarin.nova_2048"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
