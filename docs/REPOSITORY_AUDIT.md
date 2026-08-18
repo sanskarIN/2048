@@ -36,13 +36,16 @@ The permanent CI workflow runs the JSON form automatically.
 
 ### Required repository files
 
-The audit fails when required project, open-source, release, support, security, build, tooling, or workflow files are missing or empty. This includes the primary README, changelog, roadmap, license, contribution/security/support files, release-qualification files, build handbook, maintainer tooling index, repository-owned maintenance CLIs, and permanent CI workflows.
+The audit fails when required project, open-source, release, support, security, build, signing-safety, tooling, or workflow files are missing or empty. This includes the primary README, changelog, roadmap, license, `.gitignore`, contribution/security/support files, release-qualification files, build handbook, safe `android/key.properties.example` template, maintainer tooling index, repository-owned maintenance CLIs, and permanent CI workflows.
+
+Requiring `.gitignore` and the Android signing template protects the documented boundary in which real `android/key.properties`, `*.jks`, and `*.keystore` material stays outside the public repository while maintainers still have a reproducible production-signing setup path.
 
 ### Release-state consistency
 
 The audit checks that:
 
 - the package version in `pubspec.yaml` is parseable;
+- canonical `homepage`, `repository`, and `issue_tracker` metadata remain aligned with `sanskarIN/2048`;
 - the in-app `ProjectInfo.version` matches the package marketing version;
 - the release-qualification manifest candidate exactly matches the package version including build suffix;
 - the qualification manifest contains exactly the required 13 manual check records;
@@ -80,7 +83,7 @@ The repository audit has a narrow role:
 | `flutter analyze` | Dart/Flutter static analysis and linting |
 | `flutter test --coverage` | Unit, domain, persistence, widget, localization, workflow, and regression behavior |
 | `tool/release_readiness.dart` | Candidate/stable release metadata and manual-evidence schema |
-| `tool/repository_audit.dart` | Required-file, local-doc-link, temporary-file, and release-state drift |
+| `tool/repository_audit.dart` | Required-file, signing-safety, local-doc-link, temporary-file, and release-state drift |
 | `tool/solver_benchmark.dart` | Deterministic solver smoke/regression behavior |
 | Flutter Web/native builds | Build-system and target compilation compatibility |
 
