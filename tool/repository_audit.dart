@@ -23,6 +23,7 @@ const _requiredPaths = <String>[
   'docs/RELEASE_CHECKLIST.md',
   'docs/BUILDING_EXECUTABLES.md',
   'docs/release_qualification.json',
+  'tool/README.md',
   'tool/release_readiness.dart',
   'tool/record_release_qualification.dart',
   'tool/repository_audit.dart',
@@ -249,7 +250,7 @@ void _auditMarkdownLinks(
     }
   }
 
-  for (final directoryName in <String>['docs', '.github']) {
+  for (final directoryName in <String>['docs', '.github', 'tool']) {
     final directory = Directory.fromUri(root.uri.resolve('$directoryName/'));
     if (!directory.existsSync()) {
       continue;
