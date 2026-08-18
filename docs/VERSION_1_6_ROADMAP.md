@@ -18,6 +18,7 @@
 - Custom local play remains trusted gameplay but cannot overwrite built-in per-mode best-score/highest-tile records.
 - Imported backups remain separately unranked and clear custom-session identity.
 - Domain, persistence, widget-flow, reset, and custom-session policy regression coverage.
+- Builder widget tests target the actual `FilledButton`/`OutlinedButton` controls rather than text descendants, keeping hit testing representative of real user actions.
 - Dedicated architecture/policy documentation in `CUSTOM_GAME_BUILDER.md`.
 
 ## Required before the feature PR can leave draft
