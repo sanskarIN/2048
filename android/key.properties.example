@@ -1,0 +1,8 @@
+# Copy this file to android/key.properties for local distribution signing.
+# android/key.properties is ignored by Git. Never commit real passwords or keystores.
+# storeFile is resolved relative to the android/ directory.
+
+storePassword=REPLACE_WITH_STORE_PASSWORD
+keyPassword=REPLACE_WITH_KEY_PASSWORD
+keyAlias=upload
+storeFile=app/upload-keystore.jks
