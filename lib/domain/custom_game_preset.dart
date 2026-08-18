@@ -186,6 +186,7 @@ class CustomGamePreset {
         if (moveLimit != null || timeLimitSeconds != null) {
           throw const FormatException('Unexpected custom game limit');
         }
+        break;
       case CustomGameStyle.timed:
         if (moveLimit != null ||
             timeLimitSeconds == null ||
@@ -193,6 +194,7 @@ class CustomGamePreset {
             timeLimitSeconds > 86400) {
           throw const FormatException('Invalid custom time limit');
         }
+        break;
       case CustomGameStyle.moveLimit:
         if (timeLimitSeconds != null ||
             moveLimit == null ||
@@ -200,6 +202,7 @@ class CustomGamePreset {
             moveLimit > 1000000) {
           throw const FormatException('Invalid custom move limit');
         }
+        break;
     }
   }
 
