@@ -90,7 +90,8 @@ dart run tool/repository_audit.dart --json
 The audit fails closed for:
 
 - missing or empty required repository/open-source/release/workflow files;
-- package-version, in-app `ProjectInfo.version`, and qualification-candidate drift;
+- package-version, in-app `ProjectInfo.version`, canonical repository metadata, and qualification-candidate drift;
+- loss of `.gitignore` or the safe `android/key.properties.example` distribution-signing template;
 - an incorrect count of the 13 manual qualification records;
 - loss of the Phase 30 continuity and explicit `0/13` real-world boundary;
 - known temporary Phase 30/31 maintenance files left in the finished repository;
@@ -98,7 +99,7 @@ The audit fails closed for:
 
 It deliberately does not crawl external websites and does not convert hosted automation into real-device evidence.
 
-Added `test/repository_audit_cli_test.dart` with isolated process-level fixtures covering a clean audit, broken local link rejection, runtime/package version drift, qualification-candidate drift, temporary workflow rejection, and unclosed Markdown-fence warnings.
+Added `test/repository_audit_cli_test.dart` with isolated process-level fixtures covering a clean audit, broken local link rejection, runtime/package version drift, canonical repository metadata drift, qualification-candidate drift, temporary workflow rejection, and unclosed Markdown-fence warnings.
 
 Relevant final-hardening commits include:
 
@@ -107,12 +108,15 @@ Relevant final-hardening commits include:
 - `97214893127c2176390a4d8182835106d6324db6` — `ci: enforce repository integrity audit`
 - `d62d8eb3d0995a02577fdc7186153c0d95fd8b41` — `test: guard permanent repository audit wiring`
 - `53f0e0533607b3c53e778ef5fd3f3458252ca3a1` — `docs: add repository integrity audit guide`
-- `019feb79456d06287563ad03850f67bf00b38f96` — `test: cover repository integrity audit CLI`
+- `019feb79456d06287563ad1de3e176149eec3639c` — `test: cover repository integrity audit CLI`
 - `09325af9e4095e9b5be9b6dcd6474f0440dbc73f` — `style: format Dart sources tests and tools`
 - `5390bb9677e5f009826ce76d7ca73ed37e57d00b` — `chore: guard temporary finalizer cleanup`
 - `aeaab4b7e8aeae98556bd7364de68134ab9df6d6` — `docs: index repository integrity audit`
+- `d551bc16045b550bbc597a84896d4b81ff67d289` — `chore: require Android signing safety files in audit`
+- `e5575beac85e8c82d0d22817aadd33a322c54349` — `test: cover Android signing safety files in audit fixture`
+- `5c1d3e2f11a53b045eba63816993a3df140e802b` — `docs: include Android signing safety in repository audit`
 
-The formatter commit above is objective evidence that the initial audit/test Dart files reached the repository-managed formatter. A newer complete CI result for the final source is **not** claimed here because the connected workflow lookup available during this maintenance pass did not expose direct-push Actions runs. The last explicitly accepted complete CI/native evidence therefore remains the Phase 29 Version 1.5 baseline until a newer maintained run can be retrieved and recorded.
+The formatter commit above is objective evidence that the initial audit/test Dart files reached the repository-managed formatter. A newer complete CI result for the final source is **not** claimed here until the maintained verification PR completes and is inspected.
 
 ### Open-source maintenance hygiene
 
@@ -154,6 +158,34 @@ Relevant commits:
 - `9f5a79dbb3a19d54a8cf3f2e5e792f6ff0eb723e` — `test: guard final open source release metadata`
 
 The dependency set was not changed by this metadata pass; `pubspec.lock` remains the committed dependency lock source.
+
+### Android distribution-signing support
+
+The final build audit found that `android/app/build.gradle.kts` always selected the debug signing configuration for the `release` build type. This was intentional for hosted qualification, but it forced a maintainer to edit tracked Gradle source before creating a real production-signed APK/AAB.
+
+The build now supports both paths without committing secrets:
+
+- if ignored `android/key.properties` exists, Gradle loads the private alias/passwords/keystore and uses a real `release` signing configuration;
+- if the file is absent, public CI deliberately falls back to debug signing for release-mode qualification builds;
+- `storeFile` is resolved relative to `android/`;
+- `android/key.properties.example` provides a safe committed template;
+- `.gitignore` continues to exclude `android/key.properties`, `*.jks`, and `*.keystore`.
+
+Added `test/android_signing_test.dart` to guard the ignored secret path, template fields, conditional release signing, Android-root-relative store path, qualification fallback, and absence of a tracked real keystore/key properties file.
+
+Updated the master executable handbook, dedicated Android build guide, signing/distribution guide, and repository-audit documentation to describe the same behavior.
+
+Relevant commits:
+
+- `27913f41a5296773f9772050a5a21f5e3fed4764` — `build: support optional Android distribution signing`
+- `e2c7fab8e14a3319097fb60f8d794116b217ce0b` — `fix: resolve Android signing store from project root`
+- `166be61864236e36794472a28af617aa141a93b7` — `docs: add Android signing properties template`
+- `427f31365d81872980aba8db5271c25285bb56a5` — `test: guard Android distribution signing contract`
+- `f4f59731af56b6a3fade6c00adbdf972cc15ead6` — `docs: document optional Android distribution signing`
+- `fc8f27f40beab976fb68c0f1e11d89b54a066abc` — `docs: align signing guide with Android release wiring`
+- `b4fd78d868ad0697c2146371e397f5109367522b` — `docs: align master build handbook with signing support`
+
+This wiring is not itself evidence that a private production key is valid or that a signed Play release has been qualified. Those remain genuine external/manual release tasks.
 
 ### Deliberate non-changes
 
