@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 const _requiredPaths = <String>[
+  '.editorconfig',
+  '.gitattributes',
   'README.md',
   'CHANGELOG.md',
   'ROADMAP.md',
@@ -15,6 +17,7 @@ const _requiredPaths = <String>[
   'pubspec.yaml',
   'analysis_options.yaml',
   'docs/README.md',
+  'docs/REPOSITORY_AUDIT.md',
   'docs/RELEASE_QUALIFICATION.md',
   'docs/QUALIFICATION_RECORDER.md',
   'docs/RELEASE_CHECKLIST.md',
@@ -22,11 +25,17 @@ const _requiredPaths = <String>[
   'docs/release_qualification.json',
   'tool/release_readiness.dart',
   'tool/record_release_qualification.dart',
+  'tool/repository_audit.dart',
   '.github/CODEOWNERS',
   '.github/dependabot.yml',
+  '.github/FUNDING.yml',
+  '.github/ISSUE_TEMPLATE/config.yml',
+  '.github/workflows/bootstrap-branding.yml',
+  '.github/workflows/bootstrap-platforms.yml',
   '.github/workflows/ci.yml',
   '.github/workflows/dependency-review.yml',
   '.github/workflows/format-code.yml',
+  '.github/workflows/lock-dependencies.yml',
   '.github/workflows/platform-builds.yml',
 ];
 
