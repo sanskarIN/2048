@@ -129,7 +129,8 @@ void main(List<String> args) {
 void _auditRequiredPaths(Directory root, List<String> failures) {
   for (final relativePath in _requiredPaths) {
     final entity = _entityAt(root, relativePath);
-    if (entity.typeSync() == FileSystemEntityType.notFound) {
+    final type = FileSystemEntity.typeSync(entity.path, followLinks: false);
+    if (type == FileSystemEntityType.notFound) {
       failures.add('Required repository path is missing: $relativePath');
       continue;
     }
