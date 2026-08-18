@@ -44,6 +44,8 @@ The source of truth for manual qualification state is:
 docs/release_qualification.json
 ```
 
+To reduce hand-editing mistakes, maintainers may use `dart run tool/record_release_qualification.dart --list` and the guarded mutation commands documented in [`QUALIFICATION_RECORDER.md`](QUALIFICATION_RECORDER.md). The recorder does not perform or infer any real-world check; it only validates and records evidence explicitly supplied by the maintainer.
+
 The current schema version is `1`. Each entry has:
 
 - `id` — stable machine-readable check identifier;

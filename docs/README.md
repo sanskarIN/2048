@@ -41,6 +41,8 @@ This directory is the user, technical, development, platform, and release docume
 | [`PHASE_18_VERIFICATION.md`](PHASE_18_VERIFICATION.md) | Focused Phase 18 bounded-expectimax, 161-test, Web/WASM, and native-matrix acceptance record. |
 | [`PHASE_17_VERIFICATION.md`](PHASE_17_VERIFICATION.md) | Focused Phase 17 trusted per-mode-record acceptance history and final 144-test Web/WASM gate. |
 | [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md) | Evidence manifest, candidate/stable readiness commands, fail-closed promotion rules, and stable-release sequence. |
+| [`QUALIFICATION_RECORDER.md`](QUALIFICATION_RECORDER.md) | Guarded CLI for listing and recording genuine manual qualification evidence without hand-editing JSON. |
+| [`PHASE_30_VERIFICATION.md`](PHASE_30_VERIFICATION.md) | Phase 30 recorder implementation, safety boundaries, regression coverage, and manual-evidence boundary. |
 | [`RELEASE_GATE_TESTING.md`](RELEASE_GATE_TESTING.md) | Process-level fixture coverage for candidate/stable release-gate acceptance and rejection paths. |
 | [`RELEASE_ARTIFACTS.md`](RELEASE_ARTIFACTS.md) | Checksummed hosted native qualification artifacts, retention, verification, packaging, and manual-evidence boundaries. |
 | [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) | Automated and manual qualification checklist before stable release. |

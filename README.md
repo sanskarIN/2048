@@ -76,6 +76,7 @@ The complete documentation map is [`docs/README.md`](docs/README.md). Important 
 | Verification | [`docs/VERIFICATION.md`](docs/VERIFICATION.md) |
 | Troubleshooting | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
 | Release qualification gate | [`docs/RELEASE_QUALIFICATION.md`](docs/RELEASE_QUALIFICATION.md) |
+| Qualification evidence recorder | [`docs/QUALIFICATION_RECORDER.md`](docs/QUALIFICATION_RECORDER.md) |
 | Native qualification artifacts | [`docs/RELEASE_ARTIFACTS.md`](docs/RELEASE_ARTIFACTS.md) |
 | Release gate regression testing | [`docs/RELEASE_GATE_TESTING.md`](docs/RELEASE_GATE_TESTING.md) |
 | Release checklist | [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md) |
