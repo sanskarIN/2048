@@ -1,4 +1,5 @@
 name: Format Version 1.6 Widget Test Once
+# Registered workflow; this maintainer edit triggers the one-shot formatter.
 
 on:
   push:
