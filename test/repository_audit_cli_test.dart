@@ -122,17 +122,7 @@ void main() {
       '${const JsonEncoder.withIndent('  ').convert(<String, Object?>{
         'schemaVersion': 1,
         'candidate': candidate ?? packageVersion,
-        'manualChecks': _manualCheckIds
-            .map(
-              (id) => <String, Object?>{
-                'id': id,
-                'title': 'Qualification for $id',
-                'status': 'pending',
-                'evidence': '',
-                'updatedAt': null,
-              },
-            )
-            .toList(growable: false),
+        'manualChecks': _manualCheckIds.map((id) => <String, Object?>{'id': id, 'title': 'Qualification for $id', 'status': 'pending', 'evidence': '', 'updatedAt': null}).toList(growable: false),
       })}\n',
     );
 

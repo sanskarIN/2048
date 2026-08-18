@@ -262,7 +262,10 @@ void main() {
       final pubspec = File('pubspec.yaml').readAsStringSync();
 
       expect(pubspec, contains('homepage: https://github.com/sanskarIN/2048'));
-      expect(pubspec, contains('repository: https://github.com/sanskarIN/2048'));
+      expect(
+        pubspec,
+        contains('repository: https://github.com/sanskarIN/2048'),
+      );
       expect(
         pubspec,
         contains('issue_tracker: https://github.com/sanskarIN/2048/issues'),
