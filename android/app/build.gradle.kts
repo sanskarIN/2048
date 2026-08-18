@@ -1,7 +1,20 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+val hasDistributionSigning = keystorePropertiesFile.exists()
+
+if (hasDistributionSigning) {
+    FileInputStream(keystorePropertiesFile).use { stream ->
+        keystoreProperties.load(stream)
+    }
 }
 
 android {
@@ -29,12 +42,28 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (hasDistributionSigning) {
+            create("release") {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = keystoreProperties.getProperty("storeFile")?.let { file(it) }
+                storePassword = keystoreProperties.getProperty("storePassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // Hosted qualification builds intentionally use the debug key so release-mode
-            // compilation can be verified without committing distribution credentials.
-            // Production distribution signing remains an explicit manual release gate.
-            signingConfig = signingConfigs.getByName("debug")
+            // A local, ignored android/key.properties enables real distribution signing
+            // without putting credentials or keystores in Git. Hosted qualification builds
+            // intentionally fall back to the debug key so release-mode compilation can still
+            // be verified in CI without distribution credentials.
+            signingConfig = if (hasDistributionSigning) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 }
