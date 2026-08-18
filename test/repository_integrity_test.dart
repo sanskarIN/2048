@@ -213,6 +213,25 @@ void main() {
       expect(owners, contains('/ios/ @sanskarIN'));
     });
 
+    test('community metadata exposes support and funding routes', () {
+      final editorConfig = File('.editorconfig').readAsStringSync();
+      final attributes = File('.gitattributes').readAsStringSync();
+      final funding = File('.github/FUNDING.yml').readAsStringSync();
+      final issueConfig = File(
+        '.github/ISSUE_TEMPLATE/config.yml',
+      ).readAsStringSync();
+
+      expect(editorConfig, contains('root = true'));
+      expect(editorConfig, contains('charset = utf-8'));
+      expect(attributes, contains('*.png binary'));
+      expect(attributes, contains('*.ico binary'));
+      expect(funding, contains('https://buymeacoffee.com/sanskarIN'));
+      expect(funding, contains('https://ramsandesh.gumroad.com'));
+      expect(issueConfig, contains('blank_issues_enabled: false'));
+      expect(issueConfig, contains('/blob/main/SUPPORT.md'));
+      expect(issueConfig, contains('/blob/main/SECURITY.md'));
+    });
+
     test('security policy tracks the current Version 1.5 line', () {
       final policy = File('SECURITY.md').readAsStringSync();
 
@@ -237,6 +256,31 @@ void main() {
         projectInfo,
         contains("static const version = '$marketingVersion';"),
       );
+    });
+
+    test('pubspec exposes canonical open source destinations', () {
+      final pubspec = File('pubspec.yaml').readAsStringSync();
+
+      expect(pubspec, contains('homepage: https://github.com/sanskarIN/2048'));
+      expect(pubspec, contains('repository: https://github.com/sanskarIN/2048'));
+      expect(
+        pubspec,
+        contains('issue_tracker: https://github.com/sanskarIN/2048/issues'),
+      );
+    });
+
+    test('desktop metadata reflects the MIT open source license', () {
+      final license = File('LICENSE').readAsStringSync();
+      final windows = File('windows/runner/Runner.rc').readAsStringSync();
+      final macos = File(
+        'macos/Runner/Configs/AppInfo.xcconfig',
+      ).readAsStringSync();
+
+      expect(license, startsWith('MIT License'));
+      expect(windows, contains('Licensed under the MIT License.'));
+      expect(macos, contains('Licensed under the MIT License.'));
+      expect(windows, isNot(contains('All rights reserved.')));
+      expect(macos, isNot(contains('All rights reserved.')));
     });
 
     test(
