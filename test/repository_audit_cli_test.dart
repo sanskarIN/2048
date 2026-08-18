@@ -22,6 +22,7 @@ const _manualCheckIds = <String>[
 const _requiredFixtureFiles = <String>[
   '.editorconfig',
   '.gitattributes',
+  '.gitignore',
   'CHANGELOG.md',
   'ROADMAP.md',
   'SECURITY.md',
@@ -31,6 +32,7 @@ const _requiredFixtureFiles = <String>[
   'LICENSE',
   'AUTHORS.md',
   'analysis_options.yaml',
+  'android/key.properties.example',
   'docs/REPOSITORY_AUDIT.md',
   'docs/RELEASE_QUALIFICATION.md',
   'docs/QUALIFICATION_RECORDER.md',
@@ -120,7 +122,17 @@ void main() {
       '${const JsonEncoder.withIndent('  ').convert(<String, Object?>{
         'schemaVersion': 1,
         'candidate': candidate ?? packageVersion,
-        'manualChecks': _manualCheckIds.map((id) => <String, Object?>{'id': id, 'title': 'Qualification for $id', 'status': 'pending', 'evidence': '', 'updatedAt': null}).toList(growable: false),
+        'manualChecks': _manualCheckIds
+            .map(
+              (id) => <String, Object?>{
+                'id': id,
+                'title': 'Qualification for $id',
+                'status': 'pending',
+                'evidence': '',
+                'updatedAt': null,
+              },
+            )
+            .toList(growable: false),
       })}\n',
     );
 
