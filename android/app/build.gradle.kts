@@ -17,6 +17,28 @@ if (hasDistributionSigning) {
     }
 }
 
+fun requiredSigningProperty(name: String): String {
+    val value = keystoreProperties.getProperty(name)
+    if (value.isNullOrBlank() || value.startsWith("REPLACE_WITH_")) {
+        throw GradleException(
+            "android/key.properties must define a real $name value before distribution signing.",
+        )
+    }
+    return value
+}
+
+val distributionStoreFile = if (hasDistributionSigning) {
+    rootProject.file(requiredSigningProperty("storeFile")).also { file ->
+        if (!file.isFile) {
+            throw GradleException(
+                "Android distribution signing keystore does not exist: ${file.absolutePath}",
+            )
+        }
+    }
+} else {
+    null
+}
+
 android {
     namespace = "com.sanskarin.nova_2048"
     compileSdk = flutter.compileSdkVersion
@@ -45,10 +67,10 @@ android {
     signingConfigs {
         if (hasDistributionSigning) {
             create("release") {
-                keyAlias = keystoreProperties.getProperty("keyAlias")
-                keyPassword = keystoreProperties.getProperty("keyPassword")
-                storeFile = keystoreProperties.getProperty("storeFile")?.let { rootProject.file(it) }
-                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = requiredSigningProperty("keyAlias")
+                keyPassword = requiredSigningProperty("keyPassword")
+                storeFile = distributionStoreFile
+                storePassword = requiredSigningProperty("storePassword")
             }
         }
     }
