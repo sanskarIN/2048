@@ -46,6 +46,22 @@ dart run tool/solver_benchmark.dart 8
 
 The benchmark compares the isolated Auto Play strategies without touching player saves, statistics, achievements, or Daily Challenge history. See [`../docs/SOLVER_BENCHMARKS.md`](../docs/SOLVER_BENCHMARKS.md).
 
+## Final maintainer verification sequence
+
+Before cutting a release-verification branch, run or require the maintained CI equivalent of this sequence:
+
+```bash
+dart format --output=none --set-exit-if-changed lib test tool
+flutter analyze
+flutter test --coverage
+dart run tool/release_readiness.dart --json
+dart run tool/repository_audit.dart --json
+dart run tool/solver_benchmark.dart 8
+flutter build web --release
+```
+
+For changes touching Android release configuration, also require the native matrix to build both the release APK and AAB on the maintained JDK/AGP/Kotlin/Gradle baseline. A production-signed artifact still requires the private local signing inputs and real-device/store qualification documented in the build guides.
+
 ## Maintenance rule
 
 These utilities are part of the source-controlled release contract. Changes to them must remain formatter-clean, analyzer-clean, regression-tested where applicable, documented, and compatible with the permanent CI workflow. Tool output is automated evidence only; it must never be misrepresented as physical-device, assistive-technology, signing, provisioning, external-handler, or store-distribution qualification.
