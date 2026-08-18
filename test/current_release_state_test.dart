@@ -53,6 +53,19 @@ void main() {
       expect(manifest, isNot(contains('"status": "passed"')));
     });
 
+    test('repository integrity audit remains wired into permanent CI', () {
+      final ci = File('.github/workflows/ci.yml').readAsStringSync();
+      final audit = File('tool/repository_audit.dart').readAsStringSync();
+
+      expect(audit, contains('2048 Nova repository integrity audit'));
+      expect(audit, contains('Broken local Markdown link'));
+      expect(audit, contains('ProjectInfo.version'));
+      expect(
+        ci,
+        contains('dart run tool/repository_audit.dart --json'),
+      );
+    });
+
     test('temporary phase 30 finalizer files do not remain', () {
       expect(
         File('.github/workflows/phase30-continuity.yml').existsSync(),
