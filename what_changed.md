@@ -302,3 +302,103 @@ Native platform builds remain a separate workflow/evidence class.
 Documentation/tooling maintenance does not alter the 13 manual release checks.
 
 The stable qualification boundary remains 0/13 until genuine representative checks are completed and recorded. Documentation expansion, commit count, unit/widget tests, or hosted compilation cannot be used to fabricate those real-world results.
+
+# Phase 33 — Deep documentation auditability extension
+
+Date: **2026-08-19**
+
+This extension continues the Phase 33 maintenance stream without changing the application version, product feature scope, or Phase 32 release/source-completion contract.
+
+## Added tool-support decision matrix
+
+`docs/setup/TOOL_SUPPORT_MATRIX.md` adds a fast, repository-grounded compatibility reference for:
+
+- Flutter and bundled Dart;
+- Git;
+- Android Studio and Android SDK;
+- ADB, emulator/AVD, and Android licenses;
+- JDK/Java;
+- Gradle Wrapper;
+- AGP and Kotlin Android plugin;
+- Visual Studio and Windows SDK;
+- Xcode and CocoaPods;
+- Linux Clang/CMake/Ninja/pkg-config/GTK toolchain;
+- VS Code;
+- Web/PWA tooling;
+- Flutter packages;
+- CI pins.
+
+It distinguishes vendor support, project compatibility, exact pins, minimums, EOL, deprecation, newer-but-unqualified tooling, and security-driven migrations. It records the current project baseline but intentionally does not pretend to be a permanently current vendor lifecycle database.
+
+## Added documentation reading/notation guide
+
+`docs/DOCUMENTATION_READING_GUIDE.md` explains how to read technical documentation before executing commands, including:
+
+- inline code and fenced code blocks;
+- shell prompts;
+- commands/subcommands/arguments/options/flags;
+- placeholders and angle brackets;
+- square brackets and ellipses;
+- files/directories and relative/absolute paths;
+- repository root, `.`, `..`, `./`, `.\\`;
+- `PATH` and environment variables;
+- pipes, redirection, quoting, standard output/error, and exit codes;
+- wildcards/globs;
+- versions, version constraints, and caret constraints;
+- YAML and JSON;
+- generated/tracked/untracked/ignored files;
+- source-of-truth, baseline, floor, pin, range, and lockfile terminology;
+- build/artifact/target/host/debug/profile/release/CI concepts;
+- release-candidate/fail-closed/deterministic/checksum/signing meanings;
+- read-only versus mutating commands and safe command-copying checks.
+
+## Added no-skip file coverage contract
+
+`docs/FILE_COVERAGE_CONTRACT.md` turns the “do not skip any files” requirement into an explicit maintenance rule.
+
+The authoritative tracked inventory remains:
+
+```bash
+git ls-files | sort
+```
+
+Every tracked path must be covered by exact-file, explicit file-family, generated/platform-template, or historical/archive responsibility. The contract defines top-level boundaries, root-file treatment, application/test/platform/docs/tool/asset/workflow families, new-file rules, rename/deletion rules, binary/generated handling, and the pre-merge audit procedure.
+
+A static file count is intentionally not treated as authoritative because it becomes stale whenever a legitimate tracked path changes.
+
+## Canonical navigation updated
+
+`docs/setup/README.md` and `docs/README.md` now expose the new support matrix, notation guide, and file-coverage contract in the normal reading path.
+
+The setup index explicitly routes unsupported/outdated-tool questions through the support matrix before the deeper lifecycle migration guide.
+
+## Regression protection expanded
+
+`test/documentation_completeness_test.dart` now requires and checks the new documentation.
+
+The test protects:
+
+- current Version 2.0.12 project/toolchain values in the support matrix;
+- important version-check and post-upgrade verification commands;
+- documentation notation/path/exit-code/version/source-of-truth explanations;
+- the exact-file/family no-skip coverage model;
+- setup-index and canonical-docs-index discoverability.
+
+## Extension commits
+
+```text
+bcd9119f  docs: add tool support and upgrade decision matrix
+d0f70e8c  docs: explain documentation notation and command syntax
+abfa1ef6  docs: define no-skip tracked file coverage contract
+0da3a16c  docs: expose support matrix from setup index
+f094b892  docs: integrate deep references into canonical index
+25938e8c  test: protect deep documentation coverage contracts
+```
+
+This continuity update is committed separately so the documentation changes, index changes, regression protection, and maintenance record remain individually reviewable.
+
+## Extension verification boundary
+
+These extension changes are being submitted through the repository's protected-branch pull-request path. Direct writes to `main` were rejected by branch protection and were not bypassed.
+
+No formatter, analyzer, Flutter test, native build, physical-device result, assistive-technology result, store result, or manual release qualification is claimed here unless a corresponding CI/observed evidence surface reports it.
