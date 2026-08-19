@@ -8,7 +8,9 @@ const _requiredFiles = <String>[
   'README.md',
   'ROADMAP.md',
   'CHANGELOG.md',
+  'CHANGELOG_ARCHIVE_PRE_2_0_12.md',
   'SECURITY.md',
+  'what_changed.md',
   'pubspec.yaml',
   'docs/README.md',
   'docs/FINAL_2_0_12_SOURCE_AUDIT.md',
@@ -16,7 +18,12 @@ const _requiredFiles = <String>[
   'docs/PHASE_32_VERSION_2_0_12.md',
   'docs/RELEASE_CHECKLIST.md',
   'docs/RELEASE_QUALIFICATION.md',
+  'docs/SOURCE_COMPLETION_AUDIT.md',
   'docs/release_qualification.json',
+  'test/source_completion_audit_cli_test.dart',
+  'tool/README.md',
+  'tool/source_completion_audit.dart',
+  '.github/workflows/ci.yml',
 ];
 
 const _currentDocumentationFiles = <String>[
@@ -29,7 +36,10 @@ const _currentDocumentationFiles = <String>[
   'docs/RELEASE_QUALIFICATION.md',
   'docs/FINAL_2_0_12_SOURCE_AUDIT.md',
   'docs/MAINTENANCE_POLICY.md',
+  'docs/SOURCE_COMPLETION_AUDIT.md',
 ];
+
+const _maintainedDartDirectories = <String>['lib', 'test', 'tool'];
 
 void main(List<String> args) {
   final jsonMode = args.contains('--json');
@@ -83,7 +93,8 @@ void main(List<String> args) {
     _auditReleaseIdentity(root, failures);
     _auditCompletionDocuments(root, failures);
     _auditCurrentDocumentation(root, failures);
-    _auditProductSourceMarkers(root, failures);
+    _auditCompletionWiring(root, failures);
+    _auditMaintainedDartMarkers(root, failures);
   }
 
   final result = <String, Object?>{
@@ -216,6 +227,7 @@ void _auditCompletionDocuments(Directory root, List<String> failures) {
     for (final path in <String>[
       'FINAL_2_0_12_SOURCE_AUDIT.md',
       'MAINTENANCE_POLICY.md',
+      'SOURCE_COMPLETION_AUDIT.md',
     ]) {
       if (!docsIndex.contains(path)) {
         failures.add('docs/README.md must index $path.');
@@ -247,28 +259,52 @@ void _auditCurrentDocumentation(Directory root, List<String> failures) {
   }
 }
 
-void _auditProductSourceMarkers(Directory root, List<String> failures) {
-  final lib = Directory.fromUri(root.uri.resolve('lib/'));
-  if (!lib.existsSync()) {
-    failures.add('Product source directory is missing: lib/');
-    return;
-  }
+void _auditCompletionWiring(Directory root, List<String> failures) {
+  final ci = _read(root, '.github/workflows/ci.yml', failures);
+  final toolReadme = _read(root, 'tool/README.md', failures);
+  final docs = _read(root, 'docs/SOURCE_COMPLETION_AUDIT.md', failures);
 
+  const command = 'dart run tool/source_completion_audit.dart --json';
+  if (ci != null && !ci.contains(command)) {
+    failures.add('Permanent CI must run the source-completion audit.');
+  }
+  if (toolReadme != null && !toolReadme.contains('source_completion_audit.dart')) {
+    failures.add('tool/README.md must index the source-completion audit.');
+  }
+  if (docs != null && !docs.contains('test/source_completion_audit_cli_test.dart')) {
+    failures.add(
+      'Source-completion documentation must identify its process-level regression suite.',
+    );
+  }
+}
+
+void _auditMaintainedDartMarkers(Directory root, List<String> failures) {
   final unresolvedComment = RegExp(
     r'^\s*//\s*(?:TODO|FIXME)\b',
     multiLine: true,
     caseSensitive: false,
   );
 
-  for (final entity in lib.listSync(recursive: true, followLinks: false)) {
-    if (entity is! File || !entity.path.endsWith('.dart')) {
+  for (final directoryName in _maintainedDartDirectories) {
+    final directory = Directory.fromUri(root.uri.resolve('$directoryName/'));
+    if (!directory.existsSync()) {
+      failures.add('Maintained Dart directory is missing: $directoryName/');
       continue;
     }
-    final text = entity.readAsStringSync();
-    if (unresolvedComment.hasMatch(text)) {
-      failures.add(
-        'Product source contains unresolved TODO/FIXME comment: ${_relative(root, entity)}',
-      );
+
+    for (final entity in directory.listSync(
+      recursive: true,
+      followLinks: false,
+    )) {
+      if (entity is! File || !entity.path.endsWith('.dart')) {
+        continue;
+      }
+      final text = entity.readAsStringSync();
+      if (unresolvedComment.hasMatch(text)) {
+        failures.add(
+          'Maintained Dart source contains unresolved TODO/FIXME comment: ${_relative(root, entity)}',
+        );
+      }
     }
   }
 }
