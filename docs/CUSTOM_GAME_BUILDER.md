@@ -89,6 +89,8 @@ The store:
 7. Choose **Duplicate preset** to load an unsaved copy with a generated case-insensitively unique name such as `My Mode copy`. Review or modify it, then save when ready.
 8. Choose **Delete preset** and explicitly confirm before persistent deletion.
 
+Edit and Duplicate are often launched from saved cards below the form. After either action loads the selected configuration, the scroll view returns directly to the form without forcing focus or opening the keyboard, so the changed values and save controls are immediately reachable.
+
 Duplicate is intentionally a two-step action: loading a copy does not mutate storage until the user chooses **Save preset**.
 
 The compact action menu avoids a trailing row of multiple icon buttons, which gives saved-preset cards more room on narrow and large-text layouts.
@@ -132,6 +134,7 @@ Automated widget coverage includes:
 - narrow layout behavior;
 - increased text scaling;
 - the preset action menu remaining reachable without layout exceptions;
+- Edit/Duplicate returning to an immediately reachable form;
 - visible user-action hit testing;
 - custom-session semantics/disclosure.
 
@@ -168,6 +171,8 @@ Focused coverage protects:
 - full-data reset behavior;
 - bilingual builder rendering and user flows;
 - save, edit, rename, collision rejection, duplicate, cancel-edit, and confirmed-delete behavior;
+- visible selector refresh after loading/editing a preset;
+- Edit/Duplicate navigation back to the form after using a saved-card action;
 - narrow/large-text saved-preset actions;
 - invalid seed rejection before replacement;
 - custom-session persistence across restart;
