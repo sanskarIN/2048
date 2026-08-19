@@ -20,6 +20,7 @@ Historical continuity is preserved in:
 - **Source scope:** feature-complete; Phase 34 fixes integration bugs, product polish, documentation drift, and verification coverage without reopening a hidden Version 2.0.12 feature backlog.
 - **PR:** `#25` (`final/v2.0.12-integration-hardening` → `main`).
 - **Manual evidence:** stable qualification boundary remains 0/13. No physical-device, assistive-technology, real browser/PWA lifecycle, external-handler, native-branding, signing/provisioning, or store evidence is invented by source/documentation work.
+- **Repository settings:** issue #12 remains open because `main` now reports `protected: true`, but the available GitHub connector cannot inspect/write the underlying ruleset and legacy protection metadata still does not prove the intended required CI contexts. This is an external repository-setting boundary, not a missing tracked source feature.
 - **Toolchain contract:** CI Flutter 3.47.0 stable; AGP 9.1.0; Kotlin Android 2.4.10; Gradle 9.7.0; Android Java/Kotlin target 17.
 
 The `Current phase: Phase 32` line is intentionally retained because the repository integrity audit treats Phase 32 as the frozen Version 2.0.12 release/source-completion contract. Phase 33 and Phase 34 are maintenance streams inside that completed release line, not new marketing releases.
@@ -72,13 +73,21 @@ Saved-preset Edit/Duplicate/Delete actions use a compact popup menu instead of a
 
 This provides more space for long names/summaries under narrow layouts and increased text scaling.
 
+### Edit/Duplicate return to the form
+
+The final last-chance UX audit found that Edit/Duplicate could correctly load a saved configuration while leaving the user scrolled down at the saved-preset card list.
+
+The builder now owns a `ScrollController`. After Edit or Duplicate populates the form, a post-frame callback jumps to the scroll view's minimum extent. This deliberately avoids animation and automatic focus, so it also avoids forcing the keyboard or introducing a reduced-motion concern.
+
+Widget regressions now require the first form `TextField` to be hit-testable immediately after Edit and Duplicate actions launched from saved cards.
+
 ### English/Hindi behavior
 
 New action labels, editing helper text, rename-collision feedback, duplicate feedback, update confirmation, and cancel-edit feedback are available in English and Hindi.
 
-## Final code bug found and fixed during self-review
+## Selector-state bug found and fixed during self-review
 
-A second integration bug was found after the initial Edit/Duplicate implementation.
+A separate integration bug was found after the initial Edit/Duplicate implementation.
 
 `DropdownButtonFormField.initialValue` initializes a FormField but does not automatically reset that FormField's internal selected value merely because the owning state variable changes later. Therefore loading a saved preset could update `_style`, `_size`, `_target`, `_timeLimit`, and `_moveLimit` while a selector still visually displayed its older initial choice.
 
@@ -94,7 +103,7 @@ custom-move-<moves>
 
 When Edit, Duplicate, or Cancel changes the loaded configuration, the affected FormField is recreated with the correct current value.
 
-Regression tests now assert the visible selector keys after:
+Regression tests assert the visible selector keys after:
 
 - editing a Timed 5×5 / target 4096 / 90-second preset;
 - duplicating a Move Limit 6×6 / target 8192 / 500-move preset;
@@ -124,12 +133,14 @@ The integrated source still contained stale current-state wording:
 
 - `docs/CUSTOM_GAME_BUILDER.md` described a Version 1.6 feature branch;
 - `docs/VERSION_1_6_ROADMAP.md` said Version 1.5 remained the current release-candidate line;
-- `docs/USER_GUIDE.md` still contained an obsolete “stable 1.0.0” manual-qualification phrase.
+- `docs/USER_GUIDE.md` still contained an obsolete “stable 1.0.0” manual-qualification phrase;
+- the public root `README.md` did not expose the already-integrated Custom Game Builder feature.
 
 Phase 34 corrected those contradictions and integrated Custom Game Builder into current Version 2.0.12 documentation.
 
 Added/expanded:
 
+- `README.md` — public Custom Game Builder feature/trust/build/documentation visibility;
 - `docs/FINAL_2_0_12_INTEGRATION_AUDIT.md` — final same-commit integration/evidence boundary;
 - `docs/ARCHITECTURE_WALKTHROUGH.md` — startup/gameplay/persistence/custom/replay/backup/solver/platform/release flow;
 - `docs/ERROR_REFERENCE.md` — actionable source/build/platform/trust diagnosis reference;
@@ -140,10 +151,29 @@ Added/expanded:
 - `docs/README.md` — canonical index/source map for all final guides and Custom Game Builder;
 - `docs/USER_GUIDE.md` — complete custom create/play/save/edit/duplicate/cancel/delete/trust/player workflow;
 - `docs/FEATURE_REFERENCE.md` — Custom Game Builder integrated into the consolidated product surface;
+- `docs/CUSTOM_GAME_BUILDER.md` — current implementation, selector refresh, saved-card action navigation, trust, persistence, localization, and tests;
 - `CHANGELOG.md` — final integration fixes/evidence boundary;
-- `test/documentation_completeness_test.dart` — regression guards for current documentation/navigation/continuity.
+- `test/documentation_completeness_test.dart` — regression guards for public/canonical documentation/navigation/continuity.
 
 Phase 33 continuity was preserved verbatim in `what_changed_archive_phase_33.md` before the active file rotated to Phase 34.
+
+## Final stale-source sweep
+
+Repository search after the documentation fixes returned no current searchable occurrences of the obsolete phrases:
+
+```text
+Version 1.6 feature branch documentation
+Version 1.5 remains the current release-candidate line
+before stable 1.0.0
+```
+
+A final unresolved-marker search also returned no current searchable `TODO`, `FIXME`, `HACK`, or `unimplemented` marker requiring implementation.
+
+## Repository hygiene
+
+The obsolete/conflicting documentation PR #24 was closed as superseded after its useful non-duplicative documentation was carried forward onto current Version 2.0.12 source in PR #25.
+
+The only open repository issue found by the final issue sweep is issue #12, which concerns GitHub repository settings rather than tracked source. It remains open because the current connector cannot verify the full ruleset/required-check configuration.
 
 ## Phase 34 commit sequence
 
@@ -172,9 +202,15 @@ fe4550a3  docs: integrate custom games into the feature reference
 bf444910  test: protect final documentation navigation and continuity
 c0bf9b8e  docs: finalize Phase 34 continuity
 51cde615  test: harden final documentation assertions
+64b3aa90  docs: expose Custom Game Builder in the public README
+a3ee2690  test: protect the public Custom Game Builder documentation
+1ee3fe6a  fix: return to custom form after preset actions
+a3ae2903  test: verify preset actions return to the form
+7b9afc2e  docs: document preset action form navigation
+d4fc5118  docs: record final custom builder navigation fix
 ```
 
-This continuity refresh is another separate reviewable commit rather than rewriting an older implementation/test/docs commit.
+This continuity update is intentionally another separate reviewable commit rather than rewriting an earlier implementation/test/docs commit.
 
 ## Automated verification boundary
 
@@ -195,9 +231,9 @@ dart run tool/solver_benchmark.dart 8
 flutter build web --release
 ```
 
-Pull-request verification should also include Dependency Review and the configured Platform Builds matrix for Android APK/AAB, Linux, Windows, macOS, and unsigned iOS.
+Pull-request verification should also include the configured Platform Builds matrix for Android APK/AAB, Linux, Windows, macOS, and unsigned iOS. Dependency Review is path-filtered and applies when dependency-sensitive files change; PR #25 does not change `pubspec.yaml`, `pubspec.lock`, Android files, or workflow files.
 
-At the time this continuity record was refreshed, the GitHub commit-to-workflow/status surfaces had not returned a current run for the moving PR head. Therefore no formatter/analyzer/test/Web/dependency/native success is claimed merely from these commits. The final exact head must be observed before merge/promotion.
+No formatter/analyzer/test/Web/native success is claimed merely from commits being pushed. The exact final PR head must be observed before merge/promotion.
 
 ## Manual stable-release boundary
 
