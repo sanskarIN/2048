@@ -20,11 +20,13 @@ Made by the Sanskar
 
 The normal game is offline-first. It does not require an account, subscription, analytics service, advertising tracker, cloud-sync backend, remote AI model, or permanent internet connection. Internet access is only needed when a player deliberately opens an external destination such as GitHub, LinkedIn, email, Gumroad, or Buy Me a Coffee.
 
-The repository is currently on the **`1.5.0+15` Version 1.5 line**. Automated quality and native build evidence remains required, while physical-device, real screen-reader, signing/provisioning, long-session, and store-release qualification stay explicit manual boundaries before a qualified stable-release claim.
+The repository is currently on the **Version `2.0.12` release line**. Flutter package/build metadata is **`2.0.12+2012`**, where `+2012` is the platform build number and the visible semantic version remains `2.0.12`. Automated quality and native-build evidence remains required, while physical-device, real screen-reader, browser/PWA lifecycle, signing/provisioning, long-session, external-handler, and store-release qualification stay explicit manual boundaries before a qualified stable-release claim.
 
-Release promotion remains fail-closed: `dart run tool/release_readiness.dart` validates Version 1.5 candidate metadata and the evidence manifest, while `dart run tool/release_readiness.dart --stable` refuses promotion until the package is the `1.5.0` stable target, the changelog has a matching stable release section, and every required real-world qualification item has recorded passed evidence. See [`docs/RELEASE_QUALIFICATION.md`](docs/RELEASE_QUALIFICATION.md).
+Release promotion remains fail-closed: `dart run tool/release_readiness.dart` validates Version 2.0.12 candidate metadata and the evidence manifest, while `dart run tool/release_readiness.dart --stable` refuses promotion until the package matches the `2.0.12` target, the changelog has a matching stable release section, and every required real-world qualification item has recorded passed evidence. See [`docs/RELEASE_QUALIFICATION.md`](docs/RELEASE_QUALIFICATION.md) and [`docs/PHASE_32_VERSION_2_0_12.md`](docs/PHASE_32_VERSION_2_0_12.md).
 
-Hosted native release builds are now packaged as short-lived checksummed qualification artifacts for Android, Linux, Windows, macOS, and unsigned iOS. They provide reproducible inputs for real-target testing but do not replace the 13 manual evidence records. See [`docs/RELEASE_ARTIFACTS.md`](docs/RELEASE_ARTIFACTS.md).
+Hosted native release builds are packaged as short-lived checksummed qualification artifacts for Android, Linux, Windows, macOS, and unsigned iOS. They provide reproducible inputs for real-target testing but do not replace the 13 manual evidence records. See [`docs/RELEASE_ARTIFACTS.md`](docs/RELEASE_ARTIFACTS.md).
+
+The latest previously accepted complete CI/native evidence belongs to the earlier Version 1.5 source state. It remains historical baseline evidence until a complete maintained Version 2.0.12 workflow result is actually observed and recorded; it is not automatically re-labeled as verification of the new head.
 
 ## Features
 
@@ -74,15 +76,21 @@ The complete documentation map is [`docs/README.md`](docs/README.md). Important 
 | CI/CD | [`docs/CI_CD.md`](docs/CI_CD.md) |
 | Testing | [`docs/TESTING.md`](docs/TESTING.md) |
 | Verification | [`docs/VERIFICATION.md`](docs/VERIFICATION.md) |
+| Web / PWA | [`docs/PWA.md`](docs/PWA.md) |
+| Version 2.0.12 migration | [`docs/PHASE_32_VERSION_2_0_12.md`](docs/PHASE_32_VERSION_2_0_12.md) |
 | Troubleshooting | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
 | Release qualification gate | [`docs/RELEASE_QUALIFICATION.md`](docs/RELEASE_QUALIFICATION.md) |
+| Qualification status reporter | [`docs/QUALIFICATION_STATUS.md`](docs/QUALIFICATION_STATUS.md) |
 | Qualification evidence recorder | [`docs/QUALIFICATION_RECORDER.md`](docs/QUALIFICATION_RECORDER.md) |
+| Repository integrity audit | [`docs/REPOSITORY_AUDIT.md`](docs/REPOSITORY_AUDIT.md) |
 | Native qualification artifacts | [`docs/RELEASE_ARTIFACTS.md`](docs/RELEASE_ARTIFACTS.md) |
 | Release gate regression testing | [`docs/RELEASE_GATE_TESTING.md`](docs/RELEASE_GATE_TESTING.md) |
 | Release checklist | [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md) |
 | Branding | [`docs/BRANDING.md`](docs/BRANDING.md) |
 | Dependencies | [`docs/DEPENDENCIES.md`](docs/DEPENDENCIES.md) |
-| Chronological implementation log | [`what_changed.md`](what_changed.md) |
+| Active implementation log | [`what_changed.md`](what_changed.md) |
+| Phase 31 archive | [`what_changed_archive_phase_31.md`](what_changed_archive_phase_31.md) |
+| Phase 0–30 archive | [`what_changed_archive_phase_00_30.md`](what_changed_archive_phase_00_30.md) |
 
 ## Configured targets
 
@@ -95,7 +103,7 @@ The repository contains Flutter runners for:
 - macOS
 - Linux
 
-A target is only described as verified after its corresponding CI/build check has completed successfully. See [`docs/VERIFICATION.md`](docs/VERIFICATION.md) for compact current evidence and [`what_changed.md`](what_changed.md) for the chronological verification record including intermediate failures and fixes.
+A target is only described as verified after its corresponding CI/build check has completed successfully for the relevant source state. See [`docs/VERIFICATION.md`](docs/VERIFICATION.md) for accepted evidence, [`docs/PHASE_32_VERSION_2_0_12.md`](docs/PHASE_32_VERSION_2_0_12.md) for the current migration boundary, and [`what_changed.md`](what_changed.md) for active continuity.
 
 ## Controls
 
@@ -286,9 +294,12 @@ For more development detail, see [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 Before contributing or preparing a release, run:
 
 ```bash
-dart format --output=none --set-exit-if-changed lib test
+dart format --output=none --set-exit-if-changed lib test tool
 flutter analyze
 flutter test
+dart run tool/release_readiness.dart --json
+dart run tool/release_qualification_status.dart --json --pending-only
+dart run tool/repository_audit.dart --json
 flutter build web --release
 ```
 
@@ -397,10 +408,9 @@ Player-facing Home, modes, gameplay controls/dialogs, Daily Challenge, statistic
 
 See [`docs/LOCALIZATION.md`](docs/LOCALIZATION.md) for architecture, fallback rules, privacy behavior, contributor guidance, automated coverage, and remaining manual Hindi accessibility/layout qualification.
 
-
 ## Trusted per-mode records
 
-The Statistics screen now keeps a trusted local best score and highest tile for every game mode that has ranked progress on this installation. When a best score is established, its board size and target are preserved as record metadata so configurable modes are not described as though they always used one setup.
+The Statistics screen keeps a trusted local best score and highest tile for every game mode that has ranked progress on this installation. When a best score is established, its board size and target are preserved as record metadata so configurable modes are not described as though they always used one setup.
 
 Per-mode records are offline-only and follow the same ranking boundary as the rest of 2048 Nova: normal locally started games, including deterministic seeded games, can update records; editable Game Backup imports remain unranked and cannot update them. Reset Statistics clears historical mode records and, when a ranked game is active, rebuilds only that active mode's observable baseline.
 
