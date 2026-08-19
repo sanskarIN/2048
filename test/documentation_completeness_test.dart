@@ -119,63 +119,69 @@ void main() {
     expect(lifecycle, contains('source_completion_audit.dart --json'));
   });
 
-  test('tool support matrix keeps current project pins and upgrade checks visible', () {
-    final matrix = File(
-      'docs/setup/TOOL_SUPPORT_MATRIX.md',
-    ).readAsStringSync();
+  test(
+    'tool support matrix keeps current project pins and upgrade checks visible',
+    () {
+      final matrix = File(
+        'docs/setup/TOOL_SUPPORT_MATRIX.md',
+      ).readAsStringSync();
 
-    for (final requiredText in <String>[
-      '2.0.12+2012',
-      '>=3.9.0 <4.0.0',
-      '>=3.35.0',
-      '3.47.0',
-      '9.1.0',
-      '2.4.10',
-      '9.7.0',
-      'flutter doctor -v',
-      'java -version',
-      './gradlew --version',
-      'xcodebuild -version',
-      'pod --version',
-      'cmake --version',
-      'ninja --version',
-      'flutter pub outdated',
-      'Standard post-upgrade verification',
-    ]) {
-      expect(
-        matrix,
-        contains(requiredText),
-        reason: 'Tool support matrix is missing: $requiredText',
-      );
-    }
-  });
+      for (final requiredText in <String>[
+        '2.0.12+2012',
+        '>=3.9.0 <4.0.0',
+        '>=3.35.0',
+        '3.47.0',
+        '9.1.0',
+        '2.4.10',
+        '9.7.0',
+        'flutter doctor -v',
+        'java -version',
+        './gradlew --version',
+        'xcodebuild -version',
+        'pod --version',
+        'cmake --version',
+        'ninja --version',
+        'flutter pub outdated',
+        'Standard post-upgrade verification',
+      ]) {
+        expect(
+          matrix,
+          contains(requiredText),
+          reason: 'Tool support matrix is missing: $requiredText',
+        );
+      }
+    },
+  );
 
-  test('documentation reading guide explains notation instead of blind copying', () {
-    final readingGuide = File(
-      'docs/DOCUMENTATION_READING_GUIDE.md',
-    ).readAsStringSync();
+  test(
+    'documentation reading guide explains notation instead of blind copying',
+    () {
+      final readingGuide = File(
+        'docs/DOCUMENTATION_READING_GUIDE.md',
+      ).readAsStringSync();
 
-    for (final requiredText in <String>[
-      'Inline code',
-      'Fenced code blocks',
-      'Placeholders and angle brackets',
-      'Relative path',
-      'Absolute path',
-      '`PATH`',
-      'Pipes (`|`)',
-      'Exit codes',
-      'Version constraints',
-      'Source of truth',
-      'Read-only versus mutating commands',
-      'Copying commands safely',
-    ]) {
-      expect(
-        readingGuide,
-        contains(requiredText),
-        reason: 'Documentation reading guide is missing: $requiredText',
-      );
-    }
-  });
+      for (final requiredText in <String>[
+        'Inline code',
+        'Fenced code blocks',
+        'Placeholders and angle brackets',
+        'Relative path',
+        'Absolute path',
+        '`PATH`',
+        'Pipes (`|`)',
+        'Exit codes',
+        'Version constraints',
+        'Source of truth',
+        'Read-only versus mutating commands',
+        'Copying commands safely',
+      ]) {
+        expect(
+          readingGuide,
+          contains(requiredText),
+          reason: 'Documentation reading guide is missing: $requiredText',
+        );
+      }
+    },
+  );
 
   test('file coverage contract preserves the no-skip tracked-file rule', () {
     final coverage = File(
