@@ -170,6 +170,8 @@ b6b1e24e  docs: add the complete custom game player workflow
 fe4550a3  docs: integrate custom games into the feature reference
 441de059  docs: record final integration fixes in the changelog
 bf444910  test: protect final documentation navigation and continuity
+c0bf9b8e  docs: finalize Phase 34 continuity
+51cde615  test: harden final documentation assertions
 ```
 
 This continuity refresh is another separate reviewable commit rather than rewriting an older implementation/test/docs commit.
