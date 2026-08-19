@@ -1,191 +1,195 @@
-# 2048 Nova — Active Development Continuity
+# 2048 Nova — Final Active Continuity
 
-This is the current development/release continuity record. Historical implementation detail is preserved in:
+This is the active Version 2.0.12 source/release continuity record. Detailed historical development is preserved in:
 
 - [`what_changed_archive_phase_00_30.md`](what_changed_archive_phase_00_30.md) — Phases 0–30.
 - [`what_changed_archive_phase_31.md`](what_changed_archive_phase_31.md) — complete Phase 31 qualification-status and Web/PWA hardening record.
+- [`CHANGELOG_ARCHIVE_PRE_2_0_12.md`](CHANGELOG_ARCHIVE_PRE_2_0_12.md) — verbatim pre-2.0.12 active changelog history.
 
 ## Current repository state
 
-- **Current phase:** Phase 32 — Version 2.0.12 migration and release-contract hardening.
+- **Current phase:** Phase 32 — Version 2.0.12 migration and final source completion.
 - **Marketing version:** `2.0.12`.
 - **Flutter package/build version:** `2.0.12+2012`.
+- **Source status:** feature-complete for the declared offline-first puzzle-game scope.
 - **Repository:** `https://github.com/sanskarIN/2048`.
 - **Branch:** `main`.
-- **Stable qualification boundary remains 0/13:** no real-device, assistive-technology, browser/PWA lifecycle, external-handler, native-branding, signing/provisioning, or store evidence has been fabricated.
-- **Latest previously accepted complete automated evidence:** Version 1.5 CI run `32018055661` with 235/235 tests and 106 Dart files formatter-clean; native matrix run `32015893841`. These remain historical baseline evidence until a complete maintained Version 2.0.12 workflow result is observed and recorded.
-- **Known external/open blockers:** GitHub issue #10 (AGP 9.3.x/JDK-17 lint compatibility remains intentionally deferred) and issue #12 (`main` branch protection/ruleset still requires repository-setting action outside tracked source).
+- **Manual evidence:** the stable qualification boundary remains 0/13; no physical-device, assistive-technology, real browser/PWA lifecycle, external-handler, native-branding, signing/provisioning, or store evidence has been fabricated.
+- **Historical automated baseline:** Version 1.5 CI run `32018055661` with **235/235 tests** and **106 Dart files formatter-clean**; native matrix run `32015893841`. These remain historical baseline evidence until a complete maintained Version 2.0.12 verification result is actually observed and recorded.
+- **Repository governance:** issue #10 is closed as not planned for the 2.0.12 source scope; issue #12 remains open because `main` branch protection is an external GitHub repository setting and is still not enabled.
 
-# Phase 32 — Version 2.0.12 migration
+The exact phrase `stable qualification boundary remains 0/13` is retained as a regression/audit contract while the live manifest remains pending.
+
+# Phase 32 — Version 2.0.12 finalization
 
 Date: **2026-08-19**
 
-## Version policy
+## Version and release contract
 
-The project now uses:
-
-```text
-Marketing version: 2.0.12
-Flutter package version: 2.0.12+2012
-```
-
-The `+2012` suffix is the platform build number. The user-facing semantic version remains `2.0.12`.
-
-The build number intentionally moves forward from the former Version 1.5 build number and is suitable for Flutter-generated Android/iOS/desktop build metadata.
-
-## Package and runtime metadata
-
-Updated:
-
-- `pubspec.yaml` → `2.0.12+2012`;
-- `lib/core/constants/project_info.dart` → `2.0.12`;
-- `windows/runner/Runner.rc` fallback file/product version → `2,0,12,2012` / `2.0.12`;
-- `docs/release_qualification.json` candidate → `2.0.12+2012`.
-
-The 13 manual qualification records remain pending. A version migration is not evidence that any real-world qualification check passed.
-
-## Release readiness gate migration
-
-`tool/release_readiness.dart` now has a single explicit current release target:
+Version surfaces are synchronized:
 
 ```text
-2.0.12
+pubspec package/build: 2.0.12+2012
+ProjectInfo marketing: 2.0.12
+Windows numeric fallback: 2,0,12,2012
+Windows string fallback: 2.0.12
+Qualification candidate: 2.0.12+2012
+Release-readiness target: 2.0.12
 ```
 
-The gate now:
+The release gate rejects the historical release line and unrelated patch versions, requires candidate/package alignment, retains exactly 13 manual evidence IDs, and keeps strict stable promotion fail-closed.
 
-- accepts `2.0.12` with an optional numeric Flutter build suffix;
-- rejects the former 1.5 line;
-- rejects unrelated 2.0 patch versions such as 2.0.11;
-- exposes `releaseTarget: 2.0.12` in JSON output;
-- requires the qualification manifest candidate to exactly match the package version;
-- keeps the canonical 13 manual evidence checks;
-- keeps stable mode fail-closed until all manual evidence is valid;
-- requires a `[2.0.12]` changelog section only for stable promotion;
-- requires the roadmap to preserve an explicit `Remaining release qualification before 2.0.12` boundary.
+## Hidden migration drift fixed
 
-## Release-gate regression migration
+The final migration audit corrected old current-state assumptions in:
 
-The Version 2.0.12 release tests now cover:
+- release-readiness fixtures;
+- release-evidence timestamp fixture;
+- qualification status/recorder fixtures;
+- repository-integrity assertions;
+- security supported-version text;
+- release qualification/checklist/testing guides;
+- dependency/tooling documentation;
+- current-release regression tests;
+- Windows resource metadata;
+- repository audit fixtures.
 
-1. `2.0.12+2012` candidate success with stable readiness still false at 0/13 evidence;
-2. synthetic fully qualified Version 2.0.12 stable success;
-3. strict stable refusal with pending evidence;
-4. rejection of Version 1.5 candidates;
-5. rejection of unrelated 2.0 patch versions;
-6. qualification-candidate mismatch;
-7. passed evidence without evidence/timestamps;
-8. missing canonical manual-check IDs;
-9. ambiguous timezone-less evidence timestamps;
-10. qualification status reporting using `2.0.12+2012` fixtures;
-11. qualification recorder behavior using `2.0.12+2012` fixtures.
+This prevents a simple version bump from passing while hidden source/tests/docs still describe an older release line.
 
-Synthetic fully passed fixtures test tooling only. They are not evidence for the live candidate.
+## Source feature completion
 
-## Repository-integrity hardening
+`ROADMAP.md` now identifies Version 2.0.12 as a **feature-complete source target** and contains no active post-2.0.12 feature backlog.
 
-`tool/repository_audit.dart` now enforces the exact Phase 32 source contract:
+The completed product scope includes deterministic gameplay/RNG, ten modes, save/resume, bounded Undo, Daily Challenge, statistics/achievements/per-mode records, Hint, isolated Heuristic/Expectimax Auto Play, Move Replay, Full Replay Archives, Game Backup, Challenge Codes + QR, English/Hindi localization, accessibility controls, themes/settings, Android/iOS/Web/Windows/macOS/Linux runners, and complete build/release/open-source tooling/documentation.
 
-- package/build version `2.0.12+2012`;
-- marketing version `2.0.12`;
-- Windows fallback numeric/string versions;
-- exact qualification-candidate alignment;
-- exactly 13 manual qualification records;
-- Phase 32 active continuity;
-- preserved Phase 0–30 and Phase 31 continuity archives;
-- required Phase 32 verification documentation;
-- existing Web/PWA source/semantic contracts;
-- rejection of leftover Phase 30/31/32 temporary maintenance helpers.
+Former “later” ideas are explicit non-goals unless a future release deliberately adopts them. They are not unfinished Version 2.0.12 work.
 
-Its process-level fixtures now prove exact build-version, runtime-version, Windows-resource, qualification-candidate, PWA metadata, Markdown-link, and temporary-helper failure paths.
+## Final source-completion layer
 
-## Hidden Version 1.5 drift discovered and corrected
+Added permanent finalization assets:
 
-The migration audit found several source-controlled assumptions that a simple `pubspec.yaml` version bump would have missed:
+- [`docs/FINAL_2_0_12_SOURCE_AUDIT.md`](docs/FINAL_2_0_12_SOURCE_AUDIT.md);
+- [`docs/MAINTENANCE_POLICY.md`](docs/MAINTENANCE_POLICY.md);
+- [`docs/SOURCE_COMPLETION_AUDIT.md`](docs/SOURCE_COMPLETION_AUDIT.md);
+- `tool/source_completion_audit.dart`;
+- `test/source_completion_audit_cli_test.dart`.
 
-- `test/release_evidence_timestamp_test.dart` still created a `1.5.0+15` fixture;
-- `test/repository_integrity_test.dart` still required `SECURITY.md` to claim Version 1.5 was current;
-- qualification status/recorder fixtures still used the former candidate;
-- `docs/RELEASE_GATE_TESTING.md` described Version 1.5 fixture scenarios;
-- `docs/QUALIFICATION_STATUS.md` called the canonical checklist Version 1.5;
-- `docs/RELEASE_CHECKLIST.md` carried historical Version 1.5 automated checks as currently completed.
+The source-completion audit fails closed on:
 
-All of those current-state surfaces now use Version 2.0.12. The rebuilt release checklist deliberately leaves current-head automated/native checks unchecked until a complete maintained Version 2.0.12 result is actually observed.
+- package/candidate drift;
+- missing final audit/maintenance/index documents;
+- restoration of an active optional-feature backlog;
+- stale current Version 1.5 metadata in current release-facing documents;
+- unresolved `TODO`/`FIXME` line comments in production `lib/` Dart source;
+- malformed/unknown CLI arguments.
 
-## Android distribution regression guard
+Permanent CI now runs both:
 
-The maintained Platform Builds workflow already creates both Android release formats:
+```bash
+dart run tool/repository_audit.dart --json
+dart run tool/source_completion_audit.dart --json
+```
 
-- APK: `build/app/outputs/flutter-apk/app-release.apk`;
-- AAB: `build/app/outputs/bundle/release/app-release.aab`.
+## Repository-integrity expansion
 
-It also generates SHA-256 sidecars for both and uploads all four Android distribution files. Phase 32 adds `test/android_distribution_workflow_test.dart` to guard the APK build, Play Store AAB build, checksum commands, artifact paths, and fail-closed upload policy against future workflow drift.
+The repository audit now requires:
 
-This protects source-controlled distribution automation only; a real production-signed AAB still requires genuine signing and Play Store qualification.
+- final source audit;
+- maintenance policy;
+- source-completion audit guide/tool;
+- archived pre-2.0.12 changelog;
+- existing version/release/PWA/continuity/open-source/build/workflow assets.
 
-## Security and maintainer documentation
+Its process-level fixture was expanded to preserve clean and fail-closed coverage.
 
-`SECURITY.md` now identifies Version 2.0.12 / `2.0.12+2012` as the active security-maintenance line while preserving all existing input-validation, trust, dependency, secret-management, backup, replay, QR, and signing boundaries.
+## Android APK/AAB distribution protection
 
-`tool/README.md`, `README.md`, `ROADMAP.md`, `docs/README.md`, `docs/RELEASE_QUALIFICATION.md`, `docs/REPOSITORY_AUDIT.md`, `docs/RELEASE_GATE_TESTING.md`, `docs/QUALIFICATION_STATUS.md`, `docs/RELEASE_CHECKLIST.md`, and `docs/PHASE_32_VERSION_2_0_12.md` now describe the new target and its fail-closed verification boundary.
+The maintained Platform Builds workflow already builds and packages:
 
-## Historical continuity preservation
+- Android release APK;
+- Android release AAB for Google Play;
+- SHA-256 sidecar for each;
+- both payloads and both sidecars in the Android qualification artifact.
 
-The complete prior Phase 31 `what_changed.md` was preserved before replacing the active continuity index:
+`test/android_distribution_workflow_test.dart` protects those commands, paths, checksums, and fail-closed artifact behavior.
 
-- `what_changed_archive_phase_31.md`
+## Changelog/documentation finalization
 
-The earlier Phase 0–30 archive remains untouched.
+The former long active changelog is preserved verbatim in `CHANGELOG_ARCHIVE_PRE_2_0_12.md`.
 
-## Phase 32 commit sequence
+Current `CHANGELOG.md` now focuses on the source-complete Version 2.0.12 candidate, and `docs/README.md` clearly separates current release documents from historical Phase/Version 1.5 verification records.
 
-The Version 2.0.12 migration was intentionally split into small reviewable commits:
+The complete current documentation set now covers user behavior, architecture, engine/modes, persistence, backups/replays/challenges, localization/accessibility/privacy/security, dependencies/supply chain, development/testing/troubleshooting, every supported executable/build target, CI/workflow security, release qualification, source completion, and maintenance policy.
+
+## Dependency/toolchain final freeze
+
+The final source freeze is compatibility-first. Existing pins remain unless a concrete defect/security/compatibility requirement justifies another cross-platform qualification cycle.
+
+The accepted Android baseline remains:
 
 ```text
-9997da33  chore: start Version 2.0.12 package line
-d770312b  feat: expose Version 2.0.12 in app metadata
-6f341c2f  chore: retarget qualification manifest to Version 2.0.12
-fe3aa483  chore: align Windows fallback version with 2.0.12
-6a92dd3a  feat: migrate release gate to Version 2.0.12
-afc52ef5  test: migrate release gate fixtures to Version 2.0.12
-5fedb71a  docs: move roadmap to Version 2.0.12
-710d725f  docs: preserve complete Phase 31 continuity
-e758efaa  docs: advance continuity to Phase 32 Version 2.0.12
-a3190e1c  docs: migrate release qualification guide to 2.0.12
-5b3ac377  docs: add Phase 32 Version 2.0.12 verification record
-7243fd03  feat: enforce Version 2.0.12 repository integrity
-4ac3cc16  test: migrate repository audit fixtures to Phase 32
-6eadeba0  test: advance current release state to Phase 32
-71529f8e  docs: index Phase 32 Version 2.0.12 migration
-7a1e545d  docs: align repository audit with Phase 32
-d3b6d402  docs: present Version 2.0.12 in project README
-f756c4d6  test: migrate release timestamp fixture to 2.0.12
-00aa6384  docs: migrate release gate testing guide to 2.0.12
-c24e2252  docs: align qualification status guide with 2.0.12
-4a8d8e72  docs: rebuild release checklist for Version 2.0.12
-a7351f2a  test: align repository integrity with Version 2.0.12
-85883abb  docs: move security policy to Version 2.0.12
-c4228922  test: migrate qualification status fixtures to 2.0.12
-5ffca7a5  test: migrate qualification recorder fixtures to 2.0.12
-409c89f7  docs: align maintainer tools with Version 2.0.12
-13aa0f47  docs: finalize Phase 32 Version 2.0.12 continuity
-45516a17  test: guard Android APK and AAB distribution artifacts
-1f53533a  docs: record Version 2.0.12 Android distribution guard
+AGP 9.1.0
+Kotlin Android 2.4.10
+Gradle 9.7.0
+JDK 17
 ```
 
-## Verification boundary
+Issue #10 is closed as **not planned** for Version 2.0.12. This records a deliberate baseline decision, not a claim that the prior AGP 9.3.x/JDK-17 lint failure was fixed.
 
-The Version 2.0.12 source migration has been committed in small atomic changes. The connected environment does not expose a local Dart/Flutter runtime here, and no newer complete maintained formatter/analyzer/test/Web/native workflow result has been observed through the available GitHub connector yet.
+## Formatter evidence
 
-Therefore:
+Repository-owned Format Dart automation has normalized the final Dart source/test/tool additions. Important formatter commits include:
 
-- the older 235/235-test, 106-file formatting result remains historical Version 1.5 evidence only;
-- no current Version 2.0.12 test count is being invented;
-- no current native-matrix result is being inferred;
-- the release checklist keeps current-head automation unchecked pending real evidence.
+```text
+a2372253  style: format Dart sources tests and tools
+254dc2ed  style: format Dart sources tests and tools
+c70b464d  style: format Dart sources tests and tools
+```
 
-## Stable-release boundary retained
+The latest of these follows the final source-completion audit/repository-audit/test additions. Formatter success proves Dart formatter parsing/normalization for those files; it does not by itself prove analyzer/tests/Web/native builds.
 
-Stable `2.0.12` remains blocked until all 13 real-world checks are genuinely completed and recorded with valid evidence and explicit-timezone timestamps, and the complete maintained automated/native gate succeeds on the exact release commit.
+## Final source-completion commit sequence
 
-Hosted compilation, source inspection, regression fixture design, generated artifacts, and documentation updates are not substitutes for physical-device/accessibility/external-handler/PWA/signing/store qualification.
+The final pass after the initial Version 2.0.12 migration includes:
+
+```text
+9fc43029  docs: add final Version 2.0.12 source audit
+14ad9fce  docs: add post-completion maintenance policy
+271bb28a  docs: mark Version 2.0.12 source feature complete
+f3592e63  docs: refresh Version 2.0.12 dependency policy
+82ff11a6  test: guard final Version 2.0.12 source completion
+49212e9f  feat: add final source completion audit
+f2bea630  test: cover final source completion audit
+d798bc4d  ci: enforce final source completion contract
+37ab4a0a  docs: document source completion audit
+b220dd42  docs: index final source completion audit tool
+fac8a8a7  docs: finalize Version 2.0.12 documentation index
+318bd744  docs: archive pre-2.0.12 changelog history
+254dc2ed  style: format Dart sources tests and tools
+8013d14d  docs: finalize active Version 2.0.12 changelog
+1c6c9624  feat: require final source completion assets in repository audit
+a9f668a4  test: align repository audit fixtures with final completion assets
+af7dd63e  docs: finalize repository audit contract for 2.0.12
+93697d57  docs: finalize Phase 32 source completion record
+c70b464d  style: format Dart sources tests and tools
+```
+
+Earlier Phase 32 version-migration commits remain preserved in Git history and the Phase 32 documentation.
+
+## External release qualification boundary
+
+Source completion does not mark any of the 13 manual records passed. They still require genuine representative environments for Android/iOS, input/responsiveness, assistive technologies, long sessions, Auto Play, Challenge Codes, replays, backup/file handlers, browser/PWA/external handlers, native branding, and signing/provisioning/store metadata.
+
+Only actual observed evidence may update those records.
+
+## Repository-settings boundary
+
+Issue #12 remains the only known open repository-governance issue: `main` branch protection/rulesets must be enabled in GitHub settings. Tracked files such as CI/CODEOWNERS cannot truthfully replace that setting, and the connected GitHub tool surface does not expose a branch-protection/ruleset write action.
+
+This is not missing product/source functionality.
+
+## Automated verification boundary before final PR
+
+At this point the final Dart completion/audit additions have been formatter-normalized, but the complete current Version 2.0.12 analyzer/test/Web/native matrix has not yet been recorded in this file.
+
+The final step is an explicit verification PR touching application source so both permanent CI and Platform Builds run against the completed repository. Only observed successful runs will replace the historical Version 1.5 automated baseline.
