@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -97,6 +98,26 @@ void main() {
       expect(manifest, isNot(contains('"status": "passed"')));
     });
 
+    test('Web PWA metadata hardening remains source-controlled', () {
+      final manifest =
+          jsonDecode(File('web/manifest.json').readAsStringSync())
+              as Map<String, dynamic>;
+      final index = File('web/index.html').readAsStringSync();
+      final docsIndex = File('docs/README.md').readAsStringSync();
+
+      expect(manifest['id'], '.');
+      expect(manifest['start_url'], '.');
+      expect(manifest['scope'], '.');
+      expect(manifest['lang'], 'en');
+      expect(manifest['dir'], 'ltr');
+      expect((manifest['icons'] as List<dynamic>), hasLength(4));
+      expect(index, contains('<html lang="en">'));
+      expect(index, contains('mobile-web-app-capable'));
+      expect(index, contains('apple-touch-icon'));
+      expect(File('docs/PWA.md').existsSync(), isTrue);
+      expect(docsIndex, contains('PWA.md'));
+    });
+
     test('repository integrity audit remains wired into permanent CI', () {
       final ci = File('.github/workflows/ci.yml').readAsStringSync();
       final audit = File('tool/repository_audit.dart').readAsStringSync();
@@ -104,6 +125,8 @@ void main() {
       expect(audit, contains('2048 Nova repository integrity audit'));
       expect(audit, contains('Broken local Markdown link'));
       expect(audit, contains('ProjectInfo.version'));
+      expect(audit, contains('what_changed_archive_phase_00_30.md'));
+      expect(audit, contains('web/manifest.json'));
       expect(ci, contains('dart run tool/repository_audit.dart --json'));
     });
 
