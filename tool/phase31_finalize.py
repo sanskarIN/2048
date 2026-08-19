@@ -15,6 +15,18 @@ def replace_once(path: str, old: str, new: str) -> None:
     target.write_text(text.replace(old, new, 1), encoding="utf-8")
 
 
+def replace_line_prefix(path: str, prefix: str, replacement: str) -> None:
+    target = ROOT / path
+    lines = target.read_text(encoding="utf-8").splitlines()
+    matches = [index for index, line in enumerate(lines) if line.startswith(prefix)]
+    if len(matches) != 1:
+        raise RuntimeError(
+            f"Expected exactly one line starting {prefix!r} in {path}; found {len(matches)}"
+        )
+    lines[matches.single if hasattr(matches, "single") else matches[0]] = replacement
+    target.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def append_once(path: str, marker: str, block: str) -> None:
     target = ROOT / path
     text = target.read_text(encoding="utf-8")
@@ -61,6 +73,12 @@ def main() -> None:
         "docs/RELEASE_QUALIFICATION.md",
         "dart run tool/release_readiness.dart --json\ndart run tool/solver_benchmark.dart 8\nflutter build web --release\n",
         "dart run tool/release_readiness.dart --json\ndart run tool/release_qualification_status.dart --json --pending-only\ndart run tool/repository_audit.dart --json\ndart run tool/solver_benchmark.dart 8\nflutter build web --release\n",
+    )
+
+    replace_line_prefix(
+        "what_changed.md",
+        "- **Current phase:**",
+        "- **Current phase:** Phase 31 — read-only release-qualification status reporting implemented, canonically formatted, regression-tested in source, CI-wired, and documented; the latest previously accepted full CI/native evidence remains the Phase 29 Version 1.5 baseline until a newer maintained workflow result is explicitly recorded; the stable qualification boundary remains 0/13 and GitHub issues #10 and #12 remain explicit",
     )
 
     append_once(
