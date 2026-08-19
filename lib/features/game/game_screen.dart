@@ -116,6 +116,8 @@ class _GameScreenState extends State<GameScreen> {
                   runSpacing: 8,
                   alignment: WrapAlignment.center,
                   children: [
+                    if (controller.currentGameIsCustom)
+                      _CustomSessionChip(isHindi: l10n.isHindi),
                     _Metric(l10n.text('Score'), game.score),
                     _Metric(l10n.text('Best'), game.bestScore),
                     _Metric(l10n.text('Moves'), game.moves),
@@ -285,6 +287,7 @@ class _GameScreenState extends State<GameScreen> {
     final controller = AppScope.of(context);
     final l10n = context.l10n;
     final config = controller.game!.config;
+    final custom = controller.currentGameIsCustom;
     if (controller.settings.confirmRestart) {
       final confirmed = await showDialog<bool>(
         context: context,
@@ -305,7 +308,7 @@ class _GameScreenState extends State<GameScreen> {
       );
       if (confirmed != true || !mounted) return;
     }
-    await controller.newGame(config);
+    await controller.newGame(config, custom: custom);
   }
 
   Future<void> _showWinDialog() async {
@@ -391,6 +394,24 @@ class _GameScreenState extends State<GameScreen> {
     GameMode.daily => 'Daily Challenge',
     GameMode.zen => 'Zen',
   };
+}
+
+class _CustomSessionChip extends StatelessWidget {
+  const _CustomSessionChip({required this.isHindi});
+
+  final bool isHindi;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = isHindi ? 'कस्टम गेम' : 'Custom game';
+    return Semantics(
+      label: label,
+      child: Chip(
+        avatar: const Icon(Icons.tune_rounded, size: 18),
+        label: Text(label),
+      ),
+    );
+  }
 }
 
 class _Metric extends StatelessWidget {

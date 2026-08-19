@@ -5,6 +5,7 @@ import '../../core/localization/nova_localizations.dart';
 import '../../domain/game_types.dart';
 import '../../shared/game_replacement_guard.dart';
 import '../../shared/nova_scaffold.dart';
+import 'custom_game_builder_screen.dart';
 
 class ModeSelectionScreen extends StatelessWidget {
   const ModeSelectionScreen({super.key});
@@ -42,10 +43,35 @@ class ModeSelectionScreen extends StatelessWidget {
       title: l10n.text('Choose a Mode'),
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
-        itemCount: modes.length,
+        itemCount: modes.length + 1,
         separatorBuilder: (_, _) => const SizedBox(height: 8),
         itemBuilder: (context, index) {
-          final mode = modes[index];
+          if (index == 0) {
+            return Card(
+              child: ListTile(
+                leading: const Icon(Icons.tune_rounded),
+                title: Text(
+                  l10n.isHindi ? 'कस्टम गेम बिल्डर' : 'Custom Game Builder',
+                ),
+                subtitle: Text(
+                  l10n.isHindi
+                      ? 'बोर्ड, लक्ष्य, सीमा और सीड चुनकर अपना प्रीसेट बनाएँ।'
+                      : 'Choose board, target, limits, and seed; save reusable presets.',
+                ),
+                trailing: const Icon(Icons.arrow_forward_rounded),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (_) => const CustomGameBuilderScreen(),
+                    ),
+                  );
+                },
+              ),
+            );
+          }
+
+          final mode = modes[index - 1];
           return Card(
             child: ListTile(
               title: Text(l10n.text(mode.$2)),
