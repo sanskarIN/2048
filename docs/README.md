@@ -2,6 +2,8 @@
 
 This directory is the user, technical, development, platform, and release documentation set for 2048 Nova. The application is a Flutter/Dart, offline-first 2048 implementation with deterministic game rules, validated local persistence, multiple modes, trusted per-mode records, English/Hindi localization, accessibility controls, bounded read-only Move Replay, portable spectator-only Full Replay Archives, an isolated Heuristic/Expectimax Auto Play Demo with deterministic solver benchmarks, portable current-game backup/restore, and offline shareable seeded challenge codes.
 
+The current semantic release target is **Version 2.0.12**, represented in Flutter package metadata as `2.0.12+2012`.
+
 ## Start here
 
 | Document | Purpose |
@@ -32,21 +34,23 @@ This directory is the user, technical, development, platform, and release docume
 | [`CI_CD.md`](CI_CD.md) | Permanent GitHub Actions workflows, quality gates, native build matrix, and automation boundaries. |
 | [`WORKFLOW_SECURITY.md`](WORKFLOW_SECURITY.md) | Immutable Action revisions, frozen Flutter/JDK execution, least-privilege checkout credentials, reproducibility limits, and repository-setting boundaries. |
 | [`TESTING.md`](TESTING.md) | Automated test strategy, regression areas, and current evidence. |
-| [`FINAL_RELEASE_CANDIDATE_AUDIT.md`](FINAL_RELEASE_CANDIDATE_AUDIT.md) | Final Version 1.5 source audit, post-finalization 235-test/106-file CI evidence, native-build evidence, and the remaining real-world stable-release boundaries. |
-| [`VERIFICATION.md`](VERIFICATION.md) | Compact current automated verification record. |
+| [`PHASE_32_VERSION_2_0_12.md`](PHASE_32_VERSION_2_0_12.md) | Current Version 2.0.12 package/runtime/release-gate migration, qualification boundary, archive policy, and verification commands. |
+| [`FINAL_RELEASE_CANDIDATE_AUDIT.md`](FINAL_RELEASE_CANDIDATE_AUDIT.md) | Historical final Version 1.5 source audit, post-finalization 235-test/106-file CI evidence, native-build evidence, and remaining real-world stable-release boundaries. |
+| [`VERIFICATION.md`](VERIFICATION.md) | Compact latest accepted automated verification record; older Version 1.5 entries remain historical until a complete Version 2.0.12 run is recorded. |
 | [`PHASE_29_VERIFICATION.md`](PHASE_29_VERIFICATION.md) | Portable UTC timestamp hardening, Time Challenge cross-timezone integrity, absolute release-evidence timestamp enforcement, focused regressions, permanent CI, and native-matrix evidence. |
 | [`PHASE_28_VERIFICATION.md`](PHASE_28_VERIFICATION.md) | Focused immutable-workflow, frozen-toolchain, least-privilege, 225-test, Dependency Review, branding, and native-matrix evidence. |
 | [`PHASE_27_VERIFICATION.md`](PHASE_27_VERIFICATION.md) | Focused Android toolchain experiment, AGP 9.3 deferral, accepted Kotlin/Gradle subset, 217-test, and post-merge native-matrix evidence. |
 | [`PHASE_26_VERIFICATION.md`](PHASE_26_VERIFICATION.md) | Focused checkout v7, Dependency Review v5, 216-test, Web, and cross-platform Actions-runtime verification record. |
-| [`PHASE_25_VERIFICATION.md`](PHASE_25_VERIFICATION.md) | Focused Version 1.5 SDK/dependency, supply-chain, 215-test, Web, and post-maintenance native-matrix verification record. |
+| [`PHASE_25_VERIFICATION.md`](PHASE_25_VERIFICATION.md) | Historical Version 1.5 SDK/dependency, supply-chain, 215-test, Web, and post-maintenance native-matrix verification record. |
 | [`PHASE_18_VERIFICATION.md`](PHASE_18_VERIFICATION.md) | Focused Phase 18 bounded-expectimax, 161-test, Web/WASM, and native-matrix acceptance record. |
 | [`PHASE_17_VERIFICATION.md`](PHASE_17_VERIFICATION.md) | Focused Phase 17 trusted per-mode-record acceptance history and final 144-test Web/WASM gate. |
-| [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md) | Evidence manifest, candidate/stable readiness commands, fail-closed promotion rules, and stable-release sequence. |
+| [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md) | Version 2.0.12 evidence manifest, candidate/stable readiness commands, fail-closed promotion rules, and stable-release sequence. |
 | [`QUALIFICATION_RECORDER.md`](QUALIFICATION_RECORDER.md) | Guarded CLI for listing and recording genuine manual qualification evidence without hand-editing JSON. |
 | [`QUALIFICATION_STATUS.md`](QUALIFICATION_STATUS.md) | Read-only human/JSON status reporter for the canonical 13-check manual qualification manifest, including pending-only views and strict evidence-shape validation. |
 | [`PHASE_30_VERIFICATION.md`](PHASE_30_VERIFICATION.md) | Phase 30 recorder implementation, safety boundaries, regression coverage, and manual-evidence boundary. |
 | [`PHASE_31_VERIFICATION.md`](PHASE_31_VERIFICATION.md) | Phase 31 read-only qualification reporting, canonical-check validation, regression coverage, CI integration, and evidence trust boundary. |
-| [`REPOSITORY_AUDIT.md`](REPOSITORY_AUDIT.md) | Permanent required-file, release-state, temporary-workflow, and repository-local Markdown-link integrity audit used by CI. |
+| [`PHASE_31_PWA_VERIFICATION.md`](PHASE_31_PWA_VERIFICATION.md) | Phase 31 Web/PWA source metadata, semantic audit, regression coverage, and browser-qualification boundary. |
+| [`REPOSITORY_AUDIT.md`](REPOSITORY_AUDIT.md) | Permanent required-file, version/release-state, PWA, continuity-archive, temporary-workflow, and repository-local Markdown-link integrity audit used by CI. |
 | [`RELEASE_GATE_TESTING.md`](RELEASE_GATE_TESTING.md) | Process-level fixture coverage for candidate/stable release-gate acceptance and rejection paths. |
 | [`RELEASE_ARTIFACTS.md`](RELEASE_ARTIFACTS.md) | Checksummed hosted native qualification artifacts, retention, verification, packaging, and manual-evidence boundaries. |
 | [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) | Automated and manual qualification checklist before stable release. |
@@ -57,14 +61,15 @@ This directory is the user, technical, development, platform, and release docume
 | [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | Contribution architecture, localization, quality, testing, documentation, and PR requirements. |
 | [`../SECURITY.md`](../SECURITY.md) | Security-reporting and current trust boundaries. |
 | [`../SUPPORT.md`](../SUPPORT.md) | User/developer support channels and report information. |
-| [`../ROADMAP.md`](../ROADMAP.md) | Completed and optional future work. |
-| [`../CHANGELOG.md`](../CHANGELOG.md) | Release-facing history. |
-| [`../what_changed.md`](../what_changed.md) | Current development/verification continuity index. |
+| [`../ROADMAP.md`](../ROADMAP.md) | Version 2.0.12 current target, remaining qualification work, and optional future work. |
+| [`../CHANGELOG.md`](../CHANGELOG.md) | Release-facing history and Unreleased changes. |
+| [`../what_changed.md`](../what_changed.md) | Active Phase 32 development/verification continuity index. |
+| [`../what_changed_archive_phase_31.md`](../what_changed_archive_phase_31.md) | Complete preserved Phase 31 qualification-status and Web/PWA hardening continuity. |
 | [`../what_changed_archive_phase_00_30.md`](../what_changed_archive_phase_00_30.md) | Verbatim detailed chronological implementation and verification history through Phase 30. |
 
 ## Documentation principles
 
-The documentation follows behavior implemented in the repository rather than describing aspirational features as complete. Historical verification entries are kept as historical evidence; newer entries supersede older test counts for the current source state.
+The documentation follows behavior implemented in the repository rather than describing aspirational features as complete. Historical verification entries are kept as historical evidence; newer entries supersede older test counts only after the newer source state has actually completed the corresponding maintained verification.
 
 Automated build success does not imply that every physical device, assistive-technology combination, app-store signing configuration, localized layout, clipboard implementation, replay length, browser/PWA installation environment, or long-running user session has been manually validated. Those boundaries are stated explicitly in the release and verification documents.
 
@@ -88,14 +93,16 @@ A feature should not be documented as ranked/trusted when its source policy make
 - **Per-mode record presentation:** `lib/features/statistics/statistics_screen.dart`.
 - **Application routes/localization delegates:** `lib/app/nova_app.dart`.
 - **Web/PWA shell and install metadata:** `web/index.html` and `web/manifest.json`; human deployment/qualification guidance is `PWA.md`.
-- **Current package/version:** `pubspec.yaml`.
+- **Current package/build version:** `pubspec.yaml` (`2.0.12+2012`).
+- **Current marketing version:** `lib/core/constants/project_info.dart` (`2.0.12`).
+- **Windows fallback version metadata:** `windows/runner/Runner.rc`.
 - **Automated quality gates:** `.github/workflows/`.
 - **Repository integrity audit:** `tool/repository_audit.dart`; human scope and maintenance guidance is `REPOSITORY_AUDIT.md`.
 - **Executable/distribution build documentation:** `BUILDING_EXECUTABLES.md` plus `build/`; actual hosted commands remain in `.github/workflows/ci.yml` and `.github/workflows/platform-builds.yml`.
 - **Hosted native qualification artifacts:** `.github/workflows/platform-builds.yml`; handling policy is `RELEASE_ARTIFACTS.md`.
 - **Stable-release evidence gate:** `tool/release_readiness.dart` plus `release_qualification.json`; human procedure is `RELEASE_QUALIFICATION.md`.
 - **Manual qualification status reporting:** `tool/release_qualification_status.dart`; command contract and trust boundary are documented in `QUALIFICATION_STATUS.md`.
-- **Development continuity:** `../what_changed.md`; the preserved Phase 0–30 archive is `../what_changed_archive_phase_00_30.md`.
+- **Development continuity:** `../what_changed.md`; preserved historical continuity is split across `../what_changed_archive_phase_31.md` and `../what_changed_archive_phase_00_30.md`.
 
 When a document and source code disagree, review current source/tests and correct the documentation in the same change. Do not silently change implementation facts in documentation to match an intended-but-unimplemented design.
 
@@ -103,16 +110,18 @@ When a document and source code disagree, review current source/tests and correc
 
 For current release confidence, consult in this order:
 
-1. [`FINAL_RELEASE_CANDIDATE_AUDIT.md`](FINAL_RELEASE_CANDIDATE_AUDIT.md) for the final Version 1.5 source-controlled audit and post-finalization CI/native evidence.
-2. [`VERIFICATION.md`](VERIFICATION.md) for the compact latest confirmed automated state.
-3. [`PHASE_29_VERIFICATION.md`](PHASE_29_VERIFICATION.md) for the focused timestamp/release-evidence hardening acceptance record.
+1. [`PHASE_32_VERSION_2_0_12.md`](PHASE_32_VERSION_2_0_12.md) for the current version/release-contract migration and its explicit verification boundary.
+2. [`VERIFICATION.md`](VERIFICATION.md) for the latest accepted complete automated evidence; until superseded, its Version 1.5 results are historical baseline evidence only.
+3. [`FINAL_RELEASE_CANDIDATE_AUDIT.md`](FINAL_RELEASE_CANDIDATE_AUDIT.md) for the historical Version 1.5 source-controlled audit and complete CI/native evidence.
 4. [`TESTING.md`](TESTING.md) for coverage intent and regression areas.
 5. [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) for automated plus remaining manual qualification.
-6. [`../what_changed.md`](../what_changed.md) for the active continuity record and [`../what_changed_archive_phase_00_30.md`](../what_changed_archive_phase_00_30.md) for the complete detailed history through Phase 30.
+6. [`../what_changed.md`](../what_changed.md) for active Phase 32 continuity, [`../what_changed_archive_phase_31.md`](../what_changed_archive_phase_31.md) for Phase 31, and [`../what_changed_archive_phase_00_30.md`](../what_changed_archive_phase_00_30.md) for Phases 0–30.
 
 ## Project identity
 
 - Project: **2048 Nova**
+- Current semantic version: **2.0.12**
+- Flutter package/build version: `2.0.12+2012`
 - Repository: https://github.com/sanskarIN/2048
 - Creator branding: **Made by the Sanskar**
 - License: MIT
@@ -129,7 +138,7 @@ Phase 20 verification: [`PHASE_20_VERIFICATION.md`](PHASE_20_VERIFICATION.md) re
 
 ## Phase 21 documentation note
 
-Challenge Code documentation now includes offline QR rendering of the exact `NOVA1` text, presentation/trust/privacy/accessibility boundaries, focused tests, and real-device scan qualification. See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md), [`ACCESSIBILITY.md`](ACCESSIBILITY.md), [`PRIVACY.md`](PRIVACY.md), [`DEPENDENCIES.md`](DEPENDENCIES.md), and the Phase 21 verification record once finalized.
+Challenge Code documentation includes offline QR rendering of the exact `NOVA1` text, presentation/trust/privacy/accessibility boundaries, focused tests, and real-device scan qualification. See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md), [`ACCESSIBILITY.md`](ACCESSIBILITY.md), [`PRIVACY.md`](PRIVACY.md), [`DEPENDENCIES.md`](DEPENDENCIES.md), and the Phase 21 verification record.
 
 ## Phase 21 verification
 
