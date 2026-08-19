@@ -118,6 +118,10 @@ void main() {
     final seedField = tester.widget<TextField>(find.byType(TextField).at(1));
     expect(nameField.controller!.text, 'Edit Me');
     expect(seedField.controller!.text, '42');
+    expect(find.byKey(const ValueKey('custom-style-timed')), findsOneWidget);
+    expect(find.byKey(const ValueKey('custom-size-5')), findsOneWidget);
+    expect(find.byKey(const ValueKey('custom-target-4096')), findsOneWidget);
+    expect(find.byKey(const ValueKey('custom-time-90')), findsOneWidget);
     expect(find.text('Save changes'), findsOneWidget);
     expect(find.text('Cancel edit'), findsOneWidget);
 
@@ -193,6 +197,10 @@ void main() {
     final seedField = tester.widget<TextField>(find.byType(TextField).at(1));
     expect(nameField.controller!.text, 'Copy Me copy');
     expect(seedField.controller!.text, '88');
+    expect(find.byKey(const ValueKey('custom-style-moveLimit')), findsOneWidget);
+    expect(find.byKey(const ValueKey('custom-size-6')), findsOneWidget);
+    expect(find.byKey(const ValueKey('custom-target-8192')), findsOneWidget);
+    expect(find.byKey(const ValueKey('custom-move-500')), findsOneWidget);
     expect(find.text('Save preset'), findsOneWidget);
     expect(await store.load(), hasLength(1));
 
@@ -235,6 +243,9 @@ void main() {
     final seedField = tester.widget<TextField>(find.byType(TextField).at(1));
     expect(nameField.controller!.text, 'My Custom Game');
     expect(seedField.controller!.text, isEmpty);
+    expect(find.byKey(const ValueKey('custom-style-target')), findsOneWidget);
+    expect(find.byKey(const ValueKey('custom-size-4')), findsOneWidget);
+    expect(find.byKey(const ValueKey('custom-target-2048')), findsOneWidget);
     expect(find.text('Save changes'), findsNothing);
     expect(find.text('Save preset'), findsOneWidget);
     expect(find.text('Edit cancelled.'), findsOneWidget);
