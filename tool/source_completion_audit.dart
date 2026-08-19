@@ -48,7 +48,9 @@ void main(List<String> args) {
   if (helpMode) {
     stdout.writeln('2048 Nova source-completion audit');
     stdout.writeln();
-    stdout.writeln('Usage: dart run tool/source_completion_audit.dart [options]');
+    stdout.writeln(
+      'Usage: dart run tool/source_completion_audit.dart [options]',
+    );
     stdout.writeln();
     stdout.writeln('  --json         Emit machine-readable JSON.');
     stdout.writeln(
@@ -148,7 +150,9 @@ void _auditReleaseIdentity(Directory root, List<String> failures) {
   try {
     final decoded = jsonDecode(qualification);
     if (decoded is! Map<String, dynamic>) {
-      failures.add('docs/release_qualification.json must contain a JSON object.');
+      failures.add(
+        'docs/release_qualification.json must contain a JSON object.',
+      );
       return;
     }
     if (decoded['candidate'] != _packageVersion) {
@@ -158,7 +162,9 @@ void _auditReleaseIdentity(Directory root, List<String> failures) {
     }
     final checks = decoded['manualChecks'];
     if (checks is! List || checks.length != 13) {
-      failures.add('Release qualification must retain exactly 13 manual checks.');
+      failures.add(
+        'Release qualification must retain exactly 13 manual checks.',
+      );
     }
   } on FormatException catch (error) {
     failures.add('Invalid release qualification JSON: ${error.message}');
@@ -167,11 +173,7 @@ void _auditReleaseIdentity(Directory root, List<String> failures) {
 
 void _auditCompletionDocuments(Directory root, List<String> failures) {
   final roadmap = _read(root, 'ROADMAP.md', failures);
-  final finalAudit = _read(
-    root,
-    'docs/FINAL_2_0_12_SOURCE_AUDIT.md',
-    failures,
-  );
+  final finalAudit = _read(root, 'docs/FINAL_2_0_12_SOURCE_AUDIT.md', failures);
   final maintenance = _read(root, 'docs/MAINTENANCE_POLICY.md', failures);
   final docsIndex = _read(root, 'docs/README.md', failures);
 

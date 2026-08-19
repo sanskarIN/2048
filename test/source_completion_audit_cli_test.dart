@@ -97,14 +97,7 @@ void main() {
         'schemaVersion': 1,
         'candidate': candidate,
         'manualChecks': <Map<String, Object?>>[
-          for (var index = 0; index < 13; index += 1)
-            <String, Object?>{
-              'id': 'check-$index',
-              'title': 'Check $index',
-              'status': 'pending',
-              'evidence': '',
-              'updatedAt': null,
-            },
+          for (var index = 0; index < 13; index += 1) <String, Object?>{'id': 'check-$index', 'title': 'Check $index', 'status': 'pending', 'evidence': '', 'updatedAt': null},
         ],
       })}\n',
     );
@@ -137,7 +130,11 @@ void main() {
 
     final result = await runAudit(root);
 
-    expect(result.process.exitCode, 0, reason: result.process.stderr.toString());
+    expect(
+      result.process.exitCode,
+      0,
+      reason: result.process.stderr.toString(),
+    );
     expect(result.json['packageVersion'], '2.0.12+2012');
     expect(result.json['marketingVersion'], '2.0.12');
     expect(result.json['featureComplete'], isTrue);
