@@ -6,6 +6,7 @@ Widget localizedTestApp({
   required Widget home,
   Map<String, WidgetBuilder> routes = const {},
   Locale? locale,
+  TextScaler? textScaler,
 }) {
   return MaterialApp(
     locale: locale,
@@ -16,6 +17,12 @@ Widget localizedTestApp({
       GlobalWidgetsLocalizations.delegate,
       GlobalCupertinoLocalizations.delegate,
     ],
+    builder: textScaler == null
+        ? null
+        : (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: textScaler),
+            child: child!,
+          ),
     routes: routes,
     home: home,
   );
