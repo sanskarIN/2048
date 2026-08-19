@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Version 2.0.12 is feature-complete within its declared offline-first puzzle-game scope. The source-completion audit keeps that statement testable by checking the small set of files and invariants that define the completed release scope.
+Version 2.0.12 is feature-complete within its declared offline-first puzzle-game scope. The source-completion audit keeps that statement testable by checking the files and invariants that define the completed release scope and by protecting its own permanent test/documentation/CI wiring.
 
 Run it from the repository root:
 
@@ -29,6 +29,8 @@ dart run tool/source_completion_audit.dart --root=<path> --json
 The audit fails closed when any of these source-completion boundaries drift:
 
 - required final release/completion documents are missing or empty;
+- the preserved pre-2.0.12 changelog archive or active continuity record disappears;
+- the completion audit CLI, its regression suite, maintainer-tool index, human documentation, or permanent CI workflow disappears;
 - `pubspec.yaml` is no longer `2.0.12+2012`;
 - the release qualification candidate no longer matches `2.0.12+2012`;
 - the qualification manifest no longer contains exactly 13 manual checks;
@@ -38,11 +40,28 @@ The audit fails closed when any of these source-completion boundaries drift:
 - the old `## Later — Optional expansion` section returns as active Version 2.0.12 work;
 - the final source audit loses its explicit feature-complete verdict;
 - the maintenance policy loses its no-active-feature-backlog boundary;
-- the documentation index stops linking the final source audit or maintenance policy;
+- the documentation index stops linking the final source audit, maintenance policy, or this source-completion audit guide;
 - current release-facing documentation regresses to obsolete `1.5.0+15` metadata or describes Version 1.5 as the current line;
-- production Dart under `lib/` contains an unresolved line comment beginning with `TODO` or `FIXME`.
+- permanent CI stops executing `dart run tool/source_completion_audit.dart --json`;
+- `tool/README.md` stops indexing the completion audit;
+- this document stops identifying `test/source_completion_audit_cli_test.dart` as the process-level regression suite;
+- maintained Dart under `lib/`, `test/`, or `tool/` contains an unresolved line comment beginning with `TODO` or `FIXME`.
 
-The TODO/FIXME check intentionally targets product source under `lib/`. Historical documents, fixture tests, and maintenance tooling may legitimately discuss those words without creating unfinished application code.
+The unresolved-marker rule intentionally targets maintained Dart source only. Historical documents and prose may legitimately discuss TODO/FIXME terminology without creating unfinished executable or test/tool work.
+
+## Self-protection
+
+The completion audit is part of the release contract, so it now verifies its own permanent support surface:
+
+```text
+tool/source_completion_audit.dart
+test/source_completion_audit_cli_test.dart
+docs/SOURCE_COMPLETION_AUDIT.md
+tool/README.md
+.github/workflows/ci.yml
+```
+
+A completion gate that can silently disappear is not a durable completion gate. These paths are therefore required and CI wiring is checked semantically for the maintained command.
 
 ## Relationship to the other tools
 
@@ -52,10 +71,10 @@ The TODO/FIXME check intentionally targets product source under `lib/`. Historic
 | `tool/release_qualification_status.dart` | Read-only validation/reporting of the canonical 13 manual checks. |
 | `tool/record_release_qualification.dart` | Guarded storage of evidence a maintainer genuinely observed. |
 | `tool/repository_audit.dart` | Required repository files, version consistency, Web/PWA semantics, temporary helpers, and local Markdown links. |
-| `tool/source_completion_audit.dart` | Final Version 2.0.12 feature-scope/completion contract and unresolved product-work markers. |
+| `tool/source_completion_audit.dart` | Final Version 2.0.12 feature-scope/completion contract, self-wiring, and unresolved maintained-Dart work markers. |
 | `tool/solver_benchmark.dart` | Deterministic Heuristic/Expectimax smoke and benchmark behavior. |
 
-The permanent CI workflow runs both repository audits because they answer different questions: repository integrity asks whether the repository is internally coherent; source completion asks whether the completed 2.0.12 scope has accidentally been reopened or regressed.
+The permanent CI workflow runs both repository audits because they answer different questions: repository integrity asks whether the repository is internally coherent; source completion asks whether the completed 2.0.12 scope has accidentally been reopened, regressed, or had its final guardrails removed.
 
 ## Regression coverage
 
@@ -65,10 +84,12 @@ The permanent CI workflow runs both repository audits because they answer differ
 2. package/build-version drift;
 3. restored optional-feature backlog;
 4. missing final documentation-index entries;
-5. unresolved product TODO/FIXME comments;
-6. stale Version 1.5 current-release metadata;
-7. release-qualification candidate mismatch;
-8. malformed/unknown CLI arguments.
+5. unresolved product TODO comments;
+6. unresolved maintenance-tool FIXME comments;
+7. missing permanent-CI source-completion wiring;
+8. stale Version 1.5 current-release metadata;
+9. release-qualification candidate mismatch;
+10. malformed/unknown CLI arguments.
 
 Synthetic fixtures test the audit contract only. They are not gameplay, device, accessibility, signing, or store qualification evidence.
 
@@ -76,7 +97,7 @@ Synthetic fixtures test the audit contract only. They are not gameplay, device, 
 
 A passing source-completion audit does **not** prove:
 
-- that no software defect can exist;
+- that no software defect can ever exist;
 - that the current head has passed every Flutter/native workflow unless those workflows were actually observed;
 - physical Android/iOS behavior;
 - real assistive-technology quality;
