@@ -4,11 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('current release-candidate records', () {
-    test('primary continuity header points at Phase 30 state', () {
+    test('primary continuity header points at Phase 31 state', () {
       final log = File('what_changed.md').readAsStringSync();
 
-      expect(log, contains('**Current phase:** Phase 30'));
-      expect(log, contains('guarded release-qualification evidence recorder'));
+      expect(log, contains('**Current phase:** Phase 31'));
+      expect(log, contains('read-only release-qualification status reporting'));
       expect(
         log,
         contains('latest previously accepted full CI/native evidence'),
