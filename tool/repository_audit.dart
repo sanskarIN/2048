@@ -10,6 +10,7 @@ const _requiredPaths = <String>[
   '.gitignore',
   'README.md',
   'CHANGELOG.md',
+  'CHANGELOG_ARCHIVE_PRE_2_0_12.md',
   'ROADMAP.md',
   'SECURITY.md',
   'SUPPORT.md',
@@ -27,6 +28,9 @@ const _requiredPaths = <String>[
   'docs/README.md',
   'docs/PWA.md',
   'docs/REPOSITORY_AUDIT.md',
+  'docs/SOURCE_COMPLETION_AUDIT.md',
+  'docs/FINAL_2_0_12_SOURCE_AUDIT.md',
+  'docs/MAINTENANCE_POLICY.md',
   'docs/RELEASE_QUALIFICATION.md',
   'docs/QUALIFICATION_RECORDER.md',
   'docs/QUALIFICATION_STATUS.md',
@@ -47,6 +51,7 @@ const _requiredPaths = <String>[
   'tool/record_release_qualification.dart',
   'tool/release_qualification_status.dart',
   'tool/repository_audit.dart',
+  'tool/source_completion_audit.dart',
   '.github/CODEOWNERS',
   '.github/dependabot.yml',
   '.github/FUNDING.yml',
@@ -457,7 +462,8 @@ void _auditMarkdownLinks(
       }
 
       final destinations = <String>[];
-      for (final match in RegExp(r'!?\[[^\]]*\]\(([^)]+)\)').allMatches(line)) {
+      for (final match
+          in RegExp(r'!?\[[^\]]*\]\(([^)]+)\)').allMatches(line)) {
         destinations.add(match.group(1)!);
       }
       final referenceMatch = RegExp(
