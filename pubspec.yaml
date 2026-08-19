@@ -1,7 +1,7 @@
 name: nova_2048
 description: A modern, accessible, offline-first 2048 game made by Sanskar.
 publish_to: none
-version: 1.5.0+15
+version: 2.0.12+2012
 homepage: https://github.com/sanskarIN/2048
 repository: https://github.com/sanskarIN/2048
 issue_tracker: https://github.com/sanskarIN/2048/issues
