@@ -350,6 +350,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
           ),
           const SizedBox(height: 8),
           DropdownButtonFormField<CustomGameStyle>(
+            key: ValueKey('custom-style-${_style.name}'),
             initialValue: _style,
             decoration: InputDecoration(
               labelText: _text('Game style', 'गेम शैली'),
@@ -364,6 +365,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<int>(
+            key: ValueKey('custom-size-$_size'),
             initialValue: _size,
             decoration: InputDecoration(
               labelText: _text('Board size', 'बोर्ड आकार'),
@@ -378,6 +380,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<int>(
+            key: ValueKey('custom-target-$_target'),
             initialValue: _target,
             decoration: InputDecoration(
               labelText: _text('Target tile', 'लक्ष्य टाइल'),
@@ -393,6 +396,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
           if (_style == CustomGameStyle.timed) ...[
             const SizedBox(height: 12),
             DropdownButtonFormField<int>(
+              key: ValueKey('custom-time-$_timeLimit'),
               initialValue: _timeLimit,
               decoration: InputDecoration(
                 labelText: _text('Time limit', 'समय सीमा'),
@@ -412,6 +416,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
           if (_style == CustomGameStyle.moveLimit) ...[
             const SizedBox(height: 12),
             DropdownButtonFormField<int>(
+              key: ValueKey('custom-move-$_moveLimit'),
               initialValue: _moveLimit,
               decoration: InputDecoration(
                 labelText: _text('Move limit', 'चाल सीमा'),
@@ -504,7 +509,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
                   trailing: PopupMenuButton<_PresetAction>(
                     tooltip: _text('Preset actions', 'प्रीसेट क्रियाएँ'),
                     onSelected: (action) => _handlePresetAction(action, preset),
-                    itemBuilder: (menuContext) => [
+                    itemBuilder: (_) => [
                       PopupMenuItem(
                         value: _PresetAction.edit,
                         child: Row(
