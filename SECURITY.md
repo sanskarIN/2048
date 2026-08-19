@@ -4,7 +4,9 @@
 
 ## Supported version
 
-The repository is currently maintained on the **Version 1.5** line (`1.5.0+15` candidate metadata). Security fixes are applied to the active `main` development line. There is not yet a separately maintained long-term-support release branch.
+The repository is currently maintained on the **Version 2.0.12** line (`2.0.12+2012` candidate/build metadata). Security fixes are applied to the active `main` development line. There is not yet a separately maintained long-term-support release branch.
+
+Version changes do not weaken the project's qualification boundary: the live Version 2.0.12 candidate remains subject to the same fail-closed real-device, accessibility, external-handler, signing/provisioning, and distribution checks before a qualified stable-release claim.
 
 ## Reporting a vulnerability
 
@@ -137,14 +139,13 @@ No fixed response-time guarantee is promised by this open-source project, but re
 
 ## Security-related testing
 
-Relevant automated coverage includes malformed persisted-state recovery, strict configuration/state parsing, external URI allowlisting, stale Undo filtering, Challenge Code size/prefix/checksum/payload/config/mode validation, deterministic Challenge Code opening behavior, replacement cancellation, backup envelope validation, oversized-backup rejection, imported-session ranking isolation, and scoped project-data reset.
+Relevant automated coverage includes malformed persisted-state recovery, strict configuration/state parsing, external URI allowlisting, stale Undo filtering, Challenge Code size/prefix/checksum/payload/config/mode validation, deterministic Challenge Code opening behavior, replacement cancellation, backup envelope validation, oversized-backup rejection, imported-session ranking isolation, scoped project-data reset, release-version consistency, and repository-integrity checks.
 
-Automated tests do not replace real platform clipboard/security behavior, dependency advisory monitoring, assistive-technology review, or secure store-signing practices.
+Automated tests do not replace real platform clipboard/security behavior, dependency advisory monitoring, assistive-technology review, PWA/browser lifecycle qualification, or secure store-signing practices.
 
 ## Localization security boundary
 
 Localization is static application data plus a validated local preference. No remote translation endpoint, locale-specific executable code, or downloaded language pack is used. Unknown persisted language values fall back to System default and cannot select arbitrary assets, URLs, or code paths.
-
 
 ## Per-mode record integrity
 
