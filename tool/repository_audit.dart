@@ -398,7 +398,7 @@ void _auditWebMetadata(Directory root, List<String> failures) {
 
   const requiredIndexFragments = <String>[
     '<html lang="en">',
-    '<base href="$FLUTTER_BASE_HREF">',
+    '<base href="\$FLUTTER_BASE_HREF">',
     '<meta name="theme-color" content="#6C4DFF">',
     '<meta name="color-scheme" content="light dark">',
     '<meta name="mobile-web-app-capable" content="yes">',
@@ -462,7 +462,8 @@ void _auditMarkdownLinks(
       }
 
       final destinations = <String>[];
-      for (final match in RegExp(r'!?\[[^\]]*\]\(([^)]+)\)').allMatches(line)) {
+      for (final match
+          in RegExp(r'!?\[[^\]]*\]\(([^)]+)\)').allMatches(line)) {
         destinations.add(match.group(1)!);
       }
       final referenceMatch = RegExp(
