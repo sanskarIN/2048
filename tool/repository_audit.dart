@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+const _canonicalPackageVersion = '2.0.12+2012';
+const _canonicalMarketingVersion = '2.0.12';
+
 const _requiredPaths = <String>[
   '.editorconfig',
   '.gitattributes',
@@ -16,9 +19,11 @@ const _requiredPaths = <String>[
   'AUTHORS.md',
   'what_changed.md',
   'what_changed_archive_phase_00_30.md',
+  'what_changed_archive_phase_31.md',
   'pubspec.yaml',
   'analysis_options.yaml',
   'android/key.properties.example',
+  'windows/runner/Runner.rc',
   'docs/README.md',
   'docs/PWA.md',
   'docs/REPOSITORY_AUDIT.md',
@@ -26,6 +31,7 @@ const _requiredPaths = <String>[
   'docs/QUALIFICATION_RECORDER.md',
   'docs/QUALIFICATION_STATUS.md',
   'docs/PHASE_31_VERIFICATION.md',
+  'docs/PHASE_32_VERSION_2_0_12.md',
   'docs/RELEASE_CHECKLIST.md',
   'docs/BUILDING_EXECUTABLES.md',
   'docs/release_qualification.json',
@@ -58,10 +64,13 @@ const _forbiddenTemporaryPaths = <String>[
   '.github/workflows/phase30-continuity.yml',
   '.github/workflows/phase30-finalize.yml',
   '.github/workflows/phase31-finalize.yml',
+  '.github/workflows/phase32-finalize.yml',
   'docs/PHASE_30_INDEX_TRIGGER.md',
   'docs/PHASE_31_TRIGGER.md',
   'docs/PHASE_31_STATUS_TRIGGER.md',
+  'docs/PHASE_32_TRIGGER.md',
   'tool/phase31_finalize.py',
+  'tool/phase32_finalize.py',
 ];
 
 const _canonicalPubspecMetadata = <String, String>{
@@ -149,6 +158,8 @@ void main(List<String> args) {
 
   final result = <String, Object?>{
     'root': root.path,
+    'packageVersion': _canonicalPackageVersion,
+    'marketingVersion': _canonicalMarketingVersion,
     'passed': failures.isEmpty,
     'failures': failures,
     'warnings': warnings,
@@ -159,6 +170,8 @@ void main(List<String> args) {
   } else {
     stdout.writeln('2048 Nova repository audit');
     stdout.writeln('Root: ${root.path}');
+    stdout.writeln('Package target: $_canonicalPackageVersion');
+    stdout.writeln('Marketing target: $_canonicalMarketingVersion');
     stdout.writeln('Result: ${failures.isEmpty ? 'PASS' : 'FAIL'}');
     if (warnings.isNotEmpty) {
       stdout.writeln();
@@ -210,6 +223,11 @@ void _auditReleaseState(Directory root, List<String> failures) {
     'lib/core/constants/project_info.dart',
     failures,
   );
+  final windowsResources = _readText(
+    root,
+    'windows/runner/Runner.rc',
+    failures,
+  );
   final manifestText = _readText(
     root,
     'docs/release_qualification.json',
@@ -219,6 +237,7 @@ void _auditReleaseState(Directory root, List<String> failures) {
 
   if (pubspec == null ||
       projectInfo == null ||
+      windowsResources == null ||
       manifestText == null ||
       continuity == null) {
     return;
@@ -234,6 +253,12 @@ void _auditReleaseState(Directory root, List<String> failures) {
   }
   final packageVersion = versionMatch.group(1)!;
   final baseVersion = packageVersion.split('+').first;
+
+  if (packageVersion != _canonicalPackageVersion) {
+    failures.add(
+      'pubspec version must be $_canonicalPackageVersion for Phase 32; found $packageVersion.',
+    );
+  }
 
   for (final metadata in _canonicalPubspecMetadata.entries) {
     final match = RegExp(
@@ -253,9 +278,21 @@ void _auditReleaseState(Directory root, List<String> failures) {
   ).firstMatch(projectInfo);
   if (projectVersionMatch == null) {
     failures.add('ProjectInfo.version could not be parsed.');
-  } else if (projectVersionMatch.group(1) != baseVersion) {
+  } else if (projectVersionMatch.group(1) != baseVersion ||
+      projectVersionMatch.group(1) != _canonicalMarketingVersion) {
     failures.add(
-      'ProjectInfo.version (${projectVersionMatch.group(1)}) must match pubspec base version ($baseVersion).',
+      'ProjectInfo.version (${projectVersionMatch.group(1)}) must match marketing version $_canonicalMarketingVersion.',
+    );
+  }
+
+  if (!windowsResources.contains('#define VERSION_AS_NUMBER 2,0,12,2012')) {
+    failures.add(
+      'Windows fallback VERSION_AS_NUMBER must be 2,0,12,2012.',
+    );
+  }
+  if (!windowsResources.contains('#define VERSION_AS_STRING "2.0.12"')) {
+    failures.add(
+      'Windows fallback VERSION_AS_STRING must be "2.0.12".',
     );
   }
 
@@ -285,9 +322,14 @@ void _auditReleaseState(Directory root, List<String> failures) {
     );
   }
 
-  if (!continuity.contains('**Current phase:** Phase 31')) {
+  if (!continuity.contains('**Current phase:** Phase 32')) {
     failures.add(
-      'what_changed.md must identify Phase 31 as the current phase.',
+      'what_changed.md must identify Phase 32 as the current phase.',
+    );
+  }
+  if (!continuity.contains('`2.0.12+2012`')) {
+    failures.add(
+      'what_changed.md must identify the current 2.0.12+2012 package candidate.',
     );
   }
   if (!continuity.contains('stable qualification boundary remains 0/13')) {
