@@ -4,7 +4,9 @@
 
 ## Purpose
 
-The Version 1.5 stable gate requires 13 real-world qualification checks. Most of those checks cannot be truthfully completed by hosted automation because they depend on physical devices, assistive technologies, native handlers, signing/provisioning, or store metadata review.
+The **Version 2.0.12** stable gate requires 13 real-world qualification checks. Most of those checks cannot be truthfully completed by hosted automation because they depend on physical devices, assistive technologies, native handlers, PWA/browser behavior, signing/provisioning, or store metadata review.
+
+The current qualification candidate is `2.0.12+2012`; the user-facing semantic version is `2.0.12`.
 
 The status reporter makes that boundary easier to inspect while keeping it fail-closed. It can summarize progress, expose only incomplete checks, validate the recorded manifest shape, and optionally return a distinct non-zero exit code while qualification is incomplete.
 
@@ -56,8 +58,8 @@ Pending manual work is not an error in ordinary reporting mode. That is delibera
 
 The JSON form includes:
 
-- `candidate` — the release candidate recorded by the qualification manifest.
-- `total` — total canonical checks. Version 1.5 requires 13.
+- `candidate` — the release candidate recorded by the qualification manifest; currently `2.0.12+2012` in the live repository.
+- `total` — total canonical checks. Version 2.0.12 requires 13.
 - `passed` — checks with recorded passed evidence.
 - `pending` — checks not yet qualified.
 - `blocked` — checks with a documented blocker.
@@ -72,12 +74,14 @@ Before reporting status, the tool validates that:
 
 1. `schemaVersion` is `1`.
 2. `candidate` is a non-empty string.
-3. `manualChecks` is an array containing exactly the 13 canonical Version 1.5 check IDs.
+3. `manualChecks` is an array containing exactly the 13 canonical check IDs used by the Version 2.0.12 release gate.
 4. IDs are unique and no unknown check IDs are accepted.
 5. Every check has a non-empty title and a status of `pending`, `passed`, or `blocked`.
 6. `pending` checks contain no stale evidence or timestamp.
 7. `passed` and `blocked` checks contain non-empty evidence.
 8. `passed` and `blocked` checks contain a valid ISO-8601 timestamp with an explicit `Z` or numeric UTC offset.
+
+The status reporter deliberately validates checklist/evidence structure rather than hard-coding the package version itself. Exact package/candidate/version consistency is enforced by `tool/release_readiness.dart` and `tool/repository_audit.dart`.
 
 These checks help catch accidental manifest damage early. They do not determine whether real-world evidence is truthful; that remains a maintainer responsibility.
 
@@ -87,7 +91,7 @@ Use the three qualification tools for different jobs:
 
 - `tool/release_qualification_status.dart` — read and summarize the recorded state.
 - `tool/record_release_qualification.dart` — explicitly record a maintainer-observed result and evidence.
-- `tool/release_readiness.dart` — enforce candidate/stable release metadata and the stable fail-closed gate.
+- `tool/release_readiness.dart` — enforce the exact Version 2.0.12 candidate/stable release metadata and the stable fail-closed gate.
 
 A typical qualification loop is:
 
@@ -108,13 +112,19 @@ dart run tool/release_qualification_status.dart --json --pending-only
 
 This validates and publishes the current incomplete-state summary in job logs while allowing expected pending checks. CI separately verifies that the strict stable readiness command remains fail-closed until manual qualification is complete.
 
+## Current boundary
+
+The live Version 2.0.12 manifest remains **0/13 passed** until representative checks are genuinely performed. Changing package/version metadata, building hosted artifacts, or passing synthetic fixture tests does not advance this number.
+
 ## Trust boundary
 
 The reporter is intentionally read-only. It never:
 
 - changes `docs/release_qualification.json`;
 - converts a pending or blocked check to passed;
-- generates device, accessibility, signing, provisioning, external-handler, or store evidence;
+- generates device, accessibility, PWA/browser, signing, provisioning, external-handler, or store evidence;
 - treats hosted automated tests as a substitute for real qualification.
 
 This preserves the repository rule that stable-release evidence must describe work that was actually performed.
+
+See [`PHASE_32_VERSION_2_0_12.md`](PHASE_32_VERSION_2_0_12.md) for the current version-migration boundary and [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md) for the stable-promotion sequence.
