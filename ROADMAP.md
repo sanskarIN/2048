@@ -1,6 +1,6 @@
 # 2048 Nova Roadmap
 
-## 1.5.x — Current Version 1.5 hardening
+## 2.0.12 — Current release hardening
 
 Completed in the current release-candidate line:
 
@@ -22,15 +22,17 @@ Completed in the current release-candidate line:
 - Hosted release-build verification for Android, Linux, Windows, macOS, and unsigned iOS.
 - Expanded automated engine, persistence, controller, interaction, session-integrity, accessibility, Challenge Code, Auto Play isolation, bounded Move Replay, full-session replay protocol/capture/storage/spectator UI, portable-backup, clipboard-flow, imported-ranking, per-mode-record persistence/trust/reset, localized UI, and Web/PWA metadata tests.
 - Complete user/technical/development/release documentation set, branding, CI, contribution/security templates, and project support/contact integration.
-- Evidence-backed release qualification infrastructure: `docs/release_qualification.json`, `docs/RELEASE_QUALIFICATION.md`, and `tool/release_readiness.dart` keep normal release-candidate CI usable while making strict stable-release mode fail until every required real-world qualification item has recorded passed evidence and release metadata is actually `1.5.0`.
-- A read-only qualification status reporter (`tool/release_qualification_status.dart`) now summarizes the canonical 13-check manifest in human or JSON form, can filter detail to pending/blocked checks without corrupting aggregate counts, validates evidence/timestamps/check IDs, supports a distinct `--fail-if-incomplete` exit path for maintainer scripts, and is regression-tested and exercised by permanent CI without fabricating manual evidence.
-- Permanent CI now formats `tool/` together with application/tests, runs the release-candidate readiness gate, reports the current manual qualification state, and smoke-runs the deterministic solver benchmark in addition to the existing analyzer/tests/Web release build.
+- Evidence-backed release qualification infrastructure: `docs/release_qualification.json`, `docs/RELEASE_QUALIFICATION.md`, and `tool/release_readiness.dart` keep normal release-candidate CI usable while making strict stable-release mode fail until every required real-world qualification item has recorded passed evidence and release metadata matches `2.0.12`.
+- A read-only qualification status reporter (`tool/release_qualification_status.dart`) summarizes the canonical 13-check manifest in human or JSON form, can filter detail to pending/blocked checks without corrupting aggregate counts, validates evidence/timestamps/check IDs, supports a distinct `--fail-if-incomplete` exit path for maintainer scripts, and is regression-tested and exercised by permanent CI without fabricating manual evidence.
+- Permanent CI formats `tool/` together with application/tests, runs the release-candidate readiness gate, reports the current manual qualification state, and smoke-runs the deterministic solver benchmark in addition to the existing analyzer/tests/Web release build.
 - Phase 23 makes Flutter-managed metadata reproducible, includes the Cupertino icon font without Web warnings, verifies generated plugin registration, uses checkout v6, and guards these repository contracts with focused tests.
-- Native hosted builds now package SHA-256 sidecars and retain five short-lived qualification artifacts for Android, Linux, Windows, macOS, and unsigned iOS; artifacts remain inputs to manual qualification rather than substitutes for it.
+- Native hosted builds package SHA-256 sidecars and retain five short-lived qualification artifacts for Android, Linux, Windows, macOS, and unsigned iOS; artifacts remain inputs to manual qualification rather than substitutes for it.
 - Permanent CI also exposes an explicit maintainer dispatch path, regression guarded so bot-authored documentation/generator heads can be verified without relying on recursive workflow-token pushes.
-- Release-readiness CLI regression fixtures exercise both opening and fail-closed branches end to end, including a fully qualified synthetic stable fixture plus malformed/incomplete evidence rejection. Final Version 1.5 candidate CI is 235/235 tests with 106 Dart files formatter-clean; Phase 29 UTC-normalized portable timestamps, explicit-offset release-evidence validation, and current-state drift regressions are all covered.
+- Release-readiness CLI regression fixtures exercise both opening and fail-closed branches end to end, including a fully qualified synthetic stable fixture plus malformed/incomplete evidence rejection.
+- Version 2.0.12 migration aligns Flutter package/build metadata (`2.0.12+2012`), in-app marketing version (`2.0.12`), Windows fallback resources, qualification candidate metadata, and the stable release gate while retaining the real-world 0/13 evidence boundary.
+- The latest previously accepted full automated baseline remains the Version 1.5 evidence set (235/235 tests, 106 Dart files formatter-clean) until a newer complete maintained workflow result is explicitly observed and recorded for the Version 2.0.12 source tree.
 
-Remaining release qualification before `1.5.0`:
+Remaining release qualification before `2.0.12`:
 
 - Physical Android and iOS gameplay/lifecycle/save-resume checks.
 - Representative touch, orientation, keyboard, focus, and responsive-layout checks on real target environments.
@@ -47,13 +49,13 @@ Remaining release qualification before `1.5.0`:
 
 Each item above has a stable machine-readable ID in `docs/release_qualification.json`. Use `dart run tool/release_qualification_status.dart --pending-only` to inspect the unfinished set and `tool/record_release_qualification.dart` only after a maintainer actually performs a listed check. Hosted compilation or automated widget tests remain insufficient substitutes for physical qualification.
 
-## 1.5.0 — Qualified stable release target
+## 2.0.12 — Qualified stable release target
 
 Promote the release candidate only when:
 
 - automated formatter, analyzer, regression tests, release-candidate metadata gate, qualification status validation, deterministic solver smoke benchmark, Web build, and configured native builds are green for the candidate state;
 - manual device/accessibility qualification above is complete and every required manifest entry contains passed evidence plus a valid timestamp;
-- Challenge Code, replay archive, backup/restore, and external platform-handler checks are complete on representative targets;
+- Challenge Code, replay archive, backup/restore, PWA, and external platform-handler checks are complete on representative targets;
 - no known release-blocking defect remains;
 - version, changelog, release notes, privacy information, complete documentation, and `what_changed.md` are ready for the stable tag;
 - `dart run tool/release_readiness.dart --stable` exits successfully on the exact commit intended for tagging.
