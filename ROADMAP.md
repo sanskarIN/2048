@@ -1,93 +1,127 @@
-# 2048 Nova Roadmap
+# 2048 Nova Completion Roadmap
 
-## 2.0.12 — Current release hardening
+## 2.0.12 — Feature-complete source target
 
-Completed in the current release-candidate line:
+**Source status: feature-complete for the declared Version 2.0.12 product scope.**
 
-- Deterministic core engine, save/resume, bounded Undo, and persisted RNG integrity.
-- Ten configured game modes, including Daily Challenge and challenge limits.
-- Offline shareable seeded **Challenge Codes** with a versioned `NOVA1` format, deterministic config/seed round trip, corruption checksum, strict input validation, manual/clipboard entry, decoded preview, replacement protection, local high-contrast QR rendering of the exact code text, and no account/cloud/camera requirement.
-- Daily Challenge isolation from arbitrary Challenge Codes so date-derived seed/history semantics remain separate.
-- Deterministic heuristic hints with focused regression coverage.
-- Isolated deterministic **Auto Play Demo** with pause/resume, single-step control, speed selection, seed reset, selectable Heuristic/bounded-Expectimax strategies, visible search-node diagnostics, a deterministic benchmark suite/CLI, and strict separation from player saves/statistics/achievements/Daily history.
-- Read-only **Move Replay** built from validated bounded Undo snapshots, with timeline scrubbing, first/previous/next/latest navigation, play/pause, speed selection, defensive copies, and no live-game mutation path.
-- Portable spectator-only **Full Replay Archives** with a versioned `nova2048.fullReplay` JSON envelope, deterministic move/Undo/win-continuation/timed-status event reconstruction, complete-session eligibility checks, a 4,096-event safety bound, clipboard/manual import, English/Hindi UI, and strict isolation from live/trusted player progress.
-- Versioned **Game Backup** for copying/restoring one current game through the clipboard or explicit user-selected `.nova2048` / `.json` files, with pre-decode file-size bounds, strict shared validation, explicit replacement confirmation, Undo isolation, and persistent unranked-import policy.
-- Imported-backup trust isolation so portable/editable data cannot inflate lifetime statistics, achievements, streaks, Daily history, global best-score records, or per-mode records.
-- Statistics, achievements, Daily history, global best-result preservation, and corruption/self-repair behavior.
-- Trusted local **per-mode records** for best score and highest tile, including best-score board/target metadata, backward-compatible persistence, active-session reset baselines, localized Statistics presentation, and imported-backup isolation.
-- Responsive touch/keyboard UI, desktop shortcuts, themes, high contrast, reduced motion, sound/haptic toggles, accessibility semantics, and offline English/Hindi localization with persisted System/English/हिन्दी language selection.
-- Android, iOS, Web, Windows, macOS, and Linux Flutter runners.
-- Web/PWA install metadata hardening now declares stable relative app identity/start/scope, source language/direction, game categories, mobile install metadata, Apple touch icon metadata, regular/maskable 192/512 icons, and focused source regressions while keeping real installed-browser qualification explicitly manual.
-- Hosted release-build verification for Android, Linux, Windows, macOS, and unsigned iOS.
-- Expanded automated engine, persistence, controller, interaction, session-integrity, accessibility, Challenge Code, Auto Play isolation, bounded Move Replay, full-session replay protocol/capture/storage/spectator UI, portable-backup, clipboard-flow, imported-ranking, per-mode-record persistence/trust/reset, localized UI, and Web/PWA metadata tests.
-- Complete user/technical/development/release documentation set, branding, CI, contribution/security templates, and project support/contact integration.
-- Evidence-backed release qualification infrastructure: `docs/release_qualification.json`, `docs/RELEASE_QUALIFICATION.md`, and `tool/release_readiness.dart` keep normal release-candidate CI usable while making strict stable-release mode fail until every required real-world qualification item has recorded passed evidence and release metadata matches `2.0.12`.
-- A read-only qualification status reporter (`tool/release_qualification_status.dart`) summarizes the canonical 13-check manifest in human or JSON form, can filter detail to pending/blocked checks without corrupting aggregate counts, validates evidence/timestamps/check IDs, supports a distinct `--fail-if-incomplete` exit path for maintainer scripts, and is regression-tested and exercised by permanent CI without fabricating manual evidence.
-- Permanent CI formats `tool/` together with application/tests, runs the release-candidate readiness gate, reports the current manual qualification state, and smoke-runs the deterministic solver benchmark in addition to the existing analyzer/tests/Web release build.
-- Phase 23 makes Flutter-managed metadata reproducible, includes the Cupertino icon font without Web warnings, verifies generated plugin registration, uses checkout v6, and guards these repository contracts with focused tests.
-- Native hosted builds package SHA-256 sidecars and retain five short-lived qualification artifacts for Android, Linux, Windows, macOS, and unsigned iOS; artifacts remain inputs to manual qualification rather than substitutes for it.
-- Permanent CI also exposes an explicit maintainer dispatch path, regression guarded so bot-authored documentation/generator heads can be verified without relying on recursive workflow-token pushes.
-- Release-readiness CLI regression fixtures exercise both opening and fail-closed branches end to end, including a fully qualified synthetic stable fixture plus malformed/incomplete evidence rejection.
-- Version 2.0.12 migration aligns Flutter package/build metadata (`2.0.12+2012`), in-app marketing version (`2.0.12`), Windows fallback resources, qualification candidate metadata, and the stable release gate while retaining the real-world 0/13 evidence boundary.
-- The latest previously accepted full automated baseline remains the Version 1.5 evidence set (235/235 tests, 106 Dart files formatter-clean) until a newer complete maintained workflow result is explicitly observed and recorded for the Version 2.0.12 source tree.
+The active source-development roadmap is complete. Remaining items below are release/distribution qualification that require genuine representative environments; they are not missing application features.
 
-Remaining release qualification before `2.0.12`:
+Completed source scope:
+
+- Deterministic core 2048 engine with persisted RNG integrity.
+- Save/resume, validated persistence, corruption recovery, and bounded deterministic Undo.
+- Ten configured modes: Classic, Quick, Extended, Challenge, Endless, Target, Time Challenge, Move Limit, Daily Challenge, and Zen.
+- Date-seeded offline Daily Challenge with protected history semantics.
+- Offline shareable seeded **Challenge Codes** with a versioned `NOVA1` format, deterministic config/seed round trip, checksum validation, strict input bounds, decoded preview, replacement protection, clipboard/manual entry, and local high-contrast QR rendering of the exact code text.
+- Daily Challenge isolation from arbitrary Challenge Code seeds.
+- Deterministic read-only Hint behavior.
+- Isolated deterministic **Auto Play Demo** with Heuristic and bounded Expectimax strategies, pause/resume, single step, speed selection, seed reset, search-node diagnostics, deterministic benchmark tooling, and strict isolation from trusted player state.
+- Read-only **Move Replay** built from validated bounded Undo snapshots with timeline scrub, navigation, playback, speed control, defensive copies, and no live-game mutation path.
+- Portable spectator-only **Full Replay Archives** with a versioned `nova2048.fullReplay` envelope, deterministic move/Undo/win-continuation/timed-status reconstruction, complete-session eligibility rules, a 4,096-event safety bound, clipboard/manual import, English/Hindi UI, and no trusted-progress import path.
+- Versioned **Game Backup** through clipboard and explicit user-selected `.nova2048` / `.json` files with byte/text bounds, strict validation, replacement confirmation, Undo isolation, and persistent unranked-import policy.
+- Imported-backup trust isolation from lifetime statistics, achievements, streaks, Daily history, global best records, and per-mode records.
+- Local statistics, achievements, Daily history, global best-result preservation, and trusted per-mode records with board/target metadata.
+- Responsive touch/keyboard UI, desktop shortcuts, themes, seven palettes, high contrast, reduced motion, optional sound/haptics, accessibility semantics, and offline English/Hindi localization with persisted System/English/हिन्दी selection.
+- Android, iOS, Web/PWA, Windows, macOS, and Linux Flutter runners.
+- Web/PWA install metadata with stable relative identity/start/scope, source language/direction, categories, mobile/Apple install metadata, regular/maskable 192/512 icons, and source regressions.
+- Android release APK and Google Play AAB build paths, SHA-256 sidecars, artifact packaging, and a focused regression guard that fails if either distribution output disappears.
+- Linux, Windows, macOS, and unsigned-iOS release-build paths with checksummed hosted qualification artifacts.
+- Complete user, technical, architecture, engine, mode, data, privacy, accessibility, localization, security, support, dependency, CI/CD, build, release, troubleshooting, contribution, and maintenance documentation.
+- Evidence-backed release qualification infrastructure with `docs/release_qualification.json`, `tool/release_readiness.dart`, the guarded evidence recorder, and the read-only status reporter.
+- Permanent CI for dependency resolution, metadata drift, formatter, analyzer, tests, candidate release gate, qualification status, repository audit, deterministic solver smoke, and Web release build.
+- Repository integrity audit for required files, release/version consistency, Web/PWA metadata, temporary-helper cleanup, and local Markdown links.
+- Dependabot, pull-request dependency review, CODEOWNERS, security/support templates, issue/PR templates, and pinned reviewed GitHub Action revisions.
+- Version 2.0.12 synchronization across package/build metadata (`2.0.12+2012`), in-app marketing version (`2.0.12`), Windows fallback resources, qualification candidate metadata, release tooling, source audits, and regression fixtures.
+- Final source-completion audit in `docs/FINAL_2_0_12_SOURCE_AUDIT.md`.
+- Post-completion maintenance policy in `docs/MAINTENANCE_POLICY.md`.
+
+The repository-owned formatter automation produced commit `a2372253f5eb4dde16339e6c913e8581408311fc` after the 2.0.12 migration, proving the maintained Dart formatter successfully parsed and normalized `lib/`, `test/`, and `tool/`. A formatter run is not substituted for a complete analyzer/test/native result.
+
+The latest previously accepted complete CI/native evidence remains the historical Version 1.5 baseline recorded in `docs/VERIFICATION.md` until a complete maintained Version 2.0.12 workflow result is actually observed and recorded.
+
+## Remaining release qualification before `2.0.12`
+
+These are **external qualification activities**, not unfinished source features:
 
 - Physical Android and iOS gameplay/lifecycle/save-resume checks.
 - Representative touch, orientation, keyboard, focus, and responsive-layout checks on real target environments.
-- VoiceOver, TalkBack, Narrator/browser-screen-reader checks on representative platforms, including Hindi semantics, pronunciation, large-text wrapping, language switching, expanded per-mode Statistics cards, and Full Replay Archive controls/status text.
-- Long-session and real-device Daily/timed/move-limit/Undo/win-continue testing.
+- VoiceOver, TalkBack, Narrator/browser-screen-reader checks on representative platforms, including Hindi semantics/pronunciation and large-text behavior.
+- Long-session Daily/timed/move-limit/Undo/win-continue testing.
 - Representative Auto Play Heuristic/Expectimax strategy switching, pause behavior, performance/responsiveness, localization, and accessibility checks on real targets.
-- Real-platform Challenge Code generate/QR-display/device-to-device scan/copy/paste/manual-entry/validation/replacement/determinism/accessibility checks using actual screens, external camera/scanner apps, and clipboard/browser handlers.
+- Real-platform Challenge Code QR/display/copy/paste/manual-entry/validation/replacement/determinism/accessibility checks using actual screens, external scanner apps where applicable, and real clipboard/browser handlers.
 - Real-platform Move Replay scrub/play/pause/navigation-away/accessibility checks.
-- Real-platform Full Replay Archive copy/open/manual-entry/import/scrub/play/pause/navigation-away/4,096-event-boundary/accessibility checks, including long replay responsiveness on slower devices.
-- Real-platform Game Backup clipboard copy/import plus file Save/Open/cancel/round-trip/oversize/non-UTF-8/restore/restart/Undo checks using actual clipboard, browser download/file-input, native picker, document-provider, and macOS sandbox handlers.
-- Real browser/PWA install/lifecycle plus browser/email-handler checks for external destinations.
+- Real-platform Full Replay Archive import/playback/4,096-event-boundary/long-replay/accessibility checks.
+- Real-platform Game Backup clipboard and file Save/Open/cancel/round-trip/error/restore/restart/Undo checks using actual browser/native document handlers.
+- Real browser/PWA install/lifecycle/storage plus browser/email-handler checks.
 - Native splash/icon presentation review.
-- Distribution signing/provisioning and final store/package metadata review.
+- Distribution signing/provisioning, privacy/data-safety declarations, package metadata, and store metadata review.
 
-Each item above has a stable machine-readable ID in `docs/release_qualification.json`. Use `dart run tool/release_qualification_status.dart --pending-only` to inspect the unfinished set and `tool/record_release_qualification.dart` only after a maintainer actually performs a listed check. Hosted compilation or automated widget tests remain insufficient substitutes for physical qualification.
+Each item has a stable machine-readable ID in `docs/release_qualification.json`. Use:
 
-## 2.0.12 — Qualified stable release target
+```bash
+dart run tool/release_qualification_status.dart --pending-only
+```
 
-Promote the release candidate only when:
+and record evidence only after the corresponding real-world check was genuinely performed.
 
-- automated formatter, analyzer, regression tests, release-candidate metadata gate, qualification status validation, deterministic solver smoke benchmark, Web build, and configured native builds are green for the candidate state;
-- manual device/accessibility qualification above is complete and every required manifest entry contains passed evidence plus a valid timestamp;
-- Challenge Code, replay archive, backup/restore, PWA, and external platform-handler checks are complete on representative targets;
+Hosted compilation, source inspection, widget tests, generated artifacts, or documentation review are not substitutes for physical/accessibility/signing/store evidence.
+
+## 2.0.12 — Qualified stable distribution target
+
+Promote the source-complete candidate to a qualified stable distribution only when:
+
+- formatter, analyzer, full regression tests, release-candidate metadata gate, qualification-status validation, repository audit, solver smoke, Web release build, and configured native builds are green for the exact candidate commit;
+- all required manual evidence entries are genuinely passed with verifiable evidence and explicit-timezone timestamps;
+- Challenge Code, replay, backup/restore, PWA, external-handler, branding, signing/provisioning, and distribution checks are complete on representative targets;
 - no known release-blocking defect remains;
-- version, changelog, release notes, privacy information, complete documentation, and `what_changed.md` are ready for the stable tag;
-- `dart run tool/release_readiness.dart --stable` exits successfully on the exact commit intended for tagging.
+- changelog, release notes, privacy information, store metadata, complete documentation, and `what_changed.md` are ready for the exact release commit;
+- `dart run tool/release_readiness.dart --stable` exits successfully on that exact commit.
 
-## Later — Optional expansion
+## No active post-2.0.12 feature backlog
 
-These are intentionally non-blocking and must not destabilize core gameplay:
+Version 2.0.12 does **not** carry a hidden “later” feature list.
 
-- Additional languages beyond the implemented English/Hindi framework, only with complete translation, layout, persistence, and accessibility qualification.
-- Optional **in-app QR scanning** or OS share-sheet convenience for the already-implemented Challenge Code text/QR format, only if camera permissions, cross-platform maintenance, privacy, and accessibility costs are justified. Local QR rendering itself is already implemented.
-- Optional deeper/adaptive or alternative solver strategies only if they preserve the existing Auto Play sandbox, deterministic benchmark coverage, explicit resource limits, and normal Hint behavior.
-- Golden/visual-regression matrices for major breakpoints and themes.
-- Additional trustworthy mode-specific metadata beyond the implemented best-score/highest-tile records, only when it can be migrated and measured without inventing historical facts.
-- Richer platform-aware sound/haptic effects using only compatible/licensed resources.
-- Additional desktop/PWA convenience features where they preserve the offline-first design.
+The following are deliberate non-goals unless a future release explicitly adopts them:
 
-## Design guardrails for future features
+- additional languages beyond English/Hindi;
+- in-app QR scanning/camera permission or OS share-sheet integration;
+- cloud accounts, cloud save, telemetry, advertising, remote AI, online multiplayer, online leaderboards, or anti-cheat services;
+- deeper/adaptive solver variants beyond the implemented deterministic Heuristic/bounded-Expectimax sandbox;
+- extra visual-effects/audio systems beyond the maintained lightweight options;
+- additional statistics that cannot be reconstructed truthfully from trusted local state;
+- extra desktop/PWA convenience integrations that would expand privacy/platform maintenance without a concrete need.
 
-Future expansion should preserve these verified boundaries unless a deliberate redesign is documented and tested:
+A proposal for any non-goal starts a **new release scope**. It is not unfinished Version 2.0.12 work.
+
+## Maintenance after source completion
+
+Normal post-completion work is limited to:
+
+- reproducible bug fixes;
+- security fixes;
+- accessibility/localization corrections for implemented behavior;
+- dependency/toolchain/platform maintenance after compatibility review;
+- documentation/CI maintenance;
+- genuine manual-qualification evidence updates;
+- deliberately scoped future releases.
+
+See `docs/MAINTENANCE_POLICY.md`.
+
+## Design guardrails
+
+Any future release must preserve these boundaries unless an intentional redesign is documented and regression-tested:
 
 - deterministic engine remains independent of UI;
-- Challenge Codes remain configuration-only unless a separately versioned protocol is designed; checksum must not be described as authentication;
-- Daily Challenge seed/history remains protected from arbitrary portable-code injection unless intentionally redesigned;
+- Challenge Codes remain configuration-only unless a separately versioned protocol is introduced; checksum is never authentication;
+- Daily seed/history remains protected from arbitrary portable-code injection;
 - normal Hint remains read-only;
 - Auto Play remains isolated from trusted player state;
-- both Move Replay and imported Full Replay Archives remain spectator-only;
-- portable replay text is structurally/deterministically validated but is not proof of authorship and never becomes trusted progress;
-- portable/editable progress import remains unranked unless a real trust/authentication system is introduced;
-- local aggregate and per-mode records accept only trusted local-session progress;
-- local persistence remains validated and corruption-safe;
-- growing histories remain bounded, including full replay capture;
+- Move Replay and imported Full Replay Archives remain spectator-only;
+- portable replay text is structural/deterministic data, not proof of authorship;
+- portable/editable progress remains unranked unless a real authenticated trust system is introduced;
+- local aggregate/per-mode records accept only trusted local-session progress;
+- persistence remains validated, corruption-safe, and bounded;
 - external links remain explicit and scheme-validated;
-- no analytics/ads/accounts/cloud dependency is added silently;
-- automated verification does not replace real-device and assistive-technology release qualification;
-- stable-release automation must fail closed when required manual evidence is missing, malformed, stale in structure, or inconsistent with the package version.
+- analytics, ads, accounts, cloud dependencies, camera permissions, or remote services are never added silently;
+- automated verification never substitutes for real-device and assistive-technology release qualification;
+- stable-release automation fails closed when required manual evidence is missing, malformed, structurally stale, or inconsistent with the package version.
