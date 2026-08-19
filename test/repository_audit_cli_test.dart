@@ -92,6 +92,7 @@ void main() {
     String homepage = 'https://github.com/sanskarIN/2048',
     String repository = 'https://github.com/sanskarIN/2048',
     String issueTracker = 'https://github.com/sanskarIN/2048/issues',
+    String webManifestId = '.',
     String readme = '# Fixture\n\n[Docs](docs/README.md)\n',
     bool temporaryWorkflow = false,
     bool temporaryPhase31Helper = false,
@@ -137,6 +138,49 @@ void main() {
         'candidate': candidate ?? packageVersion,
         'manualChecks': _manualCheckIds.map((id) => <String, Object?>{'id': id, 'title': 'Qualification for $id', 'status': 'pending', 'evidence': '', 'updatedAt': null}).toList(growable: false),
       })}\n',
+    );
+    await write(
+      'web/manifest.json',
+      '${const JsonEncoder.withIndent('  ').convert(<String, Object?>{
+        'name': '2048 Nova',
+        'short_name': '2048 Nova',
+        'id': webManifestId,
+        'start_url': '.',
+        'scope': '.',
+        'display': 'standalone',
+        'background_color': '#111318',
+        'theme_color': '#6C4DFF',
+        'description': 'Fixture manifest',
+        'lang': 'en',
+        'dir': 'ltr',
+        'orientation': 'any',
+        'categories': <String>['games', 'entertainment'],
+        'prefer_related_applications': false,
+        'icons': <Map<String, String>>[
+          <String, String>{'src': 'icons/Icon-192.png', 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any'},
+          <String, String>{'src': 'icons/Icon-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any'},
+          <String, String>{'src': 'icons/Icon-maskable-192.png', 'sizes': '192x192', 'type': 'image/png', 'purpose': 'maskable'},
+          <String, String>{'src': 'icons/Icon-maskable-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'maskable'},
+        ],
+      })}\n',
+    );
+    await write(
+      'web/index.html',
+      '<!DOCTYPE html>\n'
+          '<html lang="en">\n'
+          '<head>\n'
+          '<base href="\$FLUTTER_BASE_HREF">\n'
+          '<meta name="theme-color" content="#6C4DFF">\n'
+          '<meta name="color-scheme" content="light dark">\n'
+          '<meta name="mobile-web-app-capable" content="yes">\n'
+          '<meta name="apple-mobile-web-app-capable" content="yes">\n'
+          '<meta name="apple-mobile-web-app-title" content="2048 Nova">\n'
+          '<link rel="manifest" href="manifest.json">\n'
+          '<link rel="apple-touch-icon" href="icons/Icon-192.png">\n'
+          '<title>2048 Nova</title>\n'
+          '</head>\n'
+          '<body><script src="flutter_bootstrap.js" async></script></body>\n'
+          '</html>\n',
     );
 
     if (temporaryWorkflow) {
@@ -236,6 +280,18 @@ void main() {
     expect(
       (result.json['failures'] as List<dynamic>).join('\n'),
       contains('must match pubspec version'),
+    );
+  });
+
+  test('Web PWA identity drift is rejected', () async {
+    final root = await fixture(webManifestId: '/wrong-app/');
+
+    final result = await runAudit(root);
+
+    expect(result.process.exitCode, 1);
+    expect(
+      (result.json['failures'] as List<dynamic>).join('\n'),
+      contains('web/manifest.json id must be .'),
     );
   });
 
