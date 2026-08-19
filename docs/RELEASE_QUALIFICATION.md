@@ -1,6 +1,6 @@
 # Release Qualification
 
-2048 Nova separates automated release-candidate verification from real-device and assistive-technology qualification. A green CI run is required, but it is not by itself sufficient evidence for a stable `1.5.0` release.
+2048 Nova separates automated release-candidate verification from real-device and assistive-technology qualification. A green CI run is required, but it is not by itself sufficient evidence for a stable `2.0.12` release.
 
 ## Machine-enforced gate
 
@@ -18,7 +18,7 @@ dart run tool/release_readiness.dart --json
 
 The normal candidate check validates the release metadata, required repository files, the qualification-manifest schema, candidate-version consistency, and the exact set of required manual checks. Pending manual checks are reported as warnings so normal release-candidate CI can continue while qualification is in progress.
 
-Before publishing `1.5.0`, run the strict stable gate:
+Before publishing `2.0.12`, run the strict stable gate:
 
 ```bash
 dart run tool/release_readiness.dart --stable
@@ -26,13 +26,15 @@ dart run tool/release_readiness.dart --stable
 
 Stable mode exits with a failure unless all of the following are true:
 
-- `pubspec.yaml` is version `1.5.0` (an optional build suffix is allowed);
-- `CHANGELOG.md` contains a `## [1.5.0]` release section;
+- `pubspec.yaml` is version `2.0.12` with an optional numeric build suffix;
+- `CHANGELOG.md` contains a `## [2.0.12]` release section;
 - every required qualification item in `docs/release_qualification.json` has status `passed`;
 - every passed item contains non-empty evidence;
 - every passed item contains a valid ISO-8601 `updatedAt` timestamp with an explicit UTC (`Z`) or numeric offset;
 - the candidate value in the qualification manifest exactly matches the package version;
 - all required release, support, security, roadmap, CI, and continuity files exist and are non-empty.
+
+The current Flutter package/build candidate is `2.0.12+2012`; the visible semantic version is `2.0.12`. The `+2012` component is the platform build number and does not change the marketing version.
 
 This intentionally makes it difficult to accidentally promote an unqualified release candidate simply by changing the version number.
 
@@ -54,7 +56,7 @@ The current schema version is `1`. Each entry has:
 - `evidence` — concise evidence that another maintainer can verify;
 - `updatedAt` — ISO-8601 timestamp for the latest qualification result, with an explicit UTC (`Z`) or numeric timezone offset.
 
-Timezone-less evidence timestamps such as `2026-08-17T14:30:00` are rejected because they do not identify one unambiguous instant across machines and time zones. Use values such as `2026-08-17T09:00:00Z` or `2026-08-17T14:30:00+05:30` instead.
+Timezone-less evidence timestamps such as `2026-08-19T07:30:00` are rejected because they do not identify one unambiguous instant across machines and time zones. Use values such as `2026-08-19T02:00:00Z` or `2026-08-19T07:30:00+05:30` instead.
 
 Do not mark an item `passed` merely because a widget or unit test covers similar behavior. These entries exist specifically for checks that require representative real environments or external handlers.
 
@@ -78,7 +80,7 @@ Example after a real check has passed:
   "title": "Physical Android gameplay, lifecycle, save, and resume",
   "status": "passed",
   "evidence": "Pixel device, Android release build from commit <sha>: new game, background/foreground, process restart, save/resume, Undo, and restart passed.",
-  "updatedAt": "2026-08-16T12:30:00+05:30"
+  "updatedAt": "2026-08-19T07:30:00+05:30"
 }
 ```
 
@@ -98,15 +100,15 @@ The manifest and gate require evidence for all of these boundaries:
 8. Move Replay scrub/play/pause/navigation/accessibility on real targets.
 9. Full Replay Archive import/playback/4,096-event-boundary/long-session/accessibility behavior.
 10. Game Backup clipboard/file save/open/cancel/round-trip/error/restore behavior using real platform handlers.
-11. Real browser, clipboard, file-provider, and email-handler behavior.
+11. Real browser, clipboard, file-provider, and email-handler behavior, including deployed PWA installation/lifecycle behavior where applicable.
 12. Native splash and launcher-icon presentation.
 13. Distribution signing/provisioning, package metadata, privacy information, and store metadata.
 
-The detailed acceptance boundary remains in `ROADMAP.md`; feature-specific manual procedures remain in the relevant documents such as `ACCESSIBILITY.md`, `BACKUP_AND_RESTORE.md`, `FILE_BACKUPS.md`, `CHALLENGE_CODES.md`, and replay documentation.
+The detailed acceptance boundary remains in `ROADMAP.md`; feature-specific manual procedures remain in the relevant documents such as `ACCESSIBILITY.md`, `BACKUP_AND_RESTORE.md`, `FILE_BACKUPS.md`, `CHALLENGE_CODES.md`, `PWA.md`, and replay documentation.
 
 ## CI behavior
 
-The primary CI workflow now performs all of the following on pushes and pull requests targeting `main`:
+The primary CI workflow performs the following on pushes and pull requests targeting `main`:
 
 ```text
 flutter pub get
@@ -120,7 +122,7 @@ dart run tool/solver_benchmark.dart 8
 flutter build web --release
 ```
 
-The CI gate intentionally runs candidate mode, not `--stable`, while the project is still on the `1.5.x` release-candidate line. The qualification status command is also intentionally read-only and non-strict in normal CI: it validates the canonical evidence manifest and prints unfinished checks, while the separate stable readiness command retains fail-closed promotion behavior.
+The CI gate intentionally runs candidate mode, not `--stable`, while Version 2.0.12 remains under qualification. The qualification status command is also intentionally read-only and non-strict in normal CI: it validates the canonical evidence manifest and prints unfinished checks, while the separate stable readiness command retains fail-closed promotion behavior.
 
 ## Stable-release sequence
 
@@ -128,9 +130,9 @@ When every real-world qualification item is genuinely complete:
 
 1. Update each manifest item to `passed` with verifiable evidence and an ISO-8601 timestamp containing explicit `Z` or a numeric timezone offset.
 2. Resolve every release-blocking defect discovered during qualification.
-3. Change `pubspec.yaml` to the final `1.5.0` version/build number.
-4. Change the manifest `candidate` field to exactly the same version.
-5. Move the final user-facing entries from `Unreleased` into a `## [1.5.0]` changelog section.
+3. Keep `pubspec.yaml` on the final `2.0.12` marketing version with the intended numeric build number.
+4. Keep the manifest `candidate` field exactly equal to the package version.
+5. Move the final user-facing entries from `Unreleased` into a `## [2.0.12]` changelog section.
 6. Update release notes, privacy/store metadata, `ROADMAP.md`, and `what_changed.md`.
 7. Run the full normal CI suite.
 8. Run `dart run tool/release_readiness.dart --stable` and require a zero exit code.
@@ -148,9 +150,9 @@ dart run tool/release_readiness.dart --root=<fixture-path> --json
 dart run tool/release_qualification_status.dart --root=<fixture-path> --json
 ```
 
-The fixture option exists for testability only. It does not turn synthetic metadata into real release evidence. The release-readiness suite exercises candidate success, complete stable success with explicit-offset timestamps, stable refusal with pending evidence, package/manifest candidate mismatch, false `passed` entries without evidence/timestamps, rejection of ambiguous timezone-less passed evidence, and missing required qualification IDs. The status-reporter suite additionally exercises aggregate summaries, pending-only filtering, blocked states, canonical ID enforcement, evidence/timestamp validation, malformed arguments, and its distinct intentional incomplete-state exit code. See [`RELEASE_GATE_TESTING.md`](RELEASE_GATE_TESTING.md) and [`QUALIFICATION_STATUS.md`](QUALIFICATION_STATUS.md).
+The fixture option exists for testability only. It does not turn synthetic metadata into real release evidence. The release-readiness suite exercises Version 2.0.12 candidate success, complete stable success with explicit-offset timestamps, stable refusal with pending evidence, rejection of the old Version 1.5 line, rejection of unrelated 2.0 patch versions, package/manifest candidate mismatch, false `passed` entries without evidence/timestamps, rejection of ambiguous timezone-less passed evidence, and missing required qualification IDs. The status-reporter suite additionally exercises aggregate summaries, pending-only filtering, blocked states, canonical ID enforcement, evidence/timestamp validation, malformed arguments, and its distinct intentional incomplete-state exit code. See [`RELEASE_GATE_TESTING.md`](RELEASE_GATE_TESTING.md) and [`QUALIFICATION_STATUS.md`](QUALIFICATION_STATUS.md).
 
-Historical automated evidence remains recorded in [`VERIFICATION.md`](VERIFICATION.md), the phase verification documents, and `what_changed.md`. The live Version 1.5 candidate still reports **0/13** real-world qualification items complete, so strict stable mode correctly remains closed.
+Historical automated evidence remains recorded in [`VERIFICATION.md`](VERIFICATION.md), the phase verification documents, and the continuity archives. The live Version 2.0.12 candidate still reports **0/13** real-world qualification items complete, so strict stable mode correctly remains closed.
 
 ## Hosted qualification artifacts
 
