@@ -56,6 +56,37 @@ void main() {
       expect(manifest, isNot(contains('"status": "passed"')));
     });
 
+    test('phase 31 qualification status reporter remains indexed and read-only', () {
+      final ci = File('.github/workflows/ci.yml').readAsStringSync();
+      final docsIndex = File('docs/README.md').readAsStringSync();
+      final qualification = File(
+        'docs/RELEASE_QUALIFICATION.md',
+      ).readAsStringSync();
+      final manifest = File(
+        'docs/release_qualification.json',
+      ).readAsStringSync();
+
+      expect(
+        File('tool/release_qualification_status.dart').existsSync(),
+        isTrue,
+      );
+      expect(File('docs/QUALIFICATION_STATUS.md').existsSync(), isTrue);
+      expect(File('docs/PHASE_31_VERIFICATION.md').existsSync(), isTrue);
+      expect(docsIndex, contains('QUALIFICATION_STATUS.md'));
+      expect(docsIndex, contains('PHASE_31_VERIFICATION.md'));
+      expect(
+        qualification,
+        contains('release_qualification_status.dart --pending-only'),
+      );
+      expect(
+        ci,
+        contains(
+          'dart run tool/release_qualification_status.dart --json --pending-only',
+        ),
+      );
+      expect(manifest, isNot(contains('"status": "passed"')));
+    });
+
     test('repository integrity audit remains wired into permanent CI', () {
       final ci = File('.github/workflows/ci.yml').readAsStringSync();
       final audit = File('tool/repository_audit.dart').readAsStringSync();
