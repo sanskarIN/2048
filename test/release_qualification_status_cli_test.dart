@@ -82,6 +82,19 @@ void main() {
     ]);
   }
 
+  Map<String, dynamic> readManifest(Directory root) {
+    final manifestFile = File.fromUri(
+      root.uri.resolve('docs/release_qualification.json'),
+    );
+    return jsonDecode(manifestFile.readAsStringSync()) as Map<String, dynamic>;
+  }
+
+  void writeManifest(Directory root, Map<String, dynamic> manifest) {
+    File.fromUri(
+      root.uri.resolve('docs/release_qualification.json'),
+    ).writeAsStringSync(jsonEncode(manifest));
+  }
+
   test('human report summarizes the canonical pending checklist', () async {
     final root = await fixture();
 
@@ -189,22 +202,87 @@ void main() {
     expect(result.stderr, contains('exactly 13 manual checks'));
   });
 
+  test('unknown check id is rejected even when the count stays 13', () async {
+    final root = await fixture(
+      ids: <String>[..._requiredCheckIds.take(12), 'invented-check'],
+    );
+
+    final result = await runStatus(root, const <String>[]);
+
+    expect(result.exitCode, 64);
+    expect(result.stderr, contains('Unknown manual check id in manifest'));
+    expect(
+      result.stderr,
+      contains('Missing required manual check id: distribution-metadata'),
+    );
+  });
+
   test('passed check without evidence is rejected', () async {
     final root = await fixture(passed: const <String>{'android-device'});
-    final manifestFile = File.fromUri(
-      root.uri.resolve('docs/release_qualification.json'),
-    );
-    final manifest =
-        jsonDecode(manifestFile.readAsStringSync()) as Map<String, dynamic>;
+    final manifest = readManifest(root);
     final checks = (manifest['manualChecks'] as List<dynamic>)
         .cast<Map<String, dynamic>>();
     checks.firstWhere((check) => check['id'] == 'android-device')['evidence'] =
         '';
-    manifestFile.writeAsStringSync(jsonEncode(manifest));
+    writeManifest(root, manifest);
 
     final result = await runStatus(root, const <String>[]);
 
     expect(result.exitCode, 64);
     expect(result.stderr, contains('with status passed needs evidence'));
+  });
+
+  test('blocked check without evidence is rejected', () async {
+    final root = await fixture(blocked: const <String>{'ios-device'});
+    final manifest = readManifest(root);
+    final checks = (manifest['manualChecks'] as List<dynamic>)
+        .cast<Map<String, dynamic>>();
+    checks.firstWhere((check) => check['id'] == 'ios-device')['evidence'] = '';
+    writeManifest(root, manifest);
+
+    final result = await runStatus(root, const <String>[]);
+
+    expect(result.exitCode, 64);
+    expect(result.stderr, contains('with status blocked needs evidence'));
+  });
+
+  test('passed check requires an explicit timestamp timezone', () async {
+    final root = await fixture(passed: const <String>{'android-device'});
+    final manifest = readManifest(root);
+    final checks = (manifest['manualChecks'] as List<dynamic>)
+        .cast<Map<String, dynamic>>();
+    checks.firstWhere(
+      (check) => check['id'] == 'android-device',
+    )['updatedAt'] = '2026-08-19T01:30:00';
+    writeManifest(root, manifest);
+
+    final result = await runStatus(root, const <String>[]);
+
+    expect(result.exitCode, 64);
+    expect(result.stderr, contains('needs an ISO-8601 updatedAt'));
+    expect(result.stderr, contains('explicit timezone'));
+  });
+
+  test('unknown argument is rejected', () async {
+    final root = await fixture();
+
+    final result = await runStatus(root, const <String>['--surprise']);
+
+    expect(result.exitCode, 64);
+    expect(result.stderr, contains('Unknown argument(s): --surprise'));
+  });
+
+  test('duplicate root arguments are rejected', () async {
+    final root = await fixture();
+
+    final result = await Process.run('dart', <String>[
+      scriptPath,
+      '--root=${root.path}',
+      '--root=${root.path}',
+      '--json',
+    ]);
+
+    expect(result.exitCode, 64);
+    expect(result.stderr, contains('Only one --root value is allowed'));
   });
 }
