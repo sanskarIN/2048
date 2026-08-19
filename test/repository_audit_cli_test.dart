@@ -93,6 +93,7 @@ void main() {
     String repository = 'https://github.com/sanskarIN/2048',
     String issueTracker = 'https://github.com/sanskarIN/2048/issues',
     String webManifestId = '.',
+    String webHtmlLang = 'en',
     String readme = '# Fixture\n\n[Docs](docs/README.md)\n',
     bool temporaryWorkflow = false,
     bool temporaryPhase31Helper = false,
@@ -167,7 +168,7 @@ void main() {
     await write(
       'web/index.html',
       '<!DOCTYPE html>\n'
-          '<html lang="en">\n'
+          '<html lang="$webHtmlLang">\n'
           '<head>\n'
           '<base href="\$FLUTTER_BASE_HREF">\n'
           '<meta name="theme-color" content="#6C4DFF">\n'
@@ -292,6 +293,18 @@ void main() {
     expect(
       (result.json['failures'] as List<dynamic>).join('\n'),
       contains('web/manifest.json id must be .'),
+    );
+  });
+
+  test('Web PWA HTML language drift is rejected', () async {
+    final root = await fixture(webHtmlLang: 'hi');
+
+    final result = await runAudit(root);
+
+    expect(result.process.exitCode, 1);
+    expect(
+      (result.json['failures'] as List<dynamic>).join('\n'),
+      contains('web/index.html is missing required metadata: <html lang="en">'),
     );
   });
 
