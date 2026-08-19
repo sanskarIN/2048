@@ -110,6 +110,10 @@ dart run tool/repository_audit.dart --json
 
 This gives maintainers a lightweight deterministic integrity check in addition to the Flutter regression suite. It does not simulate browser installation or replace manual Web/PWA qualification.
 
+## Focused verification record
+
+[`PHASE_31_PWA_VERIFICATION.md`](PHASE_31_PWA_VERIFICATION.md) records the exact Phase 31 Web/PWA source contract, fail-closed regression coverage, repository-settings re-verification, and the boundary between checked-in source review and unobserved full CI/browser qualification.
+
 ## Release verification
 
 The maintained automated sequence continues to include:
