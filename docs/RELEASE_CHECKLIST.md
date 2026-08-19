@@ -1,232 +1,355 @@
-# Release Checklist
+# Release Checklist — Version 2.0.12
 
-2048 Nova remains on the `1.5.0+15` release-candidate line. Automated checks below can verify repository behavior and build configuration; they do not replace physical-device, assistive-technology, clipboard/handler, signing, or store-distribution qualification.
+2048 Nova is currently on the **Version 2.0.12** release target.
 
-## Automated release-candidate gate
+```text
+Marketing version: 2.0.12
+Flutter package/build version: 2.0.12+2012
+Manual qualification: 0/13 passed
+```
 
-Current objective evidence is recorded in `docs/VERIFICATION.md` and `what_changed.md`. The machine-readable manual evidence state is `docs/release_qualification.json`; the exact promotion procedure and fail-closed commands are in [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md).
+This checklist deliberately separates **source-controlled readiness**, **current-head automated verification**, and **real-world qualification**. Historical Version 1.5 CI/native results remain useful baseline evidence, but they are not automatically treated as proof that the Version 2.0.12 head passed the same jobs.
 
-- [x] `dart format --output=none --set-exit-if-changed lib test tool`
-- [x] `flutter analyze`
-- [x] `flutter test --coverage`
-- [x] `dart run tool/release_readiness.dart --json` validates candidate metadata/manifest structure
-- [x] Permanent CI proves strict `--stable` remains fail-closed while the package is `1.5.x`
-- [x] `dart run tool/solver_benchmark.dart 8` smoke-runs both deterministic Auto Play strategies
-- [x] `flutter build web --release`
-- [x] `flutter pub get` leaves `pubspec.lock` and `analysis_options.yaml` unchanged in permanent CI
-- [x] Warning-enforced Web build contains the Cupertino icon font and does not emit the missing-font warning
-- [x] Native jobs verify generated dependency/plugin registration files stay synchronized
-- [x] macOS generated plugin registration includes `FilePickerPlugin` for Game Backup file transport
-- [x] Android/Linux/Windows/macOS/unsigned-iOS outputs are packaged with payload SHA-256 sidecars
-- [x] Five native qualification artifacts upload successfully with hard failure on missing output files and 14-day retention
-- [x] Permanent CI supports explicit `workflow_dispatch` and the trigger is regression guarded
-- [x] Android release APK builds on the configured hosted runner
-- [x] Linux release builds on the configured hosted runner
-- [x] Windows release builds on the configured hosted runner
-- [x] macOS release builds on the configured hosted runner
-- [x] iOS release builds with `--no-codesign` on the configured hosted runner
-- [x] Save-schema validation/migration and malformed-data recovery are regression tested
-- [x] Daily Challenge persistence/history repair and replay-best preservation are regression tested
-- [x] Undo lifetime-best and statistics-reset/Undo boundaries are regression tested
-- [x] Board-size and positional tile accessibility semantics are regression tested
-- [x] Terminal dialogs, replacement guards, keyboard shortcuts, and restored timed-game status are regression tested
-- [x] External destination URI policy is regression tested
-- [x] Auto Play deterministic reset and matching-seed sequence behavior are regression tested
-- [x] Auto Play single-step, speed selection, start/pause, and stopped-background-timer behavior are regression tested
-- [x] Auto Play player-data isolation is regression tested against player game state and lifetime statistics
-- [x] Auto Play production code builds successfully in the configured Android/Linux/Windows/macOS/unsigned-iOS matrix
-- [x] Replay timeline filters stale/future snapshots, orders retained moves, deduplicates move-number frames, and returns defensive unmodifiable copies
-- [x] Replay widget coverage verifies first/next/latest navigation, timed playback, Pause, safe empty state, and live board/score/move/RNG immutability
-- [x] Replay reuses the existing bounded Undo persistence rather than introducing a second unvalidated history format
-- [x] Replay production code is included in the configured native build matrix recorded in `docs/VERIFICATION.md`
-- [x] Challenge Code codec round-trips supported seeded configurations and reproduces the deterministic opening board/RNG state
-- [x] Challenge Codes reject missing seed, Daily mode, malformed/oversized input, unsupported prefixes/shapes, invalid checksums, and unsafe seed bounds
-- [x] Challenge Code UI regression coverage verifies deterministic generation/copy, Paste/Validate/preview/start, invalid-input preservation, and recoverable-game replacement cancellation
-- [x] Challenge Codes add no cloud/account dependency or persistence key and never import board progress, scores, achievements, settings, Daily history, or Undo data
-- [x] Daily Challenge remains excluded from arbitrary Challenge Code seed import
-- [x] Game Backup envelope round trip and exclusion of settings/statistics/achievements/Daily/Undo are regression tested
-- [x] Game Backup rejects malformed, unsupported-version, missing-game, invalid-timestamp, invalid-GameState, and oversized clipboard text
-- [x] Game Backup UI verifies explicit restore confirmation, cancellation without replacement, clipboard export, and malformed-input rejection
-- [x] Portable imports are persisted as unranked sessions and cannot mutate lifetime statistics, achievements, streaks, or Daily history
-- [x] Imported historical `bestScore` cannot replace the device lifetime record
-- [x] Imported terminal state cannot award a local ranked win
-- [x] Corrupt/cleared current-game state removes the associated unranked marker
-- [x] Normal new local game exits imported unranked policy
-- [x] Trusted per-mode best-score/highest-tile persistence, legacy migration, ranked reset baseline, imported-backup isolation, locally seeded ranking, and English/Hindi Statistics presentation are regression tested in the 144-test Phase 17 gate
-- [x] Permanent workflow directory is clean of temporary one-time patch/wiring workflows
-- [x] Complete user, architecture, engine, mode, Challenge Code, persistence, backup, privacy, accessibility, development, platform, CI/CD, testing, FAQ, troubleshooting, security, contribution, support, and release documentation is present
+## 1. Version 2.0.12 source contract
 
-The exact latest CI/native evidence for the Challenge Code production state is recorded in [`VERIFICATION.md`](VERIFICATION.md) after Phase 15 verification completes. If production code changes after that evidence, repeat the affected automated gate before release.
+These items are implemented in source and protected by regression/audit rules:
 
-## Manual device and interaction qualification
+- [x] `pubspec.yaml` uses `2.0.12+2012`.
+- [x] `ProjectInfo.version` uses `2.0.12`.
+- [x] Windows fallback metadata uses `2,0,12,2012` / `2.0.12`.
+- [x] `docs/release_qualification.json` candidate is `2.0.12+2012`.
+- [x] `tool/release_readiness.dart` targets exact Version `2.0.12` with an optional numeric build suffix.
+- [x] The gate rejects the former Version 1.5 line and unrelated 2.0 patch versions.
+- [x] Stable mode requires a `## [2.0.12]` changelog section.
+- [x] Stable mode remains fail-closed while any canonical manual check lacks genuine passed evidence.
+- [x] `tool/repository_audit.dart` enforces package/runtime/Windows/qualification/continuity version alignment.
+- [x] Phase 31 continuity is preserved in `what_changed_archive_phase_31.md`.
+- [x] Phases 0–30 remain preserved in `what_changed_archive_phase_00_30.md`.
+- [x] `what_changed.md` identifies Phase 32 and the 0/13 real-world qualification boundary.
+- [x] Version 2.0.12 migration is documented in `PHASE_32_VERSION_2_0_12.md`.
 
-Complete these before promoting to `1.5.0`:
+## 2. Current-head automated release gate
 
-- [ ] Verify core moves, scoring, spawning, win/continue, and no-double-merge behavior through real interaction
-- [ ] Verify save/resume across app termination and relaunch on representative devices
-- [ ] Verify Undo through long sessions and after challenge transitions
-- [ ] Verify Time Challenge and Move Limit behavior on representative devices
-- [ ] Verify Daily Challenge across UTC date boundaries where practical
-- [ ] Verify statistics and achievements during representative full-game sessions
-- [ ] Verify per-mode record cards, board/target metadata, Statistics reset baselines, and imported-backup exclusion during representative full-game sessions
-- [ ] Verify light/dark/system themes, all palettes, and high-contrast switching
-- [ ] Verify reduced-motion and platform animation-reduction behavior
-- [ ] Verify touch/swipe controls on representative Android and iOS devices
-- [ ] Verify keyboard focus, Arrow/WASD controls, H/U/P/Escape/R shortcuts, and window resizing on desktop/web
-- [ ] Verify Challenge Codes generate/copy correctly on representative Android, iOS, Web, Windows, macOS, and Linux clipboard environments where supported
-- [ ] Verify manual entry and Paste/Validate of a valid Challenge Code on representative platforms
-- [ ] Verify invalid prefix, checksum corruption, empty clipboard, and oversized Challenge Code input fail without replacing the current game
-- [ ] Verify the decoded Challenge Code preview accurately shows mode, board, target, limits, and seed
-- [ ] Verify recoverable-game replacement confirmation from Challenge Codes preserves the current game when cancelled
-- [ ] Verify two independent sessions using the same code start on exactly the same board/RNG state
-- [ ] Verify the same valid move sequence keeps two same-code sessions deterministic and different moves are allowed to diverge
-- [ ] Verify Target Challenge Codes for each supported target choice and at least one Time Challenge, Move Limit, Quick, Extended, Challenge, Endless, and Zen code
-- [ ] Confirm Daily Challenge cannot be encoded/opened as an arbitrary Challenge Code and normal date-derived Daily behavior remains unchanged
-- [ ] Confirm a Challenge Code starts a fresh normal non-Daily game rather than restoring sender progress
-- [ ] Verify Move Replay appears for saved/terminal games as intended and does not replace the normal Continue rule
-- [ ] Verify Move Replay first/previous/next/latest controls, slider scrub, Play/Pause, all speed options, bounded-history disclosure, and final-frame behavior on representative real platforms
-- [ ] Navigate away from Move Replay while playing and verify no user-visible/background timer behavior remains
-- [ ] Compare the live saved game before/after replay viewing and confirm board, score, moves, RNG, statistics, achievements, and Daily history remain unchanged
-- [ ] Verify Auto Play Demo navigation, single-step, start/pause/resume, all speed options, deterministic reset, and terminal-state behavior on representative real platforms
-- [ ] Navigate away from Auto Play while running and verify no user-visible/background timer behavior remains
-- [ ] Confirm Auto Play demo metrics are clearly distinguishable from player scores/statistics during real interaction
-- [ ] Verify Game Backup copy produces usable clipboard text on representative Android, iOS, Web, Windows, macOS, and Linux environments where supported
-- [ ] Verify valid Game Backup import preview, Cancel, and Restore Unranked Backup using real platform clipboard handlers
-- [ ] Verify invalid/empty/oversized backup input displays understandable failure behavior without replacing the current game
-- [ ] Verify imported session remains visibly **Continue Unranked Backup** after app termination/relaunch
-- [ ] Verify imported-session Undo works for moves made after import while lifetime records remain unchanged
-- [ ] Verify imported Classic, Daily, Target, Time Challenge, and Move Limit states reconcile correctly with current engine terminal rules
-- [ ] Confirm a portable Daily-configured import cannot create/update trusted Daily history
-- [ ] Confirm starting a normal local new game after import restores ordinary ranked/local statistics policy
-- [ ] Verify BMC, GitHub, LinkedIn, business/support email, and bug-report destinations using real platform handlers
-- [ ] Verify responsive layout at representative small-phone, large-phone, tablet, landscape, desktop, and browser widths
-- [ ] Verify native splash/icon presentation on representative targets
-- [ ] Verify optional sound/haptic settings on platforms that support the corresponding feedback
+The following must be green on the **exact Version 2.0.12 release candidate commit** before stable promotion. They remain unchecked here until a complete maintained result is actually observed and recorded for the current source state.
 
-## Accessibility qualification
+- [ ] `flutter pub get` completes successfully.
+- [ ] `pubspec.lock` remains synchronized after dependency resolution.
+- [ ] `analysis_options.yaml` remains synchronized after Flutter tooling.
+- [ ] `dart format --output=none --set-exit-if-changed lib test tool` passes with no changes.
+- [ ] `flutter analyze` reports no issues.
+- [ ] `flutter test --coverage` passes the complete current test suite.
+- [ ] `dart run tool/release_readiness.dart --json` passes candidate mode for `2.0.12+2012`.
+- [ ] `dart run tool/release_qualification_status.dart --json --pending-only` validates the canonical manifest.
+- [ ] `dart run tool/repository_audit.dart --json` passes.
+- [ ] Normal CI confirms `--stable` remains closed while manual evidence is incomplete.
+- [ ] `dart run tool/solver_benchmark.dart 8` passes deterministic solver smoke checks.
+- [ ] `flutter build web --release` succeeds without the guarded missing-icon-font warning.
+- [ ] Android release APK builds on the maintained hosted toolchain.
+- [ ] Android release AAB builds on the maintained hosted toolchain where configured.
+- [ ] Linux release build succeeds.
+- [ ] Windows release build succeeds.
+- [ ] macOS release build succeeds.
+- [ ] unsigned iOS release compilation succeeds.
+- [ ] Native qualification artifacts are packaged with SHA-256 sidecars.
+- [ ] Expected artifacts upload successfully with the maintained retention policy.
 
-- [ ] Verify board and tile announcements with TalkBack
-- [ ] Verify board and tile announcements with VoiceOver
-- [ ] Verify a representative desktop/browser screen reader
-- [ ] Verify visible focus order and focus recovery around dialogs/navigation
-- [ ] Verify Challenge Codes mode/target selection, Generate, selectable code text, Copy, multiline input, Paste, Validate, preview, errors, Start, and replacement confirmation with representative screen readers
-- [ ] Verify long Challenge Code text remains selectable/editable/readable with large text and keyboard-only navigation
-- [ ] Verify Challenge Code clipboard success/failure and validation feedback are announced understandably without relying on color
-- [ ] Verify Move Replay read-only explanation, frame/move metrics, semantic board, slider, first/previous/next/latest controls, Play/Pause, and speed selector with representative screen readers
-- [ ] Verify replay playback can be paused immediately and does not create uncontrollable repeated announcements
-- [ ] Verify Auto Play controls, demo-state label, board semantics, speed selector, and demo metrics with representative screen readers
-- [ ] Verify Game Backup Copy/Import controls, validation messages, candidate preview, Cancel, and Restore Unranked Backup dialog with TalkBack/VoiceOver/desktop screen reader
-- [ ] Verify imported/unranked continuation status is understandable without color alone
-- [ ] Verify large system text scaling without clipped primary controls, including Challenge Codes, Replay, Auto Play, and Game Backup confirmation screens
-- [ ] Verify expanded per-mode Statistics cards and localized board/target metadata with TalkBack, VoiceOver, representative desktop/browser screen reader, large text, English, and हिन्दी
-- [ ] Verify high contrast and non-color tile-value identification
-- [ ] Verify reduced-motion behavior on Replay and Auto Play boards
-- [ ] Verify timed challenge updates do not create disruptive repeated announcements
+When these are complete, record the exact commit SHA, workflow run IDs, job IDs, current test count, formatting file count, Flutter/Dart versions, and native-matrix result in `docs/VERIFICATION.md`, the Phase 32 record, and `what_changed.md`.
 
-## Distribution and project hygiene
+## 3. Core engine and persistence regression coverage
 
-- [ ] Configure real Android distribution signing for the intended store/channel
-- [ ] Configure Apple signing/provisioning for real iOS distribution
-- [ ] Produce and inspect final store/package artifacts
-- [ ] Confirm store privacy/data-safety metadata matches the offline-first implementation, explicit Challenge Code/Game Backup clipboard behavior, persistent local unranked marker, read-only local Replay behavior, and in-memory-only Auto Play sandbox
-- [ ] Prepare final screenshots/listing text where required
-- [ ] Recheck README, documentation index, CHANGELOG, ROADMAP, version, release notes, `docs/VERIFICATION.md`, and `what_changed.md`
-- [ ] Confirm no credentials/private signing material are committed
-- [ ] Review dependency/update state deliberately; do not upgrade blindly immediately before release
-- [ ] Document any remaining known limitations, including non-cryptographic Challenge Code checksums, same-code divergence after different move sequences, bounded Replay history, plain-JSON clipboard backup, imported-game unranked policy, and the heuristic rather than guaranteed-optimal Auto Play solver
-- [ ] `dart run tool/release_readiness.dart --stable` exits successfully on the exact release commit
-- [ ] Promote version/tag to `1.5.0` only after the stable-release criteria are satisfied
+Before stable release, automated/current-head coverage must still verify:
 
-## English/Hindi localization qualification
+- [ ] deterministic move/merge/spawn rules and one-merge-per-source-tile behavior;
+- [ ] deterministic RNG preservation through save/resume and Undo;
+- [ ] terminal win/game-over movement blocking;
+- [ ] continue-after-win behavior;
+- [ ] Time Challenge deadline/status reconciliation;
+- [ ] Move Limit behavior;
+- [ ] Daily Challenge deterministic date seed/history behavior;
+- [ ] malformed save rejection and safe repair/removal paths;
+- [ ] stale Undo filtering;
+- [ ] statistics reset/Undo boundaries;
+- [ ] trusted global and per-mode record behavior;
+- [ ] imported backup ranking isolation;
+- [ ] settings/statistics/achievement timestamp validation;
+- [ ] project-owned Clear All behavior without unrelated preference deletion.
 
-Before stable release, manually verify System default, explicit English, and explicit हिन्दी on representative mobile, desktop, and Web targets. Check Home, Settings, modes, gameplay dialogs/metrics, Daily, statistics, achievements, Challenge Codes, Backup, Replay, Auto Play, Guide, About, Support, and external-link fallback text.
+## 4. Challenge Code qualification
 
-Also verify Hindi large-text/narrow-layout wrapping, no clipped critical actions, game-board positional semantics, focus traversal, TalkBack/VoiceOver/representative desktop-browser screen readers, and persistence of the language choice across a real app termination/relaunch. Automated localization tests are evidence, not a substitute for these checks.
+Automated/current-head checks must cover:
 
+- [ ] deterministic supported configuration + seed round trip;
+- [ ] same-code opening board/RNG reproducibility;
+- [ ] prefix/segment/checksum/Base64URL/UTF-8/JSON validation;
+- [ ] strict `GameConfig`/seed bounds;
+- [ ] Daily Challenge exclusion;
+- [ ] oversized/malformed input rejection;
+- [ ] replacement confirmation behavior;
+- [ ] QR rendering contains the exact existing `NOVA1` text;
+- [ ] QR feature adds no camera permission or scanner dependency;
+- [ ] English/Hindi labels and errors remain covered.
 
-## Phase 18 solver qualification
+Manual real-target checks:
 
-Automated/source:
+- [ ] Generate/copy/paste/manual-entry flow on representative platforms.
+- [ ] Scan displayed QR with an external camera/scanner and verify exact text round trip.
+- [ ] Verify two independent sessions using the same code start identically.
+- [ ] Verify identical valid move sequences preserve deterministic spawn sequence.
+- [ ] Verify invalid/corrupt/oversized codes never replace current progress.
+- [ ] Verify large text, keyboard/focus, TalkBack/VoiceOver/browser-screen-reader behavior.
 
-- [x] Normal Hint remains heuristic-only and read-only.
-- [x] Expectimax search is deterministic for a fixed board/configuration.
-- [x] Expectimax simulates hypothetical spawns without consuming game RNG.
-- [x] Search work is bounded by explicit depth/node limits.
-- [x] Auto Play strategy switching preserves sandbox board/RNG state and trusted player isolation.
-- [x] Reusable seeded benchmark runner is deterministic and validates input.
-- [x] English/Hindi strategy controls have automated localization coverage.
+These real-target results belong under qualification ID `challenge-code-real-target`.
 
-Manual before stable release:
+## 5. Move Replay qualification
 
-- [ ] Verify Heuristic/Expectimax switching and node diagnostics on representative phone/desktop/web layouts.
-- [ ] Verify expectimax responsiveness on slower representative devices and confirm no UI lockup during practical single-step/Auto Play use.
-- [ ] Verify Hindi/English labels, large-text wrapping, keyboard/focus behavior, and screen-reader output for the added strategy controls/metrics.
-- [ ] Confirm long-running Auto Play remains isolated from player saves/statistics/achievements/Daily records on real targets.
+Automated/current-head checks must cover:
 
-## Phase 19 full replay archive qualification
+- [ ] validated bounded Undo snapshots only;
+- [ ] stale/future snapshot filtering;
+- [ ] defensive immutable replay copies;
+- [ ] first/previous/next/latest and slider behavior;
+- [ ] play/pause and 1/2/4 FPS behavior;
+- [ ] no live board/score/RNG/statistics mutation;
+- [ ] no lingering playback timer after navigation;
+- [ ] bounded-history disclosure.
 
-Automated and source checks covered by the Phase 19 implementation and focused suite:
+Manual real-target checks:
 
-- [x] Portable replay uses explicit `nova2048.fullReplay` format and version plus a pre-parse encoded-size limit.
-- [x] Fresh sessions create complete capture while legacy, restored, and Game Backup progress remains explicitly incomplete.
-- [x] Replay move, Undo, continue-after-win, and timed status-refresh events reconstruct deterministically with recorded event time.
-- [x] Malformed, unsupported, oversized, incomplete archives and invalid action sequences fail closed.
-- [x] Capture is bounded to 4,096 events and overflow disables complete export without stopping gameplay.
-- [x] Active replay capture persists locally, survives restart, is removed with the game or Clear All, and malformed persistence is repaired safely.
-- [x] Imported replay UI is spectator-only and automated widget coverage confirms the live game and statistics remain unchanged.
-- [x] Full Replay Archive controls and trust copy have Hindi localization regression coverage.
-- [x] Move Replay can navigate to the Full Replay Archive workspace even when no live game exists.
+- [ ] scrub/play/pause/navigation on representative mobile/desktop/Web targets;
+- [ ] verify live game remains unchanged after spectator viewing;
+- [ ] verify keyboard/focus/large-text/screen-reader behavior.
 
-Manual checks still required before `1.5.0`:
+These results belong under qualification ID `move-replay-real-target`.
 
-- [ ] Verify large replay copy, open, and manual-entry behavior using real Android, iOS, Web, Windows, macOS, and Linux clipboard environments where supported.
-- [ ] Verify a long complete replay can scrub, step, play or pause, change speed, and leave the route without lingering timer behavior.
-- [ ] Verify the 4,096-event overflow state on a representative real target and confirm gameplay remains usable while export is disabled.
-- [ ] Verify legacy, restored, and Game Backup sessions clearly communicate incomplete full-session capture and never offer misleading complete export.
-- [ ] Verify imported spectator replay cannot alter the live game, statistics, achievements, streaks, Daily history, or per-mode records through real interaction.
-- [ ] Verify English and Hindi labels, validation feedback, large-text wrapping, keyboard and focus behavior, and screen-reader semantics for archive status, actions, and viewer controls.
-- [ ] Verify long valid archive reconstruction and playback remain responsive on representative slower devices.
+## 6. Full Replay Archive qualification
 
-## Phase 20 Game Backup file checks
+Automated/current-head checks must cover:
 
-Do not mark stable `1.5.0` ready until representative real environments verify:
+- [ ] `nova2048.fullReplay` versioned envelope validation;
+- [ ] deterministic reconstruction of moves, Undo, continue-after-win, and timed status events;
+- [ ] recorded event-time use for timed reconstruction;
+- [ ] 4,096-event capture bound;
+- [ ] incomplete capture policy for legacy/restored/backup sessions;
+- [ ] malformed/unsupported/oversized archive rejection;
+- [ ] spectator-only import isolation from trusted progress;
+- [ ] English/Hindi archive/viewer coverage.
 
+Manual real-target checks:
+
+- [ ] large archive copy/open/manual-entry flows;
+- [ ] long replay scrub/step/play/pause/speed/navigation behavior;
+- [ ] 4,096-event overflow behavior without gameplay breakage;
+- [ ] responsiveness on slower representative devices;
+- [ ] accessibility and large-text behavior.
+
+These results belong under qualification ID `full-replay-real-target`.
+
+## 7. Game Backup qualification
+
+Automated/current-head checks must cover:
+
+- [ ] versioned backup envelope round trip;
+- [ ] clipboard text size bound;
+- [ ] file byte bound before UTF-8 decode;
+- [ ] strict UTF-8/JSON/GameState validation;
+- [ ] unsupported version/timestamp/state rejection;
+- [ ] explicit restore confirmation;
+- [ ] unrelated previous Undo isolation;
+- [ ] imported session persists as unranked;
+- [ ] imported progress cannot alter lifetime/per-mode records, achievements, streaks, or Daily history;
+- [ ] imported embedded historical best score is not trusted.
+
+Manual real-target checks:
+
+- [ ] clipboard copy/import on representative platforms;
 - [ ] `.nova2048` Save/Save As success and cancellation;
-- [ ] `.nova2048` export/import round trip into a fresh app session;
-- [ ] `.json` selection where exposed by the platform picker;
-- [ ] Web browser download and file-input behavior;
-- [ ] Android/iOS document-provider behavior, including a user-selected cloud-backed document where practical;
+- [ ] file open and round trip into a fresh app session;
+- [ ] Web download/file-input behavior;
+- [ ] Android/iOS document-provider behavior;
 - [ ] Windows/Linux native picker behavior;
 - [ ] macOS sandboxed user-selected read/write behavior;
-- [ ] oversized, non-UTF-8, malformed, unsupported-version, and invalid-state rejection without live-game mutation;
-- [ ] large-but-valid backup responsiveness;
-- [ ] persistent unranked status after file restore/restart and Undo after imported moves;
-- [ ] Hindi, large text, keyboard/focus, and representative screen-reader behavior for file actions/errors/confirmation.
+- [ ] oversized/non-UTF-8/malformed rejection;
+- [ ] imported restart/Undo behavior;
+- [ ] English/Hindi/large-text/keyboard/screen-reader flows.
 
-Hosted compilation is evidence of build compatibility, not completion of these interactive checks.
+These results belong under qualification ID `backup-real-target`.
 
-## Phase 21 Challenge Code QR manual gate
+## 8. Auto Play / solver qualification
 
-Before stable `1.5.0`, verify generated Challenge Code QR behavior on representative Android, iOS, Web, Windows, macOS, and Linux displays where practical. Check that the displayed QR decodes to the exact visible `NOVA1` text using external camera/scanner apps, remains readable under light/dark surrounding themes and practical brightness/glare conditions, does not overflow narrow layouts or clip adjacent large text, exposes understandable screen-reader semantics, and never requests camera permission.
+Automated/current-head checks must cover:
 
-Also confirm that QR-scanned text still goes through ordinary Challenge Code validation/replacement protection and that users can always fall back to selectable/copyable/manual text. Do not mark QR display as authentication or as an in-app scanning capability.
+- [ ] normal Hint remains read-only and heuristic-only;
+- [ ] heuristic solver deterministic tie behavior;
+- [ ] Expectimax deterministic behavior for fixed state;
+- [ ] 90%/10% hypothetical 2/4 spawn modeling;
+- [ ] explicit depth/node resource bounds;
+- [ ] search does not consume live game RNG;
+- [ ] strategy switching preserves sandbox state;
+- [ ] Auto Play sandbox remains isolated from player saves/statistics/achievements/Daily history;
+- [ ] deterministic benchmark fixtures remain stable.
 
-## Phase 21 automated acceptance and remaining manual checks
+Manual real-target checks:
 
-Automated Phase 21 acceptance is complete on source `2678e65824ca088c4ba93342bc8737fc18ec7708`: CI `31877515001` passed formatting, analysis, 194/194 tests, Web release, and WASM dry run; Platform Builds `31877514960` passed Android, Linux, Windows, macOS, and unsigned iOS.
+- [ ] Heuristic/Expectimax switching and visible diagnostics;
+- [ ] pause/resume/single-step/speed controls;
+- [ ] responsiveness on slower representative devices;
+- [ ] no lingering background timer after leaving the screen;
+- [ ] English/Hindi, large-text, keyboard/focus and screen-reader behavior.
 
-Before stable `1.5.0`, manually verify the QR on representative physical/real displays using external camera/scanner applications. Confirm exact `NOVA1` text recovery, practical scan reliability across brightness/glare/density/orientation, fixed black-on-white QR presentation inside light/dark themes, large-text/narrow-layout behavior, screen-reader semantics, and the selectable/copyable/manual text fallback. Confirm 2048 Nova requests no camera permission for rendering and that scanned text still enters the ordinary Challenge Code validation/replacement flow.
+These results belong under qualification ID `autoplay-real-target`.
 
-All earlier physical-device lifecycle/gameplay, clipboard/platform handler, Game Backup file/document provider, replay, accessibility, native branding, signing/provisioning/notarization, and store/package review checks remain required. Automated completion does not authorize a stable-release promotion by itself.
+## 9. Accessibility qualification
 
-## Release-gate regression safety
+Manual checks before stable release:
 
-- [x] Candidate-mode success path is exercised through the real CLI against an isolated fixture repository.
-- [x] Strict stable-mode success path is exercised with synthetic complete `1.5.0` metadata and all 13 evidence records.
-- [x] Strict stable mode is verified to fail when real-world evidence remains pending.
-- [x] Candidate/package mismatch is rejected.
-- [x] False `passed` evidence without a timestamp/evidence body is rejected.
-- [x] Missing required qualification IDs are rejected.
-- [x] Current maintained CI passes **200/200 tests** on source `57c6312ee26eed0cea8597ebf6417d442cf988cc` (run `31932367464`).
+- [ ] TalkBack board/tile/control announcements.
+- [ ] VoiceOver board/tile/control announcements.
+- [ ] representative desktop/browser screen reader.
+- [ ] row/column tile semantics.
+- [ ] visible focus order and focus recovery around dialogs/navigation.
+- [ ] high contrast without color-only information.
+- [ ] reduced-motion behavior.
+- [ ] large system text without clipped critical actions.
+- [ ] English/Hindi semantics and pronunciation review.
+- [ ] Statistics expandable per-mode cards under accessibility tools.
+- [ ] Challenge Code, Backup, Move Replay, Full Replay Archive, and Auto Play accessibility.
+- [ ] timed updates do not create disruptive repeated announcements.
 
-These checked items validate the release gate itself. They do not mark any of the 13 manual qualification entries as complete.
+These results belong under qualification ID `assistive-tech`.
+
+## 10. Physical Android and iOS qualification
+
+Android:
+
+- [ ] install/run the intended release candidate on a physical Android device;
+- [ ] new game, valid/invalid moves, win/continue and game over;
+- [ ] background/foreground lifecycle;
+- [ ] process termination and save/resume;
+- [ ] Undo and restart;
+- [ ] timed/move-limit/Daily flows;
+- [ ] touch/orientation/responsive behavior;
+- [ ] optional haptics/sound where supported.
+
+Record genuine evidence under `android-device` and the relevant feature-specific IDs.
+
+iOS:
+
+- [ ] sign/provision an appropriate candidate for a physical iOS device;
+- [ ] repeat gameplay/lifecycle/save/resume/Undo/restart qualification;
+- [ ] verify touch/orientation/responsive behavior;
+- [ ] verify file/clipboard handlers where available;
+- [ ] verify optional haptics/sound where supported.
+
+Record genuine evidence under `ios-device` and the relevant feature-specific IDs.
+
+## 11. Responsive/input and long-session qualification
+
+Responsive/input (`input-responsive`):
+
+- [ ] small phone;
+- [ ] large phone;
+- [ ] tablet;
+- [ ] landscape;
+- [ ] desktop resizing;
+- [ ] browser resizing;
+- [ ] touch/swipe;
+- [ ] Arrow/WASD;
+- [ ] H/U/P/Escape/R shortcuts;
+- [ ] keyboard focus and dialog focus recovery.
+
+Long session (`long-session`):
+
+- [ ] extended normal play;
+- [ ] Daily Challenge across meaningful lifecycle transitions;
+- [ ] Time Challenge;
+- [ ] Move Limit;
+- [ ] repeated Undo;
+- [ ] target win + Continue;
+- [ ] replay capture growth;
+- [ ] statistics/records remain internally consistent.
+
+## 12. Web/PWA and external-handler qualification
+
+Source-controlled Web/PWA metadata is regression/audit protected, but real deployment behavior remains manual.
+
+- [ ] deploy the exact release Web artifact to the intended origin;
+- [ ] verify root/subpath routing for the real hosting configuration;
+- [ ] verify install availability on representative compatible browsers;
+- [ ] launch installed PWA and verify standalone behavior where supported;
+- [ ] verify refresh/update/service-worker lifecycle behavior;
+- [ ] verify browser local storage across ordinary restart/reload;
+- [ ] verify expected private-browsing/eviction limitations are documented;
+- [ ] verify clipboard and file-input/download handlers;
+- [ ] verify GitHub/LinkedIn/Gumroad/Buy Me a Coffee/browser destinations;
+- [ ] verify business/support `mailto:` handlers;
+- [ ] verify bug-report destination.
+
+Record applicable evidence under `external-handlers` plus feature-specific IDs.
+
+## 13. Native branding qualification
+
+- [ ] Android launcher icon presentation.
+- [ ] Android splash presentation.
+- [ ] iOS icon/launch presentation.
+- [ ] Windows icon/product metadata presentation.
+- [ ] macOS icon/launch presentation.
+- [ ] Linux icon/window presentation where applicable.
+- [ ] PWA installed icon/maskable presentation.
+- [ ] no unintended clipping, padding, stale Flutter defaults, or wrong product name.
+
+Record evidence under `native-branding`.
+
+## 14. Distribution/signing/store qualification
+
+Before stable publication:
+
+- [ ] configure private Android production signing outside the public repository;
+- [ ] build final signed Android AAB/APK as needed;
+- [ ] configure Apple distribution signing/provisioning outside the repository;
+- [ ] produce intended iOS archive/package through the proper Apple toolchain;
+- [ ] inspect Windows/macOS/Linux package metadata where distributed;
+- [ ] verify app/package identifiers and Version `2.0.12` metadata;
+- [ ] verify store listing title/description/category/icons/screenshots;
+- [ ] verify privacy/data-safety declarations match the offline-first implementation;
+- [ ] verify clipboard/file import/export disclosures where applicable;
+- [ ] verify no analytics/ads/account/cloud claims are accidentally introduced;
+- [ ] verify all required policy/contact/support fields;
+- [ ] confirm no credentials, certificates, private keys, keystores, tokens, or provisioning secrets are committed.
+
+Record evidence under `distribution-metadata`.
+
+## 15. Open repository/toolchain blockers
+
+- [ ] **Issue #10:** only change the accepted Android AGP baseline after a controlled release-build experiment proves the previously reproduced lint/toolchain failure is resolved or after an intentional independently justified JDK/toolchain migration.
+- [ ] **Issue #12:** enable actual GitHub branch protection/ruleset for `main` and the intended required checks in repository settings. CODEOWNERS/CI YAML alone do not satisfy this item.
+
+Do not close either issue merely through documentation edits.
+
+## 16. Final stable-promotion sequence
+
+Only after the exact Version 2.0.12 candidate has passed the required automated and manual work:
+
+- [ ] all 13 canonical manual records are `passed` with genuine evidence;
+- [ ] every passed record has an explicit-timezone ISO-8601 timestamp;
+- [ ] no release-blocking defect remains;
+- [ ] latest complete CI/native evidence is recorded against the exact release commit;
+- [ ] `CHANGELOG.md` is moved from Unreleased into `## [2.0.12]` only when stable metadata is intentionally finalized;
+- [ ] README/docs/release notes/privacy/store metadata are final;
+- [ ] `ROADMAP.md` and `what_changed.md` reflect the exact release state;
+- [ ] `dart run tool/release_readiness.dart --stable --json` exits `0`;
+- [ ] final signed/distribution artifacts are generated from that same commit;
+- [ ] final artifacts are manually inspected;
+- [ ] tag/publish only the exact qualified commit.
+
+## Evidence discipline
+
+Never check a manual item merely because:
+
+- a widget/unit test exists;
+- hosted compilation succeeded;
+- a synthetic fixture says `passed`;
+- a package checksum exists;
+- a simulator/emulator partially resembles a physical-target check;
+- documentation describes the intended behavior.
+
+Evidence must describe the work actually performed on the representative environment. This is why Version 2.0.12 currently remains **0/13** manually qualified even though substantial automated/source hardening exists.
