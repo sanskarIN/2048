@@ -44,7 +44,7 @@ The source of truth for manual qualification state is:
 docs/release_qualification.json
 ```
 
-To reduce hand-editing mistakes, maintainers may use `dart run tool/record_release_qualification.dart --list` and the guarded mutation commands documented in [`QUALIFICATION_RECORDER.md`](QUALIFICATION_RECORDER.md). The recorder does not perform or infer any real-world check; it only validates and records evidence explicitly supplied by the maintainer.
+To inspect the current state without mutation, run `dart run tool/release_qualification_status.dart --pending-only` (or add `--json`) as documented in [`QUALIFICATION_STATUS.md`](QUALIFICATION_STATUS.md). To reduce hand-editing mistakes when evidence is genuinely available, maintainers may use `dart run tool/record_release_qualification.dart --list` and the guarded mutation commands documented in [`QUALIFICATION_RECORDER.md`](QUALIFICATION_RECORDER.md). Neither tool performs or infers a real-world check: the reporter is read-only, and the recorder only validates and stores evidence explicitly supplied by the maintainer.
 
 The current schema version is `1`. Each entry has:
 
@@ -114,11 +114,13 @@ dart format --output=none --set-exit-if-changed lib test tool
 flutter analyze
 flutter test --coverage
 dart run tool/release_readiness.dart --json
+dart run tool/release_qualification_status.dart --json --pending-only
+dart run tool/repository_audit.dart --json
 dart run tool/solver_benchmark.dart 8
 flutter build web --release
 ```
 
-The CI gate intentionally runs candidate mode, not `--stable`, while the project is still on the `1.5.x` release-candidate line.
+The CI gate intentionally runs candidate mode, not `--stable`, while the project is still on the `1.5.x` release-candidate line. The qualification status command is also intentionally read-only and non-strict in normal CI: it validates the canonical evidence manifest and prints unfinished checks, while the separate stable readiness command retains fail-closed promotion behavior.
 
 ## Stable-release sequence
 
@@ -139,13 +141,14 @@ A stable tag should never be used as a substitute for the evidence above.
 
 ## Automated gate regression fixtures
 
-The release gate itself is regression-tested through `test/release_readiness_cli_test.dart` and the focused timestamp fixture in `test/release_evidence_timestamp_test.dart`. The maintenance CLI accepts `--root=<path>` so tests can construct isolated temporary repository fixtures without mutating the real checkout:
+The release gate itself is regression-tested through `test/release_readiness_cli_test.dart` and the focused timestamp fixture in `test/release_evidence_timestamp_test.dart`. The read-only qualification reporter is regression-tested independently through `test/release_qualification_status_cli_test.dart`. Both maintenance CLIs accept `--root=<path>` so tests can construct isolated temporary repository fixtures without mutating the real checkout:
 
 ```bash
 dart run tool/release_readiness.dart --root=<fixture-path> --json
+dart run tool/release_qualification_status.dart --root=<fixture-path> --json
 ```
 
-The fixture option exists for testability only. It does not turn synthetic metadata into real release evidence. The suite exercises candidate success, complete stable success with explicit-offset timestamps, stable refusal with pending evidence, package/manifest candidate mismatch, false `passed` entries without evidence/timestamps, rejection of ambiguous timezone-less passed evidence, and missing required qualification IDs. See [`RELEASE_GATE_TESTING.md`](RELEASE_GATE_TESTING.md).
+The fixture option exists for testability only. It does not turn synthetic metadata into real release evidence. The release-readiness suite exercises candidate success, complete stable success with explicit-offset timestamps, stable refusal with pending evidence, package/manifest candidate mismatch, false `passed` entries without evidence/timestamps, rejection of ambiguous timezone-less passed evidence, and missing required qualification IDs. The status-reporter suite additionally exercises aggregate summaries, pending-only filtering, blocked states, canonical ID enforcement, evidence/timestamp validation, malformed arguments, and its distinct intentional incomplete-state exit code. See [`RELEASE_GATE_TESTING.md`](RELEASE_GATE_TESTING.md) and [`QUALIFICATION_STATUS.md`](QUALIFICATION_STATUS.md).
 
 Historical automated evidence remains recorded in [`VERIFICATION.md`](VERIFICATION.md), the phase verification documents, and `what_changed.md`. The live Version 1.5 candidate still reports **0/13** real-world qualification items complete, so strict stable mode correctly remains closed.
 
