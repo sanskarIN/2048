@@ -14,10 +14,10 @@ Historical continuity is preserved in:
 
 - **Current phase:** Phase 32 — Version 2.0.12 source-completion/release audit contract remains the canonical release phase protected by `tool/repository_audit.dart`.
 - **Completed maintenance stream:** Phase 33 — complete documentation, setup, command, terminology, file-coverage, and support-lifecycle hardening.
-- **Active maintenance stream:** Phase 34 — final Version 2.0.12 integration hardening after the Custom Game Builder was merged onto the later release line.
+- **Active maintenance stream:** Phase 34 — final Version 2.0.12 integration hardening after Custom Game Builder entered the later release line.
 - **Marketing version:** `2.0.12`.
 - **Flutter package/build version:** `2.0.12+2012`.
-- **Source scope:** feature-complete; Phase 34 fixes integration polish, documentation drift, and verification coverage without reopening a hidden Version 2.0.12 product backlog.
+- **Source scope:** feature-complete; Phase 34 fixes integration bugs, product polish, documentation drift, and verification coverage without reopening a hidden Version 2.0.12 feature backlog.
 - **PR:** `#25` (`final/v2.0.12-integration-hardening` → `main`).
 - **Manual evidence:** stable qualification boundary remains 0/13. No physical-device, assistive-technology, real browser/PWA lifecycle, external-handler, native-branding, signing/provisioning, or store evidence is invented by source/documentation work.
 - **Toolchain contract:** CI Flutter 3.47.0 stable; AGP 9.1.0; Kotlin Android 2.4.10; Gradle 9.7.0; Android Java/Kotlin target 17.
@@ -28,163 +28,124 @@ The `Current phase: Phase 32` line is intentionally retained because the reposit
 
 Date: **2026-08-19**
 
-## Why this final pass was necessary
+## Starting live source
 
-Live `main` was inspected instead of relying on the previous checkpoint alone.
+The final pass inspected the live repository rather than assuming the older checkpoint was still current.
 
-The current main head at the start of this work was:
+`main` started this pass at:
 
 ```text
 f81076e614b5802af4024588047dd0ba11ce4ce6
 ```
 
-That commit had integrated the Custom Game Builder after the earlier Version 2.0.12 source-completion/documentation checkpoint.
+That commit had squash-merged Custom Game Builder after the earlier Version 2.0.12 source-completion/documentation checkpoint.
 
-The Custom Game Builder feature PR had passed formatter, analyzer, 285 tests, Web build, repository/release gates, and the configured native matrix, but the successful CI log showed its base candidate was still:
+The feature's earlier successful CI log identified its candidate as:
 
 ```text
 1.5.0+15
 ```
 
-Therefore that run remains historical feature evidence. It cannot truthfully be relabeled as same-commit Version `2.0.12+2012` verification after integration into the newer main line.
+That older run remains useful historical feature evidence but cannot be relabeled as same-commit Version `2.0.12+2012` verification after later integration.
 
-## Final product polish completed
+## Product work completed
 
-### Saved custom-preset editing
+### Edit saved custom presets
 
-The Custom Game Builder now supports **Edit preset**.
+Custom Game Builder now supports **Edit preset**. Loading a preset restores its name, style, board size, target, style-specific limit, and deterministic seed.
 
-Editing reloads the complete saved configuration into the form:
+**Save changes** safely replaces the original preset. Renaming is supported, but an edit is rejected if the requested name belongs case-insensitively to a different saved preset.
 
-- name;
-- style;
-- board size;
-- target;
-- style-specific time/move limit;
-- deterministic seed.
+### Duplicate saved custom presets
 
-**Save changes** replaces the original preset, including safe rename behavior.
+**Duplicate preset** loads a full copy into the form with a bounded case-insensitively unique name such as `My Mode copy` / `My Mode copy 2`.
 
-If an edited preset is renamed to a case-insensitive name already used by a different preset, the update is rejected instead of overwriting the other preset.
+The generated name respects the 40-character domain limit. Duplication deliberately does not mutate storage until the player explicitly chooses **Save preset**.
 
-### Saved custom-preset duplication
+### Cancel edit
 
-The builder now supports **Duplicate preset**.
+**Cancel edit** leaves the stored preset unchanged and restores the default creation form.
 
-Duplication:
+### Responsive action menu
 
-- copies the full configuration;
-- creates a bounded case-insensitively unique name such as `My Mode copy`;
-- respects the 40-character preset-name limit;
-- loads the duplicate into the form;
-- does not mutate persistent storage until the player explicitly chooses **Save preset**.
+Saved-preset Edit/Duplicate/Delete actions use a compact popup menu instead of a wide trailing icon row. Tapping the preset card itself still starts that preset through the existing replacement guard.
 
-This keeps duplication reviewable and prevents accidental one-tap storage changes.
+This provides more space for long names/summaries under narrow layouts and increased text scaling.
 
-### Cancel editing
+### English/Hindi behavior
 
-**Cancel edit** leaves persistent preset data unchanged and restores the default creation form.
+New action labels, editing helper text, rename-collision feedback, duplicate feedback, update confirmation, and cancel-edit feedback are available in English and Hindi.
 
-### Responsive saved-preset actions
+## Final code bug found and fixed during self-review
 
-The previous trailing row of separate saved-preset action icons was replaced by a compact popup menu for:
+A second integration bug was found after the initial Edit/Duplicate implementation.
 
-- Edit preset;
-- Duplicate preset;
-- Delete preset.
+`DropdownButtonFormField.initialValue` initializes a FormField but does not automatically reset that FormField's internal selected value merely because the owning state variable changes later. Therefore loading a saved preset could update `_style`, `_size`, `_target`, `_timeLimit`, and `_moveLimit` while a selector still visually displayed its older initial choice.
 
-Tapping the preset card itself still starts that preset through the existing replacement guard.
+The builder now gives those selectors value-dependent keys:
 
-The menu provides more room for preset title/summary content on narrow and large-text layouts.
+```text
+custom-style-<style>
+custom-size-<size>
+custom-target-<target>
+custom-time-<seconds>
+custom-move-<moves>
+```
 
-### English/Hindi polish
+When Edit, Duplicate, or Cancel changes the loaded configuration, the affected FormField is recreated with the correct current value.
 
-The new action names, edit-state helpers, collision feedback, duplicate feedback, update confirmation, and cancel-edit feedback are available in English/Hindi using the builder's existing localization pattern.
+Regression tests now assert the visible selector keys after:
 
-## Regression coverage added
+- editing a Timed 5×5 / target 4096 / 90-second preset;
+- duplicating a Move Limit 6×6 / target 8192 / 500-move preset;
+- cancelling back to the default Target 4×4 / target 2048 form.
 
-`test/custom_game_builder_screen_test.dart` now protects:
+This protects actual UI state instead of only checking the eventually saved model.
 
-- edit and rename;
-- preservation of edited style/size/target/limit/seed;
-- name-collision rejection;
-- duplicate as an unsaved copy;
-- duplicated configuration preservation;
-- cancel-edit behavior;
-- confirmed deletion through the action menu;
-- narrow `320×640` test layout;
-- `TextScaler.linear(2)` increased-text regression coverage;
-- Hindi saved-preset action labels;
-- existing save/play/invalid-seed behavior.
+## Existing trust boundaries preserved
 
-`test/support/localized_test_app.dart` now accepts an optional `TextScaler` so accessibility/responsive widget tests can exercise increased text scaling without duplicating localization app setup.
+The final custom-preset work does not create a parallel engine or weaken existing policy:
 
-## Trust boundaries preserved
+- Custom Game Builder maps validated presets to existing deterministic `GameConfig`/`GameEngine` behavior.
+- No `GameMode.custom` migration is introduced.
+- Custom-session identity survives save/resume, application restart, and in-game restart.
+- Custom sessions cannot overwrite built-in per-mode best-score/highest-tile records.
+- Imported Game Backup remains a separate unranked trust class.
+- Replay import remains spectator-only.
+- Auto Play remains isolated from player records.
+- Opening the builder does not replace a recoverable game.
+- Invalid builder input is rejected before replacement.
+- Full-data reset removes custom preset/session keys.
+- The current `NOVA1` protocol does not encode custom origin, so unsafe custom-preset sharing is not exposed as if it preserved the record boundary.
 
-The final custom-preset polish does not change the established trust model:
+## Documentation corrected and completed
 
-- custom games reuse existing deterministic `GameConfig`/`GameEngine` behavior;
-- no new `GameMode.custom` migration is introduced;
-- custom-session identity persists across save/resume/app restart;
-- in-game restart preserves custom identity;
-- custom games can participate in normal trusted lifetime gameplay progress where existing policy permits;
-- custom games cannot overwrite built-in per-mode best-score/highest-tile records;
-- imported Game Backup remains a separate unranked trust class;
-- replay import remains spectator-only;
-- Auto Play remains isolated from player records;
-- opening the builder does not replace a recoverable game;
-- invalid builder input is rejected before replacement;
-- full-data reset removes custom preset/session keys.
+The integrated source still contained stale current-state wording:
 
-## Documentation drift fixed
+- `docs/CUSTOM_GAME_BUILDER.md` described a Version 1.6 feature branch;
+- `docs/VERSION_1_6_ROADMAP.md` said Version 1.5 remained the current release-candidate line;
+- `docs/USER_GUIDE.md` still contained an obsolete “stable 1.0.0” manual-qualification phrase.
 
-Two integrated files still described the feature as if it were outside the current release:
+Phase 34 corrected those contradictions and integrated Custom Game Builder into current Version 2.0.12 documentation.
 
-- `docs/CUSTOM_GAME_BUILDER.md` said it was Version 1.6 feature-branch documentation;
-- `docs/VERSION_1_6_ROADMAP.md` said Version 1.5 remained the current candidate.
-
-Those statements were stale after integration onto the Version 2.0.12 main line.
-
-The final pass:
-
-- rewrote `docs/CUSTOM_GAME_BUILDER.md` for the current Version `2.0.12+2012` implementation;
-- converted `docs/VERSION_1_6_ROADMAP.md` into an explicit historical record;
-- documented edit/duplicate/cancel/collision behavior;
-- documented responsive/large-text regression coverage;
-- preserved the custom-session/per-mode-record trust policy;
-- preserved the deliberate Custom Challenge Code origin boundary.
-
-## Final documentation expansion
-
-Added:
+Added/expanded:
 
 - `docs/FINAL_2_0_12_INTEGRATION_AUDIT.md` — final same-commit integration/evidence boundary;
 - `docs/ARCHITECTURE_WALKTHROUGH.md` — startup/gameplay/persistence/custom/replay/backup/solver/platform/release flow;
 - `docs/ERROR_REFERENCE.md` — actionable source/build/platform/trust diagnosis reference;
-- `docs/NEW_CONTRIBUTOR_TUTORIAL.md` — new-workstation-to-safe-PR contribution workflow;
-- `docs/DOCUMENTATION_AUDIT_CHECKLIST.md` — complete source/docs/release/manual-evidence audit checklist;
-- `docs/setup/LINUX_NATIVE_TOOLCHAIN.md` — native Linux compiler/CMake/Ninja/pkg-config/GTK/build/package/diagnosis handbook.
+- `docs/NEW_CONTRIBUTOR_TUTORIAL.md` — new-workstation-to-safe-PR workflow;
+- `docs/DOCUMENTATION_AUDIT_CHECKLIST.md` — source/docs/release/manual-evidence audit checklist;
+- `docs/setup/LINUX_NATIVE_TOOLCHAIN.md` — Clang/CMake/Ninja/pkg-config/GTK/native bundle/diagnosis handbook;
+- `docs/setup/README.md` — Linux-native/contributor/diagnosis navigation;
+- `docs/README.md` — canonical index/source map for all final guides and Custom Game Builder;
+- `docs/USER_GUIDE.md` — complete custom create/play/save/edit/duplicate/cancel/delete/trust/player workflow;
+- `docs/FEATURE_REFERENCE.md` — Custom Game Builder integrated into the consolidated product surface;
+- `CHANGELOG.md` — final integration fixes/evidence boundary;
+- `test/documentation_completeness_test.dart` — regression guards for current documentation/navigation/continuity.
 
-These topics originated as useful unfinished Phase 33 documentation work, but they were recreated on the current integration branch rather than merging an obsolete/conflicting documentation branch onto newer source.
+Phase 33 continuity was preserved verbatim in `what_changed_archive_phase_33.md` before the active file rotated to Phase 34.
 
-## Documentation regression protection
-
-`test/documentation_completeness_test.dart` now requires and validates the new final documentation.
-
-The new checks protect:
-
-- current Custom Game Builder Version 2.0.12 wording;
-- absence of obsolete current Version 1.5/Version 1.6 feature-branch declarations;
-- edit/duplicate/cancel/collision/trust documentation;
-- historical labeling of the former Version 1.6 roadmap;
-- final integration audit and same-commit evidence rule;
-- architecture trust boundaries;
-- contributor Conventional Commit/safe-change rules;
-- error diagnostics;
-- Linux native commands/bundle guidance;
-- documentation audit coverage.
-
-## Phase 34 commits before final CI correction
+## Phase 34 commit sequence
 
 ```text
 519b6ad8  feat: add custom preset edit and duplicate workflows
@@ -200,27 +161,24 @@ c721c8f2  docs: add current architecture walkthrough
 311e0ed2  docs: record final Version 2.0.12 integration audit
 258d26ea  test: protect final integration documentation
 9bebaa22  docs: archive completed Phase 33 continuity
+0dbac3ba  docs: activate final integration continuity
+167134ab  fix: refresh custom preset selectors when loading forms
+bf0ea7ca  test: verify loaded custom preset selector state
+b41fbce5  docs: link the Linux native toolchain handbook
+fc563698  docs: integrate final guides into the canonical index
+b6b1e24e  docs: add the complete custom game player workflow
+fe4550a3  docs: integrate custom games into the feature reference
+441de059  docs: record final integration fixes in the changelog
+bf444910  test: protect final documentation navigation and continuity
 ```
 
-This active continuity rotation is intentionally a separate commit so Phase 33 preservation and Phase 34 activation remain reviewable independently.
+This continuity refresh is another separate reviewable commit rather than rewriting an older implementation/test/docs commit.
 
-## PR and verification boundary
+## Automated verification boundary
 
-PR #25 was opened from:
+PR #25 is the integration branch that must supply current same-commit evidence.
 
-```text
-final/v2.0.12-integration-hardening
-```
-
-to:
-
-```text
-main
-```
-
-The exact PR head must pass the repository-maintained automated checks before merge.
-
-Expected automated coverage includes:
+The maintained quality path includes:
 
 ```bash
 flutter pub get
@@ -235,30 +193,28 @@ dart run tool/solver_benchmark.dart 8
 flutter build web --release
 ```
 
-The pull-request workflow must also provide the configured Dependency Review and native Platform Builds evidence for Android APK/AAB, Linux, Windows, macOS, and unsigned iOS where triggered.
+Pull-request verification should also include Dependency Review and the configured Platform Builds matrix for Android APK/AAB, Linux, Windows, macOS, and unsigned iOS.
 
-No success is claimed in this record until GitHub reports it for the exact current head.
+At the time this continuity record was refreshed, the GitHub commit-to-workflow/status surfaces had not returned a current run for the moving PR head. Therefore no formatter/analyzer/test/Web/dependency/native success is claimed merely from these commits. The final exact head must be observed before merge/promotion.
 
 ## Manual stable-release boundary
 
-Phase 34 does not alter the real-world release manifest.
+Phase 34 does not alter the canonical real-world evidence manifest.
 
-The stable qualification boundary remains 0/13 until genuine representative checks are completed and recorded. Source changes, documentation expansion, commit count, hosted tests, or hosted native compilation cannot be substituted for those manual results.
+The stable qualification boundary remains 0/13 until genuine representative checks are completed and recorded. Source changes, documentation expansion, commit count, widget tests, or hosted compilation cannot substitute for those manual observations.
 
 ## Final scope rule
 
-Version 2.0.12 remains source-feature-complete after this pass.
-
-The following are deliberately **not** treated as hidden missing work:
+Version 2.0.12 remains feature-complete after this pass. The following are deliberate non-goals rather than missing implementation:
 
 - cloud accounts/saves;
 - analytics/ads;
 - online leaderboards/multiplayer;
 - remote AI;
 - in-app QR scanning/camera permission;
-- unsafe custom-preset Challenge Code sharing without origin semantics;
+- custom-preset Challenge Code sharing that loses custom-origin semantics;
 - a custom leaderboard/statistics schema without a comparability/migration design;
 - extra languages beyond English/Hindi;
 - additional solver families without a deliberately scoped future release.
 
-Future changes should be reproducible fixes, security/accessibility/localization corrections, dependency/toolchain/platform maintenance, genuine qualification evidence, documentation maintenance, or intentionally scoped future-release functionality.
+Future work belongs to reproducible bug/security/accessibility/localization fixes, dependency/toolchain/platform/CI maintenance, genuine manual qualification evidence, documentation maintenance, or a deliberately scoped future release.
