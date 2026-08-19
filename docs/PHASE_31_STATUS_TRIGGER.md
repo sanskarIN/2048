@@ -2,4 +2,4 @@
 
 Temporary source-controlled trigger for the self-removing Phase 31 documentation synchronization workflow.
 
-Retry after the finalizer workflow was made rebase-safe.
+Final retry after Phase 31 continuity, audit, regression, and documentation source changes were committed.
