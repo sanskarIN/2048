@@ -114,6 +114,7 @@ void main() {
 
     await choosePresetAction(tester, 'Edit preset');
 
+    expect(find.byType(TextField).first.hitTestable(), findsOneWidget);
     final nameField = tester.widget<TextField>(find.byType(TextField).first);
     final seedField = tester.widget<TextField>(find.byType(TextField).at(1));
     expect(nameField.controller!.text, 'Edit Me');
@@ -172,7 +173,10 @@ void main() {
     expect(find.text('A preset with this name already exists.'), findsOneWidget);
     final restored = await store.load();
     expect(restored, hasLength(2));
-    expect(restored.map((preset) => preset.name), containsAll(['First', 'Second']));
+    expect(
+      restored.map((preset) => preset.name),
+      containsAll(['First', 'Second']),
+    );
   });
 
   testWidgets('duplicates a preset into a unique unsaved copy before saving', (
@@ -193,6 +197,7 @@ void main() {
 
     await choosePresetAction(tester, 'Duplicate preset');
 
+    expect(find.byType(TextField).first.hitTestable(), findsOneWidget);
     final nameField = tester.widget<TextField>(find.byType(TextField).first);
     final seedField = tester.widget<TextField>(find.byType(TextField).at(1));
     expect(nameField.controller!.text, 'Copy Me copy');
