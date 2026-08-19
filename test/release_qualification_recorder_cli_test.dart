@@ -50,8 +50,8 @@ void main() {
     await manifestFile.writeAsString(
       '${const JsonEncoder.withIndent('  ').convert(<String, Object?>{
         'schemaVersion': 1,
-        'candidate': '1.5.0+15',
-        'manualChecks': _requiredCheckIds.map((id) => <String, Object?>{'id': id, 'title': 'Qualification for $id', 'status': androidPassed && id == 'android-device' ? 'passed' : 'pending', 'evidence': androidPassed && id == 'android-device' ? 'Old verified evidence' : '', 'updatedAt': androidPassed && id == 'android-device' ? '2026-08-16T07:00:00Z' : null}).toList(growable: false),
+        'candidate': '2.0.12+2012',
+        'manualChecks': _requiredCheckIds.map((id) => <String, Object?>{'id': id, 'title': 'Qualification for $id', 'status': androidPassed && id == 'android-device' ? 'passed' : 'pending', 'evidence': androidPassed && id == 'android-device' ? 'Old verified evidence' : '', 'updatedAt': androidPassed && id == 'android-device' ? '2026-08-19T01:30:00Z' : null}).toList(growable: false),
       })}\n',
     );
     return root;
@@ -108,7 +108,7 @@ void main() {
         '--id=android-device',
         '--status=passed',
         '--evidence=Pixel test passed lifecycle and save resume checks',
-        '--updated-at=2026-08-18T15:30:00+05:30',
+        '--updated-at=2026-08-19T07:30:00+05:30',
       ]);
 
       expect(result.exitCode, 0, reason: result.stderr.toString());
@@ -118,7 +118,7 @@ void main() {
         check['evidence'],
         'Pixel test passed lifecycle and save resume checks',
       );
-      expect(check['updatedAt'], '2026-08-18T10:00:00.000Z');
+      expect(check['updatedAt'], '2026-08-19T02:00:00.000Z');
     },
   );
 
@@ -145,7 +145,7 @@ void main() {
       '--id=android-device',
       '--status=passed',
       '--evidence=Real device evidence',
-      '--updated-at=2026-08-18T15:30:00',
+      '--updated-at=2026-08-19T07:30:00',
     ]);
 
     expect(result.exitCode, isNot(0));
@@ -194,7 +194,7 @@ void main() {
       '--id=android-device',
       '--status=blocked',
       '--evidence=Waiting for physical device access',
-      '--updated-at=2026-08-18T10:00:00Z',
+      '--updated-at=2026-08-19T02:00:00Z',
       '--dry-run',
     ]);
 
