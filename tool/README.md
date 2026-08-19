@@ -2,13 +2,21 @@
 
 The `tool/` directory contains deterministic, repository-owned command-line utilities used for solver benchmarking and release maintenance. These tools are intended to be run from the repository root with the Dart SDK supplied by the supported Flutter toolchain.
 
+The current release contract is:
+
+```text
+Marketing version: 2.0.12
+Flutter package/build version: 2.0.12+2012
+Manual qualification: 0/13 passed
+```
+
 ## Repository integrity audit
 
 ```bash
 dart run tool/repository_audit.dart --json
 ```
 
-Checks required project/open-source/release/workflow files, package/runtime/qualification version consistency, known temporary maintenance leftovers, and repository-local Markdown destinations. See [`../docs/REPOSITORY_AUDIT.md`](../docs/REPOSITORY_AUDIT.md).
+Checks required project/open-source/release/workflow files, exact Phase 32 package/runtime/Windows/qualification version consistency, PWA metadata, continuity archives, known temporary maintenance leftovers, and repository-local Markdown destinations. See [`../docs/REPOSITORY_AUDIT.md`](../docs/REPOSITORY_AUDIT.md).
 
 ## Release readiness gate
 
@@ -24,7 +32,7 @@ Strict stable mode:
 dart run tool/release_readiness.dart --stable --json
 ```
 
-The stable form must remain fail-closed until all 13 genuine real-world qualification records and final stable metadata are complete. See [`../docs/RELEASE_QUALIFICATION.md`](../docs/RELEASE_QUALIFICATION.md).
+The candidate gate targets Version `2.0.12` and accepts its numeric Flutter build suffix. The stable form must remain fail-closed until all 13 genuine real-world qualification records and final Version 2.0.12 metadata are complete. See [`../docs/RELEASE_QUALIFICATION.md`](../docs/RELEASE_QUALIFICATION.md) and [`../docs/PHASE_32_VERSION_2_0_12.md`](../docs/PHASE_32_VERSION_2_0_12.md).
 
 ## Qualification status reporter
 
@@ -73,6 +81,7 @@ The benchmark compares the isolated Auto Play strategies without touching player
 Before cutting a release-verification branch, run or require the maintained CI equivalent of this sequence:
 
 ```bash
+flutter pub get
 dart format --output=none --set-exit-if-changed lib test tool
 flutter analyze
 flutter test --coverage
@@ -83,8 +92,23 @@ dart run tool/solver_benchmark.dart 8
 flutter build web --release
 ```
 
-For changes touching Android release configuration, also require the native matrix to build both the release APK and AAB on the maintained JDK/AGP/Kotlin/Gradle baseline. A production-signed artifact still requires the private local signing inputs and real-device/store qualification documented in the build guides.
+For changes touching Android release configuration, also require the native matrix to build the release APK and intended store artifact on the maintained JDK/AGP/Kotlin/Gradle baseline. A production-signed artifact still requires the private local signing inputs and real-device/store qualification documented in the build guides.
+
+## Version-change rule
+
+A future version bump must not update only `pubspec.yaml`. Coordinate at least:
+
+- `pubspec.yaml` package/build version;
+- `ProjectInfo.version` marketing version;
+- platform fallback metadata where applicable;
+- `docs/release_qualification.json` candidate;
+- `tool/release_readiness.dart` current release target;
+- `tool/repository_audit.dart` exact current version contract;
+- release-gate/audit/current-state fixtures;
+- README, roadmap, security/release documentation, and continuity records.
+
+This prevents a partially migrated release line from passing by accident.
 
 ## Maintenance rule
 
-These utilities are part of the source-controlled release contract. Changes to them must remain formatter-clean, analyzer-clean, regression-tested where applicable, documented, and compatible with the permanent CI workflow. Tool output is automated evidence only; it must never be misrepresented as physical-device, assistive-technology, signing, provisioning, external-handler, or store-distribution qualification.
+These utilities are part of the source-controlled release contract. Changes to them must remain formatter-clean, analyzer-clean, regression-tested where applicable, documented, and compatible with the permanent CI workflow. Tool output is automated evidence only; it must never be misrepresented as physical-device, assistive-technology, signing, provisioning, external-handler, PWA/browser, or store-distribution qualification.
