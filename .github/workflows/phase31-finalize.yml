@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/phase31-finalize.yml'
+      - 'docs/PHASE_31_STATUS_TRIGGER.md'
   workflow_dispatch:
 
 permissions:
@@ -38,7 +38,7 @@ jobs:
           grep -Fq 'Read-only Version 1.5 qualification status reporter' CHANGELOG.md
 
       - name: Remove one-shot finalizer
-        run: rm -f tool/phase31_finalize.py .github/workflows/phase31-finalize.yml
+        run: rm -f tool/phase31_finalize.py .github/workflows/phase31-finalize.yml docs/PHASE_31_STATUS_TRIGGER.md
 
       - name: Commit synchronized documentation
         shell: bash
@@ -46,7 +46,7 @@ jobs:
           set -euo pipefail
           git config user.name 'sanskarIN'
           git config user.email 'sanskarin@outlook.in'
-          git add CHANGELOG.md docs/README.md docs/RELEASE_QUALIFICATION.md what_changed.md tool/phase31_finalize.py .github/workflows/phase31-finalize.yml
+          git add CHANGELOG.md docs/README.md docs/RELEASE_QUALIFICATION.md what_changed.md tool/phase31_finalize.py .github/workflows/phase31-finalize.yml docs/PHASE_31_STATUS_TRIGGER.md
           if git diff --cached --quiet; then
             echo 'No Phase 31 documentation changes were required.'
             exit 0
