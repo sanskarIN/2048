@@ -1,211 +1,439 @@
-# 2048 Nova — Final Active Continuity
+# 2048 Nova — Active Continuity
 
-This is the active Version 2.0.12 source/release continuity record. Detailed historical development is preserved in:
+This is the active Version 2.0.12 maintenance record.
 
-- [`what_changed_archive_phase_00_30.md`](what_changed_archive_phase_00_30.md) — Phases 0–30.
-- [`what_changed_archive_phase_31.md`](what_changed_archive_phase_31.md) — complete Phase 31 qualification-status and Web/PWA hardening record.
-- [`CHANGELOG_ARCHIVE_PRE_2_0_12.md`](CHANGELOG_ARCHIVE_PRE_2_0_12.md) — verbatim pre-2.0.12 active changelog history.
+Historical continuity is preserved in:
+
+- [`what_changed_archive_phase_00_30.md`](what_changed_archive_phase_00_30.md) — Phases 0–30;
+- [`what_changed_archive_phase_31.md`](what_changed_archive_phase_31.md) — Phase 31;
+- [`what_changed_archive_phase_32.md`](what_changed_archive_phase_32.md) — Version 2.0.12 migration/source-completion Phase 32;
+- [`CHANGELOG_ARCHIVE_PRE_2_0_12.md`](CHANGELOG_ARCHIVE_PRE_2_0_12.md) — pre-2.0.12 changelog history.
 
 ## Current repository state
 
-- **Current phase:** Phase 32 — Version 2.0.12 migration and final source completion.
+- **Current phase:** Phase 33 — complete documentation, setup, command, terminology, and support-lifecycle hardening.
 - **Marketing version:** `2.0.12`.
 - **Flutter package/build version:** `2.0.12+2012`.
-- **Source status:** feature-complete for the declared offline-first puzzle-game scope; no active Version 2.0.12 feature backlog remains.
-- **Repository:** `https://github.com/sanskarIN/2048`.
+- **Source scope:** feature-complete; Phase 33 does not reopen the completed product-feature backlog.
 - **Branch:** `main`.
-- **Manual evidence:** the stable qualification boundary remains 0/13; no physical-device, assistive-technology, real browser/PWA lifecycle, external-handler, native-branding, signing/provisioning, or store evidence has been fabricated.
-- **Historical automated baseline:** Version 1.5 CI run `32018055661` with **235/235 tests** and **106 Dart files formatter-clean**; native matrix run `32015893841`. These remain historical evidence until a complete maintained Version 2.0.12 verification result is actually observed and recorded.
-- **Repository governance:** issue #10 is closed as not planned for the 2.0.12 source scope; issue #12 remains open because `main` branch protection is an external GitHub repository setting and is still not enabled.
+- **Manual evidence:** stable qualification boundary remains 0/13. No physical-device, assistive-technology, real browser/PWA lifecycle, external-handler, native-branding, signing/provisioning, or store evidence is being invented by documentation work.
+- **Toolchain contract:** CI Flutter 3.47.0 stable; AGP 9.1.0; Kotlin Android 2.4.10; Gradle 9.7.0; Android Java/Kotlin target 17.
 
-The exact phrase `stable qualification boundary remains 0/13` is retained as a regression/audit contract while the live manifest remains pending.
-
-# Phase 32 — Version 2.0.12 finalization
+# Phase 33 — Complete documentation and toolchain lifecycle hardening
 
 Date: **2026-08-19**
 
-## Version and release contract
+## Goal
 
-Version surfaces are synchronized:
+Make the project documentation usable from beginner installation through advanced maintenance without requiring readers to copy unknown commands or guess technical terms.
+
+The phase specifically adds:
+
+- complete installation/prerequisite guidance;
+- host-specific Windows, macOS/iOS, and Linux setup;
+- deep Android Studio/SDK/JDK/Gradle/AGP/Kotlin/ADB/emulator/APK/AAB/signing guidance;
+- explicit instructions for unsupported/end-of-life tools;
+- explanations of command/subcommand/argument/flag meanings;
+- a technical/gameplay/testing/security/build glossary;
+- a no-skip repository file atlas;
+- a consolidated implemented-feature reference;
+- regression protection for the new documentation;
+- correction of stale current-version data in the executable handbook.
+
+## Live-source audit before writing
+
+The documentation phase was based on the live repository rather than old assumptions.
+
+Confirmed current source values:
 
 ```text
 pubspec package/build: 2.0.12+2012
-ProjectInfo marketing: 2.0.12
-Windows numeric fallback: 2,0,12,2012
-Windows string fallback: 2.0.12
-Qualification candidate: 2.0.12+2012
-Release-readiness target: 2.0.12
+Dart: >=3.9.0 <4.0.0
+Flutter floor: >=3.35.0
+CI Flutter: 3.47.0
+AGP: 9.1.0
+Kotlin Android: 2.4.10
+Gradle Wrapper: 9.7.0
+Android JVM target: 17
+applicationId: com.sanskarin.nova_2048
 ```
 
-The release gate rejects the historical release line and unrelated patch versions, requires candidate/package alignment, retains exactly 13 manual evidence IDs, and keeps strict stable promotion fail-closed.
+The phase also inspected the live `lib/`, `lib/domain/`, `lib/app/`, `lib/data/`, `lib/features/`, `test/`, `tool/`, `docs/build/`, CI, and Android configuration trees so documentation responsibilities are grounded in current files.
 
-## Hidden migration drift fixed
+## Documentation defect found and fixed
 
-The final migration audit corrected old current-state assumptions in release-readiness fixtures, release-evidence timestamp fixtures, qualification status/recorder fixtures, repository-integrity assertions, security version text, release documentation, dependency/tooling documentation, current-release regression tests, Windows resource metadata, and repository-audit fixtures.
+`docs/BUILDING_EXECUTABLES.md` still contained old current-state `1.5.0+15` package/build examples despite the live source being `2.0.12+2012`.
 
-This prevents a simple version bump from passing while hidden source/tests/docs still describe an older release line.
+That handbook was rebuilt rather than leaving a partial correction. It now describes the actual Version 2.0.12 source contract and current platform/toolchain boundaries.
 
-## Source feature completion
+This matters because release-facing documentation must not disagree with `pubspec.yaml`.
 
-`ROADMAP.md` identifies Version 2.0.12 as a **feature-complete source target** and contains no active post-2.0.12 feature backlog.
+## Complete prerequisites guide
 
-The completed product scope includes deterministic gameplay/RNG, ten modes, save/resume, bounded Undo, Daily Challenge, statistics/achievements/per-mode records, Hint, isolated Heuristic/Expectimax Auto Play, Move Replay, Full Replay Archives, Game Backup, Challenge Codes + QR, English/Hindi localization, accessibility controls, themes/settings, Android/iOS/Web/Windows/macOS/Linux runners, and complete build/release/open-source tooling/documentation.
+Added [`docs/setup/PREREQUISITES.md`](docs/setup/PREREQUISITES.md).
 
-Former “later” ideas are explicit non-goals unless a future release deliberately adopts them. They are not unfinished Version 2.0.12 work.
+It explains:
 
-## Final self-protecting source-completion layer
+- Git;
+- Flutter SDK;
+- bundled Dart SDK;
+- terminal/shell choices;
+- VS Code and Flutter/Dart extensions;
+- Android Studio and Android SDK;
+- JDK 17 project baseline;
+- Gradle Wrapper versus global Gradle;
+- Visual Studio versus VS Code for Windows desktop;
+- Xcode/CocoaPods requirements;
+- Linux Clang/CMake/Ninja/pkg-config/GTK dependencies;
+- Web prerequisites;
+- package managers;
+- tools that are **not** required merely to build this Flutter project;
+- first environment-validation sequence.
 
-Permanent finalization assets include:
+## Windows installation and maintenance guide
 
-- [`docs/FINAL_2_0_12_SOURCE_AUDIT.md`](docs/FINAL_2_0_12_SOURCE_AUDIT.md);
-- [`docs/MAINTENANCE_POLICY.md`](docs/MAINTENANCE_POLICY.md);
-- [`docs/SOURCE_COMPLETION_AUDIT.md`](docs/SOURCE_COMPLETION_AUDIT.md);
-- `tool/source_completion_audit.dart`;
-- `test/source_completion_audit_cli_test.dart`.
+Added [`docs/setup/WINDOWS.md`](docs/setup/WINDOWS.md).
 
-The completion audit now fails closed on:
+It covers:
 
-- package/candidate drift;
-- missing final audit/maintenance/index/continuity/changelog assets;
-- removal of its own CLI, regression suite, documentation, maintainer-tool index, or permanent CI wiring;
-- restoration of an active optional-feature backlog;
-- stale current Version 1.5 declarations in current release-facing documents;
-- unresolved `TODO`/`FIXME` line comments in maintained Dart under `lib/`, `test/`, or `tool/`;
-- malformed/unknown CLI arguments.
+- supported Windows build targets;
+- recommended install order;
+- Git with WinGet and repository-local identity;
+- Flutter extraction/PATH placement and duplicate-SDK diagnosis;
+- stable channel/upgrade behavior;
+- VS Code extensions;
+- Android Studio/SDK/licenses;
+- JDK selection and `flutter config --jdk-dir`;
+- Gradle Wrapper use;
+- Visual Studio **Desktop development with C++** requirement;
+- project clone/validation/run/build procedures;
+- Android APK/AAB, Windows, and Web builds;
+- safe upgrades;
+- PATH troubleshooting;
+- clean build recovery.
 
-A follow-up correction tightened stale-version matching so prose explaining historical Version 1.5 checks cannot create a false completion failure.
+## macOS/iOS installation and maintenance guide
 
-Permanent CI runs both:
+Added [`docs/setup/MACOS.md`](docs/setup/MACOS.md).
+
+It covers:
+
+- Apple Command Line Tools;
+- Git;
+- Flutter PATH setup;
+- Xcode selection/first launch;
+- CocoaPods;
+- optional Android Studio and VS Code;
+- macOS builds;
+- iOS Simulator;
+- unsigned iOS release compilation;
+- signed IPA boundary;
+- Apple signing/provisioning secret safety;
+- Android/Web builds on macOS;
+- Flutter/Xcode/Android/CocoaPods upgrades;
+- common Xcode/CocoaPods/PATH recovery.
+
+## Linux installation and maintenance guide
+
+Added [`docs/setup/LINUX.md`](docs/setup/LINUX.md).
+
+It covers:
+
+- Git and Flutter setup;
+- Clang;
+- CMake;
+- Ninja;
+- pkg-config;
+- GTK development libraries;
+- Android SDK/JDK;
+- Gradle Wrapper;
+- optional VS Code;
+- Linux/Web/Android builds;
+- distribution package-manager differences;
+- native dependency diagnostics;
+- safe OS/tool upgrades.
+
+## Deep Android toolchain guide
+
+Added [`docs/setup/ANDROID.md`](docs/setup/ANDROID.md).
+
+It defines and explains:
+
+- Android Studio;
+- Android SDK and its package families;
+- SDK licenses;
+- ADB;
+- physical-device development authorization boundary;
+- Android Emulator and AVD;
+- JDK/JRE/JVM differences;
+- Gradle and Gradle Wrapper;
+- AGP;
+- Kotlin Android plugin;
+- `compileSdk`, `targetSdk`, `minSdk`;
+- NDK;
+- namespace/application ID;
+- debug/profile/release modes;
+- APK;
+- AAB;
+- distribution signing versus CI debug-signing qualification fallback;
+- `key.properties` and keystore secret rules;
+- `sdkmanager`;
+- Gradle deprecation inspection;
+- safe Android toolchain migration order;
+- first diagnostic sequence and common failures.
+
+## Unsupported/out-of-support upgrade lifecycle
+
+Added [`docs/setup/UPGRADING_AND_SUPPORT.md`](docs/setup/UPGRADING_AND_SUPPORT.md).
+
+The project now has one detailed answer for what to do when a tool becomes outdated, deprecated, insecure, unsupported, or EOL.
+
+It defines:
+
+- current/supported/EOL/deprecated/breaking change/pin/floor/compatibility matrix;
+- why “latest” is not automatically the correct compatibility set;
+- how to detect support status;
+- security versus routine versus major upgrade urgency;
+- why all toolchain layers should not be upgraded blindly at once;
+- clean branch-based migration workflow;
+- dependency/native build/CI/real-world validation expectations;
+- rollback strategy.
+
+It includes specific upgrade sections for:
+
+```text
+Flutter
+Dart
+Git
+Android Studio
+Android SDK
+JDK
+Gradle
+AGP
+Kotlin
+Xcode
+CocoaPods
+Visual Studio
+VS Code
+CMake
+Ninja
+operating systems
+Flutter package dependencies
+CI pins
+store/platform policy deadlines
+unsupported dependencies
+```
+
+## Command reference
+
+Added [`docs/COMMAND_REFERENCE.md`](docs/COMMAND_REFERENCE.md).
+
+This document explains instead of merely listing commands. It covers:
+
+- executable, command, subcommand, argument, option/flag;
+- shell notation;
+- navigation;
+- Git commands and identity;
+- Flutter/Dart diagnostic/channel/config/device commands;
+- Pub dependency commands;
+- formatting, analyzer, test, coverage, run, clean;
+- Android build modes, ABI splits, AAB, build-name/build-number;
+- Web/Windows/Linux/macOS/iOS/IPA builds;
+- repository-owned audit/release tools and their flags;
+- Gradle Wrapper/tasks/deprecation/upgrade syntax;
+- Android `sdkmanager`;
+- Java/JDK;
+- Xcode;
+- CocoaPods;
+- checksums;
+- WinGet;
+- Debian/Ubuntu package commands;
+- exit codes;
+- safe command-review workflow.
+
+## Glossary
+
+Added [`docs/GLOSSARY.md`](docs/GLOSSARY.md).
+
+It defines major terms used across the project, including:
+
+- AAB, APK, ABI, ADB, AGP, API/API level, artifact;
+- build/binary/bundle/checksum/CI/CLI/compiler;
+- Dart/Flutter/Gradle/JDK/JVM/Kotlin/Xcode/CocoaPods;
+- SDK/NDK/PWA/Wasm;
+- signing/provisioning/notarization;
+- dependencies/lockfile/supply chain;
+- Git concepts;
+- release/qualification/fail-closed/manual evidence;
+- privacy/security/trust boundaries;
+- deterministic RNG/seed;
+- board/move/merge/spawn/Undo/Hint/Auto Play/replay/Challenge Code;
+- documentation/current-versus-historical terminology.
+
+## No-skip repository file atlas
+
+Added [`docs/REPOSITORY_FILE_ATLAS.md`](docs/REPOSITORY_FILE_ATLAS.md).
+
+It explains root files and the responsibilities of:
+
+```text
+.github/
+lib/
+lib/app/
+lib/core/
+lib/data/
+lib/domain/
+lib/features/
+lib/shared/
+test/
+tool/
+assets/
+android/
+ios/
+web/
+windows/
+macos/
+linux/
+docs/
+docs/build/
+docs/setup/
+```
+
+The exact no-skip file inventory remains executable rather than hard-coded:
 
 ```bash
+git ls-files
+```
+
+The atlas explains why this is superior to a permanent manually maintained file count and gives commands for per-directory inventories, status checks, unfinished-marker review, repository/source audits, tests, and builds.
+
+## Setup index
+
+Added [`docs/setup/README.md`](docs/setup/README.md).
+
+It routes contributors by host and target, explains the first universal workflow, differentiates tools from dependencies, explains what Flutter Doctor does/does not prove, and directs unsupported tools to the lifecycle guide.
+
+## Executable handbook rebuilt
+
+`docs/BUILDING_EXECUTABLES.md` was replaced with a Version 2.0.12-current handbook that now covers:
+
+- source/toolchain baseline;
+- installation-document links;
+- host/target compatibility;
+- clone/prepare/clean/quality gates;
+- artifact matrix;
+- Android debug/profile/release/split APKs and AAB;
+- Android signing/version fields;
+- iOS unsigned and IPA boundaries;
+- Web/PWA deployment output;
+- Windows/macOS/Linux bundle behavior;
+- checksums;
+- permanent CI and native build matrix;
+- troubleshooting;
+- unsupported-tool workflow;
+- final release order;
+- explicit claims that must not be made without evidence.
+
+## Canonical documentation index expanded
+
+`docs/README.md` now starts with a beginner reading path and includes dedicated installation/toolchain, command/reference, player, architecture, platform/build, CI/release, source-of-truth, historical-record, and no-skip documentation sections.
+
+## Complete feature reference
+
+Added [`docs/FEATURE_REFERENCE.md`](docs/FEATURE_REFERENCE.md).
+
+It consolidates the implemented product surface, including:
+
+- core deterministic gameplay;
+- all ten modes;
+- controls;
+- save/resume;
+- Undo;
+- statistics/achievements/per-mode records;
+- Hint;
+- Heuristic and Expectimax solvers;
+- Auto Play;
+- benchmark;
+- Move Replay and Full Replay Archives;
+- backup/file backup;
+- Challenge Codes/QR;
+- Daily Challenge;
+- localization;
+- themes/accessibility/reduced motion;
+- About/Guide/Support/external links;
+- offline-first/privacy/data reset;
+- all six platform runners;
+- branding;
+- repository/source/release audits and CI.
+
+## Documentation regression protection
+
+Added `test/documentation_completeness_test.dart`.
+
+It protects:
+
+- presence of the new setup/reference documents;
+- current Version 2.0.12 build-handbook identity;
+- absence of the old `version: 1.5.0+15` current declaration from the build handbook;
+- setup-index links to support lifecycle, command reference, glossary, and file atlas;
+- docs-index discoverability;
+- required compatibility-first upgrade workflow content.
+
+The test automatically joins the existing `flutter test` suite because CI runs all tests.
+
+## Phase 32 archive
+
+The former active Phase 32 continuity was moved into [`what_changed_archive_phase_32.md`](what_changed_archive_phase_32.md) before this Phase 33 record became active, preserving the migration/source-completion history rather than deleting it.
+
+## Phase 33 commit sequence so far
+
+```text
+0a3f600d  docs: add complete development prerequisites guide
+bb9d41c1  docs: add deep Windows installation and setup guide
+1ff6f41a  docs: add exhaustive command and flag reference
+cdef662b  docs: add deep macOS and iOS host setup guide
+36c36989  docs: add deep Linux installation and setup guide
+61bcd3b0  docs: add complete Android toolchain setup guide
+391a09fe  docs: add unsupported tool and upgrade lifecycle guide
+c60bddae  docs: add comprehensive project and toolchain glossary
+0e0773e5  docs: add no-skip repository file atlas
+27033049  docs: add environment setup documentation index
+e39a7b10  docs: rebuild executable handbook for Version 2.0.12
+1f7a8ae5  docs: expand canonical documentation index
+b8e7d7da  test: protect complete setup and command documentation
+fcf3a112  docs: add complete implemented feature reference
+f311e33b  docs: archive completed Phase 32 continuity
+```
+
+This active file is committed separately so the continuity update itself remains an auditable, granular change.
+
+## Verification boundary for this documentation phase
+
+The changes are being pushed directly to `main` as small meaningful commits. A push/commit is not being treated as proof that all workflows passed.
+
+Before this phase is described as automation-verified, the maintained checks must actually be observed on the current Phase 33 head.
+
+At minimum the expected automated path is:
+
+```bash
+flutter pub get
+dart format --output=none --set-exit-if-changed lib test tool
+flutter analyze
+flutter test --coverage
+dart run tool/release_readiness.dart --json
+dart run tool/release_qualification_status.dart --json --pending-only
 dart run tool/repository_audit.dart --json
 dart run tool/source_completion_audit.dart --json
+dart run tool/solver_benchmark.dart 8
+flutter build web --release
 ```
 
-## Unfinished-implementation marker sweep
+Native platform builds remain a separate workflow/evidence class.
 
-The final repository-side sweep found no live implementation hits for common unfinished paths such as `UnimplementedError`, `UnsupportedError`, `NotImplemented`, “coming soon,” generic implementation placeholders, or unresolved product placeholder tokens.
+## Stable release boundary
 
-The TODO/FIXME contract is additionally enforced by the completion audit across maintained application/test/tool Dart. Fixture strings that intentionally simulate those comments remain regression data, not unfinished work.
+Phase 33 is documentation/tooling maintenance. It does not alter the genuine manual release evidence.
 
-This is a source-completion guard and does not claim software can never contain an unknown defect.
+The stable qualification boundary remains 0/13 until actual representative checks are completed and recorded.
 
-## Repository-integrity expansion
-
-The repository audit requires the final source audit, maintenance policy, source-completion audit guide/tool, archived pre-2.0.12 changelog, continuity archives, and the existing version/release/PWA/open-source/build/workflow assets. Its process-level fixture remains aligned with those permanent completion assets.
-
-## Android APK/AAB and native distribution protection
-
-The maintained Platform Builds workflow builds and packages:
-
-- Android release APK;
-- Android release AAB for Google Play;
-- SHA-256 sidecar for each Android output;
-- Linux release archive + checksum;
-- Windows release archive + checksum;
-- macOS release archive + checksum;
-- unsigned iOS release archive + checksum.
-
-`test/android_distribution_workflow_test.dart` protects the Android commands, output paths, checksums, and fail-closed artifact behavior.
-
-Commit `03fbdb4b46486da6f6421d0a67c2d45a6326d9dd` changed only the Platform Builds workflow's leading verification comment so the full native matrix is triggered against the finalized Version 2.0.12 source tree. The workflow content/build logic was otherwise preserved.
-
-A trigger is not a pass result. No successful native/CI result is recorded here unless it is actually observable.
-
-## Changelog/documentation finalization
-
-The former long active changelog is preserved verbatim in `CHANGELOG_ARCHIVE_PRE_2_0_12.md`.
-
-Current `CHANGELOG.md` focuses on the source-complete Version 2.0.12 candidate, and `docs/README.md` separates current release documents from historical phase/Version 1.5 verification records.
-
-The current documentation set covers user behavior, architecture, engine/modes, persistence, backups/replays/challenges, localization/accessibility/privacy/security, dependencies/supply chain, development/testing/troubleshooting, every supported executable/build target, CI/workflow security, release qualification, source completion, and maintenance policy.
-
-## Dependency/toolchain final freeze
-
-The final source freeze is compatibility-first. Existing pins remain unless a concrete defect/security/compatibility requirement justifies another cross-platform qualification cycle.
-
-Point-in-time dependency review on 2026-08-19 found the maintained `qr_flutter`, `shared_preferences`, and `url_launcher` pins still at their stable releases. `file_picker 11.0.3` is one newer stable patch than the pinned `11.0.2`; it is intentionally deferred because it is not required for a known 2.0.12 product fix and changing a cross-platform plugin during final freeze would require another compatibility/qualification cycle.
-
-The accepted Android baseline remains:
-
-```text
-AGP 9.1.0
-Kotlin Android 2.4.10
-Gradle 9.7.0
-JDK 17
-```
-
-Issue #10 is closed as **not planned** for Version 2.0.12. This records a deliberate baseline decision, not a claim that the prior AGP 9.3.x/JDK-17 lint failure was fixed.
-
-## Formatter and current verification evidence
-
-Repository-owned Format Dart automation has normalized prior finalization stages. Important formatter commits include:
-
-```text
-a2372253  style: format Dart sources tests and tools
-254dc2ed  style: format Dart sources tests and tools
-c70b464d  style: format Dart sources tests and tools
-```
-
-The self-protecting completion-audit hardening was added after `c70b464d`, so this record does not infer a newer formatter/analyzer/test/Web/native success merely from a push. The maintained workflows are triggered by the relevant changes; only observed results may replace the historical baseline.
-
-## Final source-completion commit sequence
-
-The final completion work after the initial Version 2.0.12 migration includes:
-
-```text
-9fc43029  docs: add final Version 2.0.12 source audit
-14ad9fce  docs: add post-completion maintenance policy
-271bb28a  docs: mark Version 2.0.12 source feature complete
-f3592e63  docs: refresh Version 2.0.12 dependency policy
-82ff11a6  test: guard final Version 2.0.12 source completion
-49212e9f  feat: add final source completion audit
-f2bea630  test: cover final source completion audit
-d798bc4d  ci: enforce final source completion contract
-37ab4a0a  docs: document source completion audit
-b220dd42  docs: index final source completion audit tool
-fac8a8a7  docs: finalize Version 2.0.12 documentation index
-318bd744  docs: archive pre-2.0.12 changelog history
-254dc2ed  style: format Dart sources tests and tools
-8013d14d  docs: finalize active Version 2.0.12 changelog
-1c6c9624  feat: require final source completion assets in repository audit
-a9f668a4  test: align repository audit fixtures with final completion assets
-af7dd63e  docs: finalize repository audit contract for 2.0.12
-93697d57  docs: finalize Phase 32 source completion record
-c70b464d  style: format Dart sources tests and tools
-afbad928  docs: finalize Phase 32 completion continuity
-254ef950  feat: make final source completion audit self-protecting
-cdd823a2  test: harden final source completion audit contract
-52e4d66e  docs: document self-protecting completion audit
-875b172b  fix: avoid completion audit documentation false positives
-03fbdb4b  ci: trigger final Version 2.0.12 native verification
-a64cb5bc  docs: record final completion hardening
-1a46fb46  docs: finalize self-protecting Version 2.0.12 audit
-```
-
-Earlier Phase 32 version-migration commits remain preserved in Git history and the Phase 32 documentation.
-
-## External release qualification boundary
-
-Source completion does not mark any of the 13 manual records passed. They still require genuine representative environments for Android/iOS, input/responsiveness, assistive technologies, long sessions, Auto Play, Challenge Codes, replays, backup/file handlers, browser/PWA/external handlers, native branding, and signing/provisioning/store metadata.
-
-Only actual observed evidence may update those records.
-
-## Repository-settings boundary
-
-Issue #12 remains the only known open repository-governance issue: `main` branch protection/rulesets must be enabled in GitHub settings. Tracked files such as CI/CODEOWNERS cannot truthfully replace that setting, and the connected GitHub tool surface exposes no branch-protection/ruleset write action. A final evidence comment was added to issue #12 rather than falsely closing it.
-
-This is not missing product/source functionality.
-
-## Final verification boundary
-
-There is no remaining declared Version 2.0.12 source-feature backlog. The final source tree has permanent completion/release/integrity guards and a deliberately triggered native verification matrix.
-
-What remains outside source completion is intentionally external or evidence-based:
-
-1. observe and record a complete successful current-head automated/native run when available;
-2. perform and record the 13 genuine real-world qualification checks;
-3. enable `main` branch protection/rulesets in GitHub repository settings;
-4. only then use the strict stable gate and final signed/store distribution flow.
-
-None of those may be fabricated or converted into “completed source features” by documentation alone.
+No documentation expansion, test, hosted build, or commit count may be used to fabricate those real-world results.
