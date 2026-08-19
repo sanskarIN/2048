@@ -66,22 +66,57 @@ The gate now:
 
 ## Release-gate regression migration
 
-`test/release_readiness_cli_test.dart` now uses Version 2.0.12 fixtures and verifies:
+The Version 2.0.12 release tests now cover:
 
-1. a `2.0.12+2012` candidate passes the candidate gate while remaining not ready for stable with 0/13 evidence;
-2. a synthetic fully qualified Version 2.0.12 fixture can pass stable mode;
-3. pending real-world evidence keeps stable mode closed;
-4. Version 1.5 candidates are rejected;
-5. other 2.0 patch versions are rejected;
-6. qualification-candidate mismatch remains rejected;
-7. passed checks without evidence/timestamps remain rejected;
-8. missing canonical manual-check IDs remain rejected.
+1. `2.0.12+2012` candidate success with stable readiness still false at 0/13 evidence;
+2. synthetic fully qualified Version 2.0.12 stable success;
+3. strict stable refusal with pending evidence;
+4. rejection of Version 1.5 candidates;
+5. rejection of unrelated 2.0 patch versions;
+6. qualification-candidate mismatch;
+7. passed evidence without evidence/timestamps;
+8. missing canonical manual-check IDs;
+9. ambiguous timezone-less evidence timestamps;
+10. qualification status reporting using `2.0.12+2012` fixtures;
+11. qualification recorder behavior using `2.0.12+2012` fixtures.
 
-Synthetic fully passed fixtures test gate behavior only. They are not evidence for the real repository candidate.
+Synthetic fully passed fixtures test tooling only. They are not evidence for the live candidate.
 
-## Roadmap migration
+## Repository-integrity hardening
 
-`ROADMAP.md` now identifies Version **2.0.12** as the current release target and retains the same real-world qualification requirements. It also records that the latest complete automated evidence still belongs to the earlier Version 1.5 source state until a new complete Version 2.0.12 run is actually observed.
+`tool/repository_audit.dart` now enforces the exact Phase 32 source contract:
+
+- package/build version `2.0.12+2012`;
+- marketing version `2.0.12`;
+- Windows fallback numeric/string versions;
+- exact qualification-candidate alignment;
+- exactly 13 manual qualification records;
+- Phase 32 active continuity;
+- preserved Phase 0–30 and Phase 31 continuity archives;
+- required Phase 32 verification documentation;
+- existing Web/PWA source/semantic contracts;
+- rejection of leftover Phase 30/31/32 temporary maintenance helpers.
+
+Its process-level fixtures now prove exact build-version, runtime-version, Windows-resource, qualification-candidate, PWA metadata, Markdown-link, and temporary-helper failure paths.
+
+## Hidden Version 1.5 drift discovered and corrected
+
+The migration audit found several source-controlled assumptions that a simple `pubspec.yaml` version bump would have missed:
+
+- `test/release_evidence_timestamp_test.dart` still created a `1.5.0+15` fixture;
+- `test/repository_integrity_test.dart` still required `SECURITY.md` to claim Version 1.5 was current;
+- qualification status/recorder fixtures still used the former candidate;
+- `docs/RELEASE_GATE_TESTING.md` described Version 1.5 fixture scenarios;
+- `docs/QUALIFICATION_STATUS.md` called the canonical checklist Version 1.5;
+- `docs/RELEASE_CHECKLIST.md` carried historical Version 1.5 automated checks as currently completed.
+
+All of those current-state surfaces now use Version 2.0.12. The rebuilt release checklist deliberately leaves current-head automated/native checks unchecked until a complete maintained Version 2.0.12 result is actually observed.
+
+## Security and maintainer documentation
+
+`SECURITY.md` now identifies Version 2.0.12 / `2.0.12+2012` as the active security-maintenance line while preserving all existing input-validation, trust, dependency, secret-management, backup, replay, QR, and signing boundaries.
+
+`tool/README.md`, `README.md`, `ROADMAP.md`, `docs/README.md`, `docs/RELEASE_QUALIFICATION.md`, `docs/REPOSITORY_AUDIT.md`, `docs/RELEASE_GATE_TESTING.md`, `docs/QUALIFICATION_STATUS.md`, and `docs/RELEASE_CHECKLIST.md` now describe the new target and its fail-closed verification boundary.
 
 ## Historical continuity preservation
 
@@ -91,7 +126,9 @@ The complete prior Phase 31 `what_changed.md` was preserved before replacing the
 
 The earlier Phase 0–30 archive remains untouched.
 
-## Phase 32 commit sequence so far
+## Phase 32 commit sequence
+
+The Version 2.0.12 migration was intentionally split into small reviewable commits:
 
 ```text
 9997da33  chore: start Version 2.0.12 package line
@@ -102,16 +139,39 @@ fe3aa483  chore: align Windows fallback version with 2.0.12
 afc52ef5  test: migrate release gate fixtures to Version 2.0.12
 5fedb71a  docs: move roadmap to Version 2.0.12
 710d725f  docs: preserve complete Phase 31 continuity
+e758efaa  docs: advance continuity to Phase 32 Version 2.0.12
+a3190e1c  docs: migrate release qualification guide to 2.0.12
+5b3ac377  docs: add Phase 32 Version 2.0.12 verification record
+7243fd03  feat: enforce Version 2.0.12 repository integrity
+4ac3cc16  test: migrate repository audit fixtures to Phase 32
+6eadeba0  test: advance current release state to Phase 32
+71529f8e  docs: index Phase 32 Version 2.0.12 migration
+7a1e545d  docs: align repository audit with Phase 32
+d3b6d402  docs: present Version 2.0.12 in project README
+f756c4d6  test: migrate release timestamp fixture to 2.0.12
+00aa6384  docs: migrate release gate testing guide to 2.0.12
+c24e2252  docs: align qualification status guide with 2.0.12
+4a8d8e72  docs: rebuild release checklist for Version 2.0.12
+a7351f2a  test: align repository integrity with Version 2.0.12
+85883abb  docs: move security policy to Version 2.0.12
+c4228922  test: migrate qualification status fixtures to 2.0.12
+5ffca7a5  test: migrate qualification recorder fixtures to 2.0.12
+409c89f7  docs: align maintainer tools with Version 2.0.12
 ```
 
 ## Verification boundary
 
-The Version 2.0.12 source migration is being committed in small atomic changes. A newer complete formatter/analyzer/test/Web/native workflow result has not yet been accepted into this file.
+The Version 2.0.12 source migration has been committed in small atomic changes. The connected environment does not expose a local Dart/Flutter runtime here, and no newer complete maintained formatter/analyzer/test/Web/native workflow result has been observed through the available GitHub connector yet.
 
-Until such evidence is actually observable, do not describe the Version 2.0.12 head as having passed the old 235-test/106-file evidence set. Those numbers belong to the previously verified Version 1.5 source state.
+Therefore:
+
+- the older 235/235-test, 106-file formatting result remains historical Version 1.5 evidence only;
+- no current Version 2.0.12 test count is being invented;
+- no current native-matrix result is being inferred;
+- the release checklist keeps current-head automation unchecked pending real evidence.
 
 ## Stable-release boundary retained
 
-Stable `2.0.12` remains blocked until all 13 real-world checks are genuinely completed and recorded with valid evidence and explicit-timezone timestamps.
+Stable `2.0.12` remains blocked until all 13 real-world checks are genuinely completed and recorded with valid evidence and explicit-timezone timestamps, and the complete maintained automated/native gate succeeds on the exact release commit.
 
-Hosted compilation, source inspection, regression fixture design, generated artifacts, and documentation updates are not substitutes for physical-device/accessibility/external-handler/signing/store qualification.
+Hosted compilation, source inspection, regression fixture design, generated artifacts, and documentation updates are not substitutes for physical-device/accessibility/external-handler/PWA/signing/store qualification.
