@@ -10,6 +10,7 @@ void expectContainsAll(String content, Iterable<String> required, String label) 
 
 void main() {
   const requiredDocumentation = <String>[
+    'README.md',
     'docs/setup/README.md',
     'docs/setup/PREREQUISITES.md',
     'docs/setup/WINDOWS.md',
@@ -58,6 +59,27 @@ void main() {
       'Build handbook',
     );
     expect(content, isNot(contains('version: 1.5.0+15')));
+  });
+
+  test('public README exposes the current custom and quality surface', () {
+    final content = File('README.md').readAsStringSync();
+    expectContainsAll(
+      content,
+      const [
+        '2.0.12+2012',
+        'Custom Game Builder',
+        'Edit',
+        'Duplicate-as-unsaved-copy',
+        'cannot overwrite built-in per-mode',
+        'docs/CUSTOM_GAME_BUILDER.md',
+        'docs/FINAL_2_0_12_INTEGRATION_AUDIT.md',
+        'docs/BUILDING_EXECUTABLES.md',
+        'flutter build appbundle --release',
+        'source_completion_audit.dart --json',
+        'what_changed_archive_phase_33.md',
+      ],
+      'Public README',
+    );
   });
 
   test('setup index exposes lifecycle, Linux native, and deep references', () {
