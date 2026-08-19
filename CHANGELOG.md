@@ -17,7 +17,7 @@ This section describes the source-complete Version 2.0.12 candidate and its fina
 
 - Custom Game Builder integrated into the Version 2.0.12 source line with validated 3×3–8×8 local configurations, supported Target/Endless/Timed/Move Limit styles, optional deterministic seed, bounded local preset persistence, and a separate custom-session trust marker.
 - Saved custom-preset **Edit**, safe rename, **Duplicate**, **Cancel edit**, and confirmed-delete workflows. Duplicate loads an unsaved uniquely named copy and does not write storage until explicit Save.
-- Responsive Custom Game Builder preset-action menu and focused English/Hindi, narrow-screen, and increased-text-scale widget regressions.
+- Responsive Custom Game Builder preset-action menu and focused English/Hindi, narrow-screen, increased-text-scale, selector-refresh, and action-to-form navigation regressions.
 - Final Version 2.0.12 integration audit in `docs/FINAL_2_0_12_INTEGRATION_AUDIT.md`, recording why older Custom Game Builder CI from the Version 1.5 base cannot be relabeled as current same-commit evidence.
 - Current architecture walkthrough in `docs/ARCHITECTURE_WALKTHROUGH.md` covering startup, deterministic gameplay, persistence, custom games, backups, replay, solvers, localization/accessibility, platform runners, and release boundaries.
 - Deep error/diagnosis reference in `docs/ERROR_REFERENCE.md`.
@@ -42,7 +42,8 @@ This section describes the source-complete Version 2.0.12 candidate and its fina
 - Custom Game Builder is now documented as current Version `2.0.12+2012` behavior rather than as a separate Version 1.6 feature branch outside the current candidate.
 - `docs/VERSION_1_6_ROADMAP.md` is retained as an explicit historical development record instead of a current roadmap.
 - Saved custom-preset actions now use a compact popup menu so long preset summaries and increased text scaling have more horizontal room.
-- The canonical docs index, setup index, player guide, feature reference, changelog, and continuity records now expose the integrated custom-game workflows and final diagnostic/contributor/toolchain guides.
+- Edit/Duplicate saved-preset actions now return directly to the configuration form after loading values, without forcing focus or opening the keyboard.
+- The public root README, canonical docs index, setup index, player guide, feature reference, changelog, and continuity records now expose the integrated custom-game workflows and final diagnostic/contributor/toolchain guides.
 - Phase 33 detailed continuity is preserved in `what_changed_archive_phase_33.md`; `what_changed.md` now records the Phase 34 final-integration maintenance stream while retaining the Phase 32 canonical release/source-completion marker required by repository integrity checks.
 - Project package/build version is `2.0.12+2012` and user-facing marketing version is `2.0.12`.
 - Windows fallback file/product version metadata matches `2,0,12,2012` / `2.0.12`.
@@ -57,7 +58,8 @@ This section describes the source-complete Version 2.0.12 candidate and its fina
 ### Fixed
 
 - Fixed Custom Game Builder edit/duplicate selector state: `DropdownButtonFormField.initialValue` could retain the original FormField selection after a preset was loaded. Dynamic selector keys now recreate the affected field state so the visible style, board size, target, and time/move limit match the loaded preset.
-- Added regressions that assert the visible selector state after Edit, Duplicate, and Cancel edit, not only the eventual stored model.
+- Fixed saved-card Edit/Duplicate navigation so loading a preset also returns the scroll view to the form; the form is immediately reachable without an animation or automatic keyboard focus.
+- Added regressions that assert the visible selector state after Edit, Duplicate, and Cancel edit, plus immediate form hit-testing after saved-card Edit/Duplicate actions.
 - Prevented an edited preset from overwriting a different saved preset when the requested rename conflicts case-insensitively.
 - Corrected stale Custom Game Builder documentation that still declared Version 1.6/Version 1.5 as the current feature/release boundary after the feature had already been integrated into Version 2.0.12.
 - Corrected a stale user-guide reference to “stable 1.0.0”; current stable promotion is governed by Version 2.0.12 same-commit automation plus the canonical 13-check real-world qualification manifest.
