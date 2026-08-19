@@ -70,6 +70,26 @@ const _canonicalPubspecMetadata = <String, String>{
   'issue_tracker': 'https://github.com/sanskarIN/2048/issues',
 };
 
+const _canonicalWebManifestMetadata = <String, Object>{
+  'name': '2048 Nova',
+  'short_name': '2048 Nova',
+  'id': '.',
+  'start_url': '.',
+  'scope': '.',
+  'display': 'standalone',
+  'lang': 'en',
+  'dir': 'ltr',
+  'orientation': 'any',
+  'prefer_related_applications': false,
+};
+
+const _canonicalWebIconSignatures = <String>{
+  'icons/Icon-192.png|192x192|any',
+  'icons/Icon-512.png|512x512|any',
+  'icons/Icon-maskable-192.png|192x192|maskable',
+  'icons/Icon-maskable-512.png|512x512|maskable',
+};
+
 void main(List<String> args) {
   final jsonMode = args.contains('--json');
   final helpMode = args.contains('--help') || args.contains('-h');
@@ -123,6 +143,7 @@ void main(List<String> args) {
     _auditRequiredPaths(root, failures);
     _auditTemporaryPaths(root, failures);
     _auditReleaseState(root, failures);
+    _auditWebMetadata(root, failures);
     _auditMarkdownLinks(root, failures, warnings);
   }
 
@@ -273,6 +294,84 @@ void _auditReleaseState(Directory root, List<String> failures) {
     failures.add(
       'what_changed.md must preserve the current 0/13 manual qualification boundary.',
     );
+  }
+}
+
+void _auditWebMetadata(Directory root, List<String> failures) {
+  final manifestText = _readText(root, 'web/manifest.json', failures);
+  final indexHtml = _readText(root, 'web/index.html', failures);
+  if (manifestText == null || indexHtml == null) {
+    return;
+  }
+
+  try {
+    final decoded = jsonDecode(manifestText);
+    if (decoded is! Map<String, dynamic>) {
+      failures.add('web/manifest.json must contain a JSON object.');
+    } else {
+      for (final expected in _canonicalWebManifestMetadata.entries) {
+        final actual = decoded[expected.key];
+        if (actual != expected.value) {
+          failures.add(
+            'web/manifest.json ${expected.key} must be ${expected.value}; found ${actual ?? 'missing'}.',
+          );
+        }
+      }
+
+      final categories = decoded['categories'];
+      if (categories is! List ||
+          !categories.contains('games') ||
+          !categories.contains('entertainment')) {
+        failures.add(
+          'web/manifest.json categories must include games and entertainment.',
+        );
+      }
+
+      final icons = decoded['icons'];
+      if (icons is! List) {
+        failures.add('web/manifest.json icons must be an array.');
+      } else {
+        final signatures = <String>{};
+        for (final icon in icons) {
+          if (icon is! Map<String, dynamic>) {
+            continue;
+          }
+          if (icon['type'] != 'image/png') {
+            failures.add(
+              'Every web/manifest.json icon must use image/png.',
+            );
+          }
+          signatures.add('${icon['src']}|${icon['sizes']}|${icon['purpose']}');
+        }
+        if (icons.length != _canonicalWebIconSignatures.length ||
+            !signatures.containsAll(_canonicalWebIconSignatures)) {
+          failures.add(
+            'web/manifest.json must contain the canonical regular/maskable 192/512 icon matrix.',
+          );
+        }
+      }
+    }
+  } on FormatException catch (error) {
+    failures.add('web/manifest.json is invalid JSON: ${error.message}');
+  }
+
+  const requiredIndexFragments = <String>[
+    '<html lang="en">',
+    '<base href="$FLUTTER_BASE_HREF">',
+    '<meta name="theme-color" content="#6C4DFF">',
+    '<meta name="color-scheme" content="light dark">',
+    '<meta name="mobile-web-app-capable" content="yes">',
+    '<meta name="apple-mobile-web-app-capable" content="yes">',
+    '<meta name="apple-mobile-web-app-title" content="2048 Nova">',
+    '<link rel="manifest" href="manifest.json">',
+    '<link rel="apple-touch-icon" href="icons/Icon-192.png">',
+    '<title>2048 Nova</title>',
+    'flutter_bootstrap.js',
+  ];
+  for (final fragment in requiredIndexFragments) {
+    if (!indexHtml.contains(fragment)) {
+      failures.add('web/index.html is missing required metadata: $fragment');
+    }
   }
 }
 
