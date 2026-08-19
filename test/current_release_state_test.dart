@@ -20,6 +20,16 @@ void main() {
       expect(log, contains('32015893841'));
     });
 
+    test('historical continuity through Phase 30 remains preserved', () {
+      final archive = File('what_changed_archive_phase_00_30.md');
+
+      expect(archive.existsSync(), isTrue);
+      final history = archive.readAsStringSync();
+      expect(history, contains('# 2048 Nova — Development Log'));
+      expect(history, contains('Phase 30'));
+      expect(history, contains('stable qualification boundary remains **0/13**'));
+    });
+
     test('verification record keeps Phase 29 ahead of Phase 28', () {
       final verification = File('docs/VERIFICATION.md').readAsStringSync();
       final phase29 = verification.indexOf('## Phase 29 —');
@@ -97,7 +107,7 @@ void main() {
       expect(ci, contains('dart run tool/repository_audit.dart --json'));
     });
 
-    test('temporary phase 30 finalizer files do not remain', () {
+    test('temporary phase maintenance helpers do not remain', () {
       expect(
         File('.github/workflows/phase30-continuity.yml').existsSync(),
         isFalse,
@@ -107,6 +117,12 @@ void main() {
         isFalse,
       );
       expect(File('docs/PHASE_30_INDEX_TRIGGER.md').existsSync(), isFalse);
+      expect(
+        File('.github/workflows/phase31-finalize.yml').existsSync(),
+        isFalse,
+      );
+      expect(File('docs/PHASE_31_STATUS_TRIGGER.md').existsSync(), isFalse);
+      expect(File('tool/phase31_finalize.py').existsSync(), isFalse);
     });
 
     test('roadmap, changelog, and About expose the current release line', () {
