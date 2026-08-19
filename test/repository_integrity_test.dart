@@ -232,10 +232,11 @@ void main() {
       expect(issueConfig, contains('/blob/main/SECURITY.md'));
     });
 
-    test('security policy tracks the current Version 1.5 line', () {
+    test('security policy tracks the current Version 2.0.12 line', () {
       final policy = File('SECURITY.md').readAsStringSync();
 
-      expect(policy, contains('Version 1.5'));
+      expect(policy, contains('Version 2.0.12'));
+      expect(policy, contains('2.0.12+2012'));
       expect(policy, contains('supportramsandesh@gmail.com'));
       expect(policy, contains('dependency-review'));
     });
@@ -256,6 +257,15 @@ void main() {
         projectInfo,
         contains("static const version = '$marketingVersion';"),
       );
+    });
+
+    test('pubspec exposes exact Phase 32 package/build version', () {
+      final pubspec = File('pubspec.yaml').readAsStringSync();
+      final windows = File('windows/runner/Runner.rc').readAsStringSync();
+
+      expect(pubspec, contains('version: 2.0.12+2012'));
+      expect(windows, contains('#define VERSION_AS_NUMBER 2,0,12,2012'));
+      expect(windows, contains('#define VERSION_AS_STRING "2.0.12"'));
     });
 
     test('pubspec exposes canonical open source destinations', () {
