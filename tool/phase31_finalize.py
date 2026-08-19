@@ -23,7 +23,7 @@ def replace_line_prefix(path: str, prefix: str, replacement: str) -> None:
         raise RuntimeError(
             f"Expected exactly one line starting {prefix!r} in {path}; found {len(matches)}"
         )
-    lines[matches.single if hasattr(matches, "single") else matches[0]] = replacement
+    lines[matches[0]] = replacement
     target.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
