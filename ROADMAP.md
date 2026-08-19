@@ -22,7 +22,8 @@ Completed in the current release-candidate line:
 - Expanded automated engine, persistence, controller, interaction, session-integrity, accessibility, Challenge Code, Auto Play isolation, bounded Move Replay, full-session replay protocol/capture/storage/spectator UI, portable-backup, clipboard-flow, imported-ranking, per-mode-record persistence/trust/reset, and localized UI tests.
 - Complete user/technical/development/release documentation set, branding, CI, contribution/security templates, and project support/contact integration.
 - Evidence-backed release qualification infrastructure: `docs/release_qualification.json`, `docs/RELEASE_QUALIFICATION.md`, and `tool/release_readiness.dart` keep normal release-candidate CI usable while making strict stable-release mode fail until every required real-world qualification item has recorded passed evidence and release metadata is actually `1.5.0`.
-- Permanent CI now formats `tool/` together with application/tests, runs the release-candidate readiness gate, and smoke-runs the deterministic solver benchmark in addition to the existing analyzer/tests/Web release build.
+- A read-only qualification status reporter (`tool/release_qualification_status.dart`) now summarizes the canonical 13-check manifest in human or JSON form, can filter detail to pending/blocked checks without corrupting aggregate counts, validates evidence/timestamps/check IDs, supports a distinct `--fail-if-incomplete` exit path for maintainer scripts, and is regression-tested and exercised by permanent CI without fabricating manual evidence.
+- Permanent CI now formats `tool/` together with application/tests, runs the release-candidate readiness gate, reports the current manual qualification state, and smoke-runs the deterministic solver benchmark in addition to the existing analyzer/tests/Web release build.
 - Phase 23 makes Flutter-managed metadata reproducible, includes the Cupertino icon font without Web warnings, verifies generated plugin registration, uses checkout v6, and guards these repository contracts with focused tests.
 - Native hosted builds now package SHA-256 sidecars and retain five short-lived qualification artifacts for Android, Linux, Windows, macOS, and unsigned iOS; artifacts remain inputs to manual qualification rather than substitutes for it.
 - Permanent CI also exposes an explicit maintainer dispatch path, regression guarded so bot-authored documentation/generator heads can be verified without relying on recursive workflow-token pushes.
@@ -43,13 +44,13 @@ Remaining release qualification before `1.5.0`:
 - Native splash/icon presentation review.
 - Distribution signing/provisioning and final store/package metadata review.
 
-Each item above has a stable machine-readable ID in `docs/release_qualification.json`. A maintainer must record genuine evidence there rather than treating hosted compilation or automated widget tests as a substitute for physical qualification.
+Each item above has a stable machine-readable ID in `docs/release_qualification.json`. Use `dart run tool/release_qualification_status.dart --pending-only` to inspect the unfinished set and `tool/record_release_qualification.dart` only after a maintainer actually performs a listed check. Hosted compilation or automated widget tests remain insufficient substitutes for physical qualification.
 
 ## 1.5.0 — Qualified stable release target
 
 Promote the release candidate only when:
 
-- automated formatter, analyzer, regression tests, release-candidate metadata gate, deterministic solver smoke benchmark, Web build, and configured native builds are green for the candidate state;
+- automated formatter, analyzer, regression tests, release-candidate metadata gate, qualification status validation, deterministic solver smoke benchmark, Web build, and configured native builds are green for the candidate state;
 - manual device/accessibility qualification above is complete and every required manifest entry contains passed evidence plus a valid timestamp;
 - Challenge Code, replay archive, backup/restore, and external platform-handler checks are complete on representative targets;
 - no known release-blocking defect remains;
