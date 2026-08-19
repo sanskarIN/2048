@@ -1,145 +1,185 @@
 # 2048 Nova Documentation
 
-This directory is the user, technical, development, platform, and release documentation set for 2048 Nova. The application is a Flutter/Dart, offline-first 2048 implementation with deterministic game rules, validated local persistence, multiple modes, trusted per-mode records, English/Hindi localization, accessibility controls, bounded read-only Move Replay, portable spectator-only Full Replay Archives, an isolated Heuristic/Expectimax Auto Play Demo with deterministic solver benchmarks, portable current-game backup/restore, and offline shareable seeded challenge codes.
+This directory is the canonical user, developer, architecture, platform, privacy, security, build, testing, maintenance, and release-documentation set for **2048 Nova**.
 
-The current semantic release target is **Version 2.0.12**, represented in Flutter package metadata as `2.0.12+2012`.
+Current source identity:
+
+```text
+Marketing version: 2.0.12
+Flutter package/build version: 2.0.12+2012
+Source scope: feature-complete
+Manual real-world qualification: 0/13 recorded passed evidence
+```
+
+Source completion and stable distribution are intentionally separate states. The application source can be feature-complete while physical-device, assistive-technology, external-handler, signing/provisioning, and store qualification remains pending.
 
 ## Start here
 
 | Document | Purpose |
 | --- | --- |
-| [`../README.md`](../README.md) | Project overview, features, setup, controls, build commands, links, and support. |
-| [`USER_GUIDE.md`](USER_GUIDE.md) | Complete player guide for rules, controls, modes, Undo, Hint, Move Replay, Full Replay Archive, Auto Play, Backup, Challenge Codes, language/settings, and data controls. |
-| [`FAQ.md`](FAQ.md) | Common user/developer questions about rules, modes, saves, replay systems, Auto Play, Backup, Challenge Codes, language, privacy, accessibility, platforms, and release status. |
-| [`ARCHITECTURE.md`](ARCHITECTURE.md) | Layer boundaries, state flow, persistence responsibilities, trust boundaries, and feature architecture. |
+| [`../README.md`](../README.md) | Project overview, features, setup, controls, platforms, build commands, links, and support. |
+| [`FINAL_2_0_12_SOURCE_AUDIT.md`](FINAL_2_0_12_SOURCE_AUDIT.md) | Final source-level completion verdict, version consistency, dependency freeze, source/release boundary, and post-completion rule. |
+| [`MAINTENANCE_POLICY.md`](MAINTENANCE_POLICY.md) | What may change after source completion, compatibility-first dependency policy, non-goals, and future-release rule. |
+| [`PHASE_32_VERSION_2_0_12.md`](PHASE_32_VERSION_2_0_12.md) | Version 2.0.12 package/runtime/release-gate migration and verification boundary. |
+| [`../ROADMAP.md`](../ROADMAP.md) | Feature-complete 2.0.12 scope, external qualification boundary, non-goals, and design guardrails. |
+| [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) | Automated and real-environment checks required before qualified stable distribution. |
+| [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md) | Evidence manifest, candidate/stable release gates, and fail-closed promotion procedure. |
+| [`VERIFICATION.md`](VERIFICATION.md) | Latest accepted automated evidence record; historical Version 1.5 evidence remains historical until superseded by observed 2.0.12 results. |
+
+## Player and behavior documentation
+
+| Document | Purpose |
+| --- | --- |
+| [`USER_GUIDE.md`](USER_GUIDE.md) | Complete player guide for rules, modes, controls, Undo, Hint, replays, Auto Play, backups, Challenge Codes, settings, and data controls. |
+| [`FAQ.md`](FAQ.md) | Common player/developer questions and release-status explanations. |
 | [`GAME_ENGINE.md`](GAME_ENGINE.md) | Exact move/merge/spawn rules, deterministic RNG, terminal-state behavior, and invariants. |
-| [`GAME_MODES.md`](GAME_MODES.md) | All supported game modes, board sizes, targets, timers, move limits, and Daily Challenge behavior. |
-| [`MODE_RECORDS.md`](MODE_RECORDS.md) | Trusted local per-mode best score/highest-tile records, migration, reset behavior, and imported-backup isolation. |
-| [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md) | Shareable seeded challenge format, deterministic behavior, validation, checksum, and trust model. |
-| [`LOCALIZATION.md`](LOCALIZATION.md) | English/Hindi locale architecture, persisted language selection, fallback rules, contributor guidance, privacy, and accessibility boundaries. |
-| [`DATA_STORAGE.md`](DATA_STORAGE.md) | Local storage keys, save schemas, bounded collections, corruption recovery, replay capture persistence, and reset behavior. |
-| [`PORTABLE_TIMESTAMPS.md`](PORTABLE_TIMESTAMPS.md) | UTC serialization for game/session/export/Daily timestamps, cross-timezone portability, legacy compatibility, Time Challenge deadline integrity, and absolute release-evidence timestamps. |
-| [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md) | Portable current-game backup format, clipboard workflow, strict validation, and unranked-import policy. |
-| [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md) | Full-session deterministic replay capture, portable JSON protocol, 4,096-event bound, spectator-only import, validation, privacy, and trust model. |
-| [`HINT_SOLVER.md`](HINT_SOLVER.md) | Deterministic heuristic Hint plus isolated Heuristic/Expectimax Auto Play behavior and limitations. |
-| [`SOLVER_BENCHMARKS.md`](SOLVER_BENCHMARKS.md) | Bounded expectimax design, node limits, sandbox trust boundary, deterministic benchmark library, and CLI harness. |
-| [`ACCESSIBILITY.md`](ACCESSIBILITY.md) | Implemented accessibility features and remaining manual assistive-technology checks, including localized semantics. |
-| [`PRIVACY.md`](PRIVACY.md) | Offline-first data behavior, language/localization, clipboard, external links, local storage, both replay systems, Auto Play, Backup, and Challenge Code privacy. |
+| [`GAME_MODES.md`](GAME_MODES.md) | Classic, Quick, Extended, Challenge, Endless, Target, Time Challenge, Move Limit, Daily, and Zen behavior. |
+| [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md) | Seeded challenge format, validation, QR representation, deterministic behavior, checksum, privacy, and trust boundaries. |
+| [`HINT_SOLVER.md`](HINT_SOLVER.md) | Read-only Hint and isolated Heuristic/Expectimax Auto Play design. |
+| [`SOLVER_BENCHMARKS.md`](SOLVER_BENCHMARKS.md) | Bounded expectimax, deterministic benchmark library, CLI, and sandbox limits. |
+| [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md) | Full-session replay capture/protocol/player, 4,096-event bound, import validation, spectator-only policy, and trust model. |
+| [`MODE_RECORDS.md`](MODE_RECORDS.md) | Trusted local per-mode best score/highest tile, metadata, migration, reset, and import isolation. |
+| [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md) | Portable current-game backup format, clipboard flow, validation, and persistent unranked-import policy. |
+| [`FILE_BACKUPS.md`](FILE_BACKUPS.md) | User-selected `.nova2048`/`.json` file transport, byte limits, platform handlers, and qualification boundaries. |
+| [`DATA_STORAGE.md`](DATA_STORAGE.md) | Local keys, save schemas, bounded histories, corruption recovery, replay capture persistence, and reset behavior. |
+| [`PORTABLE_TIMESTAMPS.md`](PORTABLE_TIMESTAMPS.md) | UTC serialization, legacy compatibility, timed-mode integrity, and release-evidence timestamp rules. |
+
+## Accessibility, localization, privacy, and security
+
+| Document | Purpose |
+| --- | --- |
+| [`ACCESSIBILITY.md`](ACCESSIBILITY.md) | Implemented semantic/input/contrast/motion features and remaining real assistive-technology checks. |
+| [`LOCALIZATION.md`](LOCALIZATION.md) | English/Hindi architecture, persisted selection, fallback, contributor rules, privacy, and accessibility boundaries. |
+| [`PRIVACY.md`](PRIVACY.md) | Offline-first data behavior, clipboard/file/replay/challenge boundaries, local storage, and external navigation. |
+| [`../SECURITY.md`](../SECURITY.md) | Security reporting, input validation, dependency, signing-secret, external-link, and trust boundaries. |
+| [`../SUPPORT.md`](../SUPPORT.md) | Player/developer support channels and useful report information. |
+
+## Architecture and development
+
+| Document | Purpose |
+| --- | --- |
+| [`ARCHITECTURE.md`](ARCHITECTURE.md) | Layer boundaries, state flow, persistence responsibilities, trust boundaries, and feature architecture. |
 | [`DEVELOPMENT.md`](DEVELOPMENT.md) | Development environment, repository layout, localization practices, local workflow, testing, and contribution practices. |
-| [`BUILDING_EXECUTABLES.md`](BUILDING_EXECUTABLES.md) | Complete artifact matrix and release-build handbook for Android APK/AAB, iOS app/IPA, Web/PWA, Windows, macOS, Linux, packaging, checksums, signing boundaries, and qualification. |
-| [`build/README.md`](build/README.md) | Dedicated per-platform build manuals and packaging/checksum guide. |
-| [`PLATFORMS.md`](PLATFORMS.md) | Android/iOS/Web/Windows/macOS/Linux setup, build commands, hosted verification, locale behavior, and signing/distribution boundaries. |
-| [`PWA.md`](PWA.md) | Web App Manifest/HTML install metadata, root/subpath deployment, icon/source contracts, regression coverage, and real-browser qualification boundary. |
-| [`ANDROID_TOOLCHAIN.md`](ANDROID_TOOLCHAIN.md) | Maintained AGP/Kotlin/Gradle baseline, AGP 9.3 deferral evidence, upgrade acceptance rules, and revisit criteria. |
-| [`CI_CD.md`](CI_CD.md) | Permanent GitHub Actions workflows, quality gates, native build matrix, and automation boundaries. |
-| [`WORKFLOW_SECURITY.md`](WORKFLOW_SECURITY.md) | Immutable Action revisions, frozen Flutter/JDK execution, least-privilege checkout credentials, reproducibility limits, and repository-setting boundaries. |
-| [`TESTING.md`](TESTING.md) | Automated test strategy, regression areas, and current evidence. |
-| [`PHASE_32_VERSION_2_0_12.md`](PHASE_32_VERSION_2_0_12.md) | Current Version 2.0.12 package/runtime/release-gate migration, qualification boundary, archive policy, and verification commands. |
-| [`FINAL_RELEASE_CANDIDATE_AUDIT.md`](FINAL_RELEASE_CANDIDATE_AUDIT.md) | Historical final Version 1.5 source audit, post-finalization 235-test/106-file CI evidence, native-build evidence, and remaining real-world stable-release boundaries. |
-| [`VERIFICATION.md`](VERIFICATION.md) | Compact latest accepted automated verification record; older Version 1.5 entries remain historical until a complete Version 2.0.12 run is recorded. |
-| [`PHASE_29_VERIFICATION.md`](PHASE_29_VERIFICATION.md) | Portable UTC timestamp hardening, Time Challenge cross-timezone integrity, absolute release-evidence timestamp enforcement, focused regressions, permanent CI, and native-matrix evidence. |
-| [`PHASE_28_VERIFICATION.md`](PHASE_28_VERIFICATION.md) | Focused immutable-workflow, frozen-toolchain, least-privilege, 225-test, Dependency Review, branding, and native-matrix evidence. |
-| [`PHASE_27_VERIFICATION.md`](PHASE_27_VERIFICATION.md) | Focused Android toolchain experiment, AGP 9.3 deferral, accepted Kotlin/Gradle subset, 217-test, and post-merge native-matrix evidence. |
-| [`PHASE_26_VERIFICATION.md`](PHASE_26_VERIFICATION.md) | Focused checkout v7, Dependency Review v5, 216-test, Web, and cross-platform Actions-runtime verification record. |
-| [`PHASE_25_VERIFICATION.md`](PHASE_25_VERIFICATION.md) | Historical Version 1.5 SDK/dependency, supply-chain, 215-test, Web, and post-maintenance native-matrix verification record. |
-| [`PHASE_18_VERIFICATION.md`](PHASE_18_VERIFICATION.md) | Focused Phase 18 bounded-expectimax, 161-test, Web/WASM, and native-matrix acceptance record. |
-| [`PHASE_17_VERIFICATION.md`](PHASE_17_VERIFICATION.md) | Focused Phase 17 trusted per-mode-record acceptance history and final 144-test Web/WASM gate. |
-| [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md) | Version 2.0.12 evidence manifest, candidate/stable readiness commands, fail-closed promotion rules, and stable-release sequence. |
-| [`QUALIFICATION_RECORDER.md`](QUALIFICATION_RECORDER.md) | Guarded CLI for listing and recording genuine manual qualification evidence without hand-editing JSON. |
-| [`QUALIFICATION_STATUS.md`](QUALIFICATION_STATUS.md) | Read-only human/JSON status reporter for the canonical 13-check manual qualification manifest, including pending-only views and strict evidence-shape validation. |
-| [`PHASE_30_VERIFICATION.md`](PHASE_30_VERIFICATION.md) | Phase 30 recorder implementation, safety boundaries, regression coverage, and manual-evidence boundary. |
-| [`PHASE_31_VERIFICATION.md`](PHASE_31_VERIFICATION.md) | Phase 31 read-only qualification reporting, canonical-check validation, regression coverage, CI integration, and evidence trust boundary. |
-| [`PHASE_31_PWA_VERIFICATION.md`](PHASE_31_PWA_VERIFICATION.md) | Phase 31 Web/PWA source metadata, semantic audit, regression coverage, and browser-qualification boundary. |
-| [`REPOSITORY_AUDIT.md`](REPOSITORY_AUDIT.md) | Permanent required-file, version/release-state, PWA, continuity-archive, temporary-workflow, and repository-local Markdown-link integrity audit used by CI. |
-| [`RELEASE_GATE_TESTING.md`](RELEASE_GATE_TESTING.md) | Process-level fixture coverage for candidate/stable release-gate acceptance and rejection paths. |
-| [`RELEASE_ARTIFACTS.md`](RELEASE_ARTIFACTS.md) | Checksummed hosted native qualification artifacts, retention, verification, packaging, and manual-evidence boundaries. |
-| [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) | Automated and manual qualification checklist before stable release. |
-| [`BRANDING.md`](BRANDING.md) | Logo/icon/splash sources and generated platform assets. |
-| [`DEPENDENCIES.md`](DEPENDENCIES.md) | Runtime/development dependency rationale and licensing notes. |
-| [`SUPPLY_CHAIN.md`](SUPPLY_CHAIN.md) | SDK floors, dependency update automation, dependency review, lockfile policy, code ownership, and acceptance checks. |
-| [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Common setup, build, save, input, replay, backup, challenge-code, localization, and platform troubleshooting. |
-| [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | Contribution architecture, localization, quality, testing, documentation, and PR requirements. |
-| [`../SECURITY.md`](../SECURITY.md) | Security-reporting and current trust boundaries. |
-| [`../SUPPORT.md`](../SUPPORT.md) | User/developer support channels and report information. |
-| [`../ROADMAP.md`](../ROADMAP.md) | Version 2.0.12 current target, remaining qualification work, and optional future work. |
-| [`../CHANGELOG.md`](../CHANGELOG.md) | Release-facing history and Unreleased changes. |
-| [`../what_changed.md`](../what_changed.md) | Active Phase 32 development/verification continuity index. |
-| [`../what_changed_archive_phase_31.md`](../what_changed_archive_phase_31.md) | Complete preserved Phase 31 qualification-status and Web/PWA hardening continuity. |
-| [`../what_changed_archive_phase_00_30.md`](../what_changed_archive_phase_00_30.md) | Verbatim detailed chronological implementation and verification history through Phase 30. |
+| [`TESTING.md`](TESTING.md) | Test strategy, regression areas, evidence rules, and manual/automated boundary. |
+| [`DEPENDENCIES.md`](DEPENDENCIES.md) | Runtime/development dependency rationale, Version 2.0.12 freeze policy, exclusions, updates, and licensing. |
+| [`SUPPLY_CHAIN.md`](SUPPLY_CHAIN.md) | SDK floors, Dependabot, dependency review, lockfile policy, code ownership, and acceptance checks. |
+| [`WORKFLOW_SECURITY.md`](WORKFLOW_SECURITY.md) | Immutable Action revisions, frozen toolchains, credential policy, reproducibility limits, and repository-setting boundaries. |
+| [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Setup, analyzer, build, save/input/replay/backup/challenge/localization/platform troubleshooting. |
+| [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | Contribution architecture, quality, tests, docs, security/privacy/accessibility, and PR requirements. |
+| [`../CODE_OF_CONDUCT.md`](../CODE_OF_CONDUCT.md) | Community participation expectations. |
+| [`../AUTHORS.md`](../AUTHORS.md) | Project authorship/credits. |
+| [`../LICENSE`](../LICENSE) | MIT license. |
 
-## Documentation principles
+## Platforms, builds, and distribution
 
-The documentation follows behavior implemented in the repository rather than describing aspirational features as complete. Historical verification entries are kept as historical evidence; newer entries supersede older test counts only after the newer source state has actually completed the corresponding maintained verification.
+| Document | Purpose |
+| --- | --- |
+| [`BUILDING_EXECUTABLES.md`](BUILDING_EXECUTABLES.md) | Complete executable/artifact handbook for Android APK/AAB, iOS app/IPA boundary, Web/PWA, Windows, macOS, Linux, signing, packaging, and checksums. |
+| [`build/README.md`](build/README.md) | Dedicated per-platform build manuals and packaging/checksum index. |
+| [`PLATFORMS.md`](PLATFORMS.md) | Android/iOS/Web/Windows/macOS/Linux setup, build commands, locale behavior, hosted-build scope, and signing boundaries. |
+| [`PWA.md`](PWA.md) | Web App Manifest/HTML install metadata, deployment, icons, regression coverage, browser storage, and installed-PWA qualification boundary. |
+| [`ANDROID_TOOLCHAIN.md`](ANDROID_TOOLCHAIN.md) | Accepted Android AGP/Kotlin/Gradle/JDK baseline, prior experiment evidence, and future upgrade acceptance policy. |
+| [`RELEASE_ARTIFACTS.md`](RELEASE_ARTIFACTS.md) | Hosted checksummed qualification artifacts, retention, verification, packaging, and evidence boundaries. |
+| [`BRANDING.md`](BRANDING.md) | Logo/icon/splash source assets and generated platform branding. |
 
-Automated build success does not imply that every physical device, assistive-technology combination, app-store signing configuration, localized layout, clipboard implementation, replay length, browser/PWA installation environment, or long-running user session has been manually validated. Those boundaries are stated explicitly in the release and verification documents.
+## CI, release, and repository-owned tools
 
-A feature should not be documented as ranked/trusted when its source policy makes it unranked or spectator-only, a configured platform should not be described as release-qualified solely because its runner files exist, and a locale should not be described as manually qualified solely because automated localization tests pass.
+| Document | Purpose |
+| --- | --- |
+| [`CI_CD.md`](CI_CD.md) | Permanent GitHub Actions quality/build/maintenance workflows and evidence boundaries. |
+| [`REPOSITORY_AUDIT.md`](REPOSITORY_AUDIT.md) | Repository integrity audit for required files, versions, PWA metadata, cleanup, and local Markdown links. |
+| [`SOURCE_COMPLETION_AUDIT.md`](SOURCE_COMPLETION_AUDIT.md) | Final 2.0.12 feature-scope audit for completion docs, roadmap/non-goals, stale current metadata, and unresolved product TODO/FIXME comments. |
+| [`RELEASE_GATE_TESTING.md`](RELEASE_GATE_TESTING.md) | Process-level release-readiness fixture testing. |
+| [`QUALIFICATION_STATUS.md`](QUALIFICATION_STATUS.md) | Read-only human/JSON reporter for the canonical 13-check manual qualification manifest. |
+| [`QUALIFICATION_RECORDER.md`](QUALIFICATION_RECORDER.md) | Guarded CLI for recording genuine maintainer-observed qualification evidence. |
+| [`../tool/README.md`](../tool/README.md) | Maintainer command index and final verification sequence. |
 
-## Source-of-truth boundaries
+Permanent CI runs the maintained equivalent of:
 
-- **Game rules:** `lib/domain/game_engine.dart`, `lib/domain/game_state.dart`, and `lib/domain/game_types.dart`.
-- **Localization:** `lib/core/localization/nova_localizations.dart` and `lib/core/localization/hindi_translations.dart`.
-- **Challenge-code codec:** `lib/domain/challenge_code.dart`.
-- **Portable backup codec:** `lib/domain/game_backup.dart`.
-- **Bounded Move Replay timeline:** `lib/domain/replay_timeline.dart`.
-- **Full Replay Archive protocol/player:** `lib/domain/replay_archive.dart`.
-- **Full replay capture orchestration:** `lib/app/state/app_controller.dart` and `lib/data/local_store.dart`.
-- **Portable/persisted timestamp normalization:** `lib/domain/game_state.dart`, `lib/domain/game_backup.dart`, `lib/domain/replay_archive.dart`, and `lib/domain/daily_record.dart`.
-- **Auto Play sandbox:** `lib/domain/autoplay_session.dart`.
-- **Advanced solver:** `lib/domain/expectimax_solver.dart`.
-- **Solver benchmark library:** `lib/domain/solver_benchmark.dart`.
-- **Local persistence:** `lib/data/local_store.dart`.
-- **Player session/ranking/settings orchestration:** `lib/app/state/app_controller.dart`.
-- **Per-mode record presentation:** `lib/features/statistics/statistics_screen.dart`.
-- **Application routes/localization delegates:** `lib/app/nova_app.dart`.
-- **Web/PWA shell and install metadata:** `web/index.html` and `web/manifest.json`; human deployment/qualification guidance is `PWA.md`.
-- **Current package/build version:** `pubspec.yaml` (`2.0.12+2012`).
-- **Current marketing version:** `lib/core/constants/project_info.dart` (`2.0.12`).
-- **Windows fallback version metadata:** `windows/runner/Runner.rc`.
-- **Automated quality gates:** `.github/workflows/`.
-- **Repository integrity audit:** `tool/repository_audit.dart`; human scope and maintenance guidance is `REPOSITORY_AUDIT.md`.
-- **Executable/distribution build documentation:** `BUILDING_EXECUTABLES.md` plus `build/`; actual hosted commands remain in `.github/workflows/ci.yml` and `.github/workflows/platform-builds.yml`.
-- **Hosted native qualification artifacts:** `.github/workflows/platform-builds.yml`; handling policy is `RELEASE_ARTIFACTS.md`.
-- **Stable-release evidence gate:** `tool/release_readiness.dart` plus `release_qualification.json`; human procedure is `RELEASE_QUALIFICATION.md`.
-- **Manual qualification status reporting:** `tool/release_qualification_status.dart`; command contract and trust boundary are documented in `QUALIFICATION_STATUS.md`.
-- **Development continuity:** `../what_changed.md`; preserved historical continuity is split across `../what_changed_archive_phase_31.md` and `../what_changed_archive_phase_00_30.md`.
+```bash
+flutter pub get
+dart format --output=none --set-exit-if-changed lib test tool
+flutter analyze
+flutter test --coverage
+dart run tool/release_readiness.dart --json
+dart run tool/release_qualification_status.dart --json --pending-only
+dart run tool/repository_audit.dart --json
+dart run tool/source_completion_audit.dart --json
+dart run tool/solver_benchmark.dart 8
+flutter build web --release
+```
 
-When a document and source code disagree, review current source/tests and correct the documentation in the same change. Do not silently change implementation facts in documentation to match an intended-but-unimplemented design.
+Native builds separately cover Android APK+AAB, Linux, Windows, macOS, and unsigned iOS when their workflow triggers or is manually dispatched.
 
-## Verification hierarchy
+## Current source-of-truth map
 
-For current release confidence, consult in this order:
+- **Package/build version:** `../pubspec.yaml` → `2.0.12+2012`.
+- **Marketing/in-app version:** `../lib/core/constants/project_info.dart` → `2.0.12`.
+- **Windows fallback version:** `../windows/runner/Runner.rc`.
+- **Game rules:** `../lib/domain/game_engine.dart`, `game_state.dart`, `game_types.dart`.
+- **Localization:** `../lib/core/localization/nova_localizations.dart`, `hindi_translations.dart`.
+- **Challenge Code:** `../lib/domain/challenge_code.dart`.
+- **Backup codec:** `../lib/domain/game_backup.dart`.
+- **Move Replay:** `../lib/domain/replay_timeline.dart`.
+- **Full Replay Archive:** `../lib/domain/replay_archive.dart` plus controller/local-store capture orchestration.
+- **Auto Play / solver:** `../lib/domain/autoplay_session.dart`, `expectimax_solver.dart`, `solver_benchmark.dart`.
+- **Persistence:** `../lib/data/local_store.dart`.
+- **Session/ranking/settings orchestration:** `../lib/app/state/app_controller.dart`.
+- **Web/PWA shell:** `../web/index.html`, `../web/manifest.json`.
+- **Release candidate/manual evidence:** `release_qualification.json`.
+- **Release gate:** `../tool/release_readiness.dart`.
+- **Qualification status/recorder:** `../tool/release_qualification_status.dart`, `../tool/record_release_qualification.dart`.
+- **Repository integrity:** `../tool/repository_audit.dart`.
+- **Source completion:** `../tool/source_completion_audit.dart`.
+- **Permanent automation:** `../.github/workflows/`.
+- **Current continuity:** `../what_changed.md`.
 
-1. [`PHASE_32_VERSION_2_0_12.md`](PHASE_32_VERSION_2_0_12.md) for the current version/release-contract migration and its explicit verification boundary.
-2. [`VERIFICATION.md`](VERIFICATION.md) for the latest accepted complete automated evidence; until superseded, its Version 1.5 results are historical baseline evidence only.
-3. [`FINAL_RELEASE_CANDIDATE_AUDIT.md`](FINAL_RELEASE_CANDIDATE_AUDIT.md) for the historical Version 1.5 source-controlled audit and complete CI/native evidence.
-4. [`TESTING.md`](TESTING.md) for coverage intent and regression areas.
-5. [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) for automated plus remaining manual qualification.
-6. [`../what_changed.md`](../what_changed.md) for active Phase 32 continuity, [`../what_changed_archive_phase_31.md`](../what_changed_archive_phase_31.md) for Phase 31, and [`../what_changed_archive_phase_00_30.md`](../what_changed_archive_phase_00_30.md) for Phases 0–30.
+When documentation and current source disagree, current source/tests determine behavior and the documentation must be corrected in the same maintenance change. Historical verification files remain historical and must not be rewritten to pretend their run IDs/test counts apply to a newer source state.
+
+## Historical verification records
+
+These files preserve important development and verification history. They are **not** the primary current Version 2.0.12 source-status documents:
+
+- [`FINAL_RELEASE_CANDIDATE_AUDIT.md`](FINAL_RELEASE_CANDIDATE_AUDIT.md) — historical final Version 1.5 audit.
+- [`FINAL_1_5_AUTOMATED_VERIFICATION.md`](FINAL_1_5_AUTOMATED_VERIFICATION.md) — historical Version 1.5 automation record.
+- [`PHASE_17_VERIFICATION.md`](PHASE_17_VERIFICATION.md)
+- [`PHASE_18_VERIFICATION.md`](PHASE_18_VERIFICATION.md)
+- [`PHASE_20_VERIFICATION.md`](PHASE_20_VERIFICATION.md)
+- [`PHASE_21_VERIFICATION.md`](PHASE_21_VERIFICATION.md)
+- [`PHASE_24_VERIFICATION.md`](PHASE_24_VERIFICATION.md)
+- [`PHASE_25_VERIFICATION.md`](PHASE_25_VERIFICATION.md)
+- [`PHASE_26_VERIFICATION.md`](PHASE_26_VERIFICATION.md)
+- [`PHASE_27_VERIFICATION.md`](PHASE_27_VERIFICATION.md)
+- [`PHASE_28_VERIFICATION.md`](PHASE_28_VERIFICATION.md)
+- [`PHASE_29_VERIFICATION.md`](PHASE_29_VERIFICATION.md)
+- [`PHASE_30_VERIFICATION.md`](PHASE_30_VERIFICATION.md)
+- [`PHASE_31_VERIFICATION.md`](PHASE_31_VERIFICATION.md)
+- [`PHASE_31_PWA_VERIFICATION.md`](PHASE_31_PWA_VERIFICATION.md)
+
+Continuity archives:
+
+- [`../what_changed_archive_phase_00_30.md`](../what_changed_archive_phase_00_30.md) — Phases 0–30.
+- [`../what_changed_archive_phase_31.md`](../what_changed_archive_phase_31.md) — complete Phase 31 continuity.
+- [`../what_changed.md`](../what_changed.md) — active/final Phase 32 continuity.
+
+## Documentation rules after source completion
+
+- Do not add an active 2.0.12 optional-feature backlog. A deliberate new feature starts a new release scope.
+- Do not describe historical Version 1.5 automation as current 2.0.12 evidence.
+- Do not convert hosted tests/builds into physical-device, accessibility, handler, signing, provisioning, or store evidence.
+- Do not describe imported portable progress as trusted/ranked.
+- Do not describe Challenge Code checksums as authentication.
+- Do not add analytics, ads, accounts, cloud services, remote AI, camera permissions, or network dependencies silently.
+- Keep build/signing secrets outside public source.
+- Update behavior docs, privacy/security/accessibility docs, tests, and release contracts together when a future maintenance or release change actually affects them.
 
 ## Project identity
 
 - Project: **2048 Nova**
-- Current semantic version: **2.0.12**
-- Flutter package/build version: `2.0.12+2012`
-- Repository: https://github.com/sanskarIN/2048
 - Creator branding: **Made by the Sanskar**
+- Repository: https://github.com/sanskarIN/2048
 - License: MIT
 - Business: `sanskarin@outlook.in`, `sanskarin.business@gmail.com`
 - Support: `supportramsandesh@gmail.com`
+- Gumroad: https://ramsandesh.gumroad.com
 - Buy Me a Coffee: https://buymeacoffee.com/sanskarIN
-
-## Phase 20 file backup documentation
-
-- [`FILE_BACKUPS.md`](FILE_BACKUPS.md) — `.nova2048` / `.json` Game Backup file transport, byte bounds, platform behavior, macOS sandbox scope, trust model, dependency boundary, tests, and manual qualification.
-- [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md) — shared clipboard/file backup envelope and persistent unranked restore policy.
-
-Phase 20 verification: [`PHASE_20_VERIFICATION.md`](PHASE_20_VERIFICATION.md) records file-backup implementation scope, transparent CI/native failures, the AGP-9 built-in-Kotlin repair, final 189-test CI, the fully green cross-platform native matrix, and remaining real-environment release boundaries.
-
-## Phase 21 documentation note
-
-Challenge Code documentation includes offline QR rendering of the exact `NOVA1` text, presentation/trust/privacy/accessibility boundaries, focused tests, and real-device scan qualification. See [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md), [`ACCESSIBILITY.md`](ACCESSIBILITY.md), [`PRIVACY.md`](PRIVACY.md), [`DEPENDENCIES.md`](DEPENDENCIES.md), and the Phase 21 verification record.
-
-## Phase 21 verification
-
-- [`PHASE_21_VERIFICATION.md`](PHASE_21_VERIFICATION.md) — focused implementation, helper-failure, formatter, 194-test CI, native-build, QR trust/privacy/accessibility, and manual optical-scan qualification evidence for offline Challenge Code QR rendering.
