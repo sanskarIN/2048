@@ -49,11 +49,11 @@ void main() {
       ]) {
         await write(path, 'fixture\n');
       }
-      await write('pubspec.yaml', 'name: fixture\nversion: 1.5.0+15\n');
+      await write('pubspec.yaml', 'name: fixture\nversion: 2.0.12+2012\n');
       await write('CHANGELOG.md', '# Changelog\n\n## [Unreleased]\n');
       await write(
         'ROADMAP.md',
-        '# Roadmap\n\nRemaining release qualification before `1.5.0`\n',
+        '# Roadmap\n\nRemaining release qualification before `2.0.12`\n',
       );
 
       final checks = _requiredCheckIds
@@ -66,7 +66,7 @@ void main() {
                   ? 'Physical device evidence'
                   : '',
               'updatedAt': id == 'android-device'
-                  ? '2026-08-17T14:30:00'
+                  ? '2026-08-19T07:30:00'
                   : null,
             },
           )
@@ -75,7 +75,7 @@ void main() {
         'docs/release_qualification.json',
         const JsonEncoder.withIndent('  ').convert(<String, Object?>{
           'schemaVersion': 1,
-          'candidate': '1.5.0+15',
+          'candidate': '2.0.12+2012',
           'manualChecks': checks,
         }),
       );
@@ -92,6 +92,7 @@ void main() {
 
       expect(result.exitCode, 1);
       expect(output['candidateGatePassed'], isFalse);
+      expect(output['releaseTarget'], '2.0.12');
       expect(
         (output['failures'] as List<dynamic>).join('\n'),
         contains('explicit UTC or numeric offset'),
