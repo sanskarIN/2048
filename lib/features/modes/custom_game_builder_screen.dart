@@ -24,6 +24,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
   static const _moveLimits = [25, 50, 100, 150, 250, 500, 1000];
 
   final _store = CustomPresetStore();
+  final _scrollController = ScrollController();
   final _nameController = TextEditingController(text: 'My Custom Game');
   final _seedController = TextEditingController();
 
@@ -46,6 +47,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _nameController.dispose();
     _seedController.dispose();
     super.dispose();
@@ -155,6 +157,14 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
       _timeLimit = preset.timeLimitSeconds ?? 180;
       _moveLimit = preset.moveLimit ?? 250;
       _editingOriginalName = editingOriginalName;
+    });
+    _scrollToForm();
+  }
+
+  void _scrollToForm() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      _scrollController.jumpTo(_scrollController.position.minScrollExtent);
     });
   }
 
@@ -329,6 +339,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
     return NovaScaffold(
       title: _text('Custom Game Builder', 'कस्टम गेम बिल्डर'),
       body: ListView(
+        controller: _scrollController,
         padding: const EdgeInsets.all(16),
         children: [
           TextField(
