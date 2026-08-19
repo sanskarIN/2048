@@ -26,6 +26,28 @@ dart run tool/release_readiness.dart --stable --json
 
 The stable form must remain fail-closed until all 13 genuine real-world qualification records and final stable metadata are complete. See [`../docs/RELEASE_QUALIFICATION.md`](../docs/RELEASE_QUALIFICATION.md).
 
+## Qualification status reporter
+
+Show the recorded qualification state without mutating evidence:
+
+```bash
+dart run tool/release_qualification_status.dart
+```
+
+Show only pending and blocked details while preserving the full 13-check summary:
+
+```bash
+dart run tool/release_qualification_status.dart --pending-only
+```
+
+Produce machine-readable output:
+
+```bash
+dart run tool/release_qualification_status.dart --json --pending-only
+```
+
+Maintainer scripts may add `--fail-if-incomplete` when they intentionally need a distinct non-zero result until all checks pass. The reporter validates the canonical checklist, evidence shape, and explicit timestamps but never changes a status or invents manual evidence. See [`../docs/QUALIFICATION_STATUS.md`](../docs/QUALIFICATION_STATUS.md).
+
 ## Qualification evidence recorder
 
 List the current manual checks without mutation:
@@ -55,6 +77,7 @@ dart format --output=none --set-exit-if-changed lib test tool
 flutter analyze
 flutter test --coverage
 dart run tool/release_readiness.dart --json
+dart run tool/release_qualification_status.dart --json --pending-only
 dart run tool/repository_audit.dart --json
 dart run tool/solver_benchmark.dart 8
 flutter build web --release
