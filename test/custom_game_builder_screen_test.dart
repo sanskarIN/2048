@@ -19,12 +19,14 @@ void main() {
   Future<AppController> pumpBuilder(
     WidgetTester tester, {
     Locale? locale,
+    TextScaler? textScaler,
   }) async {
     final controller = AppController(store: LocalStore());
     await controller.initialize();
     await tester.pumpWidget(
       localizedTestApp(
         locale: locale,
+        textScaler: textScaler,
         routes: {'/game': (_) => const Scaffold(body: Text('Custom game'))},
         home: AppScope(
           controller: controller,
@@ -42,6 +44,15 @@ void main() {
     await tester.ensureVisible(finder);
     await tester.pumpAndSettle();
     await tester.tap(finder);
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> choosePresetAction(
+    WidgetTester tester,
+    String actionLabel,
+  ) async {
+    await tapVisible(tester, find.byTooltip('Preset actions').first);
+    await tester.tap(find.text(actionLabel).last);
     await tester.pumpAndSettle();
   }
 
@@ -85,6 +96,151 @@ void main() {
     expect(restored.single.name, 'My Saved Mode');
   });
 
+  testWidgets('edits and renames a preset without leaving the old entry', (
+    tester,
+  ) async {
+    final store = CustomPresetStore();
+    await store.save([
+      CustomGamePreset.create(
+        name: 'Edit Me',
+        style: CustomGameStyle.timed,
+        size: 5,
+        target: 4096,
+        timeLimitSeconds: 90,
+        seed: 42,
+      ),
+    ]);
+    await pumpBuilder(tester);
+
+    await choosePresetAction(tester, 'Edit preset');
+
+    final nameField = tester.widget<TextField>(find.byType(TextField).first);
+    final seedField = tester.widget<TextField>(find.byType(TextField).at(1));
+    expect(nameField.controller!.text, 'Edit Me');
+    expect(seedField.controller!.text, '42');
+    expect(find.text('Save changes'), findsOneWidget);
+    expect(find.text('Cancel edit'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField).first, 'Edited Mode');
+    await tester.enterText(find.byType(TextField).at(1), '43');
+    await tapVisible(
+      tester,
+      find.widgetWithText(OutlinedButton, 'Save changes'),
+    );
+
+    final restored = await store.load();
+    expect(restored, hasLength(1));
+    expect(restored.single.name, 'Edited Mode');
+    expect(restored.single.style, CustomGameStyle.timed);
+    expect(restored.single.size, 5);
+    expect(restored.single.target, 4096);
+    expect(restored.single.timeLimitSeconds, 90);
+    expect(restored.single.seed, 43);
+    expect(find.text('Edit Me'), findsNothing);
+    expect(find.text('Preset updated.'), findsOneWidget);
+  });
+
+  testWidgets('editing refuses to overwrite a different saved preset name', (
+    tester,
+  ) async {
+    final store = CustomPresetStore();
+    await store.save([
+      CustomGamePreset.create(
+        name: 'First',
+        style: CustomGameStyle.target,
+        size: 4,
+      ),
+      CustomGamePreset.create(
+        name: 'Second',
+        style: CustomGameStyle.endless,
+        size: 5,
+      ),
+    ]);
+    await pumpBuilder(tester);
+
+    await choosePresetAction(tester, 'Edit preset');
+    await tester.enterText(find.byType(TextField).first, 'Second');
+    await tapVisible(
+      tester,
+      find.widgetWithText(OutlinedButton, 'Save changes'),
+    );
+
+    expect(find.text('A preset with this name already exists.'), findsOneWidget);
+    final restored = await store.load();
+    expect(restored, hasLength(2));
+    expect(restored.map((preset) => preset.name), containsAll(['First', 'Second']));
+  });
+
+  testWidgets('duplicates a preset into a unique unsaved copy before saving', (
+    tester,
+  ) async {
+    final store = CustomPresetStore();
+    await store.save([
+      CustomGamePreset.create(
+        name: 'Copy Me',
+        style: CustomGameStyle.moveLimit,
+        size: 6,
+        target: 8192,
+        moveLimit: 500,
+        seed: 88,
+      ),
+    ]);
+    await pumpBuilder(tester);
+
+    await choosePresetAction(tester, 'Duplicate preset');
+
+    final nameField = tester.widget<TextField>(find.byType(TextField).first);
+    final seedField = tester.widget<TextField>(find.byType(TextField).at(1));
+    expect(nameField.controller!.text, 'Copy Me copy');
+    expect(seedField.controller!.text, '88');
+    expect(find.text('Save preset'), findsOneWidget);
+    expect(await store.load(), hasLength(1));
+
+    await tapVisible(
+      tester,
+      find.widgetWithText(OutlinedButton, 'Save preset'),
+    );
+
+    final restored = await store.load();
+    expect(restored, hasLength(2));
+    expect(
+      restored.map((preset) => preset.name),
+      containsAll(['Copy Me', 'Copy Me copy']),
+    );
+    final copy = restored.firstWhere((preset) => preset.name == 'Copy Me copy');
+    expect(copy.style, CustomGameStyle.moveLimit);
+    expect(copy.size, 6);
+    expect(copy.target, 8192);
+    expect(copy.moveLimit, 500);
+    expect(copy.seed, 88);
+  });
+
+  testWidgets('cancel edit restores the default creation form', (tester) async {
+    final store = CustomPresetStore();
+    await store.save([
+      CustomGamePreset.create(
+        name: 'Cancel Me',
+        style: CustomGameStyle.endless,
+        size: 7,
+        target: 4096,
+        seed: 7,
+      ),
+    ]);
+    await pumpBuilder(tester);
+
+    await choosePresetAction(tester, 'Edit preset');
+    await tapVisible(tester, find.widgetWithText(TextButton, 'Cancel edit'));
+
+    final nameField = tester.widget<TextField>(find.byType(TextField).first);
+    final seedField = tester.widget<TextField>(find.byType(TextField).at(1));
+    expect(nameField.controller!.text, 'My Custom Game');
+    expect(seedField.controller!.text, isEmpty);
+    expect(find.text('Save changes'), findsNothing);
+    expect(find.text('Save preset'), findsOneWidget);
+    expect(find.text('Edit cancelled.'), findsOneWidget);
+    expect(await store.load(), hasLength(1));
+  });
+
   testWidgets('delete confirmation cancels or removes only after approval', (
     tester,
   ) async {
@@ -99,7 +255,7 @@ void main() {
     ]);
     await pumpBuilder(tester);
 
-    await tapVisible(tester, find.byTooltip('Delete preset'));
+    await choosePresetAction(tester, 'Delete preset');
 
     expect(find.text('Delete preset?'), findsOneWidget);
     expect(
@@ -112,13 +268,60 @@ void main() {
     expect(find.text('Delete Me'), findsOneWidget);
     expect(await store.load(), hasLength(1));
 
-    await tapVisible(tester, find.byTooltip('Delete preset'));
+    await choosePresetAction(tester, 'Delete preset');
     await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
     await tester.pumpAndSettle();
 
     expect(find.text('Delete Me'), findsNothing);
     expect(find.text('Preset deleted.'), findsOneWidget);
     expect(await store.load(), isEmpty);
+  });
+
+  testWidgets('preset actions remain usable on narrow large-text layouts', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await CustomPresetStore().save([
+      CustomGamePreset.create(
+        name: 'Responsive Mode',
+        style: CustomGameStyle.target,
+        size: 4,
+        target: 2048,
+      ),
+    ]);
+    await pumpBuilder(tester, textScaler: TextScaler.linear(2));
+
+    await tester.ensureVisible(find.text('Responsive Mode'));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Preset actions'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    await tapVisible(tester, find.byTooltip('Preset actions'));
+    expect(find.text('Edit preset'), findsOneWidget);
+    expect(find.text('Duplicate preset'), findsOneWidget);
+    expect(find.text('Delete preset'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('preset action labels localize in Hindi', (tester) async {
+    await CustomPresetStore().save([
+      CustomGamePreset.create(
+        name: 'हिंदी मोड',
+        style: CustomGameStyle.target,
+        size: 4,
+      ),
+    ]);
+    await pumpBuilder(tester, locale: const Locale('hi'));
+
+    await tapVisible(tester, find.byTooltip('प्रीसेट क्रियाएँ'));
+
+    expect(find.text('प्रीसेट संपादित करें'), findsOneWidget);
+    expect(find.text('प्रीसेट कॉपी करें'), findsOneWidget);
+    expect(find.text('प्रीसेट हटाएँ'), findsOneWidget);
   });
 
   testWidgets('play now starts the validated default custom target game', (
