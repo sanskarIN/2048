@@ -140,13 +140,35 @@ void main() {
       expect(phase32.existsSync(), isTrue);
       expect(phase32.readAsStringSync(), contains('2.0.12+2012'));
       expect(docsIndex, contains('PHASE_32_VERSION_2_0_12.md'));
-      expect(roadmap, contains('## 2.0.12 — Current release hardening'));
+      expect(roadmap, contains('## 2.0.12 — Feature-complete source target'));
       expect(
         roadmap,
         contains('Remaining release qualification before `2.0.12`'),
       );
       expect(qualification, contains('stable `2.0.12` release'));
       expect(qualification, contains('`2.0.12+2012`'));
+    });
+
+    test('final source-completion contract remains explicit and indexed', () {
+      final audit = File('docs/FINAL_2_0_12_SOURCE_AUDIT.md');
+      final maintenance = File('docs/MAINTENANCE_POLICY.md');
+      final roadmap = File('ROADMAP.md').readAsStringSync();
+      final docsIndex = File('docs/README.md').readAsStringSync();
+
+      expect(audit.existsSync(), isTrue);
+      expect(maintenance.existsSync(), isTrue);
+      expect(
+        audit.readAsStringSync(),
+        contains('feature-complete within its declared offline-first'),
+      );
+      expect(
+        maintenance.readAsStringSync(),
+        contains('## No active feature backlog'),
+      );
+      expect(roadmap, contains('## No active post-2.0.12 feature backlog'));
+      expect(roadmap, isNot(contains('## Later — Optional expansion')));
+      expect(docsIndex, contains('FINAL_2_0_12_SOURCE_AUDIT.md'));
+      expect(docsIndex, contains('MAINTENANCE_POLICY.md'));
     });
 
     test('Web PWA metadata hardening remains source-controlled', () {
@@ -181,6 +203,8 @@ void main() {
       expect(audit, contains('2.0.12+2012'));
       expect(audit, contains('windows/runner/Runner.rc'));
       expect(audit, contains('web/manifest.json'));
+      expect(audit, contains('FINAL_2_0_12_SOURCE_AUDIT.md'));
+      expect(audit, contains('MAINTENANCE_POLICY.md'));
       expect(ci, contains('dart run tool/repository_audit.dart --json'));
     });
 
@@ -215,8 +239,9 @@ void main() {
         'lib/features/about/about_screen.dart',
       ).readAsStringSync();
 
-      expect(roadmap, contains('Version 2.0.12 migration aligns'));
+      expect(roadmap, contains('Version 2.0.12 synchronization'));
       expect(roadmap, contains('235/235 tests'));
+      expect(roadmap, contains('feature-complete'));
       expect(changelog, contains('## [Unreleased]'));
       expect(
         about,
