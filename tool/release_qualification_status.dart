@@ -3,6 +3,21 @@ import 'dart:io';
 
 const _manifestPath = 'docs/release_qualification.json';
 const _allowedStatuses = <String>{'pending', 'passed', 'blocked'};
+const _requiredCheckIds = <String>[
+  'android-device',
+  'ios-device',
+  'input-responsive',
+  'assistive-tech',
+  'long-session',
+  'autoplay-real-target',
+  'challenge-code-real-target',
+  'move-replay-real-target',
+  'full-replay-real-target',
+  'backup-real-target',
+  'external-handlers',
+  'native-branding',
+  'distribution-metadata',
+];
 
 void main(List<String> args) {
   if (args.contains('--help') || args.contains('-h')) {
@@ -134,6 +149,10 @@ _QualificationReport? _buildReport(
       errors.add('Duplicate manual check id: $id');
       continue;
     }
+    if (!_requiredCheckIds.contains(id)) {
+      errors.add('Unknown manual check id in manifest: $id');
+      continue;
+    }
     if (title is! String || title.trim().isEmpty) {
       errors.add('Manual check "$id" must have a non-empty title.');
       continue;
@@ -182,8 +201,15 @@ _QualificationReport? _buildReport(
     );
   }
 
-  if (checks.isEmpty) {
-    errors.add('$_manifestPath must contain at least one valid manual check.');
+  for (final requiredId in _requiredCheckIds) {
+    if (!ids.contains(requiredId)) {
+      errors.add('Missing required manual check id: $requiredId');
+    }
+  }
+  if (rawChecks.length != _requiredCheckIds.length) {
+    errors.add(
+      'Manifest must contain exactly ${_requiredCheckIds.length} manual checks.',
+    );
   }
   if (errors.isNotEmpty) return null;
 
