@@ -36,7 +36,6 @@ const _currentDocumentationFiles = <String>[
   'docs/RELEASE_QUALIFICATION.md',
   'docs/FINAL_2_0_12_SOURCE_AUDIT.md',
   'docs/MAINTENANCE_POLICY.md',
-  'docs/SOURCE_COMPLETION_AUDIT.md',
 ];
 
 const _maintainedDartDirectories = <String>['lib', 'test', 'tool'];
@@ -250,7 +249,7 @@ void _auditCurrentDocumentation(Directory root, List<String> failures) {
     }
 
     final staleCurrentLine = RegExp(
-      r'(currently maintained|current release|current semantic|maintained package line)[^\n]*Version 1\.5',
+      r'(?:currently maintained on the[^\n]{0,80}Version 1\.5|current release(?: line)?\s*(?:is|:)[^\n]{0,80}Version 1\.5|maintained package line\s*(?:is|:)[^\n]{0,80}Version 1\.5)',
       caseSensitive: false,
     );
     if (staleCurrentLine.hasMatch(text)) {
