@@ -36,11 +36,14 @@ const _requiredFixtureFiles = <String>[
   'docs/REPOSITORY_AUDIT.md',
   'docs/RELEASE_QUALIFICATION.md',
   'docs/QUALIFICATION_RECORDER.md',
+  'docs/QUALIFICATION_STATUS.md',
+  'docs/PHASE_31_VERIFICATION.md',
   'docs/RELEASE_CHECKLIST.md',
   'docs/BUILDING_EXECUTABLES.md',
   'tool/README.md',
   'tool/release_readiness.dart',
   'tool/record_release_qualification.dart',
+  'tool/release_qualification_status.dart',
   'tool/repository_audit.dart',
   '.github/CODEOWNERS',
   '.github/dependabot.yml',
@@ -102,7 +105,7 @@ void main() {
     await write(
       'what_changed.md',
       '# Log\n\n'
-          '- **Current phase:** Phase 30 — final fixture\n'
+          '- **Current phase:** Phase 31 — final fixture\n'
           '- stable qualification boundary remains 0/13\n',
     );
     await write(
