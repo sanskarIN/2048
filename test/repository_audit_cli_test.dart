@@ -85,6 +85,7 @@ void main() {
     String issueTracker = 'https://github.com/sanskarIN/2048/issues',
     String readme = '# Fixture\n\n[Docs](docs/README.md)\n',
     bool temporaryWorkflow = false,
+    bool temporaryPhase31Helper = false,
     bool unclosedFence = false,
   }) async {
     final root = await Directory.systemTemp.createTemp('nova-repo-audit-');
@@ -134,6 +135,14 @@ void main() {
         '.github/workflows/phase30-finalize.yml',
         'name: temporary\n',
       );
+    }
+    if (temporaryPhase31Helper) {
+      await write(
+        '.github/workflows/phase31-finalize.yml',
+        'name: temporary\n',
+      );
+      await write('docs/PHASE_31_STATUS_TRIGGER.md', 'temporary\n');
+      await write('tool/phase31_finalize.py', 'temporary\n');
     }
     if (unclosedFence) {
       await write('docs/REPOSITORY_AUDIT.md', '# Audit\n\n```text\nopen\n');
@@ -231,6 +240,18 @@ void main() {
       (result.json['failures'] as List<dynamic>).join('\n'),
       contains('Temporary repository path must not remain'),
     );
+  });
+
+  test('Phase 31 finalizer artifacts are rejected', () async {
+    final root = await fixture(temporaryPhase31Helper: true);
+
+    final result = await runAudit(root);
+
+    expect(result.process.exitCode, 1);
+    final failures = (result.json['failures'] as List<dynamic>).join('\n');
+    expect(failures, contains('.github/workflows/phase31-finalize.yml'));
+    expect(failures, contains('docs/PHASE_31_STATUS_TRIGGER.md'));
+    expect(failures, contains('tool/phase31_finalize.py'));
   });
 
   test('unclosed Markdown fence is reported as a warning', () async {
