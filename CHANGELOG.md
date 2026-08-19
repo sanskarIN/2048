@@ -18,7 +18,8 @@ This section describes the source-complete Version 2.0.12 candidate. It does not
 - Final Version 2.0.12 source-completion audit in `docs/FINAL_2_0_12_SOURCE_AUDIT.md`.
 - Post-completion maintenance/non-goal policy in `docs/MAINTENANCE_POLICY.md` so normal maintenance is not mistaken for unfinished product scope.
 - Dedicated `tool/source_completion_audit.dart` with JSON/fixture support and permanent CI execution.
-- Process-level source-completion audit regressions covering clean completion, package/candidate drift, restored optional backlog, missing final-doc indexing, unresolved product TODO/FIXME comments, obsolete current Version 1.5 metadata, and invalid CLI arguments.
+- Self-protection for the completion audit: it now requires its own CLI, regression suite, human guide, maintainer-tool index, continuity/changelog archives, and permanent CI wiring to remain present.
+- Process-level source-completion audit regressions covering clean completion, package/candidate drift, restored optional backlog, missing final-doc indexing, unresolved product/tool TODO/FIXME comments, missing CI wiring, obsolete current Version 1.5 metadata, and invalid CLI arguments.
 - Version 2.0.12 source-integrity enforcement across package metadata, in-app version, Windows fallback resources, qualification candidate, release tooling, roadmap, current-state tests, and documentation.
 - Read-only release-qualification status reporting for the canonical 13-check manifest, including JSON output, pending-only detail filtering, strict evidence/timestamp validation, and an optional fail-if-incomplete exit path.
 - Guarded release-qualification evidence recorder for genuine maintainer-observed results.
@@ -34,6 +35,7 @@ This section describes the source-complete Version 2.0.12 candidate. It does not
 - Windows fallback file/product version metadata now matches `2,0,12,2012` / `2.0.12`.
 - Release qualification candidate now matches `2.0.12+2012` while retaining all 13 real-world checks as pending until genuine evidence exists.
 - `tool/release_readiness.dart` now targets Version 2.0.12 exactly, rejects the previous release line and unrelated patch versions, exposes the release target in JSON, and keeps strict stable promotion fail-closed.
+- `tool/source_completion_audit.dart` now scans maintained Dart in `lib/`, `test/`, and `tool/` for unresolved TODO/FIXME line comments instead of limiting that guard to product source only.
 - `ROADMAP.md` is now a completion roadmap: Version 2.0.12 has no active source-feature backlog; previously optional expansion ideas are explicit non-goals unless a future release deliberately adopts them.
 - Dependency policy now uses a compatibility-first final freeze rather than last-minute freshness churn. Existing qualified pins are retained unless a concrete fix/security/compatibility need justifies a new validation cycle.
 - `SECURITY.md`, README/release documentation, qualification guides, gate-testing guide, audit documentation, and maintainer tooling now describe the Version 2.0.12 line rather than the former Version 1.5 current state.
@@ -48,6 +50,7 @@ This section describes the source-complete Version 2.0.12 candidate. It does not
 - Corrected repository-integrity/current-release regressions that still asserted the former Version 1.5 security/release line.
 - Corrected repository audit fixtures to enforce exact Version 2.0.12 package, runtime, qualification, Windows, PWA, and Phase 32 continuity contracts.
 - Corrected the current-release test after the roadmap moved from “current release hardening” to the final feature-complete source heading.
+- Corrected a completion-audit false-positive risk where documentation explaining historical/current-version validation could be mistaken for actually declaring Version 1.5 current.
 - Removed temporary one-shot Phase 30/31/32 maintenance/finalizer paths from the permanent repository contract and regression-guarded their absence.
 - Hardened Web/PWA audit behavior to fail closed on manifest identity/icon drift and required HTML metadata drift.
 
@@ -57,18 +60,20 @@ This section describes the source-complete Version 2.0.12 candidate. It does not
 - Android remains on the accepted AGP 9.1.0 / Kotlin Android 2.4.10 / Gradle 9.7.0 / JDK 17 compatibility baseline for Version 2.0.12.
 - The previously reproduced AGP 9.3.x/JDK-17 lint problem is treated as a future toolchain-maintenance concern, not unfinished Version 2.0.12 product work.
 - Android hosted builds produce both APK and AAB with SHA-256 sidecars; Linux, Windows, macOS, and unsigned iOS hosted outputs remain checksummed qualification inputs.
+- Commit `03fbdb4b` intentionally touched only the native workflow comment to trigger one final full Platform Builds matrix against the finalized repository. No success result is claimed until it is actually observed.
 - GitHub Actions remain pinned to reviewed immutable commit revisions and read-only workflows avoid persisting checkout credentials.
 
 ### Verification boundary
 
-The repository-owned formatter automation produced commit:
+Repository-owned formatter automation has previously normalized the Version 2.0.12 Dart tree, including formatter commits:
 
 ```text
 a2372253f5eb4dde16339e6c913e8581408311fc
-style: format Dart sources tests and tools
+254dc2ed3556417d6098e563c1960d84ad560aa7
+c70b464df0b8a926c7cdd91464d2afc63592bd1d
 ```
 
-This proves the maintained Dart formatter parsed and normalized the then-current `lib/`, `test/`, and `tool/` tree. It does **not** substitute for a complete analyzer/test/Web/native workflow result.
+The self-protecting completion-audit hardening was added after `c70b464d`; its push triggers the maintained formatting/CI workflows, but a newer complete result is not being inferred merely from the push. Formatter evidence also does **not** substitute for a complete analyzer/test/Web/native workflow result.
 
 The latest previously accepted complete automated/native evidence remains the historical Version 1.5 baseline:
 
