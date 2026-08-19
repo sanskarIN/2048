@@ -18,8 +18,9 @@ Completed in the current release-candidate line:
 - Trusted local **per-mode records** for best score and highest tile, including best-score board/target metadata, backward-compatible persistence, active-session reset baselines, localized Statistics presentation, and imported-backup isolation.
 - Responsive touch/keyboard UI, desktop shortcuts, themes, high contrast, reduced motion, sound/haptic toggles, accessibility semantics, and offline English/Hindi localization with persisted System/English/हिन्दी language selection.
 - Android, iOS, Web, Windows, macOS, and Linux Flutter runners.
+- Web/PWA install metadata hardening now declares stable relative app identity/start/scope, source language/direction, game categories, mobile install metadata, Apple touch icon metadata, regular/maskable 192/512 icons, and focused source regressions while keeping real installed-browser qualification explicitly manual.
 - Hosted release-build verification for Android, Linux, Windows, macOS, and unsigned iOS.
-- Expanded automated engine, persistence, controller, interaction, session-integrity, accessibility, Challenge Code, Auto Play isolation, bounded Move Replay, full-session replay protocol/capture/storage/spectator UI, portable-backup, clipboard-flow, imported-ranking, per-mode-record persistence/trust/reset, and localized UI tests.
+- Expanded automated engine, persistence, controller, interaction, session-integrity, accessibility, Challenge Code, Auto Play isolation, bounded Move Replay, full-session replay protocol/capture/storage/spectator UI, portable-backup, clipboard-flow, imported-ranking, per-mode-record persistence/trust/reset, localized UI, and Web/PWA metadata tests.
 - Complete user/technical/development/release documentation set, branding, CI, contribution/security templates, and project support/contact integration.
 - Evidence-backed release qualification infrastructure: `docs/release_qualification.json`, `docs/RELEASE_QUALIFICATION.md`, and `tool/release_readiness.dart` keep normal release-candidate CI usable while making strict stable-release mode fail until every required real-world qualification item has recorded passed evidence and release metadata is actually `1.5.0`.
 - A read-only qualification status reporter (`tool/release_qualification_status.dart`) now summarizes the canonical 13-check manifest in human or JSON form, can filter detail to pending/blocked checks without corrupting aggregate counts, validates evidence/timestamps/check IDs, supports a distinct `--fail-if-incomplete` exit path for maintainer scripts, and is regression-tested and exercised by permanent CI without fabricating manual evidence.
@@ -40,7 +41,7 @@ Remaining release qualification before `1.5.0`:
 - Real-platform Move Replay scrub/play/pause/navigation-away/accessibility checks.
 - Real-platform Full Replay Archive copy/open/manual-entry/import/scrub/play/pause/navigation-away/4,096-event-boundary/accessibility checks, including long replay responsiveness on slower devices.
 - Real-platform Game Backup clipboard copy/import plus file Save/Open/cancel/round-trip/oversize/non-UTF-8/restore/restart/Undo checks using actual clipboard, browser download/file-input, native picker, document-provider, and macOS sandbox handlers.
-- Real browser/email-handler checks for external destinations.
+- Real browser/PWA install/lifecycle plus browser/email-handler checks for external destinations.
 - Native splash/icon presentation review.
 - Distribution signing/provisioning and final store/package metadata review.
 
