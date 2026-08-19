@@ -26,14 +26,16 @@ void main(List<String> args) {
   }
 
   final errors = <String>[];
-  final unknown = args.where((arg) {
-    return arg != '--json' &&
-        arg != '--pending-only' &&
-        arg != '--fail-if-incomplete' &&
-        arg != '--help' &&
-        arg != '-h' &&
-        !arg.startsWith('--root=');
-  }).toList(growable: false);
+  final unknown = args
+      .where((arg) {
+        return arg != '--json' &&
+            arg != '--pending-only' &&
+            arg != '--fail-if-incomplete' &&
+            arg != '--help' &&
+            arg != '-h' &&
+            !arg.startsWith('--root=');
+      })
+      .toList(growable: false);
   if (unknown.isNotEmpty) {
     errors.add('Unknown argument(s): ${unknown.join(', ')}');
   }
@@ -213,7 +215,10 @@ _QualificationReport? _buildReport(
   }
   if (errors.isNotEmpty) return null;
 
-  return _QualificationReport(candidate: (candidate as String).trim(), checks: checks);
+  return _QualificationReport(
+    candidate: (candidate as String).trim(),
+    checks: checks,
+  );
 }
 
 bool _validExplicitTimestamp(String value) {
@@ -261,8 +266,12 @@ void _printHelp() {
   stdout.writeln('  dart run tool/release_qualification_status.dart [options]');
   stdout.writeln();
   stdout.writeln('Options:');
-  stdout.writeln('  --json                Emit a machine-readable JSON report.');
-  stdout.writeln('  --pending-only        Show only pending or blocked checks.');
+  stdout.writeln(
+    '  --json                Emit a machine-readable JSON report.',
+  );
+  stdout.writeln(
+    '  --pending-only        Show only pending or blocked checks.',
+  );
   stdout.writeln(
     '  --fail-if-incomplete Exit with status 3 when any check is incomplete.',
   );
