@@ -2,4 +2,4 @@
 
 Temporary source-controlled trigger for the self-removing Phase 31 documentation synchronization workflow.
 
-Final retry after Phase 31 continuity, audit, regression, and documentation source changes were committed.
+Final retry after the permanent docs index and release-qualification guide were synchronized directly.
