@@ -38,7 +38,7 @@ void main() {
   });
 
   Future<Directory> fixture({
-    String version = '1.5.0+15',
+    String version = '2.0.12+2012',
     String? candidate,
     bool stableMetadata = false,
     bool passedEvidence = false,
@@ -72,11 +72,11 @@ void main() {
     await write(
       'CHANGELOG.md',
       '# Changelog\n\n## [Unreleased]\n'
-          '${stableMetadata ? '\n## [1.5.0]\n' : ''}',
+          '${stableMetadata ? '\n## [2.0.12]\n' : ''}',
     );
     await write(
       'ROADMAP.md',
-      '# Roadmap\n\nRemaining release qualification before `1.5.0`\n',
+      '# Roadmap\n\nRemaining release qualification before `2.0.12`\n',
     );
 
     final manifestChecks =
@@ -89,7 +89,7 @@ void main() {
                 'status': passedEvidence ? 'passed' : 'pending',
                 'evidence': passedEvidence ? 'Verified fixture evidence' : '',
                 'updatedAt': passedEvidence
-                    ? '2026-08-16T12:30:00+05:30'
+                    ? '2026-08-19T07:30:00+05:30'
                     : null,
               },
             )
@@ -133,7 +133,8 @@ void main() {
 
       expect(result.process.exitCode, 0);
       expect(result.json['mode'], 'candidate');
-      expect(result.json['version'], '1.5.0+15');
+      expect(result.json['version'], '2.0.12+2012');
+      expect(result.json['releaseTarget'], '2.0.12');
       expect(result.json['candidateGatePassed'], isTrue);
       expect(result.json['readyForStable'], isFalse);
       expect(result.json['manualChecksPassed'], 0);
@@ -144,7 +145,6 @@ void main() {
 
   test('stable fixture passes with complete metadata and evidence', () async {
     final root = await fixture(
-      version: '1.5.0+15',
       stableMetadata: true,
       passedEvidence: true,
     );
@@ -157,6 +157,7 @@ void main() {
       reason: result.process.stderr.toString(),
     );
     expect(result.json['mode'], 'stable');
+    expect(result.json['releaseTarget'], '2.0.12');
     expect(result.json['candidateGatePassed'], isTrue);
     expect(result.json['readyForStable'], isTrue);
     expect(result.json['manualChecksPassed'], 13);
@@ -164,7 +165,7 @@ void main() {
   });
 
   test('stable mode fails closed while manual evidence is pending', () async {
-    final root = await fixture(version: '1.5.0', stableMetadata: true);
+    final root = await fixture(version: '2.0.12', stableMetadata: true);
 
     final result = await runGate(root, stable: true);
 
@@ -176,8 +177,8 @@ void main() {
     );
   });
 
-  test('legacy 0.9 candidate is rejected after the 1.5 migration', () async {
-    final root = await fixture(version: '0.9.99+99');
+  test('old Version 1.5 candidate is rejected after 2.0.12 migration', () async {
+    final root = await fixture(version: '1.5.0+15');
 
     final result = await runGate(root);
 
@@ -185,12 +186,25 @@ void main() {
     expect(result.json['candidateGatePassed'], isFalse);
     expect(
       (result.json['failures'] as List<dynamic>).join('\n'),
-      contains('1.5.x current release line'),
+      contains('2.0.12 release target'),
+    );
+  });
+
+  test('other 2.0 patch versions are rejected', () async {
+    final root = await fixture(version: '2.0.11+2011');
+
+    final result = await runGate(root);
+
+    expect(result.process.exitCode, 1);
+    expect(result.json['candidateGatePassed'], isFalse);
+    expect(
+      (result.json['failures'] as List<dynamic>).join('\n'),
+      contains('2.0.12 release target'),
     );
   });
 
   test('candidate mismatch is rejected', () async {
-    final root = await fixture(candidate: '1.5.99+99');
+    final root = await fixture(candidate: '2.0.12+9999');
 
     final result = await runGate(root);
 
