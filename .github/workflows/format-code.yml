@@ -41,16 +41,28 @@ jobs:
       - name: Format Dart sources, tests, and tools
         run: dart format lib test tool
 
-      - name: Commit formatting changes
+      - name: Finalize Phase 31 continuity when helper is present
+        shell: bash
         run: |
-          git add lib test tool
+          set -euo pipefail
+          if [[ -f tool/phase31_finalize.py ]]; then
+            python3 tool/phase31_finalize.py
+            rm -f tool/phase31_finalize.py .github/workflows/phase31-finalize.yml docs/PHASE_31_STATUS_TRIGGER.md
+            git show HEAD^:.github/workflows/format-code.yml > .github/workflows/format-code.yml
+          fi
+
+      - name: Commit formatting and one-shot finalization changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add lib test tool CHANGELOG.md docs what_changed.md .github/workflows/format-code.yml .github/workflows/phase31-finalize.yml
           if git diff --cached --quiet; then
-            echo "No Dart formatting changes were required."
+            echo "No Dart formatting or Phase 31 finalization changes were required."
             exit 0
           fi
           git config user.name "Sanskar"
           git config user.email "sanskarin@outlook.in"
-          git commit -m "style: format Dart sources tests and tools"
+          git commit -m "chore: finalize Phase 31 continuity"
           git reset --hard HEAD
           git clean -fd
           git pull --rebase origin main
