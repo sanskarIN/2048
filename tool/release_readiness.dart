@@ -2,6 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 const _manifestPath = 'docs/release_qualification.json';
+const _releaseVersion = '2.0.12';
+const _stableChangelogMarker = '## [2.0.12]';
+const _roadmapQualificationMarker =
+    'Remaining release qualification before `2.0.12`';
 
 const _requiredFiles = <String>[
   'README.md',
@@ -118,22 +122,16 @@ void main(List<String> args) {
     failures.add('CHANGELOG.md must keep an [Unreleased] section.');
   }
 
-  if (roadmap != null &&
-      !roadmap.contains('Remaining release qualification before `1.5.0`')) {
+  if (roadmap != null && !roadmap.contains(_roadmapQualificationMarker)) {
     failures.add(
-      'ROADMAP.md must preserve the explicit pre-1.5 release qualification boundary.',
+      'ROADMAP.md must preserve the explicit pre-$_releaseVersion release qualification boundary.',
     );
   }
 
-  if (version != null) {
-    final acceptableCandidate = RegExp(
-      r'^1\.5\.\d+(?:\+\d+)?$',
-    ).hasMatch(version);
-    if (!acceptableCandidate) {
-      failures.add(
-        'pubspec version must remain in the 1.5.x current release line while using this gate; found $version.',
-      );
-    }
+  if (version != null && !_isCurrentReleaseVersion(version)) {
+    failures.add(
+      'pubspec version must remain on the $_releaseVersion release target while using this gate; found $version.',
+    );
   }
 
   final passedChecks = checks.where((check) => check.status == 'passed').length;
@@ -144,22 +142,22 @@ void main(List<String> args) {
   var stableMetadataReady = false;
   if (version != null && changelog != null) {
     stableMetadataReady =
-        RegExp(r'^1\.5\.0(?:\+\d+)?$').hasMatch(version) &&
-        changelog.contains('## [1.5.0]');
+        _isCurrentReleaseVersion(version) &&
+        changelog.contains(_stableChangelogMarker);
   }
 
   final readyForStable =
       failures.isEmpty && allManualChecksPassed && stableMetadataReady;
 
   if (stableMode) {
-    if (version == null || !RegExp(r'^1\.5\.0(?:\+\d+)?$').hasMatch(version)) {
+    if (version == null || !_isCurrentReleaseVersion(version)) {
       failures.add(
-        'Stable mode requires pubspec.yaml version 1.5.0 (optionally with a build number).',
+        'Stable mode requires pubspec.yaml version $_releaseVersion (optionally with a numeric build number).',
       );
     }
-    if (changelog == null || !changelog.contains('## [1.5.0]')) {
+    if (changelog == null || !changelog.contains(_stableChangelogMarker)) {
       failures.add(
-        'Stable mode requires a CHANGELOG.md [1.5.0] release section.',
+        'Stable mode requires a CHANGELOG.md [$_releaseVersion] release section.',
       );
     }
     for (final check in checks) {
@@ -179,6 +177,7 @@ void main(List<String> args) {
     'mode': stableMode ? 'stable' : 'candidate',
     'root': root.path,
     'version': version,
+    'releaseTarget': _releaseVersion,
     'candidateGatePassed': failures.isEmpty,
     'readyForStable': readyForStable,
     'manualChecksPassed': passedChecks,
@@ -194,6 +193,7 @@ void main(List<String> args) {
     stdout.writeln('Mode: ${stableMode ? 'stable' : 'candidate'}');
     stdout.writeln('Root: ${root.path}');
     stdout.writeln('Version: ${version ?? 'unknown'}');
+    stdout.writeln('Release target: $_releaseVersion');
     stdout.writeln(
       'Manual evidence: $passedChecks/${_requiredManualCheckIds.length} passed',
     );
@@ -219,6 +219,12 @@ void main(List<String> args) {
   if (failures.isNotEmpty) {
     exitCode = 1;
   }
+}
+
+bool _isCurrentReleaseVersion(String version) {
+  return RegExp(
+    '^${RegExp.escape(_releaseVersion)}(?:\\+\\d+)?\$',
+  ).hasMatch(version);
 }
 
 File _fileAt(Directory root, String relativePath) {
