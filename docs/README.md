@@ -27,6 +27,7 @@ This directory is the user, technical, development, platform, and release docume
 | [`BUILDING_EXECUTABLES.md`](BUILDING_EXECUTABLES.md) | Complete artifact matrix and release-build handbook for Android APK/AAB, iOS app/IPA, Web/PWA, Windows, macOS, Linux, packaging, checksums, signing boundaries, and qualification. |
 | [`build/README.md`](build/README.md) | Dedicated per-platform build manuals and packaging/checksum guide. |
 | [`PLATFORMS.md`](PLATFORMS.md) | Android/iOS/Web/Windows/macOS/Linux setup, build commands, hosted verification, locale behavior, and signing/distribution boundaries. |
+| [`PWA.md`](PWA.md) | Web App Manifest/HTML install metadata, root/subpath deployment, icon/source contracts, regression coverage, and real-browser qualification boundary. |
 | [`ANDROID_TOOLCHAIN.md`](ANDROID_TOOLCHAIN.md) | Maintained AGP/Kotlin/Gradle baseline, AGP 9.3 deferral evidence, upgrade acceptance rules, and revisit criteria. |
 | [`CI_CD.md`](CI_CD.md) | Permanent GitHub Actions workflows, quality gates, native build matrix, and automation boundaries. |
 | [`WORKFLOW_SECURITY.md`](WORKFLOW_SECURITY.md) | Immutable Action revisions, frozen Flutter/JDK execution, least-privilege checkout credentials, reproducibility limits, and repository-setting boundaries. |
@@ -58,13 +59,14 @@ This directory is the user, technical, development, platform, and release docume
 | [`../SUPPORT.md`](../SUPPORT.md) | User/developer support channels and report information. |
 | [`../ROADMAP.md`](../ROADMAP.md) | Completed and optional future work. |
 | [`../CHANGELOG.md`](../CHANGELOG.md) | Release-facing history. |
-| [`../what_changed.md`](../what_changed.md) | Detailed chronological implementation and verification log. |
+| [`../what_changed.md`](../what_changed.md) | Current development/verification continuity index. |
+| [`../what_changed_archive_phase_00_30.md`](../what_changed_archive_phase_00_30.md) | Verbatim detailed chronological implementation and verification history through Phase 30. |
 
 ## Documentation principles
 
 The documentation follows behavior implemented in the repository rather than describing aspirational features as complete. Historical verification entries are kept as historical evidence; newer entries supersede older test counts for the current source state.
 
-Automated build success does not imply that every physical device, assistive-technology combination, app-store signing configuration, localized layout, clipboard implementation, replay length, or long-running user session has been manually validated. Those boundaries are stated explicitly in the release and verification documents.
+Automated build success does not imply that every physical device, assistive-technology combination, app-store signing configuration, localized layout, clipboard implementation, replay length, browser/PWA installation environment, or long-running user session has been manually validated. Those boundaries are stated explicitly in the release and verification documents.
 
 A feature should not be documented as ranked/trusted when its source policy makes it unranked or spectator-only, a configured platform should not be described as release-qualified solely because its runner files exist, and a locale should not be described as manually qualified solely because automated localization tests pass.
 
@@ -85,6 +87,7 @@ A feature should not be documented as ranked/trusted when its source policy make
 - **Player session/ranking/settings orchestration:** `lib/app/state/app_controller.dart`.
 - **Per-mode record presentation:** `lib/features/statistics/statistics_screen.dart`.
 - **Application routes/localization delegates:** `lib/app/nova_app.dart`.
+- **Web/PWA shell and install metadata:** `web/index.html` and `web/manifest.json`; human deployment/qualification guidance is `PWA.md`.
 - **Current package/version:** `pubspec.yaml`.
 - **Automated quality gates:** `.github/workflows/`.
 - **Repository integrity audit:** `tool/repository_audit.dart`; human scope and maintenance guidance is `REPOSITORY_AUDIT.md`.
@@ -92,6 +95,7 @@ A feature should not be documented as ranked/trusted when its source policy make
 - **Hosted native qualification artifacts:** `.github/workflows/platform-builds.yml`; handling policy is `RELEASE_ARTIFACTS.md`.
 - **Stable-release evidence gate:** `tool/release_readiness.dart` plus `release_qualification.json`; human procedure is `RELEASE_QUALIFICATION.md`.
 - **Manual qualification status reporting:** `tool/release_qualification_status.dart`; command contract and trust boundary are documented in `QUALIFICATION_STATUS.md`.
+- **Development continuity:** `../what_changed.md`; the preserved Phase 0–30 archive is `../what_changed_archive_phase_00_30.md`.
 
 When a document and source code disagree, review current source/tests and correct the documentation in the same change. Do not silently change implementation facts in documentation to match an intended-but-unimplemented design.
 
@@ -104,7 +108,7 @@ For current release confidence, consult in this order:
 3. [`PHASE_29_VERIFICATION.md`](PHASE_29_VERIFICATION.md) for the focused timestamp/release-evidence hardening acceptance record.
 4. [`TESTING.md`](TESTING.md) for coverage intent and regression areas.
 5. [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) for automated plus remaining manual qualification.
-6. [`../what_changed.md`](../what_changed.md) for the complete chronological record, including intermediate failures and fixes.
+6. [`../what_changed.md`](../what_changed.md) for the active continuity record and [`../what_changed_archive_phase_00_30.md`](../what_changed_archive_phase_00_30.md) for the complete detailed history through Phase 30.
 
 ## Project identity
 
