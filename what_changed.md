@@ -11,11 +11,11 @@ This is the active Version 2.0.12 source/release continuity record. Detailed his
 - **Current phase:** Phase 32 — Version 2.0.12 migration and final source completion.
 - **Marketing version:** `2.0.12`.
 - **Flutter package/build version:** `2.0.12+2012`.
-- **Source status:** feature-complete for the declared offline-first puzzle-game scope.
+- **Source status:** feature-complete for the declared offline-first puzzle-game scope; no active Version 2.0.12 feature backlog remains.
 - **Repository:** `https://github.com/sanskarIN/2048`.
 - **Branch:** `main`.
 - **Manual evidence:** the stable qualification boundary remains 0/13; no physical-device, assistive-technology, real browser/PWA lifecycle, external-handler, native-branding, signing/provisioning, or store evidence has been fabricated.
-- **Historical automated baseline:** Version 1.5 CI run `32018055661` with **235/235 tests** and **106 Dart files formatter-clean**; native matrix run `32015893841`. These remain historical baseline evidence until a complete maintained Version 2.0.12 verification result is actually observed and recorded.
+- **Historical automated baseline:** Version 1.5 CI run `32018055661` with **235/235 tests** and **106 Dart files formatter-clean**; native matrix run `32015893841`. These remain historical evidence until a complete maintained Version 2.0.12 verification result is actually observed and recorded.
 - **Repository governance:** issue #10 is closed as not planned for the 2.0.12 source scope; issue #12 remains open because `main` branch protection is an external GitHub repository setting and is still not enabled.
 
 The exact phrase `stable qualification boundary remains 0/13` is retained as a regression/audit contract while the live manifest remains pending.
@@ -41,32 +41,21 @@ The release gate rejects the historical release line and unrelated patch version
 
 ## Hidden migration drift fixed
 
-The final migration audit corrected old current-state assumptions in:
-
-- release-readiness fixtures;
-- release-evidence timestamp fixture;
-- qualification status/recorder fixtures;
-- repository-integrity assertions;
-- security supported-version text;
-- release qualification/checklist/testing guides;
-- dependency/tooling documentation;
-- current-release regression tests;
-- Windows resource metadata;
-- repository audit fixtures.
+The final migration audit corrected old current-state assumptions in release-readiness fixtures, release-evidence timestamp fixtures, qualification status/recorder fixtures, repository-integrity assertions, security version text, release documentation, dependency/tooling documentation, current-release regression tests, Windows resource metadata, and repository-audit fixtures.
 
 This prevents a simple version bump from passing while hidden source/tests/docs still describe an older release line.
 
 ## Source feature completion
 
-`ROADMAP.md` now identifies Version 2.0.12 as a **feature-complete source target** and contains no active post-2.0.12 feature backlog.
+`ROADMAP.md` identifies Version 2.0.12 as a **feature-complete source target** and contains no active post-2.0.12 feature backlog.
 
 The completed product scope includes deterministic gameplay/RNG, ten modes, save/resume, bounded Undo, Daily Challenge, statistics/achievements/per-mode records, Hint, isolated Heuristic/Expectimax Auto Play, Move Replay, Full Replay Archives, Game Backup, Challenge Codes + QR, English/Hindi localization, accessibility controls, themes/settings, Android/iOS/Web/Windows/macOS/Linux runners, and complete build/release/open-source tooling/documentation.
 
 Former “later” ideas are explicit non-goals unless a future release deliberately adopts them. They are not unfinished Version 2.0.12 work.
 
-## Final source-completion layer
+## Final self-protecting source-completion layer
 
-Added permanent finalization assets:
+Permanent finalization assets include:
 
 - [`docs/FINAL_2_0_12_SOURCE_AUDIT.md`](docs/FINAL_2_0_12_SOURCE_AUDIT.md);
 - [`docs/MAINTENANCE_POLICY.md`](docs/MAINTENANCE_POLICY.md);
@@ -74,56 +63,68 @@ Added permanent finalization assets:
 - `tool/source_completion_audit.dart`;
 - `test/source_completion_audit_cli_test.dart`.
 
-The source-completion audit fails closed on:
+The completion audit now fails closed on:
 
 - package/candidate drift;
-- missing final audit/maintenance/index documents;
+- missing final audit/maintenance/index/continuity/changelog assets;
+- removal of its own CLI, regression suite, documentation, maintainer-tool index, or permanent CI wiring;
 - restoration of an active optional-feature backlog;
-- stale current Version 1.5 metadata in current release-facing documents;
-- unresolved `TODO`/`FIXME` line comments in production `lib/` Dart source;
+- stale current Version 1.5 declarations in current release-facing documents;
+- unresolved `TODO`/`FIXME` line comments in maintained Dart under `lib/`, `test/`, or `tool/`;
 - malformed/unknown CLI arguments.
 
-Permanent CI now runs both:
+A follow-up correction tightened stale-version matching so prose explaining historical Version 1.5 checks cannot create a false completion failure.
+
+Permanent CI runs both:
 
 ```bash
 dart run tool/repository_audit.dart --json
 dart run tool/source_completion_audit.dart --json
 ```
 
+## Unfinished-implementation marker sweep
+
+The final repository-side sweep found no live implementation hits for common unfinished paths such as `UnimplementedError`, `UnsupportedError`, `NotImplemented`, “coming soon,” generic implementation placeholders, or unresolved product placeholder tokens.
+
+The TODO/FIXME contract is additionally enforced by the completion audit across maintained application/test/tool Dart. Fixture strings that intentionally simulate those comments remain regression data, not unfinished work.
+
+This is a source-completion guard and does not claim software can never contain an unknown defect.
+
 ## Repository-integrity expansion
 
-The repository audit now requires:
+The repository audit requires the final source audit, maintenance policy, source-completion audit guide/tool, archived pre-2.0.12 changelog, continuity archives, and the existing version/release/PWA/open-source/build/workflow assets. Its process-level fixture remains aligned with those permanent completion assets.
 
-- final source audit;
-- maintenance policy;
-- source-completion audit guide/tool;
-- archived pre-2.0.12 changelog;
-- existing version/release/PWA/continuity/open-source/build/workflow assets.
+## Android APK/AAB and native distribution protection
 
-Its process-level fixture was expanded to preserve clean and fail-closed coverage.
-
-## Android APK/AAB distribution protection
-
-The maintained Platform Builds workflow already builds and packages:
+The maintained Platform Builds workflow builds and packages:
 
 - Android release APK;
 - Android release AAB for Google Play;
-- SHA-256 sidecar for each;
-- both payloads and both sidecars in the Android qualification artifact.
+- SHA-256 sidecar for each Android output;
+- Linux release archive + checksum;
+- Windows release archive + checksum;
+- macOS release archive + checksum;
+- unsigned iOS release archive + checksum.
 
-`test/android_distribution_workflow_test.dart` protects those commands, paths, checksums, and fail-closed artifact behavior.
+`test/android_distribution_workflow_test.dart` protects the Android commands, output paths, checksums, and fail-closed artifact behavior.
+
+Commit `03fbdb4b46486da6f6421d0a67c2d45a6326d9dd` changed only the Platform Builds workflow's leading verification comment so the full native matrix is triggered against the finalized Version 2.0.12 source tree. The workflow content/build logic was otherwise preserved.
+
+A trigger is not a pass result. No successful native/CI result is recorded here unless it is actually observable.
 
 ## Changelog/documentation finalization
 
 The former long active changelog is preserved verbatim in `CHANGELOG_ARCHIVE_PRE_2_0_12.md`.
 
-Current `CHANGELOG.md` now focuses on the source-complete Version 2.0.12 candidate, and `docs/README.md` clearly separates current release documents from historical Phase/Version 1.5 verification records.
+Current `CHANGELOG.md` focuses on the source-complete Version 2.0.12 candidate, and `docs/README.md` separates current release documents from historical phase/Version 1.5 verification records.
 
-The complete current documentation set now covers user behavior, architecture, engine/modes, persistence, backups/replays/challenges, localization/accessibility/privacy/security, dependencies/supply chain, development/testing/troubleshooting, every supported executable/build target, CI/workflow security, release qualification, source completion, and maintenance policy.
+The current documentation set covers user behavior, architecture, engine/modes, persistence, backups/replays/challenges, localization/accessibility/privacy/security, dependencies/supply chain, development/testing/troubleshooting, every supported executable/build target, CI/workflow security, release qualification, source completion, and maintenance policy.
 
 ## Dependency/toolchain final freeze
 
 The final source freeze is compatibility-first. Existing pins remain unless a concrete defect/security/compatibility requirement justifies another cross-platform qualification cycle.
+
+Point-in-time dependency review on 2026-08-19 found the maintained `qr_flutter`, `shared_preferences`, and `url_launcher` pins still at their stable releases. `file_picker 11.0.3` is one newer stable patch than the pinned `11.0.2`; it is intentionally deferred because it is not required for a known 2.0.12 product fix and changing a cross-platform plugin during final freeze would require another compatibility/qualification cycle.
 
 The accepted Android baseline remains:
 
@@ -136,9 +137,9 @@ JDK 17
 
 Issue #10 is closed as **not planned** for Version 2.0.12. This records a deliberate baseline decision, not a claim that the prior AGP 9.3.x/JDK-17 lint failure was fixed.
 
-## Formatter evidence
+## Formatter and current verification evidence
 
-Repository-owned Format Dart automation has normalized the final Dart source/test/tool additions. Important formatter commits include:
+Repository-owned Format Dart automation has normalized prior finalization stages. Important formatter commits include:
 
 ```text
 a2372253  style: format Dart sources tests and tools
@@ -146,11 +147,11 @@ a2372253  style: format Dart sources tests and tools
 c70b464d  style: format Dart sources tests and tools
 ```
 
-The latest of these follows the final source-completion audit/repository-audit/test additions. Formatter success proves Dart formatter parsing/normalization for those files; it does not by itself prove analyzer/tests/Web/native builds.
+The self-protecting completion-audit hardening was added after `c70b464d`, so this record does not infer a newer formatter/analyzer/test/Web/native success merely from a push. The maintained workflows are triggered by the relevant changes; only observed results may replace the historical baseline.
 
 ## Final source-completion commit sequence
 
-The final pass after the initial Version 2.0.12 migration includes:
+The final completion work after the initial Version 2.0.12 migration includes:
 
 ```text
 9fc43029  docs: add final Version 2.0.12 source audit
@@ -172,6 +173,14 @@ a9f668a4  test: align repository audit fixtures with final completion assets
 af7dd63e  docs: finalize repository audit contract for 2.0.12
 93697d57  docs: finalize Phase 32 source completion record
 c70b464d  style: format Dart sources tests and tools
+afbad928  docs: finalize Phase 32 completion continuity
+254ef950  feat: make final source completion audit self-protecting
+cdd823a2  test: harden final source completion audit contract
+52e4d66e  docs: document self-protecting completion audit
+875b172b  fix: avoid completion audit documentation false positives
+03fbdb4b  ci: trigger final Version 2.0.12 native verification
+a64cb5bc  docs: record final completion hardening
+1a46fb46  docs: finalize self-protecting Version 2.0.12 audit
 ```
 
 Earlier Phase 32 version-migration commits remain preserved in Git history and the Phase 32 documentation.
@@ -184,12 +193,19 @@ Only actual observed evidence may update those records.
 
 ## Repository-settings boundary
 
-Issue #12 remains the only known open repository-governance issue: `main` branch protection/rulesets must be enabled in GitHub settings. Tracked files such as CI/CODEOWNERS cannot truthfully replace that setting, and the connected GitHub tool surface does not expose a branch-protection/ruleset write action.
+Issue #12 remains the only known open repository-governance issue: `main` branch protection/rulesets must be enabled in GitHub settings. Tracked files such as CI/CODEOWNERS cannot truthfully replace that setting, and the connected GitHub tool surface exposes no branch-protection/ruleset write action. A final evidence comment was added to issue #12 rather than falsely closing it.
 
 This is not missing product/source functionality.
 
-## Automated verification boundary before final PR
+## Final verification boundary
 
-At this point the final Dart completion/audit additions have been formatter-normalized, but the complete current Version 2.0.12 analyzer/test/Web/native matrix has not yet been recorded in this file.
+There is no remaining declared Version 2.0.12 source-feature backlog. The final source tree has permanent completion/release/integrity guards and a deliberately triggered native verification matrix.
 
-The final step is an explicit verification PR touching application source so both permanent CI and Platform Builds run against the completed repository. Only observed successful runs will replace the historical Version 1.5 automated baseline.
+What remains outside source completion is intentionally external or evidence-based:
+
+1. observe and record a complete successful current-head automated/native run when available;
+2. perform and record the 13 genuine real-world qualification checks;
+3. enable `main` branch protection/rulesets in GitHub repository settings;
+4. only then use the strict stable gate and final signed/store distribution flow.
+
+None of those may be fabricated or converted into “completed source features” by documentation alone.
