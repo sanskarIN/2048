@@ -96,6 +96,20 @@ Browser storage, caching, eviction, private-browsing behavior, clipboard/file ha
 
 These tests prevent accidental source drift. They are not a replacement for a real installed-PWA/browser qualification pass.
 
+## Repository integrity audit
+
+`tool/repository_audit.dart` independently protects the same source boundary at repository-maintenance time. It requires the manifest, HTML shell, favicon, all four regular/maskable icon assets, this guide, and the preserved Phase 0–30 continuity archive to exist and be non-empty.
+
+The audit also parses the manifest and checks the canonical identity/start/scope, language/direction, display/orientation policy, categories, and exact icon matrix. It checks required install-oriented HTML fragments including the Flutter base-href placeholder, mobile/Apple metadata, manifest link, touch icon, title, and bootstrap script.
+
+Run it directly with:
+
+```bash
+dart run tool/repository_audit.dart --json
+```
+
+This gives maintainers a lightweight deterministic integrity check in addition to the Flutter regression suite. It does not simulate browser installation or replace manual Web/PWA qualification.
+
 ## Release verification
 
 The maintained automated sequence continues to include:
