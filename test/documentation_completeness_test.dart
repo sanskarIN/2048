@@ -9,6 +9,7 @@ void main() {
     'docs/setup/WINDOWS.md',
     'docs/setup/MACOS.md',
     'docs/setup/LINUX.md',
+    'docs/setup/LINUX_NATIVE_TOOLCHAIN.md',
     'docs/setup/ANDROID.md',
     'docs/setup/UPGRADING_AND_SUPPORT.md',
     'docs/setup/TOOL_SUPPORT_MATRIX.md',
@@ -18,6 +19,13 @@ void main() {
     'docs/REPOSITORY_FILE_ATLAS.md',
     'docs/FILE_COVERAGE_CONTRACT.md',
     'docs/FEATURE_REFERENCE.md',
+    'docs/ARCHITECTURE_WALKTHROUGH.md',
+    'docs/NEW_CONTRIBUTOR_TUTORIAL.md',
+    'docs/ERROR_REFERENCE.md',
+    'docs/DOCUMENTATION_AUDIT_CHECKLIST.md',
+    'docs/CUSTOM_GAME_BUILDER.md',
+    'docs/VERSION_1_6_ROADMAP.md',
+    'docs/FINAL_2_0_12_INTEGRATION_AUDIT.md',
     'docs/BUILDING_EXECUTABLES.md',
     'docs/README.md',
     'what_changed.md',
@@ -203,6 +211,175 @@ void main() {
         coverage,
         contains(requiredText),
         reason: 'File coverage contract is missing: $requiredText',
+      );
+    }
+  });
+
+  test('custom game documentation is current and covers final workflows', () {
+    final customBuilder = File('docs/CUSTOM_GAME_BUILDER.md').readAsStringSync();
+
+    for (final requiredText in <String>[
+      '2.0.12+2012',
+      'Edit preset',
+      'Duplicate preset',
+      'Cancel edit',
+      'Save changes',
+      'case-insensitively unique',
+      'built-in per-mode',
+      'Challenge Code boundary',
+      'narrow',
+      'large-text',
+    ]) {
+      expect(
+        customBuilder,
+        contains(requiredText),
+        reason: 'Custom Game Builder documentation is missing: $requiredText',
+      );
+    }
+
+    expect(
+      customBuilder,
+      isNot(contains('Version 1.6 feature branch documentation')),
+    );
+    expect(
+      customBuilder,
+      isNot(contains('not part of the qualified Version 1.5 release candidate')),
+    );
+  });
+
+  test('Version 1.6 roadmap is explicitly historical instead of current', () {
+    final historicalRoadmap = File(
+      'docs/VERSION_1_6_ROADMAP.md',
+    ).readAsStringSync();
+
+    expect(historicalRoadmap, contains('Historical record'));
+    expect(historicalRoadmap, contains('2.0.12+2012'));
+    expect(historicalRoadmap, contains('closed as an active roadmap'));
+    expect(
+      historicalRoadmap,
+      isNot(contains('Version 1.5 remains the current release-candidate line')),
+    );
+  });
+
+  test('final integration audit preserves same-commit evidence boundary', () {
+    final audit = File(
+      'docs/FINAL_2_0_12_INTEGRATION_AUDIT.md',
+    ).readAsStringSync();
+
+    for (final requiredText in <String>[
+      '2.0.12+2012',
+      'f81076e614b5802af4024588047dd0ba11ce4ce6',
+      '1.5.0+15',
+      'Edit preset',
+      'Duplicate preset',
+      'same-commit',
+      '0/13',
+      'Dependency Review',
+      'Android APK + AAB',
+      'unsigned iOS',
+    ]) {
+      expect(
+        audit,
+        contains(requiredText),
+        reason: 'Final integration audit is missing: $requiredText',
+      );
+    }
+  });
+
+  test('architecture and contributor guides cover final trust boundaries', () {
+    final architecture = File(
+      'docs/ARCHITECTURE_WALKTHROUGH.md',
+    ).readAsStringSync();
+    final contributor = File(
+      'docs/NEW_CONTRIBUTOR_TUTORIAL.md',
+    ).readAsStringSync();
+
+    for (final requiredText in <String>[
+      'Custom Game Builder',
+      'imported Game Backup progress is unranked',
+      'custom sessions cannot overwrite built-in per-mode records',
+      'Full Replay Archive',
+      'Auto Play',
+      'source-complete',
+    ]) {
+      expect(
+        architecture,
+        contains(requiredText),
+        reason: 'Architecture walkthrough is missing: $requiredText',
+      );
+    }
+
+    for (final requiredText in <String>[
+      'Preserve trust boundaries',
+      'Custom Game Builder',
+      'same-commit',
+      'Conventional Commits',
+      'Do not split one inseparable code line',
+    ]) {
+      expect(
+        contributor,
+        contains(requiredText),
+        reason: 'Contributor tutorial is missing: $requiredText',
+      );
+    }
+  });
+
+  test('error reference and Linux handbook expose actionable diagnostics', () {
+    final errors = File('docs/ERROR_REFERENCE.md').readAsStringSync();
+    final linux = File(
+      'docs/setup/LINUX_NATIVE_TOOLCHAIN.md',
+    ).readAsStringSync();
+
+    for (final requiredText in <String>[
+      'flutter doctor -v',
+      'Custom presets disappear after corruption',
+      'Custom game appears in built-in mode records',
+      'APK builds but AAB fails',
+      'Stable release gate fails at 0/13',
+    ]) {
+      expect(
+        errors,
+        contains(requiredText),
+        reason: 'Error reference is missing: $requiredText',
+      );
+    }
+
+    for (final requiredText in <String>[
+      'cmake --version',
+      'ninja --version',
+      'pkg-config --modversion gtk+-3.0',
+      'flutter build linux --release',
+      'complete release bundle',
+      'Platform Builds',
+    ]) {
+      expect(
+        linux,
+        contains(requiredText),
+        reason: 'Linux native handbook is missing: $requiredText',
+      );
+    }
+  });
+
+  test('documentation audit checklist covers project release boundaries', () {
+    final checklist = File(
+      'docs/DOCUMENTATION_AUDIT_CHECKLIST.md',
+    ).readAsStringSync();
+
+    for (final requiredText in <String>[
+      'Custom Game Builder',
+      'Portable data and trust',
+      'Accessibility',
+      'Privacy/security',
+      'Build artifacts',
+      'Same-commit evidence rule',
+      'Manual qualification boundary',
+      'Open-source/community files',
+      'what_changed.md',
+    ]) {
+      expect(
+        checklist,
+        contains(requiredText),
+        reason: 'Documentation audit checklist is missing: $requiredText',
       );
     }
   });
