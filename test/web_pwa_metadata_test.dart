@@ -96,7 +96,7 @@ void main() {
     });
 
     test('index retains Flutter base-href and responsive viewport contract', () {
-      expect(indexHtml, contains('<base href="$FLUTTER_BASE_HREF">'));
+      expect(indexHtml, contains('<base href="\$FLUTTER_BASE_HREF">'));
       expect(
         indexHtml,
         contains(

@@ -240,7 +240,12 @@ void main() {
       ).readAsStringSync();
 
       expect(roadmap, contains('Version 2.0.12 synchronization'));
-      expect(roadmap, contains('235/235 tests'));
+      expect(
+        roadmap,
+        contains(
+          'latest previously accepted complete CI/native evidence remains the historical Version 1.5 baseline',
+        ),
+      );
       expect(roadmap, contains('feature-complete'));
       expect(changelog, contains('## [Unreleased]'));
       expect(
