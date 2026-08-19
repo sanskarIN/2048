@@ -1,12 +1,13 @@
 # 2048 Nova Maintainer Tools
 
-The `tool/` directory contains deterministic, repository-owned command-line utilities used for solver benchmarking and release maintenance. These tools are intended to be run from the repository root with the Dart SDK supplied by the supported Flutter toolchain.
+The `tool/` directory contains deterministic, repository-owned command-line utilities used for solver benchmarking, repository integrity, source-completion enforcement, and release maintenance. These tools are intended to be run from the repository root with the Dart SDK supplied by the supported Flutter toolchain.
 
 The current release contract is:
 
 ```text
 Marketing version: 2.0.12
 Flutter package/build version: 2.0.12+2012
+Source scope: feature-complete
 Manual qualification: 0/13 passed
 ```
 
@@ -17,6 +18,16 @@ dart run tool/repository_audit.dart --json
 ```
 
 Checks required project/open-source/release/workflow files, exact Phase 32 package/runtime/Windows/qualification version consistency, PWA metadata, continuity archives, known temporary maintenance leftovers, and repository-local Markdown destinations. See [`../docs/REPOSITORY_AUDIT.md`](../docs/REPOSITORY_AUDIT.md).
+
+## Source completion audit
+
+```bash
+dart run tool/source_completion_audit.dart --json
+```
+
+Checks the final Version 2.0.12 completion contract: exact package/candidate version, final source-audit and maintenance documents, feature-complete roadmap/no-active-backlog markers, current documentation version drift, and unresolved product `TODO`/`FIXME` line comments under `lib/`.
+
+It does not replace analyzer/tests, native builds, or real-device/manual qualification. See [`../docs/SOURCE_COMPLETION_AUDIT.md`](../docs/SOURCE_COMPLETION_AUDIT.md) and [`../docs/FINAL_2_0_12_SOURCE_AUDIT.md`](../docs/FINAL_2_0_12_SOURCE_AUDIT.md).
 
 ## Release readiness gate
 
@@ -88,11 +99,12 @@ flutter test --coverage
 dart run tool/release_readiness.dart --json
 dart run tool/release_qualification_status.dart --json --pending-only
 dart run tool/repository_audit.dart --json
+dart run tool/source_completion_audit.dart --json
 dart run tool/solver_benchmark.dart 8
 flutter build web --release
 ```
 
-For changes touching Android release configuration, also require the native matrix to build the release APK and intended store artifact on the maintained JDK/AGP/Kotlin/Gradle baseline. A production-signed artifact still requires the private local signing inputs and real-device/store qualification documented in the build guides.
+For changes touching application/native/dependency configuration, also require the native matrix to build Android APK+AAB, Linux, Windows, macOS, and unsigned iOS on the maintained baseline. A production-signed artifact still requires private local signing inputs and real-device/store qualification documented in the build guides.
 
 ## Version-change rule
 
@@ -104,11 +116,14 @@ A future version bump must not update only `pubspec.yaml`. Coordinate at least:
 - `docs/release_qualification.json` candidate;
 - `tool/release_readiness.dart` current release target;
 - `tool/repository_audit.dart` exact current version contract;
+- `tool/source_completion_audit.dart` completion/version contract when the completed release scope changes;
 - release-gate/audit/current-state fixtures;
-- README, roadmap, security/release documentation, and continuity records.
+- README, roadmap, security/release documentation, final audit/maintenance policy, and continuity records.
 
 This prevents a partially migrated release line from passing by accident.
 
 ## Maintenance rule
 
-These utilities are part of the source-controlled release contract. Changes to them must remain formatter-clean, analyzer-clean, regression-tested where applicable, documented, and compatible with the permanent CI workflow. Tool output is automated evidence only; it must never be misrepresented as physical-device, assistive-technology, signing, provisioning, external-handler, PWA/browser, or store-distribution qualification.
+These utilities are part of the source-controlled release contract. Changes to them must remain formatter-clean, analyzer-clean, regression-tested where applicable, documented, and compatible with permanent CI. Tool output is automated evidence only; it must never be misrepresented as physical-device, assistive-technology, signing, provisioning, external-handler, PWA/browser, or store-distribution qualification.
+
+After Version 2.0.12 source completion, new product functionality should start a deliberately scoped future release instead of silently weakening the source-completion audit. See [`../docs/MAINTENANCE_POLICY.md`](../docs/MAINTENANCE_POLICY.md).
