@@ -36,9 +36,13 @@ The permanent CI workflow runs the JSON form automatically.
 
 ### Required repository files
 
-The audit fails when required project, open-source, release, support, security, build, signing-safety, tooling, or workflow files are missing or empty. This includes the primary README, changelog, roadmap, license, `.gitignore`, contribution/security/support files, release-qualification files, qualification recorder/status documentation, Phase 31 verification record, build handbook, safe `android/key.properties.example` template, maintainer tooling index, repository-owned maintenance CLIs, and permanent CI workflows.
+The audit fails when required project, open-source, release, support, security, build, signing-safety, tooling, Web/PWA, continuity, or workflow files are missing or empty. This includes the primary README, changelog, roadmap, license, `.gitignore`, contribution/security/support files, release-qualification files, qualification recorder/status documentation, Phase 31 verification record, build handbook, safe `android/key.properties.example` template, maintainer tooling index, repository-owned maintenance CLIs, permanent CI workflows, Web/PWA shell/manifest/icon assets, the PWA guide, the active continuity index, and the verbatim Phase 0–30 continuity archive.
 
 Requiring `.gitignore` and the Android signing template protects the documented boundary in which real `android/key.properties`, `*.jks`, and `*.keystore` material stays outside the public repository while maintainers still have a reproducible production-signing setup path.
+
+Requiring the Web/PWA shell, manifest, favicon, regular/maskable icon matrix, and PWA guide protects the install-oriented source contract from accidental file deletion. Semantic manifest and HTML metadata are additionally covered by `test/web_pwa_metadata_test.dart`.
+
+Requiring `what_changed_archive_phase_00_30.md` prevents the compact active continuity index from accidentally replacing the detailed historical implementation/verification record.
 
 ### Release-state consistency
 
@@ -52,7 +56,7 @@ The audit checks that:
 - the continuity log identifies the current Phase 31 state;
 - the continuity log preserves the explicit `0/13` real-world qualification boundary while those checks remain pending.
 
-This supplements, rather than replaces, the stricter semantic validation performed by `tool/release_readiness.dart` and the canonical check/evidence validation performed by `tool/release_qualification_status.dart`.
+This supplements, rather than replaces, the stricter semantic validation performed by `tool/release_readiness.dart`, the canonical check/evidence validation performed by `tool/release_qualification_status.dart`, and the focused Web/PWA metadata assertions in `test/web_pwa_metadata_test.dart`.
 
 ### Temporary workflow cleanup
 
@@ -60,7 +64,7 @@ Known one-shot Phase 30 and Phase 31 helper paths are forbidden from remaining i
 
 ### Local Markdown links
 
-The audit scans top-level Markdown plus Markdown under `docs/`, `.github/`, and `tool/`, and validates local file/directory destinations.
+The audit scans top-level Markdown plus Markdown under `docs/`, `.github/`, and `tool/`, and validates local file/directory destinations. Because the archived Phase 0–30 log remains at repository root, its historical relative links retain their original resolution base and are audited with current root documentation.
 
 It ignores:
 
@@ -81,20 +85,20 @@ The repository audit has a narrow role:
 | --- | --- |
 | `dart format` | Dart source formatting |
 | `flutter analyze` | Dart/Flutter static analysis and linting |
-| `flutter test --coverage` | Unit, domain, persistence, widget, localization, workflow, and regression behavior |
+| `flutter test --coverage` | Unit, domain, persistence, widget, localization, workflow, Web/PWA metadata, and regression behavior |
 | `tool/release_readiness.dart` | Candidate/stable release metadata and stable manual-evidence gate |
 | `tool/release_qualification_status.dart` | Read-only canonical manual-qualification status/evidence-shape reporting |
-| `tool/repository_audit.dart` | Required-file, signing-safety, local-doc-link, temporary-file, and release-state drift |
+| `tool/repository_audit.dart` | Required-file, signing-safety, Web/PWA source, continuity-archive, local-doc-link, temporary-file, and release-state drift |
 | `tool/solver_benchmark.dart` | Deterministic solver smoke/regression behavior |
 | Flutter Web/native builds | Build-system and target compilation compatibility |
 
-A green repository audit or status report does not mean the application is physically qualified for stable distribution.
+A green repository audit, metadata regression test, or status report does not mean the application is physically qualified for stable distribution.
 
 ## Manual boundaries remain manual
 
-The audit must never mark real-device qualification evidence as passed. Physical Android/iOS testing, assistive-technology checks, clipboard/file/browser/email handlers, long-session checks, native branding review, signing/provisioning, and distribution/store metadata still require genuine representative-environment evidence in `docs/release_qualification.json`.
+The audit must never mark real-device qualification evidence as passed. Physical Android/iOS testing, assistive-technology checks, clipboard/file/browser/email handlers, installed-PWA/browser behavior, long-session checks, native branding review, signing/provisioning, and distribution/store metadata still require genuine representative-environment evidence in `docs/release_qualification.json`.
 
-Use the read-only reporter described in [`QUALIFICATION_STATUS.md`](QUALIFICATION_STATUS.md) to inspect what remains. Use the guarded recorder described in [`QUALIFICATION_RECORDER.md`](QUALIFICATION_RECORDER.md) only after a check has actually been performed.
+Use the read-only reporter described in [`QUALIFICATION_STATUS.md`](QUALIFICATION_STATUS.md) to inspect what remains. Use the guarded recorder described in [`QUALIFICATION_RECORDER.md`](QUALIFICATION_RECORDER.md) only after a check has actually been performed. Web/PWA deployment and install boundaries are documented in [`PWA.md`](PWA.md).
 
 ## Adding new documentation
 
@@ -114,4 +118,4 @@ If the audit reports a broken link, fix the document or the intended file path. 
 
 ## Scope discipline
 
-This tool intentionally avoids becoming a general internet crawler, package vulnerability scanner, code formatter, or store-release publisher. Those concerns already have dedicated workflows, tools, or manual qualification boundaries. Keeping the audit deterministic and repository-local makes failures reproducible on every supported development host with Dart available.
+This tool intentionally avoids becoming a general internet crawler, package vulnerability scanner, code formatter, browser-install simulator, or store-release publisher. Those concerns already have dedicated workflows, tools, regression tests, or manual qualification boundaries. Keeping the audit deterministic and repository-local makes failures reproducible on every supported development host with Dart available.
