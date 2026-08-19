@@ -69,7 +69,7 @@ void main() {
         },
     ];
     await manifestFile.writeAsString(
-      '${const JsonEncoder.withIndent('  ').convert(<String, Object?>{'schemaVersion': 1, 'candidate': '1.5.0+15', 'manualChecks': checks})}\n',
+      '${const JsonEncoder.withIndent('  ').convert(<String, Object?>{'schemaVersion': 1, 'candidate': '2.0.12+2012', 'manualChecks': checks})}\n',
     );
     return root;
   }
@@ -101,7 +101,7 @@ void main() {
     final result = await runStatus(root, const <String>[]);
 
     expect(result.exitCode, 0, reason: result.stderr.toString());
-    expect(result.stdout, contains('Candidate: 1.5.0+15'));
+    expect(result.stdout, contains('Candidate: 2.0.12+2012'));
     expect(
       result.stdout,
       contains('Progress: 0/13 passed, 13 pending, 0 blocked'),
@@ -121,7 +121,7 @@ void main() {
 
     expect(result.exitCode, 0, reason: result.stderr.toString());
     final report = jsonDecode(result.stdout as String) as Map<String, dynamic>;
-    expect(report['candidate'], '1.5.0+15');
+    expect(report['candidate'], '2.0.12+2012');
     expect(report['total'], 13);
     expect(report['passed'], 1);
     expect(report['pending'], 11);
