@@ -144,10 +144,7 @@ void main() {
   );
 
   test('stable fixture passes with complete metadata and evidence', () async {
-    final root = await fixture(
-      stableMetadata: true,
-      passedEvidence: true,
-    );
+    final root = await fixture(stableMetadata: true, passedEvidence: true);
 
     final result = await runGate(root, stable: true);
 
@@ -177,18 +174,21 @@ void main() {
     );
   });
 
-  test('old Version 1.5 candidate is rejected after 2.0.12 migration', () async {
-    final root = await fixture(version: '1.5.0+15');
+  test(
+    'old Version 1.5 candidate is rejected after 2.0.12 migration',
+    () async {
+      final root = await fixture(version: '1.5.0+15');
 
-    final result = await runGate(root);
+      final result = await runGate(root);
 
-    expect(result.process.exitCode, 1);
-    expect(result.json['candidateGatePassed'], isFalse);
-    expect(
-      (result.json['failures'] as List<dynamic>).join('\n'),
-      contains('2.0.12 release target'),
-    );
-  });
+      expect(result.process.exitCode, 1);
+      expect(result.json['candidateGatePassed'], isFalse);
+      expect(
+        (result.json['failures'] as List<dynamic>).join('\n'),
+        contains('2.0.12 release target'),
+      );
+    },
+  );
 
   test('other 2.0 patch versions are rejected', () async {
     final root = await fixture(version: '2.0.11+2011');

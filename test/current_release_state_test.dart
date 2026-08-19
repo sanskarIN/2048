@@ -17,7 +17,9 @@ void main() {
       expect(log, contains('32015893841'));
       expect(
         log,
-        contains('historical baseline evidence until a complete maintained Version 2.0.12'),
+        contains(
+          'historical baseline evidence until a complete maintained Version 2.0.12',
+        ),
       );
     });
 
@@ -34,7 +36,10 @@ void main() {
       expect(earlyHistory, contains('Phase 30'));
       expect(phase31History, contains('Current phase:** Phase 31'));
       expect(phase31History, contains('Semantic fail-closed PWA audit'));
-      expect(phase31History, contains('stable qualification boundary remains 0/13'));
+      expect(
+        phase31History,
+        contains('stable qualification boundary remains 0/13'),
+      );
     });
 
     test('Version 2.0.12 package and runtime metadata stay aligned', () {
@@ -90,36 +95,39 @@ void main() {
       expect(manifest, isNot(contains('"status": "passed"')));
     });
 
-    test('phase 31 qualification status reporter remains indexed and read-only', () {
-      final ci = File('.github/workflows/ci.yml').readAsStringSync();
-      final docsIndex = File('docs/README.md').readAsStringSync();
-      final qualification = File(
-        'docs/RELEASE_QUALIFICATION.md',
-      ).readAsStringSync();
-      final manifest = File(
-        'docs/release_qualification.json',
-      ).readAsStringSync();
+    test(
+      'phase 31 qualification status reporter remains indexed and read-only',
+      () {
+        final ci = File('.github/workflows/ci.yml').readAsStringSync();
+        final docsIndex = File('docs/README.md').readAsStringSync();
+        final qualification = File(
+          'docs/RELEASE_QUALIFICATION.md',
+        ).readAsStringSync();
+        final manifest = File(
+          'docs/release_qualification.json',
+        ).readAsStringSync();
 
-      expect(
-        File('tool/release_qualification_status.dart').existsSync(),
-        isTrue,
-      );
-      expect(File('docs/QUALIFICATION_STATUS.md').existsSync(), isTrue);
-      expect(File('docs/PHASE_31_VERIFICATION.md').existsSync(), isTrue);
-      expect(docsIndex, contains('QUALIFICATION_STATUS.md'));
-      expect(docsIndex, contains('PHASE_31_VERIFICATION.md'));
-      expect(
-        qualification,
-        contains('release_qualification_status.dart --pending-only'),
-      );
-      expect(
-        ci,
-        contains(
-          'dart run tool/release_qualification_status.dart --json --pending-only',
-        ),
-      );
-      expect(manifest, isNot(contains('"status": "passed"')));
-    });
+        expect(
+          File('tool/release_qualification_status.dart').existsSync(),
+          isTrue,
+        );
+        expect(File('docs/QUALIFICATION_STATUS.md').existsSync(), isTrue);
+        expect(File('docs/PHASE_31_VERIFICATION.md').existsSync(), isTrue);
+        expect(docsIndex, contains('QUALIFICATION_STATUS.md'));
+        expect(docsIndex, contains('PHASE_31_VERIFICATION.md'));
+        expect(
+          qualification,
+          contains('release_qualification_status.dart --pending-only'),
+        );
+        expect(
+          ci,
+          contains(
+            'dart run tool/release_qualification_status.dart --json --pending-only',
+          ),
+        );
+        expect(manifest, isNot(contains('"status": "passed"')));
+      },
+    );
 
     test('Phase 32 version migration documentation is source-controlled', () {
       final phase32 = File('docs/PHASE_32_VERSION_2_0_12.md');

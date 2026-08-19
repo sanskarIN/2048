@@ -42,7 +42,11 @@ void main() {
         'build/app/outputs/bundle/release/app-release.aab',
         'build/app/outputs/bundle/release/app-release.aab.sha256',
       ]) {
-        expect(workflow, contains(path), reason: 'Missing artifact path: $path');
+        expect(
+          workflow,
+          contains(path),
+          reason: 'Missing artifact path: $path',
+        );
       }
       expect(workflow, contains('name: nova-2048-android-release'));
       expect(workflow, contains('if-no-files-found: error'));

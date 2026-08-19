@@ -286,14 +286,10 @@ void _auditReleaseState(Directory root, List<String> failures) {
   }
 
   if (!windowsResources.contains('#define VERSION_AS_NUMBER 2,0,12,2012')) {
-    failures.add(
-      'Windows fallback VERSION_AS_NUMBER must be 2,0,12,2012.',
-    );
+    failures.add('Windows fallback VERSION_AS_NUMBER must be 2,0,12,2012.');
   }
   if (!windowsResources.contains('#define VERSION_AS_STRING "2.0.12"')) {
-    failures.add(
-      'Windows fallback VERSION_AS_STRING must be "2.0.12".',
-    );
+    failures.add('Windows fallback VERSION_AS_STRING must be "2.0.12".');
   }
 
   try {
@@ -379,9 +375,7 @@ void _auditWebMetadata(Directory root, List<String> failures) {
             continue;
           }
           if (icon['type'] != 'image/png') {
-            failures.add(
-              'Every web/manifest.json icon must use image/png.',
-            );
+            failures.add('Every web/manifest.json icon must use image/png.');
           }
           signatures.add('${icon['src']}|${icon['sizes']}|${icon['purpose']}');
         }

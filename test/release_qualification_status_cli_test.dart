@@ -251,9 +251,8 @@ void main() {
     final manifest = readManifest(root);
     final checks = (manifest['manualChecks'] as List<dynamic>)
         .cast<Map<String, dynamic>>();
-    checks.firstWhere(
-      (check) => check['id'] == 'android-device',
-    )['updatedAt'] = '2026-08-19T01:30:00';
+    checks.firstWhere((check) => check['id'] == 'android-device')['updatedAt'] =
+        '2026-08-19T01:30:00';
     writeManifest(root, manifest);
 
     final result = await runStatus(root, const <String>[]);
