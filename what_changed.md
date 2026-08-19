@@ -112,11 +112,22 @@ The migration audit found several source-controlled assumptions that a simple `p
 
 All of those current-state surfaces now use Version 2.0.12. The rebuilt release checklist deliberately leaves current-head automated/native checks unchecked until a complete maintained Version 2.0.12 result is actually observed.
 
+## Android distribution regression guard
+
+The maintained Platform Builds workflow already creates both Android release formats:
+
+- APK: `build/app/outputs/flutter-apk/app-release.apk`;
+- AAB: `build/app/outputs/bundle/release/app-release.aab`.
+
+It also generates SHA-256 sidecars for both and uploads all four Android distribution files. Phase 32 adds `test/android_distribution_workflow_test.dart` to guard the APK build, Play Store AAB build, checksum commands, artifact paths, and fail-closed upload policy against future workflow drift.
+
+This protects source-controlled distribution automation only; a real production-signed AAB still requires genuine signing and Play Store qualification.
+
 ## Security and maintainer documentation
 
 `SECURITY.md` now identifies Version 2.0.12 / `2.0.12+2012` as the active security-maintenance line while preserving all existing input-validation, trust, dependency, secret-management, backup, replay, QR, and signing boundaries.
 
-`tool/README.md`, `README.md`, `ROADMAP.md`, `docs/README.md`, `docs/RELEASE_QUALIFICATION.md`, `docs/REPOSITORY_AUDIT.md`, `docs/RELEASE_GATE_TESTING.md`, `docs/QUALIFICATION_STATUS.md`, and `docs/RELEASE_CHECKLIST.md` now describe the new target and its fail-closed verification boundary.
+`tool/README.md`, `README.md`, `ROADMAP.md`, `docs/README.md`, `docs/RELEASE_QUALIFICATION.md`, `docs/REPOSITORY_AUDIT.md`, `docs/RELEASE_GATE_TESTING.md`, `docs/QUALIFICATION_STATUS.md`, `docs/RELEASE_CHECKLIST.md`, and `docs/PHASE_32_VERSION_2_0_12.md` now describe the new target and its fail-closed verification boundary.
 
 ## Historical continuity preservation
 
@@ -157,6 +168,9 @@ a7351f2a  test: align repository integrity with Version 2.0.12
 c4228922  test: migrate qualification status fixtures to 2.0.12
 5ffca7a5  test: migrate qualification recorder fixtures to 2.0.12
 409c89f7  docs: align maintainer tools with Version 2.0.12
+13aa0f47  docs: finalize Phase 32 Version 2.0.12 continuity
+45516a17  test: guard Android APK and AAB distribution artifacts
+1f53533a  docs: record Version 2.0.12 Android distribution guard
 ```
 
 ## Verification boundary
