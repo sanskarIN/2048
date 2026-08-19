@@ -25,6 +25,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Refresh current main
+        run: git pull --rebase origin main
+
       - name: Apply Phase 31 documentation synchronization
         run: python3 tool/phase31_finalize.py
 
@@ -52,4 +55,5 @@ jobs:
             exit 0
           fi
           git commit -m 'docs: finalize Phase 31 qualification reporting'
+          git pull --rebase origin main
           git push origin HEAD:main
