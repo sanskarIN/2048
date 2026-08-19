@@ -57,14 +57,22 @@ void main() {
     );
     await write('CHANGELOG.md', '# Changelog\n\n## [Unreleased]\n');
     await write(
+      'CHANGELOG_ARCHIVE_PRE_2_0_12.md',
+      '# Historical changelog\n\nArchived pre-2.0.12 release history.\n',
+    );
+    await write(
       'SECURITY.md',
       '# Security\n\nThe repository is maintained on Version 2.0.12.\n',
+    );
+    await write(
+      'what_changed.md',
+      '# Continuity\n\nCurrent Phase 32 Version 2.0.12 completion state.\n',
     );
     await write('pubspec.yaml', 'name: fixture\nversion: $packageVersion\n');
     await write(
       'docs/README.md',
       '# Documentation\n\n'
-          '${indexFinalDocs ? '- FINAL_2_0_12_SOURCE_AUDIT.md\n- MAINTENANCE_POLICY.md\n' : ''}',
+          '${indexFinalDocs ? '- FINAL_2_0_12_SOURCE_AUDIT.md\n- MAINTENANCE_POLICY.md\n- SOURCE_COMPLETION_AUDIT.md\n' : ''}',
     );
     await write(
       'docs/DEPENDENCIES.md',
@@ -92,6 +100,11 @@ void main() {
       '# Qualification\n\nStable Version 2.0.12 requires real evidence.\n',
     );
     await write(
+      'docs/SOURCE_COMPLETION_AUDIT.md',
+      '# Source completion audit\n\n'
+          'Regression coverage: test/source_completion_audit_cli_test.dart\n',
+    );
+    await write(
       'docs/release_qualification.json',
       '${const JsonEncoder.withIndent('  ').convert(<String, Object?>{
         'schemaVersion': 1,
@@ -106,6 +119,23 @@ void main() {
       unresolvedProductTodo
           ? '// TODO: finish product work\nvoid main() {}\n'
           : 'void main() {}\n',
+    );
+    await write(
+      'test/source_completion_audit_cli_test.dart',
+      'void fixtureRegressionMarker() {}\n',
+    );
+    await write(
+      'tool/README.md',
+      '# Tooling\n\n- source_completion_audit.dart\n',
+    );
+    await write(
+      'tool/source_completion_audit.dart',
+      'void fixtureAuditMarker() {}\n',
+    );
+    await write(
+      '.github/workflows/ci.yml',
+      'name: Fixture CI\n'
+          '# dart run tool/source_completion_audit.dart --json\n',
     );
 
     return root;
@@ -175,6 +205,7 @@ void main() {
     final failures = (result.json['failures'] as List<dynamic>).join('\n');
     expect(failures, contains('FINAL_2_0_12_SOURCE_AUDIT.md'));
     expect(failures, contains('MAINTENANCE_POLICY.md'));
+    expect(failures, contains('SOURCE_COMPLETION_AUDIT.md'));
   });
 
   test('unresolved product TODO comment fails closed', () async {
@@ -185,7 +216,7 @@ void main() {
     expect(result.process.exitCode, 1);
     expect(
       (result.json['failures'] as List<dynamic>).join('\n'),
-      contains('Product source contains unresolved TODO/FIXME comment'),
+      contains('Maintained Dart source contains unresolved TODO/FIXME comment'),
     );
   });
 
