@@ -44,6 +44,22 @@ Requiring the Web/PWA shell, manifest, favicon, regular/maskable icon matrix, an
 
 Requiring `what_changed_archive_phase_00_30.md` prevents the compact active continuity index from accidentally replacing the detailed historical implementation/verification record.
 
+### Web/PWA semantic consistency
+
+The audit parses `web/manifest.json` and fails closed when install-oriented source metadata drifts from the maintained contract. It verifies:
+
+- app name and short name;
+- relative install identity, start URL, and scope (`.`);
+- standalone display mode;
+- English/left-to-right manifest metadata;
+- orientation and related-application policy;
+- `games` and `entertainment` categories;
+- exactly the regular/maskable 192×192 and 512×512 PNG icon matrix.
+
+The audit also checks required `web/index.html` fragments for the document language, Flutter base-href placeholder, theme/color-scheme metadata, generic/Apple mobile install metadata, manifest/touch-icon links, title, and Flutter bootstrap script.
+
+This repository-level check complements `test/web_pwa_metadata_test.dart`: the audit gives maintainers a deterministic source-integrity command, while the focused Flutter test keeps the PWA contract inside the normal regression suite.
+
 ### Release-state consistency
 
 The audit checks that:
@@ -88,7 +104,7 @@ The repository audit has a narrow role:
 | `flutter test --coverage` | Unit, domain, persistence, widget, localization, workflow, Web/PWA metadata, and regression behavior |
 | `tool/release_readiness.dart` | Candidate/stable release metadata and stable manual-evidence gate |
 | `tool/release_qualification_status.dart` | Read-only canonical manual-qualification status/evidence-shape reporting |
-| `tool/repository_audit.dart` | Required-file, signing-safety, Web/PWA source, continuity-archive, local-doc-link, temporary-file, and release-state drift |
+| `tool/repository_audit.dart` | Required-file, signing-safety, Web/PWA semantic/source, continuity-archive, local-doc-link, temporary-file, and release-state drift |
 | `tool/solver_benchmark.dart` | Deterministic solver smoke/regression behavior |
 | Flutter Web/native builds | Build-system and target compilation compatibility |
 
