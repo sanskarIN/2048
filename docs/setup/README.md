@@ -25,9 +25,12 @@ Android Java/Kotlin target: JVM 17
 | [`LINUX.md`](LINUX.md) | You develop on Linux or need Android/Linux/Web setup. |
 | [`ANDROID.md`](ANDROID.md) | You want deep Android Studio/SDK/JDK/Gradle/AGP/Kotlin/APK/AAB/signing detail. |
 | [`UPGRADING_AND_SUPPORT.md`](UPGRADING_AND_SUPPORT.md) | A tool is outdated, deprecated, insecure, unsupported, or end-of-life. |
+| [`TOOL_SUPPORT_MATRIX.md`](TOOL_SUPPORT_MATRIX.md) | You want the current project baseline, version-check commands, and a fast upgrade/compatibility decision table for every major tool family. |
+| [`../DOCUMENTATION_READING_GUIDE.md`](../DOCUMENTATION_READING_GUIDE.md) | You want to understand notation, placeholders, paths, version operators, pipes, exit codes, and how to read commands safely. |
 | [`../COMMAND_REFERENCE.md`](../COMMAND_REFERENCE.md) | You want to understand what each command and flag means. |
 | [`../GLOSSARY.md`](../GLOSSARY.md) | A technical word/abbreviation is unfamiliar. |
 | [`../REPOSITORY_FILE_ATLAS.md`](../REPOSITORY_FILE_ATLAS.md) | You want a no-skip explanation of the repository and how to enumerate every tracked file. |
+| [`../FILE_COVERAGE_CONTRACT.md`](../FILE_COVERAGE_CONTRACT.md) | You want the auditable rule that defines how every tracked path is covered without relying on a stale hard-coded file count. |
 
 ## Choose by target
 
@@ -113,6 +116,8 @@ flutter test
 
 Then run the build for the target you intend to maintain.
 
+If any command notation is unclear before you execute it, read [`../DOCUMENTATION_READING_GUIDE.md`](../DOCUMENTATION_READING_GUIDE.md), then use [`../COMMAND_REFERENCE.md`](../COMMAND_REFERENCE.md) for the command-specific explanation.
+
 ## What `flutter doctor -v` does and does not prove
 
 It is a diagnostic tool that checks whether Flutter can find major platform dependencies and reports detailed versions/paths.
@@ -132,7 +137,7 @@ Those are separate checks.
 
 Do not immediately delete everything and install random latest versions.
 
-Use [`UPGRADING_AND_SUPPORT.md`](UPGRADING_AND_SUPPORT.md) to:
+Start with [`TOOL_SUPPORT_MATRIX.md`](TOOL_SUPPORT_MATRIX.md) to compare the local tool with the repository baseline and identify the correct version-check command. Then use [`UPGRADING_AND_SUPPORT.md`](UPGRADING_AND_SUPPORT.md) to:
 
 1. identify whether the tool is actually unsupported;
 2. check official compatibility requirements;
@@ -178,6 +183,16 @@ The project favors a **supported, reproducible, validated compatibility set** ov
 - chasing every newest release without qualification.
 
 Security requirements, OS/store policy deadlines, and vendor end-of-support events are valid reasons to open a maintenance migration.
+
+## No-skip repository rule
+
+The literal tracked-file inventory comes from Git:
+
+```bash
+git ls-files | sort
+```
+
+[`../FILE_COVERAGE_CONTRACT.md`](../FILE_COVERAGE_CONTRACT.md) defines how every tracked path must be covered by an exact-file or explicit file-family explanation, while [`../REPOSITORY_FILE_ATLAS.md`](../REPOSITORY_FILE_ATLAS.md) provides the detailed repository map.
 
 ## Next documentation
 
