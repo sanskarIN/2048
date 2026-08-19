@@ -50,11 +50,14 @@ void main(List<String> args) {
   }
 
   final pendingOnly = args.contains('--pending-only');
-  final outputReport = pendingOnly ? report.pendingOnly() : report;
   if (args.contains('--json')) {
-    stdout.writeln(const JsonEncoder.withIndent('  ').convert(outputReport.toJson()));
+    stdout.writeln(
+      const JsonEncoder.withIndent(
+        '  ',
+      ).convert(report.toJson(pendingOnly: pendingOnly)),
+    );
   } else {
-    _printHuman(outputReport, pendingOnly: pendingOnly);
+    _printHuman(report, pendingOnly: pendingOnly);
   }
 
   if (args.contains('--fail-if-incomplete') && !report.complete) {
@@ -193,6 +196,9 @@ bool _validExplicitTimestamp(String value) {
 }
 
 void _printHuman(_QualificationReport report, {required bool pendingOnly}) {
+  final visibleChecks = pendingOnly
+      ? report.checks.where((check) => check.status != 'passed')
+      : report.checks;
   stdout.writeln('2048 Nova release qualification status');
   stdout.writeln('Candidate: ${report.candidate}');
   stdout.writeln(
@@ -202,11 +208,11 @@ void _printHuman(_QualificationReport report, {required bool pendingOnly}) {
   stdout.writeln('Complete: ${report.complete ? 'yes' : 'no'}');
   stdout.writeln();
   stdout.writeln(pendingOnly ? 'Incomplete checks:' : 'Checks:');
-  if (report.checks.isEmpty) {
+  if (visibleChecks.isEmpty) {
     stdout.writeln('- none');
     return;
   }
-  for (final check in report.checks) {
+  for (final check in visibleChecks) {
     stdout.writeln('- ${check.id}: ${check.status} — ${check.title}');
   }
 }
@@ -254,20 +260,22 @@ class _QualificationReport {
   int get blocked => checks.where((check) => check.status == 'blocked').length;
   bool get complete => total > 0 && passed == total;
 
-  _QualificationReport pendingOnly() => _QualificationReport(
-    candidate: candidate,
-    checks: checks.where((check) => check.status != 'passed').toList(growable: false),
-  );
-
-  Map<String, Object?> toJson() => <String, Object?>{
-    'candidate': candidate,
-    'total': total,
-    'passed': passed,
-    'pending': pending,
-    'blocked': blocked,
-    'complete': complete,
-    'checks': checks.map((check) => check.toJson()).toList(growable: false),
-  };
+  Map<String, Object?> toJson({bool pendingOnly = false}) {
+    final visibleChecks = pendingOnly
+        ? checks.where((check) => check.status != 'passed')
+        : checks;
+    return <String, Object?>{
+      'candidate': candidate,
+      'total': total,
+      'passed': passed,
+      'pending': pending,
+      'blocked': blocked,
+      'complete': complete,
+      'checks': visibleChecks
+          .map((check) => check.toJson())
+          .toList(growable: false),
+    };
+  }
 }
 
 class _QualificationCheck {
