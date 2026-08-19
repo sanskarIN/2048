@@ -29,9 +29,12 @@ Phase 32 aligns:
 - `windows/runner/Runner.rc` fallback metadata — `2,0,12,2012` and `2.0.12`;
 - `docs/release_qualification.json` candidate — `2.0.12+2012`;
 - `ROADMAP.md` — current/stable target `2.0.12`;
+- `SECURITY.md` — current supported development line `2.0.12` / `2.0.12+2012`;
 - `docs/RELEASE_QUALIFICATION.md` — Version 2.0.12 stable-promotion procedure;
+- `docs/RELEASE_CHECKLIST.md` — Version 2.0.12 source/automation/manual qualification checklist;
 - `tool/release_readiness.dart` — exact Version 2.0.12 release contract;
-- `test/release_readiness_cli_test.dart` — Version 2.0.12 candidate/stable/rejection fixtures.
+- `tool/repository_audit.dart` — exact package/runtime/Windows/qualification version integrity;
+- release-readiness, timestamp, repository-integrity, qualification-status, qualification-recorder, and current-state fixtures — Version 2.0.12 expectations.
 
 ## Release-gate behavior
 
@@ -47,11 +50,47 @@ It rejects:
 - stable promotion without a `## [2.0.12]` changelog section;
 - stable promotion while any real-world qualification item remains incomplete.
 
+## Hidden migration drift corrected
+
+A coordinated version migration was necessary because the former release line appeared outside `pubspec.yaml`. Phase 32 corrected stale current-state assumptions in:
+
+- release timestamp fixtures;
+- repository-integrity security-policy assertions;
+- qualification status and recorder fixtures;
+- release-gate testing documentation;
+- qualification-status documentation;
+- release checklist state;
+- security supported-version policy;
+- maintainer tooling documentation.
+
+This prevents the Version 2.0.12 candidate from failing tests for unrelated old-version assertions or presenting historical Version 1.5 automation as current-head evidence.
+
+## Android distribution artifact guard
+
+The maintained Platform Builds workflow already produces both Android distribution formats:
+
+```text
+APK: build/app/outputs/flutter-apk/app-release.apk
+AAB: build/app/outputs/bundle/release/app-release.aab
+```
+
+It also generates SHA-256 sidecars for both payloads and uploads all four files in the `nova-2048-android-release` qualification artifact.
+
+Phase 32 adds `test/android_distribution_workflow_test.dart` so the repository regression suite explicitly fails if a future workflow edit silently drops:
+
+- the APK release build;
+- the Play Store AAB release build;
+- either SHA-256 sidecar;
+- either uploaded Android distribution payload;
+- the fail-closed `if-no-files-found: error` artifact policy.
+
+This is source/workflow regression protection only. It does not prove that a production-signed AAB has been accepted by Google Play.
+
 ## Qualification state
 
 The live qualification manifest remains **0/13** passed.
 
-No Phase 32 version or documentation change marks any of these as complete:
+No Phase 32 version, documentation, or workflow-regression change marks any of these as complete:
 
 - physical Android/iOS validation;
 - responsive/input validation on representative targets;
@@ -111,7 +150,7 @@ dart run tool/solver_benchmark.dart 8
 flutter build web --release
 ```
 
-Native platform builds should then be run through the maintained Platform Builds workflow.
+Native platform builds should then be run through the maintained Platform Builds workflow. The Android job must retain both `flutter build apk --release` and `flutter build appbundle --release`.
 
 ## Stable-release rule
 
