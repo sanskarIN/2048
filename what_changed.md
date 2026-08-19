@@ -244,8 +244,29 @@ f11f6e06  test: align audit fixtures with Web PWA contract
 08627b3f  docs: document Web PWA audit coverage
 0c274dce  test: guard current Web PWA hardening state
 1c9a2f6c  docs: record Web PWA hardening in roadmap
+f958e489  feat: validate Web PWA metadata in repository audit
+01d04116  test: cover semantic Web PWA audit failures
+41828683  docs: document semantic Web PWA audit checks
+e0998127  docs: add PWA integrity audit guidance
+92f4e824  test: reject Web PWA HTML language drift
+8ece20b1  docs: add Phase 31 Web PWA verification record
+f3ead8b4  docs: link focused Web PWA verification record
 ```
+
+## Semantic fail-closed PWA audit
+
+The repository audit now parses the Web App Manifest instead of checking only file presence. It verifies canonical app identity/start/scope/display/language/direction/orientation/related-app metadata, requires the `games` and `entertainment` categories, and requires exactly the regular/maskable 192/512 PNG icon matrix. It also checks required install-oriented HTML fragments including the Flutter base-href placeholder, mobile/Apple metadata, manifest/touch-icon links, title, and bootstrap script.
+
+Process-level fixture tests now prove both manifest identity drift and HTML document-language drift are rejected. The focused source verification record is [`docs/PHASE_31_PWA_VERIFICATION.md`](docs/PHASE_31_PWA_VERIFICATION.md).
+
+## Open-blocker re-verification
+
+Issue #12 was re-verified against the live `main` branch on 2026-08-19. Branch protection still reported disabled and required status checks unenforced, while the available GitHub connector still exposed no branch-protection/ruleset write operation. A fresh evidence comment was added to issue #12 rather than pretending a tracked file can enforce repository settings.
+
+Issue #10 was also re-checked against current official Android/Gradle documentation. AGP 9.3 still documents JDK 17 as the minimum/default runtime and its 9.3.1 fixed-issues section lists no public fix for the previously reproduced lint failure; newer AGP 9.4 also documents JDK 17 but changes the Gradle baseline. Without a fresh controlled Android release-build experiment proving the repository-specific failure resolved, the accepted AGP 9.1.0 baseline remains unchanged and issue #10 stays open. A fresh evidence comment was added to issue #10.
 
 ## Qualification boundary unchanged
 
 The PWA source hardening does **not** change the live real-world qualification evidence. The stable qualification boundary remains **0/13**. Browser installation UI, installed lifecycle, service-worker behavior, browser storage/caching/eviction, clipboard/file handlers, and real deployed-origin behavior still require representative manual qualification before stable-release claims are made.
+
+No newer complete maintained CI/native result was observable through the available connector for the newest commits, so the previously accepted Phase 29 evidence remains the latest recorded full verification baseline. This continuity record intentionally does not convert source inspection or synthetic fixture design into a claim that the full current head has passed all maintained jobs.
