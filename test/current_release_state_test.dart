@@ -27,7 +27,7 @@ void main() {
       final history = archive.readAsStringSync();
       expect(history, contains('# 2048 Nova — Development Log'));
       expect(history, contains('Phase 30'));
-      expect(history, contains('stable qualification boundary remains **0/13**'));
+      expect(history, contains('stable qualification boundary remains 0/13'));
     });
 
     test('verification record keeps Phase 29 ahead of Phase 28', () {
