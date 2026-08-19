@@ -33,13 +33,16 @@ const _requiredFixtureFiles = <String>[
   'AUTHORS.md',
   'analysis_options.yaml',
   'what_changed_archive_phase_00_30.md',
+  'what_changed_archive_phase_31.md',
   'android/key.properties.example',
+  'windows/runner/Runner.rc',
   'docs/PWA.md',
   'docs/REPOSITORY_AUDIT.md',
   'docs/RELEASE_QUALIFICATION.md',
   'docs/QUALIFICATION_RECORDER.md',
   'docs/QUALIFICATION_STATUS.md',
   'docs/PHASE_31_VERIFICATION.md',
+  'docs/PHASE_32_VERSION_2_0_12.md',
   'docs/RELEASE_CHECKLIST.md',
   'docs/BUILDING_EXECUTABLES.md',
   'web/index.html',
@@ -86,17 +89,20 @@ void main() {
   });
 
   Future<Directory> fixture({
-    String packageVersion = '1.5.0+15',
-    String projectVersion = '1.5.0',
+    String packageVersion = '2.0.12+2012',
+    String projectVersion = '2.0.12',
     String? candidate,
     String homepage = 'https://github.com/sanskarIN/2048',
     String repository = 'https://github.com/sanskarIN/2048',
     String issueTracker = 'https://github.com/sanskarIN/2048/issues',
     String webManifestId = '.',
     String webHtmlLang = 'en',
+    String windowsVersionNumber = '2,0,12,2012',
+    String windowsVersionString = '2.0.12',
     String readme = '# Fixture\n\n[Docs](docs/README.md)\n',
     bool temporaryWorkflow = false,
     bool temporaryPhase31Helper = false,
+    bool temporaryPhase32Helper = false,
     bool unclosedFence = false,
   }) async {
     final root = await Directory.systemTemp.createTemp('nova-repo-audit-');
@@ -117,7 +123,8 @@ void main() {
     await write(
       'what_changed.md',
       '# Log\n\n'
-          '- **Current phase:** Phase 31 — final fixture\n'
+          '- **Current phase:** Phase 32 — final fixture\n'
+          '- package candidate `2.0.12+2012`\n'
           '- stable qualification boundary remains 0/13\n',
     );
     await write(
@@ -131,6 +138,11 @@ void main() {
     await write(
       'lib/core/constants/project_info.dart',
       "class ProjectInfo {\n  static const version = '$projectVersion';\n}\n",
+    );
+    await write(
+      'windows/runner/Runner.rc',
+      '#define VERSION_AS_NUMBER $windowsVersionNumber\n'
+          '#define VERSION_AS_STRING "$windowsVersionString"\n',
     );
     await write(
       'docs/release_qualification.json',
@@ -198,6 +210,14 @@ void main() {
       await write('docs/PHASE_31_STATUS_TRIGGER.md', 'temporary\n');
       await write('tool/phase31_finalize.py', 'temporary\n');
     }
+    if (temporaryPhase32Helper) {
+      await write(
+        '.github/workflows/phase32-finalize.yml',
+        'name: temporary\n',
+      );
+      await write('docs/PHASE_32_TRIGGER.md', 'temporary\n');
+      await write('tool/phase32_finalize.py', 'temporary\n');
+    }
     if (unclosedFence) {
       await write('docs/REPOSITORY_AUDIT.md', '# Audit\n\n```text\nopen\n');
     }
@@ -219,7 +239,7 @@ void main() {
     return (process: process, json: decoded as Map<String, dynamic>);
   }
 
-  test('clean fixture passes the repository audit', () async {
+  test('clean Phase 32 fixture passes the repository audit', () async {
     final root = await fixture();
 
     final result = await runAudit(root);
@@ -229,6 +249,8 @@ void main() {
       0,
       reason: result.process.stderr.toString(),
     );
+    expect(result.json['packageVersion'], '2.0.12+2012');
+    expect(result.json['marketingVersion'], '2.0.12');
     expect(result.json['passed'], isTrue);
     expect(result.json['failures'], isEmpty);
   });
@@ -248,15 +270,39 @@ void main() {
     );
   });
 
-  test('runtime marketing-version drift is rejected', () async {
-    final root = await fixture(projectVersion: '1.5.1');
+  test('exact package build-version drift is rejected', () async {
+    final root = await fixture(packageVersion: '2.0.12+2013');
 
     final result = await runAudit(root);
 
     expect(result.process.exitCode, 1);
     expect(
       (result.json['failures'] as List<dynamic>).join('\n'),
-      contains('must match pubspec base version'),
+      contains('pubspec version must be 2.0.12+2012 for Phase 32'),
+    );
+  });
+
+  test('runtime marketing-version drift is rejected', () async {
+    final root = await fixture(projectVersion: '2.0.11');
+
+    final result = await runAudit(root);
+
+    expect(result.process.exitCode, 1);
+    expect(
+      (result.json['failures'] as List<dynamic>).join('\n'),
+      contains('must match marketing version 2.0.12'),
+    );
+  });
+
+  test('Windows fallback version drift is rejected', () async {
+    final root = await fixture(windowsVersionNumber: '2,0,12,2011');
+
+    final result = await runAudit(root);
+
+    expect(result.process.exitCode, 1);
+    expect(
+      (result.json['failures'] as List<dynamic>).join('\n'),
+      contains('Windows fallback VERSION_AS_NUMBER must be 2,0,12,2012'),
     );
   });
 
@@ -273,7 +319,7 @@ void main() {
   });
 
   test('qualification candidate drift is rejected', () async {
-    final root = await fixture(candidate: '1.5.0+99');
+    final root = await fixture(candidate: '2.0.12+9999');
 
     final result = await runAudit(root);
 
@@ -330,6 +376,18 @@ void main() {
     expect(failures, contains('.github/workflows/phase31-finalize.yml'));
     expect(failures, contains('docs/PHASE_31_STATUS_TRIGGER.md'));
     expect(failures, contains('tool/phase31_finalize.py'));
+  });
+
+  test('Phase 32 finalizer artifacts are rejected', () async {
+    final root = await fixture(temporaryPhase32Helper: true);
+
+    final result = await runAudit(root);
+
+    expect(result.process.exitCode, 1);
+    final failures = (result.json['failures'] as List<dynamic>).join('\n');
+    expect(failures, contains('.github/workflows/phase32-finalize.yml'));
+    expect(failures, contains('docs/PHASE_32_TRIGGER.md'));
+    expect(failures, contains('tool/phase32_finalize.py'));
   });
 
   test('unclosed Markdown fence is reported as a warning', () async {
