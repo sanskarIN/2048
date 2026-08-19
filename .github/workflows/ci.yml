@@ -53,6 +53,9 @@ jobs:
       - name: Verify release-candidate readiness metadata
         run: dart run tool/release_readiness.dart --json
 
+      - name: Report manual qualification status
+        run: dart run tool/release_qualification_status.dart --json --pending-only
+
       - name: Audit repository integrity and local documentation links
         run: dart run tool/repository_audit.dart --json
 
