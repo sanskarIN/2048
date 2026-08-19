@@ -1,3 +1,4 @@
+/// Canonical project identity shared by the UI and release-integrity checks.
 abstract final class ProjectInfo {
   static const name = '2048 Nova';
   static const version = '2.0.12';
