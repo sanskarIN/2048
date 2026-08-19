@@ -1,12 +1,20 @@
 {
   "name": "2048 Nova",
   "short_name": "2048 Nova",
+  "id": ".",
   "start_url": ".",
+  "scope": ".",
   "display": "standalone",
   "background_color": "#111318",
   "theme_color": "#6C4DFF",
   "description": "A modern, accessible, offline-first 2048 game by Sanskar.",
+  "lang": "en",
+  "dir": "ltr",
   "orientation": "any",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
   "prefer_related_applications": false,
   "icons": [
     {
