@@ -27,9 +27,11 @@ void main() {
     'docs/VERSION_1_6_ROADMAP.md',
     'docs/FINAL_2_0_12_INTEGRATION_AUDIT.md',
     'docs/BUILDING_EXECUTABLES.md',
+    'docs/USER_GUIDE.md',
     'docs/README.md',
     'what_changed.md',
     'what_changed_archive_phase_32.md',
+    'what_changed_archive_phase_33.md',
   ];
 
   test('complete setup and reference documentation is tracked in source tree', () {
@@ -50,19 +52,30 @@ void main() {
     expect(handbook, isNot(contains('version: 1.5.0+15')));
   });
 
-  test('setup index links lifecycle, support, command, and file references', () {
+  test('setup index links lifecycle, native Linux, and deep references', () {
     final setupIndex = File('docs/setup/README.md').readAsStringSync();
 
-    expect(setupIndex, contains('UPGRADING_AND_SUPPORT.md'));
-    expect(setupIndex, contains('TOOL_SUPPORT_MATRIX.md'));
-    expect(setupIndex, contains('../DOCUMENTATION_READING_GUIDE.md'));
-    expect(setupIndex, contains('../COMMAND_REFERENCE.md'));
-    expect(setupIndex, contains('../GLOSSARY.md'));
-    expect(setupIndex, contains('../REPOSITORY_FILE_ATLAS.md'));
-    expect(setupIndex, contains('../FILE_COVERAGE_CONTRACT.md'));
+    for (final path in <String>[
+      'LINUX_NATIVE_TOOLCHAIN.md',
+      'UPGRADING_AND_SUPPORT.md',
+      'TOOL_SUPPORT_MATRIX.md',
+      '../DOCUMENTATION_READING_GUIDE.md',
+      '../COMMAND_REFERENCE.md',
+      '../GLOSSARY.md',
+      '../REPOSITORY_FILE_ATLAS.md',
+      '../FILE_COVERAGE_CONTRACT.md',
+      '../NEW_CONTRIBUTOR_TUTORIAL.md',
+      '../ERROR_REFERENCE.md',
+    ]) {
+      expect(
+        setupIndex,
+        contains(path),
+        reason: 'Setup index does not expose $path',
+      );
+    }
   });
 
-  test('canonical docs index exposes the deep setup documentation', () {
+  test('canonical docs index exposes the complete final documentation set', () {
     final docsIndex = File('docs/README.md').readAsStringSync();
 
     for (final path in <String>[
@@ -70,6 +83,7 @@ void main() {
       'setup/WINDOWS.md',
       'setup/MACOS.md',
       'setup/LINUX.md',
+      'setup/LINUX_NATIVE_TOOLCHAIN.md',
       'setup/ANDROID.md',
       'setup/UPGRADING_AND_SUPPORT.md',
       'setup/TOOL_SUPPORT_MATRIX.md',
@@ -78,6 +92,13 @@ void main() {
       'GLOSSARY.md',
       'REPOSITORY_FILE_ATLAS.md',
       'FILE_COVERAGE_CONTRACT.md',
+      'NEW_CONTRIBUTOR_TUTORIAL.md',
+      'ARCHITECTURE_WALKTHROUGH.md',
+      'ERROR_REFERENCE.md',
+      'DOCUMENTATION_AUDIT_CHECKLIST.md',
+      'CUSTOM_GAME_BUILDER.md',
+      'FINAL_2_0_12_INTEGRATION_AUDIT.md',
+      '../what_changed_archive_phase_33.md',
     ]) {
       expect(
         docsIndex,
@@ -87,11 +108,28 @@ void main() {
     }
   });
 
+  test('canonical source map exposes custom game implementation ownership', () {
+    final docsIndex = File('docs/README.md').readAsStringSync();
+
+    for (final path in <String>[
+      '../lib/domain/custom_game_preset.dart',
+      '../lib/data/custom_preset_store.dart',
+      '../lib/features/modes/custom_game_builder_screen.dart',
+    ]) {
+      expect(
+        docsIndex,
+        contains(path),
+        reason: 'Canonical source map does not expose $path',
+      );
+    }
+  });
+
   test('feature reference covers the completed product surface', () {
     final featureReference = File('docs/FEATURE_REFERENCE.md').readAsStringSync();
 
     for (final feature in <String>[
       'Ten game modes',
+      'Custom Game Builder',
       'Save and resume',
       'Undo',
       'Hint',
@@ -110,6 +148,34 @@ void main() {
         reason: 'Feature reference is missing: $feature',
       );
     }
+
+    expect(featureReference, contains('cannot overwrite built-in per-mode'));
+    expect(featureReference, contains('Duplicate preset'));
+  });
+
+  test('user guide exposes the complete custom preset workflow and policy', () {
+    final userGuide = File('docs/USER_GUIDE.md').readAsStringSync();
+
+    for (final requiredText in <String>[
+      'Custom Game Builder',
+      'Play without saving',
+      'Save a preset',
+      'Edit a saved preset',
+      'Cancel an edit',
+      'Duplicate a saved preset',
+      'Delete a saved preset',
+      'Custom-session records',
+      'Sharing boundary',
+      'built-in per-mode',
+    ]) {
+      expect(
+        userGuide,
+        contains(requiredText),
+        reason: 'User guide is missing: $requiredText',
+      );
+    }
+
+    expect(userGuide, isNot(contains('before stable 1.0.0')));
   });
 
   test('tool lifecycle guide protects the compatibility-first workflow', () {
@@ -384,11 +450,33 @@ void main() {
     }
   });
 
-  test('active continuity points to the preserved Phase 32 archive', () {
+  test('changelog records final integration without claiming green evidence', () {
+    final changelog = File('CHANGELOG.md').readAsStringSync();
+
+    for (final requiredText in <String>[
+      'Custom Game Builder',
+      'Duplicate',
+      'selector state',
+      '1.5.0+15',
+      'same-commit',
+      '0/13',
+    ]) {
+      expect(
+        changelog,
+        contains(requiredText),
+        reason: 'Changelog is missing: $requiredText',
+      );
+    }
+
+    expect(changelog, contains('No green formatter'));
+  });
+
+  test('active continuity preserves archives and records Phase 34', () {
     final continuity = File('what_changed.md').readAsStringSync();
 
-    expect(continuity, contains('Phase 33'));
+    expect(continuity, contains('Phase 34'));
     expect(continuity, contains('what_changed_archive_phase_32.md'));
+    expect(continuity, contains('what_changed_archive_phase_33.md'));
     expect(continuity, contains('stable qualification boundary remains 0/13'));
   });
 }
