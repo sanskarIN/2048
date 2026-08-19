@@ -22,12 +22,15 @@ const _requiredPaths = <String>[
   'docs/REPOSITORY_AUDIT.md',
   'docs/RELEASE_QUALIFICATION.md',
   'docs/QUALIFICATION_RECORDER.md',
+  'docs/QUALIFICATION_STATUS.md',
+  'docs/PHASE_31_VERIFICATION.md',
   'docs/RELEASE_CHECKLIST.md',
   'docs/BUILDING_EXECUTABLES.md',
   'docs/release_qualification.json',
   'tool/README.md',
   'tool/release_readiness.dart',
   'tool/record_release_qualification.dart',
+  'tool/release_qualification_status.dart',
   'tool/repository_audit.dart',
   '.github/CODEOWNERS',
   '.github/dependabot.yml',
@@ -48,6 +51,8 @@ const _forbiddenTemporaryPaths = <String>[
   '.github/workflows/phase31-finalize.yml',
   'docs/PHASE_30_INDEX_TRIGGER.md',
   'docs/PHASE_31_TRIGGER.md',
+  'docs/PHASE_31_STATUS_TRIGGER.md',
+  'tool/phase31_finalize.py',
 ];
 
 const _canonicalPubspecMetadata = <String, String>{
@@ -250,9 +255,9 @@ void _auditReleaseState(Directory root, List<String> failures) {
     );
   }
 
-  if (!continuity.contains('**Current phase:** Phase 30')) {
+  if (!continuity.contains('**Current phase:** Phase 31')) {
     failures.add(
-      'what_changed.md must identify Phase 30 as the current phase.',
+      'what_changed.md must identify Phase 31 as the current phase.',
     );
   }
   if (!continuity.contains('stable qualification boundary remains 0/13')) {
