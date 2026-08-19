@@ -27,7 +27,9 @@ void main() {
     bool restoreOptionalBacklog = false,
     bool indexFinalDocs = true,
     bool unresolvedProductTodo = false,
+    bool unresolvedToolTodo = false,
     bool staleCurrentVersion = false,
+    bool missingCiWiring = false,
   }) async {
     final root = await Directory.systemTemp.createTemp(
       'nova-source-completion-',
@@ -57,14 +59,22 @@ void main() {
     );
     await write('CHANGELOG.md', '# Changelog\n\n## [Unreleased]\n');
     await write(
+      'CHANGELOG_ARCHIVE_PRE_2_0_12.md',
+      '# Historical changelog\n',
+    );
+    await write(
       'SECURITY.md',
       '# Security\n\nThe repository is maintained on Version 2.0.12.\n',
+    );
+    await write(
+      'what_changed.md',
+      '# Continuity\n\nVersion 2.0.12 source completion.\n',
     );
     await write('pubspec.yaml', 'name: fixture\nversion: $packageVersion\n');
     await write(
       'docs/README.md',
       '# Documentation\n\n'
-          '${indexFinalDocs ? '- FINAL_2_0_12_SOURCE_AUDIT.md\n- MAINTENANCE_POLICY.md\n' : ''}',
+          '${indexFinalDocs ? '- FINAL_2_0_12_SOURCE_AUDIT.md\n- MAINTENANCE_POLICY.md\n- SOURCE_COMPLETION_AUDIT.md\n' : ''}',
     );
     await write(
       'docs/DEPENDENCIES.md',
@@ -92,12 +102,24 @@ void main() {
       '# Qualification\n\nStable Version 2.0.12 requires real evidence.\n',
     );
     await write(
+      'docs/SOURCE_COMPLETION_AUDIT.md',
+      '# Source completion audit\n\n'
+          '`test/source_completion_audit_cli_test.dart` protects this contract.\n',
+    );
+    await write(
       'docs/release_qualification.json',
       '${const JsonEncoder.withIndent('  ').convert(<String, Object?>{
         'schemaVersion': 1,
         'candidate': candidate,
         'manualChecks': <Map<String, Object?>>[
-          for (var index = 0; index < 13; index += 1) <String, Object?>{'id': 'check-$index', 'title': 'Check $index', 'status': 'pending', 'evidence': '', 'updatedAt': null},
+          for (var index = 0; index < 13; index += 1)
+            <String, Object?>{
+              'id': 'check-$index',
+              'title': 'Check $index',
+              'status': 'pending',
+              'evidence': '',
+              'updatedAt': null,
+            },
         ],
       })}\n',
     );
@@ -106,6 +128,30 @@ void main() {
       unresolvedProductTodo
           ? '// TODO: finish product work\nvoid main() {}\n'
           : 'void main() {}\n',
+    );
+    await write(
+      'test/source_completion_audit_cli_test.dart',
+      'void main() {}\n',
+    );
+    await write(
+      'tool/README.md',
+      '# Tools\n\n`source_completion_audit.dart`\n',
+    );
+    await write(
+      'tool/source_completion_audit.dart',
+      'void main() {}\n',
+    );
+    if (unresolvedToolTodo) {
+      await write(
+        'tool/unresolved_helper.dart',
+        '// FIXME: finish maintenance helper\nvoid helper() {}\n',
+      );
+    }
+    await write(
+      '.github/workflows/ci.yml',
+      missingCiWiring
+          ? 'name: CI\n'
+          : 'name: CI\nrun: dart run tool/source_completion_audit.dart --json\n',
     );
 
     return root;
@@ -175,6 +221,7 @@ void main() {
     final failures = (result.json['failures'] as List<dynamic>).join('\n');
     expect(failures, contains('FINAL_2_0_12_SOURCE_AUDIT.md'));
     expect(failures, contains('MAINTENANCE_POLICY.md'));
+    expect(failures, contains('SOURCE_COMPLETION_AUDIT.md'));
   });
 
   test('unresolved product TODO comment fails closed', () async {
@@ -185,7 +232,33 @@ void main() {
     expect(result.process.exitCode, 1);
     expect(
       (result.json['failures'] as List<dynamic>).join('\n'),
-      contains('Product source contains unresolved TODO/FIXME comment'),
+      contains('Maintained Dart source contains unresolved TODO/FIXME comment'),
+    );
+  });
+
+  test('unresolved tool FIXME comment fails closed', () async {
+    final root = await fixture(unresolvedToolTodo: true);
+
+    final result = await runAudit(root);
+
+    expect(result.process.exitCode, 1);
+    final failures = (result.json['failures'] as List<dynamic>).join('\n');
+    expect(failures, contains('tool/unresolved_helper.dart'));
+    expect(
+      failures,
+      contains('Maintained Dart source contains unresolved TODO/FIXME comment'),
+    );
+  });
+
+  test('permanent CI must retain source completion audit wiring', () async {
+    final root = await fixture(missingCiWiring: true);
+
+    final result = await runAudit(root);
+
+    expect(result.process.exitCode, 1);
+    expect(
+      (result.json['failures'] as List<dynamic>).join('\n'),
+      contains('Permanent CI must run the source-completion audit'),
     );
   });
 
