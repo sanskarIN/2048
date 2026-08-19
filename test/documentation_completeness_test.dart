@@ -11,9 +11,12 @@ void main() {
     'docs/setup/LINUX.md',
     'docs/setup/ANDROID.md',
     'docs/setup/UPGRADING_AND_SUPPORT.md',
+    'docs/setup/TOOL_SUPPORT_MATRIX.md',
+    'docs/DOCUMENTATION_READING_GUIDE.md',
     'docs/COMMAND_REFERENCE.md',
     'docs/GLOSSARY.md',
     'docs/REPOSITORY_FILE_ATLAS.md',
+    'docs/FILE_COVERAGE_CONTRACT.md',
     'docs/FEATURE_REFERENCE.md',
     'docs/BUILDING_EXECUTABLES.md',
     'docs/README.md',
@@ -39,13 +42,16 @@ void main() {
     expect(handbook, isNot(contains('version: 1.5.0+15')));
   });
 
-  test('setup index links the support lifecycle and command references', () {
+  test('setup index links lifecycle, support, command, and file references', () {
     final setupIndex = File('docs/setup/README.md').readAsStringSync();
 
     expect(setupIndex, contains('UPGRADING_AND_SUPPORT.md'));
+    expect(setupIndex, contains('TOOL_SUPPORT_MATRIX.md'));
+    expect(setupIndex, contains('../DOCUMENTATION_READING_GUIDE.md'));
     expect(setupIndex, contains('../COMMAND_REFERENCE.md'));
     expect(setupIndex, contains('../GLOSSARY.md'));
     expect(setupIndex, contains('../REPOSITORY_FILE_ATLAS.md'));
+    expect(setupIndex, contains('../FILE_COVERAGE_CONTRACT.md'));
   });
 
   test('canonical docs index exposes the deep setup documentation', () {
@@ -58,9 +64,12 @@ void main() {
       'setup/LINUX.md',
       'setup/ANDROID.md',
       'setup/UPGRADING_AND_SUPPORT.md',
+      'setup/TOOL_SUPPORT_MATRIX.md',
+      'DOCUMENTATION_READING_GUIDE.md',
       'COMMAND_REFERENCE.md',
       'GLOSSARY.md',
       'REPOSITORY_FILE_ATLAS.md',
+      'FILE_COVERAGE_CONTRACT.md',
     ]) {
       expect(
         docsIndex,
@@ -108,6 +117,94 @@ void main() {
     expect(lifecycle, contains('flutter test --coverage'));
     expect(lifecycle, contains('repository_audit.dart --json'));
     expect(lifecycle, contains('source_completion_audit.dart --json'));
+  });
+
+  test(
+    'tool support matrix keeps current project pins and upgrade checks visible',
+    () {
+      final matrix = File(
+        'docs/setup/TOOL_SUPPORT_MATRIX.md',
+      ).readAsStringSync();
+
+      for (final requiredText in <String>[
+        '2.0.12+2012',
+        '>=3.9.0 <4.0.0',
+        '>=3.35.0',
+        '3.47.0',
+        '9.1.0',
+        '2.4.10',
+        '9.7.0',
+        'flutter doctor -v',
+        'java -version',
+        './gradlew --version',
+        'xcodebuild -version',
+        'pod --version',
+        'cmake --version',
+        'ninja --version',
+        'flutter pub outdated',
+        'Standard post-upgrade verification',
+      ]) {
+        expect(
+          matrix,
+          contains(requiredText),
+          reason: 'Tool support matrix is missing: $requiredText',
+        );
+      }
+    },
+  );
+
+  test(
+    'documentation reading guide explains notation instead of blind copying',
+    () {
+      final readingGuide = File(
+        'docs/DOCUMENTATION_READING_GUIDE.md',
+      ).readAsStringSync();
+
+      for (final requiredText in <String>[
+        'Inline code',
+        'Fenced code blocks',
+        'Placeholders and angle brackets',
+        'Relative path',
+        'Absolute path',
+        '`PATH`',
+        'Pipes (`|`)',
+        'Exit codes',
+        'Version constraints',
+        'Source of truth',
+        'Read-only versus mutating commands',
+        'Copying commands safely',
+      ]) {
+        expect(
+          readingGuide,
+          contains(requiredText),
+          reason: 'Documentation reading guide is missing: $requiredText',
+        );
+      }
+    },
+  );
+
+  test('file coverage contract preserves the no-skip tracked-file rule', () {
+    final coverage = File(
+      'docs/FILE_COVERAGE_CONTRACT.md',
+    ).readAsStringSync();
+
+    for (final requiredText in <String>[
+      'git ls-files',
+      'Exact-file coverage',
+      'Explicit file-family coverage',
+      'Generated/platform-template coverage',
+      'Historical/archive coverage',
+      'Top-level coverage boundaries',
+      'New-file rule',
+      'Rename and deletion rule',
+      'documentation_completeness_test.dart',
+    ]) {
+      expect(
+        coverage,
+        contains(requiredText),
+        reason: 'File coverage contract is missing: $requiredText',
+      );
+    }
   });
 
   test('active continuity points to the preserved Phase 32 archive', () {

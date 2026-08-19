@@ -21,14 +21,16 @@ Read these in order if you are starting from a new computer:
 2. [`setup/PREREQUISITES.md`](setup/PREREQUISITES.md) — every required/optional tool and why it is needed.
 3. Your host guide: [`setup/WINDOWS.md`](setup/WINDOWS.md), [`setup/MACOS.md`](setup/MACOS.md), or [`setup/LINUX.md`](setup/LINUX.md).
 4. [`setup/ANDROID.md`](setup/ANDROID.md) if you maintain Android.
-5. [`COMMAND_REFERENCE.md`](COMMAND_REFERENCE.md) to understand commands/flags rather than copying blindly.
-6. [`GLOSSARY.md`](GLOSSARY.md) for terminology and abbreviations.
-7. [`DEVELOPMENT.md`](DEVELOPMENT.md) for normal source workflow.
-8. [`TESTING.md`](TESTING.md) for the verification model.
-9. [`BUILDING_EXECUTABLES.md`](BUILDING_EXECUTABLES.md) for every maintained artifact.
-10. [`REPOSITORY_FILE_ATLAS.md`](REPOSITORY_FILE_ATLAS.md) for the no-skip repository map and literal tracked-file audit.
+5. [`DOCUMENTATION_READING_GUIDE.md`](DOCUMENTATION_READING_GUIDE.md) to understand notation, paths, placeholders, version operators, shell symbols, and safe command reading.
+6. [`COMMAND_REFERENCE.md`](COMMAND_REFERENCE.md) to understand commands/flags rather than copying blindly.
+7. [`GLOSSARY.md`](GLOSSARY.md) for terminology and abbreviations.
+8. [`DEVELOPMENT.md`](DEVELOPMENT.md) for normal source workflow.
+9. [`TESTING.md`](TESTING.md) for the verification model.
+10. [`BUILDING_EXECUTABLES.md`](BUILDING_EXECUTABLES.md) for every maintained artifact.
+11. [`REPOSITORY_FILE_ATLAS.md`](REPOSITORY_FILE_ATLAS.md) for the repository map.
+12. [`FILE_COVERAGE_CONTRACT.md`](FILE_COVERAGE_CONTRACT.md) for the auditable no-skip tracked-file rule.
 
-If a tool is old, deprecated, unsupported, insecure, or end-of-life, use [`setup/UPGRADING_AND_SUPPORT.md`](setup/UPGRADING_AND_SUPPORT.md) before changing project pins.
+If a tool is old, deprecated, unsupported, insecure, or end-of-life, first compare it with [`setup/TOOL_SUPPORT_MATRIX.md`](setup/TOOL_SUPPORT_MATRIX.md), then use [`setup/UPGRADING_AND_SUPPORT.md`](setup/UPGRADING_AND_SUPPORT.md) before changing project pins.
 
 ## 2. Current release and source-completion documents
 
@@ -54,15 +56,18 @@ If a tool is old, deprecated, unsupported, insecure, or end-of-life, use [`setup
 | [`setup/LINUX.md`](setup/LINUX.md) | Linux Flutter/native dependencies, Android, Web/Linux builds, upgrades, troubleshooting. |
 | [`setup/ANDROID.md`](setup/ANDROID.md) | Android Studio, Android SDK, ADB, emulator/AVD, JDK 17, Gradle, AGP, Kotlin, SDK levels, APK/AAB, signing, compatibility. |
 | [`setup/UPGRADING_AND_SUPPORT.md`](setup/UPGRADING_AND_SUPPORT.md) | End-of-support/EOL detection, safe migration, rollback, and per-tool upgrade procedures. |
+| [`setup/TOOL_SUPPORT_MATRIX.md`](setup/TOOL_SUPPORT_MATRIX.md) | Fast project-baseline table, installed-version checks, support-state meanings, and upgrade/compatibility decisions for Flutter/Dart/Git/Android/Windows/Apple/Linux/Web/editor/CI tool families. |
 | [`ANDROID_TOOLCHAIN.md`](ANDROID_TOOLCHAIN.md) | Repository-specific accepted AGP/Kotlin/Gradle/JDK baseline and prior compatibility evidence. |
 
-## 4. Command and terminology reference
+## 4. Command, notation, terminology, and file reference
 
 | Document | Purpose |
 | --- | --- |
+| [`DOCUMENTATION_READING_GUIDE.md`](DOCUMENTATION_READING_GUIDE.md) | Explains inline code, code fences, placeholders, paths, PATH/environment variables, flags, pipes, redirection, exit codes, version constraints, YAML/JSON, source-of-truth language, artifacts, host/target, and safe command reading. |
 | [`COMMAND_REFERENCE.md`](COMMAND_REFERENCE.md) | Full explanation of shell/Git/Flutter/Pub/test/build/Gradle/Android/Xcode/CocoaPods/checksum/package-manager commands and flags. |
 | [`GLOSSARY.md`](GLOSSARY.md) | Definitions for Flutter/Dart/Git/Android/Apple/build/release/security/testing/gameplay vocabulary. |
 | [`REPOSITORY_FILE_ATLAS.md`](REPOSITORY_FILE_ATLAS.md) | Explains root/source/test/tool/CI/platform/docs paths and how to enumerate every tracked file with `git ls-files`. |
+| [`FILE_COVERAGE_CONTRACT.md`](FILE_COVERAGE_CONTRACT.md) | Defines exact-file/family/generated/archive coverage and the auditable rule for ensuring no tracked path is silently skipped. |
 | [`build/QUICK_COMMANDS.md`](build/QUICK_COMMANDS.md) | Compact build-command sheet for experienced contributors. |
 
 ## 5. Player and behavior documentation
@@ -105,6 +110,7 @@ If a tool is old, deprecated, unsupported, insecure, or end-of-life, use [`setup
 | [`WORKFLOW_SECURITY.md`](WORKFLOW_SECURITY.md) | Immutable Action revisions, frozen toolchains, credential policy, reproducibility boundaries, repository settings. |
 | [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Setup, analyzer, build, save/input/replay/backup/challenge/localization/platform diagnostics. |
 | [`REPOSITORY_FILE_ATLAS.md`](REPOSITORY_FILE_ATLAS.md) | File/folder responsibilities and no-skip auditing. |
+| [`FILE_COVERAGE_CONTRACT.md`](FILE_COVERAGE_CONTRACT.md) | No-skip tracked-path responsibility and new-file/rename/deletion audit rules. |
 | [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | Contribution quality, tests, docs, security/privacy/accessibility, and PR requirements. |
 | [`../CODE_OF_CONDUCT.md`](../CODE_OF_CONDUCT.md) | Community participation expectations. |
 | [`../AUTHORS.md`](../AUTHORS.md) | Project authorship/credits. |
@@ -243,7 +249,7 @@ Continuity archives:
 - Keep signing secrets/private credentials outside public source.
 - When behavior changes in a future release, update source, tests, behavior docs, privacy/security/accessibility docs, build docs, and release contracts together.
 
-## 13. Literal documentation inventory
+## 13. Literal documentation and tracked-file inventory
 
 To ensure no documentation file is skipped:
 
@@ -257,7 +263,13 @@ PowerShell:
 git ls-files 'docs/**' | Sort-Object
 ```
 
-The repository audit validates required documentation and repository-local Markdown links. The file atlas explains how to audit the entire repository, not only `docs/`.
+To enumerate **every tracked path** in the repository:
+
+```bash
+git ls-files | sort
+```
+
+[`FILE_COVERAGE_CONTRACT.md`](FILE_COVERAGE_CONTRACT.md) defines the exact-file/family coverage rule used to keep that inventory understandable without relying on a stale fixed count. The repository audit validates required documentation and repository-local Markdown links. The file atlas explains the repository responsibilities in depth.
 
 ## 14. Project identity
 
