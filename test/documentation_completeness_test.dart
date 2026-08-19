@@ -14,8 +14,11 @@ void main() {
     'docs/COMMAND_REFERENCE.md',
     'docs/GLOSSARY.md',
     'docs/REPOSITORY_FILE_ATLAS.md',
+    'docs/FEATURE_REFERENCE.md',
     'docs/BUILDING_EXECUTABLES.md',
     'docs/README.md',
+    'what_changed.md',
+    'what_changed_archive_phase_32.md',
   ];
 
   test('complete setup and reference documentation is tracked in source tree', () {
@@ -67,6 +70,31 @@ void main() {
     }
   });
 
+  test('feature reference covers the completed product surface', () {
+    final featureReference = File('docs/FEATURE_REFERENCE.md').readAsStringSync();
+
+    for (final feature in <String>[
+      'Ten game modes',
+      'Save and resume',
+      'Undo',
+      'Hint',
+      'Expectimax solver',
+      'Auto Play',
+      'Full Replay Archives',
+      'Challenge Codes',
+      'English/Hindi localization',
+      'Accessibility controls',
+      'Platform support',
+      'Release readiness',
+    ]) {
+      expect(
+        featureReference,
+        contains(feature),
+        reason: 'Feature reference is missing: $feature',
+      );
+    }
+  });
+
   test('tool lifecycle guide protects the compatibility-first workflow', () {
     final lifecycle = File(
       'docs/setup/UPGRADING_AND_SUPPORT.md',
@@ -80,5 +108,13 @@ void main() {
     expect(lifecycle, contains('flutter test --coverage'));
     expect(lifecycle, contains('repository_audit.dart --json'));
     expect(lifecycle, contains('source_completion_audit.dart --json'));
+  });
+
+  test('active continuity points to the preserved Phase 32 archive', () {
+    final continuity = File('what_changed.md').readAsStringSync();
+
+    expect(continuity, contains('Phase 33'));
+    expect(continuity, contains('what_changed_archive_phase_32.md'));
+    expect(continuity, contains('stable qualification boundary remains 0/13'));
   });
 }
