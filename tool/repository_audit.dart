@@ -462,8 +462,7 @@ void _auditMarkdownLinks(
       }
 
       final destinations = <String>[];
-      for (final match
-          in RegExp(r'!?\[[^\]]*\]\(([^)]+)\)').allMatches(line)) {
+      for (final match in RegExp(r'!?\[[^\]]*\]\(([^)]+)\)').allMatches(line)) {
         destinations.add(match.group(1)!);
       }
       final referenceMatch = RegExp(
