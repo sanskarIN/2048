@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "candidate": "1.5.0+15",
+  "candidate": "2.0.12+2012",
   "manualChecks": [
     {
       "id": "android-device",
