@@ -1,168 +1,199 @@
 # Repository Integrity Audit
 
-2048 Nova includes a repository-level audit in addition to Flutter formatting, static analysis, automated tests, release-readiness validation, qualification-status reporting, solver smoke testing, and platform builds.
+2048 Nova uses a deterministic repository-level audit in addition to Dart formatting, Flutter analysis/tests, release-readiness validation, qualification reporting, the final source-completion audit, solver smoke tests, and platform builds.
 
-The audit is implemented by:
+Implementation:
 
 ```text
 tool/repository_audit.dart
 ```
 
-It is intended to catch source-controlled release and documentation drift that normal Dart analysis does not detect.
-
 ## Current Version 2.0.12 contract
-
-Phase 32 defines two related version values:
 
 ```text
 Marketing version: 2.0.12
 Flutter package/build version: 2.0.12+2012
+Source scope: feature-complete
 ```
 
-The repository audit treats those values as part of the current source-controlled release contract. A later intentional version change must update the audit, its fixtures, release gate, release documentation, continuity record, and platform fallback metadata together rather than weakening the checks.
+A later intentional version change must update package/runtime/platform metadata, qualification state, release tooling, audit fixtures, documentation, and continuity together rather than weakening the checks.
 
 ## Run the audit
-
-From the repository root:
 
 ```bash
 dart run tool/repository_audit.dart
 ```
 
-For machine-readable output:
+Machine-readable:
 
 ```bash
 dart run tool/repository_audit.dart --json
 ```
 
-For isolated regression fixtures or another checkout:
+Fixture/alternate root:
 
 ```bash
 dart run tool/repository_audit.dart --root=<path> --json
 ```
 
-The permanent CI workflow runs the JSON form automatically.
+Permanent CI runs the JSON form automatically.
 
-## What the audit checks
+## Required repository assets
 
-### Required repository files
+The audit fails when permanent project/open-source/release/support/security/build/signing-safety/tooling/Web/PWA/continuity/workflow files are missing or empty.
 
-The audit fails when required project, open-source, release, support, security, build, signing-safety, tooling, Web/PWA, continuity, or workflow files are missing or empty. This includes the primary README, changelog, roadmap, license, `.gitignore`, contribution/security/support files, release-qualification files, qualification recorder/status documentation, Phase 31 verification history, the Phase 32 Version 2.0.12 record, build handbook, safe `android/key.properties.example` template, Windows resource metadata, maintainer tooling index, repository-owned maintenance CLIs, permanent CI workflows, Web/PWA shell/manifest/icon assets, the PWA guide, the active continuity index, and both historical continuity archives.
+The final Version 2.0.12 required set includes, among other files:
 
-Requiring `.gitignore` and the Android signing template protects the documented boundary in which real `android/key.properties`, `*.jks`, and `*.keystore` material stays outside the public repository while maintainers still have a reproducible production-signing setup path.
+- `README.md`, `ROADMAP.md`, `CHANGELOG.md`;
+- preserved `CHANGELOG_ARCHIVE_PRE_2_0_12.md`;
+- security/support/contribution/conduct/license/authorship files;
+- `what_changed.md` plus Phase 0–30 and Phase 31 continuity archives;
+- `pubspec.yaml`, analyzer configuration, Android signing template, Windows resource metadata;
+- complete documentation index/build/PWA/release/qualification documentation;
+- `docs/FINAL_2_0_12_SOURCE_AUDIT.md`;
+- `docs/MAINTENANCE_POLICY.md`;
+- `docs/SOURCE_COMPLETION_AUDIT.md`;
+- `tool/release_readiness.dart`;
+- `tool/release_qualification_status.dart`;
+- `tool/record_release_qualification.dart`;
+- `tool/repository_audit.dart`;
+- `tool/source_completion_audit.dart`;
+- permanent GitHub Actions, CODEOWNERS, Dependabot, funding, and issue configuration;
+- Web/PWA shell, manifest, favicon, and regular/maskable icon assets.
 
-Requiring the Web/PWA shell, manifest, favicon, regular/maskable icon matrix, and PWA guide protects the install-oriented source contract from accidental file deletion. Semantic manifest and HTML metadata are additionally covered by `test/web_pwa_metadata_test.dart`.
+Requiring the final audit/maintenance/source-completion assets ensures the completed 2.0.12 scope cannot silently lose its own maintenance and verification contract.
 
-Requiring both `what_changed_archive_phase_00_30.md` and `what_changed_archive_phase_31.md` prevents the compact active Phase 32 continuity index from accidentally replacing detailed historical implementation/verification records.
+## Version and release-state consistency
 
-### Version and release-state consistency
+The audit checks:
 
-The audit checks that:
+- `pubspec.yaml` is exactly `2.0.12+2012`;
+- canonical homepage/repository/issue-tracker metadata stays on `sanskarIN/2048`;
+- `ProjectInfo.version` is exactly `2.0.12`;
+- Windows fallback numeric version is `2,0,12,2012`;
+- Windows fallback string version is `2.0.12`;
+- the qualification candidate exactly matches the package/build version;
+- the qualification manifest retains exactly 13 manual records;
+- active continuity identifies Phase 32 and `2.0.12+2012`;
+- active continuity preserves the explicit `stable qualification boundary remains 0/13` statement while those records remain pending.
 
-- `pubspec.yaml` is exactly `2.0.12+2012` for the current Phase 32 package/build contract;
-- canonical `homepage`, `repository`, and `issue_tracker` metadata remain aligned with `sanskarIN/2048`;
-- the in-app `ProjectInfo.version` is exactly `2.0.12` and matches the package marketing version;
-- Windows fallback `VERSION_AS_NUMBER` is `2,0,12,2012`;
-- Windows fallback `VERSION_AS_STRING` is `2.0.12`;
-- the release-qualification manifest candidate exactly matches the package/build version;
-- the qualification manifest contains exactly the required 13 manual check records;
-- the continuity log identifies Phase 32;
-- the continuity log identifies package candidate `2.0.12+2012`;
-- the continuity log preserves the explicit `0/13` real-world qualification boundary while those checks remain pending.
+`tool/release_readiness.dart` performs deeper candidate/stable validation, while `tool/release_qualification_status.dart` validates the canonical manual-check/evidence shape.
 
-This supplements, rather than replaces, the stricter candidate/stable validation performed by `tool/release_readiness.dart` and the canonical check/evidence validation performed by `tool/release_qualification_status.dart`.
+## Web/PWA consistency
 
-### Web/PWA semantic consistency
+The audit parses `web/manifest.json` and verifies:
 
-The audit parses `web/manifest.json` and fails closed when install-oriented source metadata drifts from the maintained contract. It verifies:
-
-- app name and short name;
-- relative install identity, start URL, and scope (`.`);
-- standalone display mode;
-- English/left-to-right manifest metadata;
-- orientation and related-application policy;
+- name/short name;
+- relative identity/start URL/scope (`.`);
+- standalone display;
+- English/left-to-right metadata;
+- orientation and related-app policy;
 - `games` and `entertainment` categories;
-- exactly the regular/maskable 192×192 and 512×512 PNG icon matrix.
+- exact regular/maskable 192×192 and 512×512 PNG icon matrix.
 
-The audit also checks required `web/index.html` fragments for the document language, Flutter base-href placeholder, theme/color-scheme metadata, generic/Apple mobile install metadata, manifest/touch-icon links, title, and Flutter bootstrap script.
+It also checks required `web/index.html` fragments for:
 
-This repository-level check complements `test/web_pwa_metadata_test.dart`: the audit gives maintainers a deterministic source-integrity command, while the focused Flutter test keeps the PWA contract inside the normal regression suite.
+- document language;
+- Flutter base-href placeholder;
+- theme/color-scheme metadata;
+- generic/Apple mobile install metadata;
+- manifest/touch-icon links;
+- title;
+- Flutter bootstrap script.
 
-### Temporary workflow cleanup
+This complements `test/web_pwa_metadata_test.dart` and does not claim a real browser/PWA installation was manually qualified.
 
-Known one-shot Phase 30, Phase 31, and Phase 32 helper paths are forbidden from remaining in the final repository. If a temporary finalizer workflow, trigger marker, or helper script is accidentally reintroduced, the audit fails instead of allowing release-maintenance machinery to become permanent dead configuration.
+## Temporary-helper cleanup
 
-### Local Markdown links
+Known one-shot Phase 30, Phase 31, and Phase 32 finalizer/workflow/trigger/helper paths are forbidden from remaining in the permanent repository. If one is reintroduced, the audit fails.
 
-The audit scans top-level Markdown plus Markdown under `docs/`, `.github/`, and `tool/`, and validates local file/directory destinations. Because the historical continuity archives remain at repository root, their relative links retain the original resolution base and are audited with current root documentation.
+## Local Markdown links
 
-It ignores:
+The audit scans top-level Markdown and Markdown under `docs/`, `.github/`, and `tool/`.
+
+It validates repository-local file/directory destinations and ignores:
 
 - same-document anchors;
-- `http://` and `https://` destinations;
+- external HTTP/HTTPS links;
 - `mailto:`, `tel:`, and `data:` destinations;
-- Markdown content inside fenced code examples.
+- destinations inside fenced code examples.
 
-This keeps the check deterministic and offline. It deliberately does **not** make network requests to prove that external websites are reachable.
+It stays deterministic/offline and does not crawl external websites. Unclosed Markdown fences are warnings because they can make later link parsing ambiguous.
 
-An unclosed Markdown code fence is reported as a warning because it may make later link parsing ambiguous and usually deserves review.
+## Source-completion audit relationship
 
-## Relationship to other gates
+The broader repository audit and the final source-completion audit intentionally remain separate:
 
-The repository audit has a narrow role:
-
-| Gate | Primary responsibility |
+| Tool | Responsibility |
 | --- | --- |
-| `dart format` | Dart source formatting |
-| `flutter analyze` | Dart/Flutter static analysis and linting |
-| `flutter test --coverage` | Unit, domain, persistence, widget, localization, workflow, Web/PWA metadata, release-contract, and regression behavior |
-| `tool/release_readiness.dart` | Version 2.0.12 candidate/stable release metadata and stable manual-evidence gate |
-| `tool/release_qualification_status.dart` | Read-only canonical manual-qualification status/evidence-shape reporting |
-| `tool/repository_audit.dart` | Exact version surfaces, required files, signing-safety, Web/PWA semantic/source, continuity archives, local-doc links, temporary files, and release-state drift |
-| `tool/solver_benchmark.dart` | Deterministic solver smoke/regression behavior |
-| Flutter Web/native builds | Build-system and target compilation compatibility |
+| `tool/repository_audit.dart` | Required assets, exact release/version surfaces, PWA semantics, continuity, temporary cleanup, and local Markdown links. |
+| `tool/source_completion_audit.dart` | Feature-complete roadmap/final-audit/maintenance contract, current-doc version drift, and unresolved product TODO/FIXME markers. |
 
-A green repository audit, metadata regression test, or status report does not mean the application is physically qualified for stable distribution.
+Permanent CI runs both. See [`SOURCE_COMPLETION_AUDIT.md`](SOURCE_COMPLETION_AUDIT.md).
 
 ## Regression fixtures
 
-`test/repository_audit_cli_test.dart` constructs isolated repositories and proves both success and fail-closed behavior. Phase 32 coverage includes:
+`test/repository_audit_cli_test.dart` creates isolated synthetic repositories and covers:
 
-- a clean `2.0.12+2012` / `2.0.12` fixture;
-- exact package/build-version drift;
+- clean Version `2.0.12+2012` / marketing `2.0.12` success;
+- exact package/build drift;
 - runtime marketing-version drift;
-- Windows fallback version drift;
+- Windows fallback drift;
 - canonical repository metadata drift;
 - qualification-candidate drift;
 - Web/PWA identity and HTML-language drift;
 - broken local Markdown links;
-- Phase 31 and Phase 32 temporary helper rejection;
+- temporary Phase 30/31/32 helper rejection;
 - unclosed Markdown-fence warnings.
 
-Synthetic fixtures are audit tests only and are not release qualification evidence.
+The fixture set also creates the final completion audit, maintenance policy, source-completion guide/tool, and archived changelog because those are now permanent repository assets.
+
+Synthetic fixtures are automated tests only. They are not physical-device, accessibility, signing, store, or handler evidence.
+
+## Other maintained gates
+
+| Gate | Primary responsibility |
+| --- | --- |
+| `dart format` | Dart source formatting |
+| `flutter analyze` | Dart/Flutter static analysis and lints |
+| `flutter test --coverage` | Unit/domain/persistence/widget/localization/workflow/release/audit regressions |
+| `tool/release_readiness.dart` | Candidate/stable metadata and fail-closed real-world evidence boundary |
+| `tool/release_qualification_status.dart` | Read-only canonical manual-qualification reporting/validation |
+| `tool/source_completion_audit.dart` | Final feature-complete source contract |
+| `tool/solver_benchmark.dart` | Deterministic Heuristic/Expectimax smoke behavior |
+| Web/native workflows | Actual configured target compilation/package compatibility |
+
+A green repository audit never means the app is physically qualified for stable distribution.
 
 ## Manual boundaries remain manual
 
-The audit must never mark real-device qualification evidence as passed. Physical Android/iOS testing, assistive-technology checks, clipboard/file/browser/email handlers, installed-PWA/browser behavior, long-session checks, native branding review, signing/provisioning, and distribution/store metadata still require genuine representative-environment evidence in `docs/release_qualification.json`.
+The audit never marks real-world evidence as passed. These still require genuine representative environments:
 
-Use the read-only reporter described in [`QUALIFICATION_STATUS.md`](QUALIFICATION_STATUS.md) to inspect what remains. Use the guarded recorder described in [`QUALIFICATION_RECORDER.md`](QUALIFICATION_RECORDER.md) only after a check has actually been performed. Web/PWA deployment and install boundaries are documented in [`PWA.md`](PWA.md). The current version-migration boundary is documented in [`PHASE_32_VERSION_2_0_12.md`](PHASE_32_VERSION_2_0_12.md).
+- physical Android/iOS lifecycle/gameplay;
+- TalkBack/VoiceOver/Narrator/browser screen readers;
+- touch/orientation/keyboard/focus/responsive layouts;
+- long sessions;
+- real clipboard/file/browser/email/PWA handlers;
+- Challenge Code/replay/backup real-target interaction;
+- native icon/splash presentation;
+- production signing/provisioning;
+- store metadata/privacy/data-safety review.
 
-## Adding new documentation
+Use [`QUALIFICATION_STATUS.md`](QUALIFICATION_STATUS.md) to inspect the pending set and [`QUALIFICATION_RECORDER.md`](QUALIFICATION_RECORDER.md) only after a real check was genuinely performed.
 
-When adding a Markdown document:
+## Adding or changing documentation
 
-1. use relative local links when pointing to another repository document;
-2. keep linked paths case-correct so Linux CI can resolve them;
-3. avoid putting real links inside examples unless they are intended to be followed;
-4. run `dart run tool/repository_audit.dart --json` before committing;
-5. add important permanent documentation to [`README.md`](README.md) when it belongs in the documentation map.
+When a maintenance or future-release change modifies documentation:
 
-If the audit reports a broken link, fix the document or the intended file path. Do not weaken the audit merely to preserve a stale link.
+1. keep local paths case-correct;
+2. use relative links for repository documents;
+3. preserve historical evidence instead of relabeling it as current;
+4. run `dart run tool/repository_audit.dart --json`;
+5. run `dart run tool/source_completion_audit.dart --json` when current release-scope text changes;
+6. index important permanent docs in [`README.md`](README.md).
 
-## Maintainer tooling map
-
-[`../tool/README.md`](../tool/README.md) is the compact entry point for the repository audit, release-readiness gate, qualification status reporter, qualification recorder, and deterministic solver benchmark. The tooling index itself is required by the audit and its local Markdown links are scanned with the rest of the maintained documentation.
+Do not weaken either audit merely to preserve stale documentation.
 
 ## Scope discipline
 
-This tool intentionally avoids becoming a general internet crawler, package vulnerability scanner, code formatter, browser-install simulator, or store-release publisher. Those concerns already have dedicated workflows, tools, regression tests, or manual qualification boundaries. Keeping the audit deterministic and repository-local makes failures reproducible on every supported development host with Dart available.
+The repository audit is intentionally not an internet crawler, vulnerability scanner, code formatter, browser simulator, device farm, or store publisher. Those concerns have dedicated tools/workflows or genuine manual qualification boundaries.
