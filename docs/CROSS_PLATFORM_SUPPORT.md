@@ -8,12 +8,12 @@
 | --- | --- | --- | --- |
 | Android | `android/` | APK + Android App Bundle | APK, AAB, SHA-256 checksums |
 | iOS | `ios/` | unsigned release app in CI | unsigned app ZIP + SHA-256 checksum |
-| Web / PWA | `web/` | Flutter Web release | PWA tarball + SHA-256 checksum |
+| Web / PWA | `web/` | Flutter Web release | Web/PWA tarball + SHA-256 checksum |
 | Windows | `windows/` | Windows desktop release | x64 ZIP + SHA-256 checksum |
 | macOS | `macos/` | macOS desktop release | app ZIP + SHA-256 checksum |
 | Linux | `linux/` | Linux desktop release | x64 tarball + SHA-256 checksum |
 
-The platform families above are the complete maintained platform scope for Version 2.0.12. Android tablets, iPad, touch-capable desktops, installed PWAs, and responsive browser layouts are handled inside those target families rather than as separate source trees.
+The platform families above are the complete maintained platform scope for Version 2.0.12. Android tablets, iPad, touch-capable desktops, installable web-app experiences, and responsive browser layouts are handled inside those target families rather than as separate source trees.
 
 ## Cross-platform source guarantees
 
@@ -27,7 +27,7 @@ A change is considered source-level cross-platform compatible only when all of t
 6. Web/PWA release compilation and packaging are defined;
 7. Windows, macOS, and Linux release builds are defined;
 8. the dedicated Platform Builds workflow reacts to changes in every platform runner, including `web/**`;
-9. every CI qualification package has a SHA-256 checksum;
+9. every retained CI qualification package has a SHA-256 checksum;
 10. the repository-owned platform support audit passes.
 
 Run the audit locally from the repository root:
@@ -90,12 +90,12 @@ flutter build ios --release --no-codesign
 flutter build web --release
 ```
 
-The dedicated platform workflow verifies that the generated Web release includes:
+The dedicated platform workflow verifies that the generated Web release includes the current Flutter bootstrap and application metadata:
 
 ```text
 build/web/index.html
 build/web/manifest.json
-build/web/flutter_service_worker.js
+build/web/flutter_bootstrap.js
 ```
 
 It then packages the complete generated `build/web/` tree as:
@@ -106,6 +106,8 @@ nova-2048-web-pwa.tar.gz.sha256
 ```
 
 This keeps Web/PWA at the same checksummed qualification-artifact level as the native targets.
+
+Current Flutter no longer generates or manages a default service worker. A deployment that needs **cold-start offline caching** must deliberately add and qualify a custom service worker using standard Web tooling. The repository therefore does not treat the obsolete generated `flutter_service_worker.js` as a required build output. This avoids tying Web support to removed Flutter behavior while preserving the manifest, icons, responsive application, installable web metadata, and full Web release package.
 
 ### Windows
 
@@ -152,7 +154,7 @@ GitHub Actions mirrors those constraints: Ubuntu builds Android, Web/PWA, and Li
 
 ## Shared feature parity
 
-The product architecture intentionally keeps gameplay and most behavior in shared Flutter/Dart code. The maintained feature set is expected to remain available across all six targets unless the operating system itself prevents a capability.
+The product architecture intentionally keeps gameplay and most behavior in shared Flutter/Dart code. The maintained feature set is expected to remain available across all six targets unless the operating system or browser itself prevents a capability.
 
 Shared features include:
 
@@ -171,7 +173,7 @@ Shared features include:
 - touch/swipe input where pointer/touch input is available;
 - accessibility semantics supplied by the Flutter UI;
 - external-link actions through the platform handler;
-- local preferences and offline-first operation.
+- local preferences and offline-first gameplay behavior after the application has loaded.
 
 ## Platform-dependent behavior
 
@@ -202,14 +204,16 @@ Desktop and Web targets expose keyboard-friendly gameplay. Mobile platforms may 
 Web is a first-class target, not merely a development preview. The repository therefore requires:
 
 - `web/index.html`;
-- a valid PWA manifest;
-- generated service-worker output in release builds;
-- installable PWA metadata and icons;
+- a valid manifest;
+- application icons and installable-web metadata;
+- the generated `flutter_bootstrap.js` release bootstrap;
 - a dedicated Platform Builds job;
 - a retained checksummed Web/PWA artifact;
 - the same formatter/analyzer/test gate used by native targets.
 
-Installed-PWA behavior still requires real browser qualification because service-worker update timing, storage eviction, clipboard policy, external handlers, accessibility APIs, and installation UI are browser-controlled.
+Flutter no longer supplies a default service worker, so service-worker presence is not used as a false proxy for Web support. If a deployment requires offline cold start, background caching, or an explicit update strategy, that deployment must add a custom service worker and qualify its caching/update behavior separately.
+
+Installed-web behavior still requires real browser qualification because installation policy, storage eviction, caching, clipboard policy, external handlers, accessibility APIs, and update behavior are browser-controlled.
 
 ## Android distribution boundary
 
@@ -259,7 +263,7 @@ A green cross-platform matrix does **not** prove all of the following without re
 
 - physical-device gesture feel;
 - screen-reader quality;
-- browser/PWA install and update lifecycle;
+- browser install/update and optional custom-service-worker lifecycle;
 - OS clipboard policy;
 - user-selected file picker behavior;
 - external browser/mail handlers;
