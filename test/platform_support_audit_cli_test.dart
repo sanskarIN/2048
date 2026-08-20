@@ -22,7 +22,7 @@ void main() {
   });
 
   Future<Directory> fixture({
-    String? missingRunner,
+    String? missingFile,
     String? missingBuildCommand,
     bool omitWebPackaging = false,
     bool omitCiWiring = false,
@@ -31,7 +31,7 @@ void main() {
     temporaryRoots.add(root);
 
     Future<void> write(String path, [String contents = 'configured\n']) async {
-      if (path == missingRunner) {
+      if (path == missingFile) {
         return;
       }
       final file = File.fromUri(root.uri.resolve(path));
@@ -52,6 +52,10 @@ void main() {
       'macos/Runner.xcodeproj/project.pbxproj',
       'linux/CMakeLists.txt',
       'linux/runner/main.cc',
+      'docs/CROSS_PLATFORM_SUPPORT.md',
+      'test/platform_support_audit_cli_test.dart',
+      'tool/README.md',
+      'tool/platform_support_audit.dart',
     ]) {
       await write(path);
     }
@@ -126,7 +130,7 @@ void main() {
 
   test('missing runner file fails closed', () async {
     final result = await runAudit(
-      await fixture(missingRunner: 'windows/runner/main.cpp'),
+      await fixture(missingFile: 'windows/runner/main.cpp'),
     );
 
     expect(result.process.exitCode, 1);
@@ -134,6 +138,20 @@ void main() {
     expect(
       (result.json['failures'] as List<dynamic>).join('\n'),
       contains('Windows runner file is missing: windows/runner/main.cpp'),
+    );
+  });
+
+  test('missing platform contract document fails closed', () async {
+    final result = await runAudit(
+      await fixture(missingFile: 'docs/CROSS_PLATFORM_SUPPORT.md'),
+    );
+
+    expect(result.process.exitCode, 1);
+    expect(
+      (result.json['failures'] as List<dynamic>).join('\n'),
+      contains(
+        'Cross-platform contract file is missing: docs/CROSS_PLATFORM_SUPPORT.md',
+      ),
     );
   });
 
