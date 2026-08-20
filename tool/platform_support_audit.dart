@@ -28,6 +28,15 @@ const _targets = <String, List<String>>{
   ],
 };
 
+const _contractFiles = <String>[
+  'docs/CROSS_PLATFORM_SUPPORT.md',
+  'test/platform_support_audit_cli_test.dart',
+  'tool/README.md',
+  'tool/platform_support_audit.dart',
+  '.github/workflows/platform-builds.yml',
+  '.github/workflows/ci.yml',
+];
+
 const _requiredBuildFragments = <String, String>{
   'Android APK': 'flutter build apk --release',
   'Android AAB': 'flutter build appbundle --release',
@@ -90,6 +99,7 @@ void main(List<String> args) {
   if (!root.existsSync()) {
     failures.add('Repository root does not exist: ${root.path}');
   } else {
+    _auditContractFiles(root, failures);
     _auditTargetRunners(root, targetStatus, failures);
     _auditBuildMatrix(root, failures);
     _auditWebPwaPackaging(root, failures);
@@ -126,6 +136,19 @@ void main(List<String> args) {
 
   if (failures.isNotEmpty) {
     exitCode = 1;
+  }
+}
+
+void _auditContractFiles(Directory root, List<String> failures) {
+  for (final path in _contractFiles) {
+    final file = File.fromUri(root.uri.resolve(path));
+    if (!file.existsSync()) {
+      failures.add('Cross-platform contract file is missing: $path');
+      continue;
+    }
+    if (file.lengthSync() == 0) {
+      failures.add('Cross-platform contract file is empty: $path');
+    }
   }
 }
 
