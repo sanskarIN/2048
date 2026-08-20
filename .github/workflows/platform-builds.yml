@@ -1,5 +1,5 @@
-# Final Version 2.0.12 source-completion verification trigger: run the complete native matrix on the finalized repository.
-# Phase 25 requalification trigger: dependency/toolchain maintenance is validated on every hosted native target.
+# Final Version 2.0.12 source-completion verification trigger: run the complete cross-platform matrix on the finalized repository.
+# Phase 25 requalification trigger: dependency/toolchain maintenance is validated on every hosted target.
 name: Platform Builds
 
 on:
@@ -12,6 +12,7 @@ on:
       - pubspec.lock
       - android/**
       - ios/**
+      - web/**
       - linux/**
       - macos/**
       - windows/**
@@ -25,6 +26,7 @@ on:
       - pubspec.lock
       - android/**
       - ios/**
+      - web/**
       - linux/**
       - macos/**
       - windows/**
@@ -77,6 +79,51 @@ jobs:
             build/app/outputs/flutter-apk/app-release.apk.sha256
             build/app/outputs/bundle/release/app-release.aab
             build/app/outputs/bundle/release/app-release.aab.sha256
+          if-no-files-found: error
+          retention-days: 14
+
+  web:
+    name: Web / PWA release
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          channel: stable
+          flutter-version: 3.47.0
+          cache: false
+      - run: flutter config --enable-web
+      - run: flutter pub get
+      - name: Verify dependency lockfile is synchronized
+        run: git diff --exit-code -- pubspec.lock
+      - name: Build Web/PWA release without missing-font warnings
+        shell: bash
+        run: |
+          set -o pipefail
+          flutter build web --release 2>&1 | tee web-build.log
+          if grep -F "Expected to find fonts for" web-build.log; then
+            echo "Web build completed with a missing icon-font asset warning."
+            exit 1
+          fi
+      - name: Package Web/PWA release and checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f build/web/index.html
+          test -f build/web/manifest.json
+          test -f build/web/flutter_service_worker.js
+          tar -C build/web -czf nova-2048-web-pwa.tar.gz .
+          sha256sum nova-2048-web-pwa.tar.gz > nova-2048-web-pwa.tar.gz.sha256
+      - name: Upload Web/PWA qualification artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: nova-2048-web-pwa-release
+          path: |
+            nova-2048-web-pwa.tar.gz
+            nova-2048-web-pwa.tar.gz.sha256
           if-no-files-found: error
           retention-days: 14
 
