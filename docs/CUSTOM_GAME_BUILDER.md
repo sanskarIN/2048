@@ -1,6 +1,6 @@
 # Custom Game Builder
 
-> Version 1.6 feature branch documentation. This feature is not part of the qualified Version 1.5 release candidate until its own review and verification are complete.
+> Current source target: **2048 Nova 2.0.12+2012**. Custom Game Builder is part of the current integrated source tree. Stable distribution still depends on the repository's automated gates and genuine 0/13 real-world qualification evidence.
 
 ## Purpose
 
@@ -76,6 +76,25 @@ The store:
 
 `LocalStore.clearAll()` also removes this key, so **Clear all local data** retains its promise to remove every project-owned user-data category.
 
+## Create, edit, duplicate, play, and delete
+
+`lib/features/modes/custom_game_builder_screen.dart` provides a complete local preset workflow:
+
+1. Choose the board size, target, style, optional limit, and optional deterministic seed.
+2. Choose **Play now** to start the validated configuration without saving it.
+3. Choose **Save preset** to store it locally for reuse.
+4. Open a saved preset's action menu and choose **Edit preset** to load its values back into the form.
+5. While editing, **Save changes** replaces the original preset. Renaming is supported, but an edit cannot overwrite a different existing preset name.
+6. Choose **Cancel edit** to leave the stored preset unchanged and restore the default creation form.
+7. Choose **Duplicate preset** to load an unsaved copy with a generated case-insensitively unique name such as `My Mode copy`. Review or modify it, then save when ready.
+8. Choose **Delete preset** and explicitly confirm before persistent deletion.
+
+Edit and Duplicate are often launched from saved cards below the form. After either action loads the selected configuration, the scroll view returns directly to the form without forcing focus or opening the keyboard, so the changed values and save controls are immediately reachable.
+
+Duplicate is intentionally a two-step action: loading a copy does not mutate storage until the user chooses **Save preset**.
+
+The compact action menu avoids a trailing row of multiple icon buttons, which gives saved-preset cards more room on narrow and large-text layouts.
+
 ## Custom-session identity and statistics
 
 A custom game is trusted local gameplay, but its configuration may not be comparable to a built-in preset. For example, an 8×8 Target game must not overwrite the best record displayed for the built-in 4×4 Target mode.
@@ -93,33 +112,37 @@ Policy:
 - custom games are **not** imported/unranked backups;
 - they may contribute to normal lifetime gameplay totals and achievements;
 - they **do not update built-in per-mode best-score/highest-tile records**;
-- the custom identity survives save/resume and app restart;
+- the custom identity survives save/resume, app restart, and in-game restart;
+- the game screen discloses the active custom-session identity;
 - starting a normal built-in game clears the custom identity;
 - importing a portable backup clears the custom identity and keeps the existing unranked-import policy;
 - clearing the active game or all app data removes the marker.
 
-## User interface
+## Replacement safety
 
-`lib/features/modes/custom_game_builder_screen.dart` provides:
-
-- English and Hindi labels from the first implementation;
-- preset name input;
-- game-style selector;
-- board-size selector;
-- target selector;
-- conditional time/move-limit selector;
-- optional deterministic seed input;
-- **Play now**;
-- **Save preset**;
-- saved-preset list with play/delete actions.
-
-Mode Selection exposes the builder without replacing the current game. The existing replacement guard is invoked only when a player actually starts a custom game.
+Opening the builder does not replace the current game. The existing game-replacement guard runs only when the player chooses to start a custom configuration.
 
 Invalid form input is rejected before the current game can be replaced.
 
+## Localization and accessibility
+
+The builder has English and Hindi labels for its controls, saved-preset actions, confirmation dialogs, validation feedback, and custom-session disclosure.
+
+Automated widget coverage includes:
+
+- English and Hindi rendering;
+- narrow layout behavior;
+- increased text scaling;
+- the preset action menu remaining reachable without layout exceptions;
+- Edit/Duplicate returning to an immediately reachable form;
+- visible user-action hit testing;
+- custom-session semantics/disclosure.
+
+Automated semantics and layout tests are regression protection, not a substitute for real TalkBack/VoiceOver/Narrator/browser-screen-reader checks in the manual release qualification plan.
+
 ## Privacy and offline behavior
 
-Custom presets are local-only. Creating, saving, deleting, or playing a preset does not require:
+Custom presets are local-only. Creating, editing, duplicating, saving, deleting, or playing a preset does not require:
 
 - an account;
 - analytics;
@@ -129,11 +152,17 @@ Custom presets are local-only. Creating, saving, deleting, or playing a preset d
 - remote AI;
 - network access.
 
-An optional future sharing action may reuse the existing Challenge Code format only if the current validator can represent the chosen configuration without weakening its strict validation or Daily Challenge isolation.
+## Challenge Code boundary
+
+The existing `NOVA1` Challenge Code can describe the underlying `GameConfig`, but it does not encode the Custom Game Builder origin/trust marker.
+
+For that reason the app does **not** expose a custom-preset sharing button that would silently turn a custom configuration into an ordinary built-in ranked session on another installation. Sharing this origin safely would require a separately versioned/validated protocol or an intentional compatible origin field with matching trust-policy tests.
+
+Daily Challenge remains isolated from arbitrary portable configuration injection.
 
 ## Tests
 
-The feature branch includes focused coverage for:
+Focused coverage protects:
 
 - domain validation and JSON round trips;
 - style-to-engine mapping;
@@ -141,11 +170,18 @@ The feature branch includes focused coverage for:
 - local preset persistence, deduplication, corruption repair, and bounds;
 - full-data reset behavior;
 - bilingual builder rendering and user flows;
+- save, edit, rename, collision rejection, duplicate, cancel-edit, and confirmed-delete behavior;
+- visible selector refresh after loading/editing a preset;
+- Edit/Duplicate navigation back to the form after using a saved-card action;
+- narrow/large-text saved-preset actions;
 - invalid seed rejection before replacement;
 - custom-session persistence across restart;
+- custom identity across in-game restart;
 - built-in per-mode-record isolation;
 - restoration of normal record behavior after starting a built-in game.
 
 ## Release boundary
 
-This feature must remain outside the Version 1.5 stable claim until its feature branch is formatter-clean, analyzer-clean, regression-tested, documented, and reviewed through the maintained CI process. Real-device/responsive/accessibility qualification should then be added to the next release's evidence plan rather than silently reusing Version 1.5 evidence.
+Custom Game Builder is now integrated with the Version 2.0.12 source line. Its earlier green feature-branch CI was based on an older release line, so the final integration branch must pass formatter, analyzer, full tests, repository/source audits, Web build, dependency review, and configured native builds again on the current Version 2.0.12 base before that result is treated as current automated evidence.
+
+Real-device, responsive, accessibility, external-handler, signing, native-branding, and store qualification remain genuine manual evidence and must never be inferred from hosted tests.
