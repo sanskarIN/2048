@@ -86,7 +86,7 @@ void main() {
       workflow
         ..writeln('test -f build/web/index.html')
         ..writeln('test -f build/web/manifest.json')
-        ..writeln('test -f build/web/flutter_service_worker.js')
+        ..writeln('test -f build/web/flutter_bootstrap.js')
         ..writeln('nova-2048-web-pwa.tar.gz')
         ..writeln('nova-2048-web-pwa.tar.gz.sha256')
         ..writeln('nova-2048-web-pwa-release');
