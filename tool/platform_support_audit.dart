@@ -102,7 +102,7 @@ void main(List<String> args) {
     _auditContractFiles(root, failures);
     _auditTargetRunners(root, targetStatus, failures);
     _auditBuildMatrix(root, failures);
-    _auditWebPwaPackaging(root, failures);
+    _auditWebPackaging(root, failures);
     _auditCiWiring(root, failures);
   }
 
@@ -205,7 +205,7 @@ void _auditBuildMatrix(Directory root, List<String> failures) {
   }
 }
 
-void _auditWebPwaPackaging(Directory root, List<String> failures) {
+void _auditWebPackaging(Directory root, List<String> failures) {
   final workflow = _read(root, _platformWorkflow, failures);
   if (workflow == null) {
     return;
@@ -214,7 +214,7 @@ void _auditWebPwaPackaging(Directory root, List<String> failures) {
   const requiredFragments = <String>[
     'build/web/index.html',
     'build/web/manifest.json',
-    'flutter_service_worker.js',
+    'build/web/flutter_bootstrap.js',
     'nova-2048-web-pwa.tar.gz',
     'nova-2048-web-pwa.tar.gz.sha256',
     'nova-2048-web-pwa-release',
