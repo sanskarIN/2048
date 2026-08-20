@@ -3,21 +3,34 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  const checkoutRevision = '3d3c42e5aac5ba805825da76410c181273ba90b1';
+
   group('workflow security', () {
     test('read-only workflows do not persist checkout credentials', () {
-      final expectedCheckoutCounts = <String, int>{
-        '.github/workflows/ci.yml': 1,
-        '.github/workflows/dependency-review.yml': 1,
-        '.github/workflows/platform-builds.yml': 4,
-      };
+      for (final path in <String>[
+        '.github/workflows/ci.yml',
+        '.github/workflows/dependency-review.yml',
+        '.github/workflows/platform-builds.yml',
+      ]) {
+        final source = File(path).readAsStringSync();
+        final checkoutCount = RegExp(
+          'actions/checkout@$checkoutRevision',
+        ).allMatches(source).length;
+        final disabledCredentialCount = RegExp(
+          r'persist-credentials:\s*false',
+        ).allMatches(source).length;
 
-      for (final entry in expectedCheckoutCounts.entries) {
-        final source = File(entry.key).readAsStringSync();
         expect(source, contains('permissions:\n  contents: read'));
         expect(
-          'persist-credentials: false'.allMatches(source).length,
-          entry.value,
-          reason: '${entry.key} must disable checkout credential persistence',
+          checkoutCount,
+          greaterThan(0),
+          reason: '$path must keep an explicit checkout step',
+        );
+        expect(
+          disabledCredentialCount,
+          checkoutCount,
+          reason:
+              '$path must disable credential persistence for every checkout step',
         );
       }
     });
@@ -42,7 +55,10 @@ void main() {
         final workflows = Directory('.github/workflows')
             .listSync()
             .whereType<File>()
-            .where((file) => file.path.endsWith('.yml'));
+            .where(
+              (file) =>
+                  file.path.endsWith('.yml') || file.path.endsWith('.yaml'),
+            );
 
         for (final workflow in workflows) {
           final source = workflow.readAsStringSync();
@@ -63,7 +79,7 @@ void main() {
     );
 
     test(
-      'repository-writing workflows preserve identity and avoid force pushes',
+      'repository-writing workflows serialize safe non-force main pushes',
       () {
         for (final path in <String>[
           '.github/workflows/bootstrap-branding.yml',
@@ -73,11 +89,16 @@ void main() {
         ]) {
           final source = File(path).readAsStringSync();
           expect(source, contains('contents: write'));
+          expect(source, contains('concurrency:'));
+          expect(source, contains('cancel-in-progress: true'));
+          expect(source, contains("github.actor != 'github-actions[bot]'"));
+          expect(source, contains('timeout-minutes:'));
           expect(source, contains('git config user.name "Sanskar"'));
           expect(
             source,
             contains('git config user.email "sanskarin@outlook.in"'),
           );
+          expect(source, contains('git push origin HEAD:main'));
           expect(source, isNot(contains('git push --force')));
           expect(source, isNot(contains('git push -f')));
         }

@@ -402,3 +402,71 @@ This continuity update is committed separately so the documentation changes, ind
 These extension changes are being submitted through the repository's protected-branch pull-request path. Direct writes to `main` were rejected by branch protection and were not bypassed.
 
 No formatter, analyzer, Flutter test, native build, physical-device result, assistive-technology result, store result, or manual release qualification is claimed here unless a corresponding CI/observed evidence surface reports it.
+
+# Phase 33 — Workflow security and repository-writer hardening
+
+Date: **2026-08-20**
+
+This maintenance extension strengthens GitHub Actions execution safety without changing Version `2.0.12+2012`, gameplay behavior, the completed product scope, or any manual qualification record.
+
+## Findings corrected
+
+The live workflow/test audit found three concrete maintenance gaps:
+
+1. `.github/workflows/bootstrap-platforms.yml` had no finite job timeout.
+2. The branding and platform bootstrap workflows can commit generated files to `main` but did not serialize overlapping writer runs with workflow concurrency cancellation.
+3. `test/workflow_security_test.dart` still assumed four Platform Builds checkout steps even though the Web/PWA matrix expansion increased the read-only checkout count to five.
+
+The stale checkout-count assertion was changed to count actual pinned checkout steps and require a matching `persist-credentials: false` for every read-only checkout, so future matrix expansion is protected without another hard-coded count migration.
+
+## New executable workflow-security contract
+
+`tool/workflow_security_audit.dart` now audits every maintained `.github/workflows/*.yml` / `.yaml` file and fails closed for:
+
+- mutable remote Action references instead of full immutable commit SHAs;
+- `pull_request_target`;
+- blanket `write-all` permissions;
+- missing explicit top-level content permissions;
+- jobs without `timeout-minutes`;
+- persisted checkout credentials in read-only workflows;
+- unapproved `contents: write` workflows;
+- approved repository writers that lose concurrency cancellation, bot-loop protection, or their explicit normal non-force main push;
+- deletion of an approved repository-writing workflow;
+- removal of the workflow-security audit from permanent CI.
+
+Permanent CI now runs:
+
+```bash
+dart run tool/workflow_security_audit.dart --json
+```
+
+The maintainer verification sequence in `tool/README.md` includes the same audit.
+
+## Regression coverage
+
+`test/workflow_security_audit_cli_test.dart` provides process-level fail-closed fixtures for the new audit, including mutable Action refs, missing timeouts, credential persistence, missing writer concurrency, privileged triggers, CI wiring removal, and unknown CLI arguments.
+
+`test/workflow_security_test.dart` also now protects dynamic read-only checkout credential counts and all approved writer concurrency/loop/timeout/non-force-push controls.
+
+## Workflow documentation corrected
+
+`docs/WORKFLOW_SECURITY.md` was refreshed from the stale Version 1.5 wording to the current Version 2.0.12 contract. It documents the executable audit, exact writer allowlist, job timeout policy, immutable Action pins, credential rules, current hosted toolchain boundary, and the current repository-protection uncertainty tracked by issue #12.
+
+## Maintenance commits before this continuity entry
+
+```text
+43635e51  ci: bound platform bootstrap execution
+11908f5a  ci: serialize branding generator writes
+8e319044  tool: add workflow security audit
+5c1b162a  test: cover workflow security audit
+82ae13f4  test: harden workflow credential and writer guards
+28cde52c  ci: enforce workflow security audit
+3b98447c  docs: refresh workflow security contract
+7d3d2298  docs: integrate workflow security maintainer tool
+```
+
+The work is submitted through pull request #27 (`ci: harden workflow security and writer safety`). This record does not claim CI success merely because the branch or pull request exists; formatter/analyzer/test/audit/build results are accepted only from an observed workflow result for the exact commit.
+
+## Release boundary preserved
+
+The stable qualification boundary remains 0/13. No physical-device, assistive-technology, installed-PWA, external-handler, native-branding, signing/provisioning, store, or other manual evidence was fabricated or advanced by this automation maintenance.

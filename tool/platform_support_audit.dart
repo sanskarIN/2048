@@ -10,22 +10,13 @@ const _targets = <String, List<String>>{
     'ios/Runner/Info.plist',
     'ios/Runner.xcodeproj/project.pbxproj',
   ],
-  'Web/PWA': <String>[
-    'web/index.html',
-    'web/manifest.json',
-  ],
-  'Windows': <String>[
-    'windows/CMakeLists.txt',
-    'windows/runner/main.cpp',
-  ],
+  'Web/PWA': <String>['web/index.html', 'web/manifest.json'],
+  'Windows': <String>['windows/CMakeLists.txt', 'windows/runner/main.cpp'],
   'macOS': <String>[
     'macos/Runner/Info.plist',
     'macos/Runner.xcodeproj/project.pbxproj',
   ],
-  'Linux': <String>[
-    'linux/CMakeLists.txt',
-    'linux/runner/main.cc',
-  ],
+  'Linux': <String>['linux/CMakeLists.txt', 'linux/runner/main.cc'],
 };
 
 const _contractFiles = <String>[
@@ -120,7 +111,9 @@ void main(List<String> args) {
     stdout.writeln('2048 Nova cross-platform support audit');
     stdout.writeln('Root: ${root.path}');
     for (final entry in targetStatus.entries) {
-      stdout.writeln('${entry.key}: ${entry.value ? 'configured' : 'incomplete'}');
+      stdout.writeln(
+        '${entry.key}: ${entry.value ? 'configured' : 'incomplete'}',
+      );
     }
     stdout.writeln(
       'Cross-platform source readiness: ${failures.isEmpty ? 'yes' : 'no'}',

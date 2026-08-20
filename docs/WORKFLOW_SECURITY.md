@@ -1,18 +1,39 @@
 # Workflow Execution Security
 
-This document defines the executable GitHub Actions trust and reproducibility policy for 2048 Nova Version 1.5.
+This document defines the executable GitHub Actions trust, credential, concurrency, and reproducibility policy for **2048 Nova Version 2.0.12** (`2.0.12+2012`).
 
-## Objective
+The goal is simple: an unchanged repository commit should not silently execute different third-party Action code, obtain broader credentials than necessary, run forever, or allow overlapping repository-writing jobs to race each other.
 
-A repository commit should identify the automation code and primary build toolchain it intends to execute. Moving workflow tags and floating build-tool channels make an old repository commit behave differently when rerun later, so the maintained workflows minimize those moving inputs.
+This policy complements [`SUPPLY_CHAIN.md`](SUPPLY_CHAIN.md), [`CI_CD.md`](CI_CD.md), [`REPOSITORY_AUDIT.md`](REPOSITORY_AUDIT.md), and the release qualification gate. It does not replace GitHub repository rulesets or genuine real-device release evidence.
 
-This policy complements [`SUPPLY_CHAIN.md`](SUPPLY_CHAIN.md), [`CI_CD.md`](CI_CD.md), and the release qualification gate. It does not replace GitHub repository rulesets or real-device release evidence.
+## Automated workflow-security audit
+
+Run the repository-owned audit from the project root:
+
+```bash
+dart run tool/workflow_security_audit.dart --json
+```
+
+The audit fails closed when it finds any of these conditions in `.github/workflows/`:
+
+- a remote `uses:` reference that is not pinned to a full lowercase 40-character commit SHA;
+- `pull_request_target` in a maintained workflow;
+- blanket `write-all` permissions;
+- missing explicit top-level `contents: read` / `contents: write` permission;
+- a job without `timeout-minutes`;
+- a read-only checkout that keeps repository credentials;
+- an unapproved workflow requesting `contents: write`;
+- an approved repository writer without concurrency cancellation, bot-loop protection, or its explicit normal non-force push;
+- deletion of one of the four approved repository-writing workflows;
+- removal of the workflow-security audit from permanent CI.
+
+Process-level regression coverage lives in `test/workflow_security_audit_cli_test.dart`. Focused source-level workflow assertions remain in `test/workflow_security_test.dart` and `test/repository_integrity_test.dart`.
 
 ## Immutable remote Action references
 
-Maintained workflow files use full 40-character commit revisions for remote `uses:` references. Human-readable version comments are kept beside each revision.
+Maintained workflows use full commit revisions for remote Actions. Human-readable version comments remain beside the immutable revision.
 
-Current qualified revisions:
+Current reviewed revisions include:
 
 ```text
 actions/checkout
@@ -31,13 +52,11 @@ actions/setup-java
 b6effb05e454b25005698d916606bdc6ffcbf961  # v5
 ```
 
-The comment is informational. GitHub executes the commit revision before the comment.
-
-`test/repository_integrity_test.dart` scans every maintained workflow and rejects a remote Action reference that is not a full lowercase commit SHA.
+A tag such as `@v7` is useful to humans but is mutable. The repository therefore executes the reviewed commit revision instead.
 
 ## Flutter SDK reproducibility
 
-Workflows that execute Flutter pin:
+Workflows that execute Flutter pin the maintained hosted SDK:
 
 ```yaml
 channel: stable
@@ -45,106 +64,110 @@ flutter-version: 3.47.0
 cache: false
 ```
 
-The exact version prevents a later stable-channel release from changing the compiler/framework used to rerun an unchanged repository commit.
+The exact version prevents a future stable-channel release from changing the compiler/framework used to rerun an unchanged commit.
 
-`cache: false` is intentional. The qualified `subosito/flutter-action` composite implementation contains an internal `actions/cache@v5` reference when caching is enabled. Because that is a moving major-version reference outside this repository, 2048 Nova disables the action cache path rather than silently reintroducing mutable executable code through a transitive Action.
+`cache: false` remains intentional. The project does not silently enable a transitive moving cache Action through the Flutter setup Action. A future cache design must be reviewed as executable supply-chain code before adoption.
 
-This trades some hosted-runner speed for stronger reproducibility. A future cache design can be adopted only when its executable reference is reviewable and immutably pinned by the repository's own workflow surface.
+## Job execution bounds
 
-## Android Java and Gradle verification
+Every maintained workflow job must declare a positive `timeout-minutes` value.
 
-The hosted Android job explicitly installs **Temurin JDK 17** through the immutable `actions/setup-java` revision above. This is important because Phase 27 demonstrated materially different AGP 9.3.1 release-lint behavior between JDK 17 and JDK 21. The accepted Version 1.5 Android baseline must therefore not depend on whichever Java runtime a future runner image happens to make default.
+Timeouts are a reliability and security control: a stalled package mirror, native build, script, generator, or external hosted runner must not consume an unbounded job indefinitely. The workflow-security audit parses the `jobs:` section and fails if a job loses this bound.
 
-The Android Gradle wrapper also verifies the official Gradle 9.7.0 complete-distribution SHA-256 through `distributionSha256Sum`. Repository-integrity tests protect both the accepted Gradle version and checksum.
+The platform bootstrap generator previously lacked this protection; the Phase 33 maintenance hardening added a bounded timeout and regression enforcement.
 
-JDK 21 remains a diagnostic result for issue #10, not the maintained release-build baseline.
+## Checkout credential policy
 
-## Checkout credential persistence
+Read-only CI, Dependency Review, and Platform Builds jobs use:
 
-Read-only CI, Dependency Review, and native matrix jobs use:
+```yaml
+permissions:
+  contents: read
+```
+
+and every `actions/checkout` step in those workflows must include:
 
 ```yaml
 persist-credentials: false
 ```
 
-They need repository contents after checkout but do not need to push. Removing the checkout credential from local Git configuration narrows the credential exposure available to later build/test commands.
+The regression test counts checkout steps dynamically rather than hard-coding the Platform Builds job count, so adding a new read-only build target cannot silently leave its checkout credential enabled.
 
-The four repository-writing workflows intentionally retain normal checkout credentials because their explicit purpose includes pushing generated assets, generated platform files, formatting repairs, or lockfile updates. Those workflows still request only `contents: write`, preserve the project commit identity, and do not force-push.
+## Approved repository-writing workflows
 
-`test/workflow_security_test.dart` enforces both sides of this boundary.
+Only these maintained workflows are approved to request `contents: write`:
+
+```text
+.github/workflows/bootstrap-branding.yml
+.github/workflows/bootstrap-platforms.yml
+.github/workflows/format-code.yml
+.github/workflows/lock-dependencies.yml
+```
+
+Their purpose is intentionally narrow: generated branding, generated Flutter platform files, canonical Dart formatting repairs, or dependency lockfile updates.
+
+Each approved writer must retain all of these controls:
+
+- explicit `contents: write` rather than blanket write permissions;
+- `github.actor != 'github-actions[bot]'` loop protection;
+- a finite job timeout;
+- top-level concurrency with `cancel-in-progress: true`;
+- the established `Sanskar <sanskarin@outlook.in>` commit identity;
+- an ordinary `git push origin HEAD:main` after its guarded update/rebase flow;
+- no `git push --force` or `git push -f`;
+- no execution with write permission on `pull_request` or `pull_request_target` events.
+
+The branding and platform bootstrap writers now use dedicated concurrency groups so overlapping generator runs cannot race each other while preparing a direct repository update.
+
+## Android Java and Gradle verification
+
+The hosted Android build explicitly installs **Temurin JDK 17** through the immutable `actions/setup-java` revision above. The Android Gradle wrapper pins Gradle 9.7.0 and verifies the accepted complete-distribution SHA-256 through `distributionSha256Sum`.
+
+The current Android repository baseline is documented in [`ANDROID_TOOLCHAIN.md`](ANDROID_TOOLCHAIN.md) and the setup/tool-support documentation. A locally newer Java, Gradle, AGP, Kotlin, or Android SDK is not automatically accepted as the release baseline without compatibility verification.
 
 ## Branding generator reproducibility
 
-`tool/branding-requirements.txt` exactly pins the Python packages used by `bootstrap-branding.yml`. The current set is based on a previously successful Ubuntu-hosted branding environment and is rerun as part of maintenance qualification.
+`tool/branding-requirements.txt` exactly pins the Python packages used by `bootstrap-branding.yml`.
 
-The branding workflow installs through:
+The workflow installs them with:
 
 ```text
 python3 -m pip install --requirement tool/branding-requirements.txt
 ```
 
-No floating `pip install cairosvg pillow` command is accepted. Repository-integrity tests require each non-comment requirements line to contain an exact `==` version.
+Build-time tooling is reviewed like any other executable dependency. Floating unreviewed package installs are not part of the maintained generator contract.
 
-These packages are build-time tools and are not shipped in the application runtime.
+## Dependency Review and Action updates
 
-## Dependency Review proof
+Dependabot monitors GitHub Actions, but an Action update is not accepted solely because a version label is newer.
 
-The SHA-pinned dependency-review path is not accepted from static text alone. Phase 28 opened disposable PR #13 specifically to execute the immutable checkout and Dependency Review revisions on a real pull-request event.
+For an Action revision change:
 
-The PR is not a product change and was closed without merge after the dependency-review job succeeded. Exact run/job evidence is preserved in [`PHASE_28_VERIFICATION.md`](PHASE_28_VERIFICATION.md) and the chronological development log.
-
-## Permissions
-
-Permanent read-only verification workflows request `contents: read` unless write access is required for their explicit purpose.
-
-Repository-writing workflows request `contents: write` and follow these rules:
-
-- commit only expected generated/formatted/lock files;
-- configure `Sanskar <sanskarin@outlook.in>` as the Git identity;
-- do not force-push `main`;
-- rebase before a normal push when concurrent changes may exist;
-- exit without a commit when output is already current;
-- do not store credentials, signing keys, or access tokens in tracked files.
-
-The repository security regression also rejects permanent `pull_request_target` triggers and blanket `write-all` permissions.
-
-## Dependabot update policy for Actions
-
-Dependabot continues monitoring GitHub Actions. A proposed Action update must not be accepted solely because the version label is newer.
-
-For an Action change:
-
-1. identify the new immutable commit revision;
-2. keep an accurate human-readable version comment;
-3. review release notes and runtime requirements;
-4. run Dependency Review when the changed path triggers it;
-5. run permanent CI;
-6. run affected native/generator workflows;
-7. update repository-integrity expected revisions only after qualification;
-8. preserve the stable-release `0/13` manual boundary unless actual real-world evidence exists.
+1. identify the exact immutable commit revision;
+2. verify the human-readable version comment;
+3. review release notes/runtime requirements;
+4. run Dependency Review when applicable;
+5. run permanent CI, including the workflow-security audit;
+6. run affected platform/generator workflows;
+7. update documented reviewed revisions only after successful qualification;
+8. preserve the manual release-evidence boundary unless genuine real-world evidence was performed.
 
 ## Hosted runner boundary
 
-Pinning Action code, Flutter, JDK, Gradle, Dart packages, and branding Python packages substantially reduces drift, but GitHub-hosted runner images and OS package mirrors remain external managed infrastructure. Labels such as `ubuntu-latest`, `windows-latest`, and `macos-latest` can receive image updates over time, and the Linux native job installs system build prerequisites from the runner's configured package mirror.
+Pinning Action code, Flutter, JDK, Gradle, Dart packages, and branding packages reduces drift, but GitHub-hosted runner images and OS package mirrors remain managed external infrastructure. Labels such as `ubuntu-latest`, `windows-latest`, and `macos-latest` can change over time.
 
-For that reason, every release-candidate maintenance change still requires fresh hosted verification. An old successful build is evidence for its recorded runner environment, not proof that all future runner images are identical.
-
-## Security-alert API visibility
-
-Phase 28 attempted to read repository Dependabot, code-scanning, and secret-scanning alert endpoints through the connected integration. GitHub returned permission-restricted responses for those endpoints. The repository therefore does **not** claim that hidden alert sets are empty based on inaccessible APIs.
-
-Available evidence remains the tracked-source secret/config audit, Dependency Review execution, analyzer/tests/builds, and GitHub settings that the integration can actually read.
+For that reason, an old successful workflow is historical evidence, not proof that a later hosted image behaves identically. Release maintenance still requires fresh hosted verification for the exact candidate commit.
 
 ## Repository protection boundary
 
-Workflow files and CODEOWNERS cannot enforce `main` protection by themselves.
+Workflow files, CODEOWNERS, tests, and audits cannot configure GitHub branch/ruleset settings by themselves.
 
-The Phase 28 audit found `main` currently unprotected, with required status-check enforcement off. Issue #12 tracks the necessary GitHub repository-setting change. Until the setting itself is enabled, documentation must not claim that direct pushes are technically prevented.
+The latest repository observation records `main` as protected, but the available legacy protection metadata still does not expose the intended required status-check contexts. A repository ruleset may be responsible for the protected flag; the connected surface cannot prove every enforcement detail.
 
-Recommended protection is documented in [`SUPPLY_CHAIN.md`](SUPPLY_CHAIN.md) and issue #12.
+Issue #12 therefore remains the source of truth for repository-setting verification. Do not close it or claim full required-check enforcement until the GitHub settings themselves prove the intended merge restrictions and permanent CI requirement.
 
 ## Stable-release boundary
 
-Immutable automation improves provenance and repeatability, but it does not satisfy physical-device, assistive-technology, external-handler, long-session, native-branding, signing, provisioning, or store-distribution qualification.
+Workflow hardening improves source integrity and automation provenance. It does **not** satisfy physical-device, assistive-technology, real browser/PWA lifecycle, external-handler, native-branding, signing/provisioning, or store-distribution qualification.
 
-Those 13 evidence items remain controlled by the fail-closed release manifest and `tool/release_readiness.dart`.
+Those 13 manual evidence items remain controlled by `docs/release_qualification.json` and the fail-closed stable gate in `tool/release_readiness.dart`.

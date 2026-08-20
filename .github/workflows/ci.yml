@@ -59,6 +59,9 @@ jobs:
       - name: Audit repository integrity and local documentation links
         run: dart run tool/repository_audit.dart --json
 
+      - name: Audit GitHub Actions workflow security
+        run: dart run tool/workflow_security_audit.dart --json
+
       - name: Audit six-target cross-platform support
         run: dart run tool/platform_support_audit.dart --json
 
