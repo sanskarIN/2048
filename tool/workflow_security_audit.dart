@@ -82,17 +82,14 @@ void main(List<String> args) {
         contentsPermission,
         failures,
       );
-      _auditWriterPolicy(
-        relativePath,
-        source,
-        contentsPermission,
-        failures,
-      );
+      _auditWriterPolicy(relativePath, source, contentsPermission, failures);
     }
 
     for (final writer in _approvedWriterWorkflows) {
       if (!checkedWorkflows.contains(writer)) {
-        failures.add('Approved repository-writing workflow is missing: $writer');
+        failures.add(
+          'Approved repository-writing workflow is missing: $writer',
+        );
       }
     }
     _auditCiWiring(root, failures);
@@ -144,18 +141,18 @@ List<File> _workflowFiles(Directory root, List<String> failures) {
       .toList(growable: false);
 
   if (workflows.isEmpty) {
-    failures.add('No GitHub Actions workflows were found in $_workflowDirectory.');
+    failures.add(
+      'No GitHub Actions workflows were found in $_workflowDirectory.',
+    );
   }
   return workflows;
 }
 
-void _auditUnsafePatterns(
-  String path,
-  String source,
-  List<String> failures,
-) {
+void _auditUnsafePatterns(String path, String source, List<String> failures) {
   if (source.contains('pull_request_target:')) {
-    failures.add('$path must not use the privileged pull_request_target trigger.');
+    failures.add(
+      '$path must not use the privileged pull_request_target trigger.',
+    );
   }
   if (source.contains('write-all')) {
     failures.add('$path must not request blanket write-all permissions.');
@@ -171,16 +168,14 @@ void _auditActionPins(String path, String source, List<String> failures) {
       continue;
     }
     if (!immutableUse.hasMatch(line)) {
-      failures.add('$path has a mutable or unpinned Action reference: ${line.trim()}');
+      failures.add(
+        '$path has a mutable or unpinned Action reference: ${line.trim()}',
+      );
     }
   }
 }
 
-String? _auditPermissions(
-  String path,
-  String source,
-  List<String> failures,
-) {
+String? _auditPermissions(String path, String source, List<String> failures) {
   if (!RegExp(r'^permissions:\s*$', multiLine: true).hasMatch(source)) {
     failures.add('$path must declare top-level permissions explicitly.');
     return null;
@@ -191,7 +186,9 @@ String? _auditPermissions(
     multiLine: true,
   ).firstMatch(source);
   if (contentsMatch == null) {
-    failures.add('$path must declare top-level contents: read or contents: write.');
+    failures.add(
+      '$path must declare top-level contents: read or contents: write.',
+    );
     return null;
   }
   return contentsMatch.group(1);
@@ -282,7 +279,9 @@ void _auditWriterPolicy(
   final approvedWriter = _approvedWriterWorkflows.contains(path);
 
   if (contentsPermission == 'write' && !approvedWriter) {
-    failures.add('$path requests contents: write but is not an approved writer.');
+    failures.add(
+      '$path requests contents: write but is not an approved writer.',
+    );
     return;
   }
   if (!approvedWriter) {
@@ -293,11 +292,15 @@ void _auditWriterPolicy(
     failures.add('$path must retain explicit contents: write permission.');
   }
   if (RegExp(r'^\s*pull_request:\s*$', multiLine: true).hasMatch(source)) {
-    failures.add('$path must not run with write permission on pull_request events.');
+    failures.add(
+      '$path must not run with write permission on pull_request events.',
+    );
   }
   if (!RegExp(r'^concurrency:\s*$', multiLine: true).hasMatch(source) ||
-      !RegExp(r'^  cancel-in-progress:\s*true\s*$', multiLine: true)
-          .hasMatch(source)) {
+      !RegExp(
+        r'^  cancel-in-progress:\s*true\s*$',
+        multiLine: true,
+      ).hasMatch(source)) {
     failures.add('$path must serialize/cancel overlapping repository writes.');
   }
   if (!source.contains("github.actor != 'github-actions[bot]'")) {
@@ -336,5 +339,7 @@ String _relativePath(Directory root, File file) {
   final prefix = root.path.endsWith(Platform.pathSeparator)
       ? root.path
       : '${root.path}${Platform.pathSeparator}';
-  return file.path.substring(prefix.length).replaceAll(Platform.pathSeparator, '/');
+  return file.path
+      .substring(prefix.length)
+      .replaceAll(Platform.pathSeparator, '/');
 }

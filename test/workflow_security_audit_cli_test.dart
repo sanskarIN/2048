@@ -94,10 +94,7 @@ jobs:
     await write('.github/workflows/ci.yml', readOnlyCi());
     await write(
       '.github/workflows/bootstrap-branding.yml',
-      writer(
-        'bootstrap-branding',
-        omitConcurrency: omitWriterConcurrency,
-      ),
+      writer('bootstrap-branding', omitConcurrency: omitWriterConcurrency),
     );
     await write(
       '.github/workflows/bootstrap-platforms.yml',
@@ -129,7 +126,11 @@ jobs:
   test('secure workflow fixture passes', () async {
     final result = await runAudit(await fixture());
 
-    expect(result.process.exitCode, 0, reason: result.process.stderr.toString());
+    expect(
+      result.process.exitCode,
+      0,
+      reason: result.process.stderr.toString(),
+    );
     expect(result.json['secure'], isTrue);
     expect(result.json['workflowCount'], 5);
     expect(result.json['failures'], isEmpty);
