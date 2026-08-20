@@ -108,13 +108,13 @@ jobs:
             echo "Web build completed with a missing icon-font asset warning."
             exit 1
           fi
-      - name: Package Web/PWA release and checksum
+      - name: Validate and package Web/PWA release
         shell: bash
         run: |
           set -euo pipefail
           test -f build/web/index.html
           test -f build/web/manifest.json
-          test -f build/web/flutter_service_worker.js
+          test -f build/web/flutter_bootstrap.js
           tar -C build/web -czf nova-2048-web-pwa.tar.gz .
           sha256sum nova-2048-web-pwa.tar.gz > nova-2048-web-pwa.tar.gz.sha256
       - name: Upload Web/PWA qualification artifact
