@@ -20,6 +20,8 @@ void main() {
     'docs/FEATURE_REFERENCE.md',
     'docs/BUILDING_EXECUTABLES.md',
     'docs/CROSS_PLATFORM_SUPPORT.md',
+    'docs/REPOSITORY_AUDIT.md',
+    'docs/SOURCE_COMPLETION_AUDIT.md',
     'docs/README.md',
     'what_changed.md',
     'what_changed_archive_phase_32.md',
@@ -225,6 +227,35 @@ void main() {
         reason: 'Cross-platform support contract is missing: $requiredText',
       );
     }
+  });
+
+  test('audit documentation preserves one fail-closed root argument rule', () {
+    const sharedRule =
+        'The --root=<path> argument requires a non-empty path.';
+    final maintainerTools = File('tool/README.md').readAsStringSync();
+    final repositoryAudit = File(
+      'docs/REPOSITORY_AUDIT.md',
+    ).readAsStringSync();
+    final sourceCompletion = File(
+      'docs/SOURCE_COMPLETION_AUDIT.md',
+    ).readAsStringSync();
+
+    expect(maintainerTools, contains('Shared audit root-argument rule'));
+    expect(maintainerTools, contains('audit_root_argument_consistency_test.dart'));
+    expect(repositoryAudit, contains('`--root=<path>` requires a non-empty path'));
+    expect(sourceCompletion, contains('`--root=<path>` requires a non-empty path'));
+    expect(
+      File('tool/repository_audit.dart').readAsStringSync(),
+      contains(sharedRule),
+    );
+    expect(
+      File('tool/platform_support_audit.dart').readAsStringSync(),
+      contains(sharedRule),
+    );
+    expect(
+      File('tool/source_completion_audit.dart').readAsStringSync(),
+      contains(sharedRule),
+    );
   });
 
   test('active continuity preserves Phase 32 while tracking Phase 34', () {
