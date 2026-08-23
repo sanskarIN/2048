@@ -241,9 +241,18 @@ void main() {
     ).readAsStringSync();
 
     expect(maintainerTools, contains('Shared audit root-argument rule'));
-    expect(maintainerTools, contains('audit_root_argument_consistency_test.dart'));
-    expect(repositoryAudit, contains('`--root=<path>` requires a non-empty path'));
-    expect(sourceCompletion, contains('`--root=<path>` requires a non-empty path'));
+    expect(
+      maintainerTools,
+      contains('audit_root_argument_consistency_test.dart'),
+    );
+    expect(
+      repositoryAudit,
+      contains('`--root=<path>` requires a non-empty path'),
+    );
+    expect(
+      sourceCompletion,
+      contains('`--root=<path>` requires a non-empty path'),
+    );
     expect(
       File('tool/repository_audit.dart').readAsStringSync(),
       contains(sharedRule),
