@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+const _schemaVersion = 1;
+
 const _targets = <String, List<String>>{
   'Android': <String>[
     'android/app/build.gradle.kts',
@@ -95,7 +97,9 @@ void main(List<String> args) {
     configuredRoot.isEmpty ? Directory.current.path : configuredRoot,
   ).absolute;
 
-  final targetStatus = <String, bool>{};
+  final targetStatus = <String, bool>{
+    for (final target in _targets.keys) target: false,
+  };
   if (!root.existsSync()) {
     failures.add('Repository root does not exist: ${root.path}');
   } else {
@@ -106,11 +110,16 @@ void main(List<String> args) {
     _auditCiWiring(root, failures);
   }
 
+  final configuredTargetCount = targetStatus.values.where((value) => value).length;
   final result = <String, Object?>{
+    'schemaVersion': _schemaVersion,
     'root': root.path,
     'supportedTargets': _targets.keys.toList(growable: false),
     'targetStatus': targetStatus,
+    'requiredTargetCount': _targets.length,
+    'configuredTargetCount': configuredTargetCount,
     'crossPlatformReady': failures.isEmpty,
+    'failureCount': failures.length,
     'failures': failures,
   };
 
