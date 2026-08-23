@@ -427,6 +427,8 @@ The cross-platform support contract already required every retained qualificatio
 
 `test/platform_support_audit_cli_test.dart` now protects the JSON result shape, invalid empty-root behavior, fixture representation of all checksummed qualification packages, and fail-closed behavior when a native checksum is removed.
 
+The repository-integrity and source-completion audits now use the same fail-closed fixture-root rule: omitting `--root` audits the current repository, while explicitly supplying `--root=<path>` requires a non-empty path. `test/audit_root_argument_consistency_test.dart` protects the shared behavior across all three audits.
+
 ## CI evidence retention hardened
 
 The permanent `CI` workflow now captures successful JSON output from:
@@ -445,7 +447,7 @@ Each capture step uses shell pipe-failure propagation with `tee`, so retaining t
 
 ## Documentation synchronized
 
-`docs/CROSS_PLATFORM_SUPPORT.md`, `tool/README.md`, and `CHANGELOG.md` now describe the all-platform checksum audit, stable JSON interface, invalid-root behavior, and retained CI audit-evidence bundle.
+`docs/CROSS_PLATFORM_SUPPORT.md`, `docs/REPOSITORY_AUDIT.md`, `docs/SOURCE_COMPLETION_AUDIT.md`, `tool/README.md`, and `CHANGELOG.md` now describe the hardened audit contracts, all-platform checksum enforcement, shared fail-closed root handling, stable platform-audit JSON interface, and retained CI audit-evidence bundle.
 
 ## Phase 34 commits
 
@@ -462,13 +464,31 @@ a7ee4cb6  test: protect retained CI audit evidence
 cf1ce23e  docs: document hardened platform audit tooling
 81688cff  docs: align platform contract with checksum audit evidence
 f594965d  docs: record Phase 34 audit evidence hardening
+c1cee613  docs: activate Phase 34 maintenance continuity
+958015ed  test: protect Phase 34 audit documentation continuity
+387adbdd  test: preserve audit schema for missing roots
+6c9510d3  fix: reject empty source-completion audit roots
+1908f2bb  test: cover empty source-completion audit roots
+2c043369  fix: reject empty repository audit roots
+b7898f0a  test: enforce consistent audit root validation
+e16689ff  docs: document fail-closed repository audit roots
+ae9e89da  docs: document fail-closed completion audit roots
+5c2a8b38  docs: define shared audit root argument contract
+0aa911b3  docs: record shared audit root validation
+431d6c20  test: protect shared audit root documentation
 ```
 
-This continuity update is intentionally separate from the tooling, tests, CI, support-contract, and changelog commits so the maintenance history remains reviewable.
+This continuity update is intentionally separate from the tooling, tests, CI, support-contract, changelog, and documentation-regression commits so the maintenance history remains reviewable.
+
+## Repository-settings issue boundary
+
+Issue #12 remains open. PR #28 demonstrates that pull-request CI and Dependency Review workflows are created automatically for maintenance changes, but the available repository-settings surface still does not prove that the active ruleset *requires* those checks before merge or exposes every intended merge restriction. The issue was updated with this observed 2026-08-23 evidence rather than being closed on an assumption.
 
 ## Phase 34 verification boundary
 
 The maintenance branch was created from `main` commit `fb78b0ba27ff6b3421e9c1f8d95652454b91653a`. The connected status surfaces did not expose a completed CI/check result for that starting head, so no inherited green result is being claimed.
+
+PR #28 is the protected-branch integration path for this maintenance stream. Its exact-head workflow result must be observed after the final continuity commit before any formatter/analyzer/test/Web-build success is claimed.
 
 This execution environment does not provide a runnable Flutter/Dart toolchain, so formatter, analyzer, Flutter tests, Web build, and native builds are not being invented as local results. The branch must use the repository's maintained CI and Platform Builds workflows for those checks.
 
