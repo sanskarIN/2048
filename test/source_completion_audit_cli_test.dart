@@ -284,6 +284,22 @@ void main() {
     );
   });
 
+  test('empty root argument fails closed', () async {
+    final process = await Process.run('dart', <String>[
+      scriptPath,
+      '--root=',
+      '--json',
+    ]);
+
+    expect(process.exitCode, 1);
+    final output = jsonDecode(process.stdout as String) as Map<String, dynamic>;
+    expect(output['featureComplete'], isFalse);
+    expect(
+      (output['failures'] as List<dynamic>).join('\n'),
+      contains('The --root=<path> argument requires a non-empty path.'),
+    );
+  });
+
   test('unknown argument fails closed', () async {
     final root = await fixture();
     final process = await Process.run('dart', <String>[
