@@ -32,6 +32,7 @@ This section describes the source-complete Version 2.0.12 candidate. It does not
 - Regression coverage for cross-platform audit result shape, invalid empty root input, and missing native qualification checksums.
 - Retained machine-readable CI evidence for release readiness, manual qualification status, repository integrity, cross-platform support, and source completion in the `nova-2048-source-audit-reports` artifact.
 - CI regression coverage protecting the machine-readable audit evidence bundle, pinned artifact uploader, fail-on-missing behavior, and retention policy.
+- Cross-tool regression coverage that keeps repository-integrity, platform-support, and source-completion audits aligned on the same fail-closed non-empty `--root=<path>` fixture contract.
 
 ### Changed
 
@@ -48,6 +49,7 @@ This section describes the source-complete Version 2.0.12 candidate. It does not
 - The cross-platform audit now verifies checksummed retained qualification packaging for Android APK/AAB, Linux, Windows, macOS, and unsigned iOS in addition to its existing Web/PWA checks.
 - The CI quality job now captures successful JSON audit output with pipe-failure propagation before uploading the source-audit report bundle for 14 days.
 - Cross-platform support documentation now defines the machine-readable audit interface and makes the all-platform checksum contract explicit.
+- Repository, platform, and source-completion audit documentation now define one shared rule: omitting `--root` audits the current repository, while an explicitly supplied root must be non-empty.
 
 ### Fixed
 
@@ -61,7 +63,7 @@ This section describes the source-complete Version 2.0.12 candidate. It does not
 - Removed temporary one-shot Phase 30/31/32 maintenance/finalizer paths from the permanent repository contract and regression-guarded their absence.
 - Hardened Web/PWA audit behavior to fail closed on manifest identity/icon drift and required HTML metadata drift.
 - Closed an audit-policy gap where native qualification packages could lose a required SHA-256 sidecar without the cross-platform source audit detecting the drift.
-- Empty `--root=` input to the platform-support audit now fails explicitly instead of silently falling back to the current working directory.
+- Empty `--root=` input to the platform-support, repository-integrity, and source-completion audits now fails explicitly instead of silently falling back to the current working directory.
 
 ### Maintained release/toolchain boundaries
 
