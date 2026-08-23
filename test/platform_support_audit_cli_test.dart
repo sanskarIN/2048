@@ -243,6 +243,36 @@ void main() {
     );
   });
 
+  test('missing root preserves the six-target JSON shape', () async {
+    final root = Directory.fromUri(
+      Directory.systemTemp.uri.resolve(
+        'nova-platform-audit-missing-${DateTime.now().microsecondsSinceEpoch}/',
+      ),
+    );
+    expect(root.existsSync(), isFalse);
+
+    final process = await Process.run('dart', <String>[
+      scriptPath,
+      '--root=${root.path}',
+      '--json',
+    ]);
+
+    expect(process.exitCode, 1);
+    final output = jsonDecode(process.stdout as String) as Map<String, dynamic>;
+    expect(output['schemaVersion'], 1);
+    expect(output['requiredTargetCount'], 6);
+    expect(output['configuredTargetCount'], 0);
+    expect(output['crossPlatformReady'], isFalse);
+    expect(output['failureCount'], greaterThanOrEqualTo(1));
+    final targetStatus = output['targetStatus'] as Map<String, dynamic>;
+    expect(targetStatus.length, 6);
+    expect(targetStatus.values, everyElement(isFalse));
+    expect(
+      (output['failures'] as List<dynamic>).join('\n'),
+      contains('Repository root does not exist:'),
+    );
+  });
+
   test('unknown argument fails closed', () async {
     final root = await fixture();
     final process = await Process.run('dart', <String>[
