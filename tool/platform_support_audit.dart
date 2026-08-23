@@ -93,6 +93,9 @@ void main(List<String> args) {
   final configuredRoot = rootArgs.isEmpty
       ? Directory.current.path
       : rootArgs.first.substring('--root='.length).trim();
+  if (rootArgs.isNotEmpty && configuredRoot.isEmpty) {
+    failures.add('The --root=<path> argument requires a non-empty path.');
+  }
   final root = Directory(
     configuredRoot.isEmpty ? Directory.current.path : configuredRoot,
   ).absolute;
