@@ -26,7 +26,11 @@ Checks required project/open-source/release/workflow files, exact Phase 32 packa
 dart run tool/platform_support_audit.dart --json
 ```
 
-Checks the maintained six-target contract for Android, iOS, Web/PWA, Windows, macOS, and Linux. It verifies required runner files, every release-build command, all platform path triggers in the dedicated build workflow, checksummed Web/PWA qualification packaging, and permanent CI wiring. The command fails closed when any maintained target silently loses its source runner or automated build path.
+Checks the maintained six-target contract for Android, iOS, Web/PWA, Windows, macOS, and Linux. It verifies required runner files, every release-build command, all platform path triggers in the dedicated build workflow, generated Web release prerequisites, checksummed qualification packaging for Android APK/AAB, Web/PWA, Linux, Windows, macOS, and unsigned iOS, and permanent CI wiring. The command fails closed when any maintained target silently loses its source runner, automated build path, retained qualification package, or package checksum.
+
+The JSON response uses `schemaVersion: 1` and always includes `supportedTargets`, a six-key `targetStatus` map, `requiredTargetCount`, `configuredTargetCount`, `crossPlatformReady`, `failureCount`, and `failures`. This makes local and CI consumers able to distinguish a fully configured six-target source tree from an incomplete or invalid audit root without scraping prose.
+
+Use `--root=<path>` only when intentionally auditing another repository root, such as a regression fixture. An explicitly empty `--root=` is invalid and exits non-zero rather than silently changing meaning. `--help` prints the supported CLI contract.
 
 The process-level regression suite is `test/platform_support_audit_cli_test.dart`. See [`../docs/CROSS_PLATFORM_SUPPORT.md`](../docs/CROSS_PLATFORM_SUPPORT.md) and [`../docs/PLATFORMS.md`](../docs/PLATFORMS.md).
 
@@ -97,6 +101,26 @@ dart run tool/solver_benchmark.dart 8
 ```
 
 The benchmark compares the isolated Auto Play strategies without touching player saves, statistics, achievements, or Daily Challenge history. See [`../docs/SOLVER_BENCHMARKS.md`](../docs/SOLVER_BENCHMARKS.md).
+
+## CI audit evidence bundle
+
+The permanent `CI` workflow retains the successful machine-readable outputs from the source-maintenance gates as a short-lived artifact named:
+
+```text
+nova-2048-source-audit-reports
+```
+
+The bundle contains:
+
+```text
+release-readiness.json
+release-qualification-status.json
+repository-audit.json
+platform-support-audit.json
+source-completion-audit.json
+```
+
+The workflow uses shell pipe-failure propagation while writing these files, so piping through `tee` does not turn a failed audit into a successful CI step. These reports are automated source evidence only and are not substitutes for the 13 real-world manual qualification checks.
 
 ## Final maintainer verification sequence
 
