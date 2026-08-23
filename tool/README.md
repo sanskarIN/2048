@@ -44,6 +44,18 @@ Checks the final Version 2.0.12 completion contract: exact package/candidate ver
 
 It does not replace analyzer/tests, platform builds, or real-device/manual qualification. See [`../docs/SOURCE_COMPLETION_AUDIT.md`](../docs/SOURCE_COMPLETION_AUDIT.md) and [`../docs/FINAL_2_0_12_SOURCE_AUDIT.md`](../docs/FINAL_2_0_12_SOURCE_AUDIT.md).
 
+## Shared audit root-argument rule
+
+The repository-integrity, cross-platform-support, and source-completion audits all support fixture/alternate-root execution with one non-empty `--root=<path>` argument. Across all three commands:
+
+- omitting `--root` audits the current repository root;
+- one non-empty `--root=<path>` audits that explicit location;
+- `--root=` is invalid and exits non-zero;
+- multiple root arguments are invalid;
+- unknown arguments fail closed.
+
+`test/audit_root_argument_consistency_test.dart` protects the shared empty-root rule in addition to each audit's dedicated process-level regression suite.
+
 ## Release readiness gate
 
 Candidate mode:
