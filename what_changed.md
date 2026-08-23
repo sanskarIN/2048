@@ -12,15 +12,15 @@ Historical continuity is preserved in:
 ## Current repository state
 
 - **Current phase:** Phase 32 — Version 2.0.12 source-completion/release audit contract remains the canonical release phase protected by `tool/repository_audit.dart`.
-- **Active maintenance stream:** Phase 33 — complete documentation, setup, command, terminology, and support-lifecycle hardening.
+- **Active maintenance stream:** Phase 34 — cross-platform audit evidence, artifact-checksum enforcement, and CI diagnostics hardening.
 - **Marketing version:** `2.0.12`.
 - **Flutter package/build version:** `2.0.12+2012`.
-- **Source scope:** feature-complete; Phase 33 maintenance does not reopen the completed Version 2.0.12 product-feature backlog.
+- **Source scope:** feature-complete; Phase 34 maintenance does not reopen the completed Version 2.0.12 product-feature backlog.
 - **Branch:** `main`.
-- **Manual evidence:** stable qualification boundary remains 0/13. No physical-device, assistive-technology, real browser/PWA lifecycle, external-handler, native-branding, signing/provisioning, or store evidence is being invented by documentation work.
+- **Manual evidence:** stable qualification boundary remains 0/13. No physical-device, assistive-technology, real browser/PWA lifecycle, external-handler, native-branding, signing/provisioning, or store evidence is being invented by maintenance work.
 - **Toolchain contract:** CI Flutter 3.47.0 stable; AGP 9.1.0; Kotlin Android 2.4.10; Gradle 9.7.0; Android Java/Kotlin target 17.
 
-The `Current phase: Phase 32` line is intentionally retained because the repository integrity audit treats Phase 32 as the frozen Version 2.0.12 release/source-completion contract. Phase 33 is a maintenance/documentation stream inside that completed release line, not a new product release or feature scope.
+The `Current phase: Phase 32` line is intentionally retained because the repository integrity audit treats Phase 32 as the frozen Version 2.0.12 release/source-completion contract. Phase 34 is a maintenance/audit stream inside that completed release line, not a new product release or feature scope.
 
 # Phase 33 — Complete documentation and toolchain lifecycle hardening
 
@@ -402,3 +402,74 @@ This continuity update is committed separately so the documentation changes, ind
 These extension changes are being submitted through the repository's protected-branch pull-request path. Direct writes to `main` were rejected by branch protection and were not bypassed.
 
 No formatter, analyzer, Flutter test, native build, physical-device result, assistive-technology result, store result, or manual release qualification is claimed here unless a corresponding CI/observed evidence surface reports it.
+
+# Phase 34 — Cross-platform audit evidence and checksum hardening
+
+Date: **2026-08-23**
+
+This maintenance stream continues the completed Version 2.0.12 release line without adding product features or weakening the Phase 32 source-completion contract.
+
+## Gap identified
+
+The cross-platform support contract already required every retained qualification package to have a SHA-256 checksum, and the hosted Platform Builds workflow already produced those checksums. However, `tool/platform_support_audit.dart` only failed closed on Web/PWA package/checksum drift. A future native workflow edit could therefore remove an Android, Linux, Windows, macOS, or unsigned-iOS checksum sidecar without the platform audit detecting that policy regression.
+
+## Audit contract hardened
+
+`tool/platform_support_audit.dart` now:
+
+- emits a versioned machine-readable contract with `schemaVersion: 1`;
+- always exposes all six target keys in `targetStatus`;
+- reports `requiredTargetCount`, `configuredTargetCount`, and `failureCount`;
+- rejects an explicitly empty `--root=` instead of silently treating it as the current directory;
+- continues to fail on unknown arguments and duplicate root arguments;
+- validates retained qualification package/checksum fragments for Android APK/AAB, Web/PWA, Linux, Windows, macOS, and unsigned iOS;
+- continues to protect the six runner families, release commands, platform-path triggers, and permanent CI invocation.
+
+`test/platform_support_audit_cli_test.dart` now protects the JSON result shape, invalid empty-root behavior, fixture representation of all checksummed qualification packages, and fail-closed behavior when a native checksum is removed.
+
+## CI evidence retention hardened
+
+The permanent `CI` workflow now captures successful JSON output from:
+
+```text
+release_readiness.dart
+release_qualification_status.dart
+repository_audit.dart
+platform_support_audit.dart
+source_completion_audit.dart
+```
+
+The reports are uploaded for 14 days as `nova-2048-source-audit-reports`.
+
+Each capture step uses shell pipe-failure propagation with `tee`, so retaining the JSON file cannot hide a non-zero audit exit. `test/ci_audit_reports_test.dart` protects the commands, report filenames, pinned artifact uploader, fail-on-missing policy, artifact name, and retention duration.
+
+## Documentation synchronized
+
+`docs/CROSS_PLATFORM_SUPPORT.md`, `tool/README.md`, and `CHANGELOG.md` now describe the all-platform checksum audit, stable JSON interface, invalid-root behavior, and retained CI audit-evidence bundle.
+
+## Phase 34 commits
+
+```text
+66c02ca0  tool: stabilize cross-platform audit JSON contract
+10905a36  test: cover cross-platform audit result schema
+25eb64ac  fix: reject empty platform audit root arguments
+a1f747dd  test: cover invalid platform audit root input
+a02041f9  test: model checksummed native qualification artifacts
+beaae472  tool: audit checksums for every native platform package
+c485c4a1  test: fail closed on missing native artifact checksums
+dbdddc9b  ci: retain machine-readable source audit reports
+a7ee4cb6  test: protect retained CI audit evidence
+cf1ce23e  docs: document hardened platform audit tooling
+81688cff  docs: align platform contract with checksum audit evidence
+f594965d  docs: record Phase 34 audit evidence hardening
+```
+
+This continuity update is intentionally separate from the tooling, tests, CI, support-contract, and changelog commits so the maintenance history remains reviewable.
+
+## Phase 34 verification boundary
+
+The maintenance branch was created from `main` commit `fb78b0ba27ff6b3421e9c1f8d95652454b91653a`. The connected status surfaces did not expose a completed CI/check result for that starting head, so no inherited green result is being claimed.
+
+This execution environment does not provide a runnable Flutter/Dart toolchain, so formatter, analyzer, Flutter tests, Web build, and native builds are not being invented as local results. The branch must use the repository's maintained CI and Platform Builds workflows for those checks.
+
+The stable qualification boundary remains 0/13. Automated source reports, hosted compilation, extra commit count, and documentation do not replace physical-device, assistive-technology, browser/PWA lifecycle, external-handler, native-branding, signing/provisioning, or store evidence.
