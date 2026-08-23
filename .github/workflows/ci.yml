@@ -51,19 +51,47 @@ jobs:
         run: flutter test --coverage
 
       - name: Verify release-candidate readiness metadata
-        run: dart run tool/release_readiness.dart --json
+        shell: bash
+        run: |
+          set -o pipefail
+          dart run tool/release_readiness.dart --json | tee release-readiness.json
 
       - name: Report manual qualification status
-        run: dart run tool/release_qualification_status.dart --json --pending-only
+        shell: bash
+        run: |
+          set -o pipefail
+          dart run tool/release_qualification_status.dart --json --pending-only | tee release-qualification-status.json
 
       - name: Audit repository integrity and local documentation links
-        run: dart run tool/repository_audit.dart --json
+        shell: bash
+        run: |
+          set -o pipefail
+          dart run tool/repository_audit.dart --json | tee repository-audit.json
 
       - name: Audit six-target cross-platform support
-        run: dart run tool/platform_support_audit.dart --json
+        shell: bash
+        run: |
+          set -o pipefail
+          dart run tool/platform_support_audit.dart --json | tee platform-support-audit.json
 
       - name: Audit final source-completion contract
-        run: dart run tool/source_completion_audit.dart --json
+        shell: bash
+        run: |
+          set -o pipefail
+          dart run tool/source_completion_audit.dart --json | tee source-completion-audit.json
+
+      - name: Upload machine-readable source audit reports
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: nova-2048-source-audit-reports
+          path: |
+            release-readiness.json
+            release-qualification-status.json
+            repository-audit.json
+            platform-support-audit.json
+            source-completion-audit.json
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Verify stable gate remains fail-closed
         shell: bash
