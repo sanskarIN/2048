@@ -49,6 +49,36 @@ const _requiredBuildFragments = <String, String>{
   'Linux': 'flutter build linux --release',
 };
 
+const _requiredNativeQualificationFragments = <String, List<String>>{
+  'Android': <String>[
+    'build/app/outputs/flutter-apk/app-release.apk',
+    'build/app/outputs/flutter-apk/app-release.apk.sha256',
+    'build/app/outputs/bundle/release/app-release.aab',
+    'build/app/outputs/bundle/release/app-release.aab.sha256',
+    'nova-2048-android-release',
+  ],
+  'Linux': <String>[
+    'nova-2048-linux-x64.tar.gz',
+    'nova-2048-linux-x64.tar.gz.sha256',
+    'nova-2048-linux-x64-release',
+  ],
+  'Windows': <String>[
+    'nova-2048-windows-x64.zip',
+    'nova-2048-windows-x64.zip.sha256',
+    'nova-2048-windows-x64-release',
+  ],
+  'macOS': <String>[
+    'nova-2048-macos-release.zip',
+    'nova-2048-macos-release.zip.sha256',
+    'nova-2048-macos-release',
+  ],
+  'unsigned iOS': <String>[
+    'nova-2048-ios-unsigned-release.zip',
+    'nova-2048-ios-unsigned-release.zip.sha256',
+    'nova-2048-ios-unsigned-release',
+  ],
+};
+
 const _platformWorkflow = '.github/workflows/platform-builds.yml';
 const _ciWorkflow = '.github/workflows/ci.yml';
 const _auditCommand = 'dart run tool/platform_support_audit.dart --json';
@@ -110,6 +140,7 @@ void main(List<String> args) {
     _auditTargetRunners(root, targetStatus, failures);
     _auditBuildMatrix(root, failures);
     _auditWebPackaging(root, failures);
+    _auditNativeQualificationPackaging(root, failures);
     _auditCiWiring(root, failures);
   }
 
@@ -235,6 +266,24 @@ void _auditWebPackaging(Directory root, List<String> failures) {
   for (final fragment in requiredFragments) {
     if (!workflow.contains(fragment)) {
       failures.add('Web/PWA qualification packaging is missing: $fragment');
+    }
+  }
+}
+
+void _auditNativeQualificationPackaging(
+  Directory root,
+  List<String> failures,
+) {
+  final workflow = _read(root, _platformWorkflow, failures);
+  if (workflow == null) {
+    return;
+  }
+
+  for (final entry in _requiredNativeQualificationFragments.entries) {
+    for (final fragment in entry.value) {
+      if (!workflow.contains(fragment)) {
+        failures.add('${entry.key} qualification packaging is missing: $fragment');
+      }
     }
   }
 }
