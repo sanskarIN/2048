@@ -19,6 +19,7 @@ void main() {
     'docs/FILE_COVERAGE_CONTRACT.md',
     'docs/FEATURE_REFERENCE.md',
     'docs/BUILDING_EXECUTABLES.md',
+    'docs/CROSS_PLATFORM_SUPPORT.md',
     'docs/README.md',
     'what_changed.md',
     'what_changed_archive_phase_32.md',
@@ -207,10 +208,31 @@ void main() {
     }
   });
 
-  test('active continuity points to the preserved Phase 32 archive', () {
+  test('cross-platform documentation exposes hardened audit evidence contract', () {
+    final support = File('docs/CROSS_PLATFORM_SUPPORT.md').readAsStringSync();
+
+    for (final requiredText in <String>[
+      'schemaVersion: 1',
+      'requiredTargetCount',
+      'configuredTargetCount',
+      'failureCount',
+      'qualification package/checksum',
+      'nova-2048-source-audit-reports',
+    ]) {
+      expect(
+        support,
+        contains(requiredText),
+        reason: 'Cross-platform support contract is missing: $requiredText',
+      );
+    }
+  });
+
+  test('active continuity preserves Phase 32 while tracking Phase 34', () {
     final continuity = File('what_changed.md').readAsStringSync();
 
-    expect(continuity, contains('Phase 33'));
+    expect(continuity, contains('**Current phase:** Phase 32'));
+    expect(continuity, contains('**Active maintenance stream:** Phase 34'));
+    expect(continuity, contains('# Phase 34 — Cross-platform audit evidence'));
     expect(continuity, contains('what_changed_archive_phase_32.md'));
     expect(continuity, contains('stable qualification boundary remains 0/13'));
   });
