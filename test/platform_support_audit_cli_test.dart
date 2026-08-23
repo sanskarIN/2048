@@ -91,6 +91,24 @@ void main() {
         ..writeln('nova-2048-web-pwa.tar.gz.sha256')
         ..writeln('nova-2048-web-pwa-release');
     }
+    workflow
+      ..writeln('build/app/outputs/flutter-apk/app-release.apk')
+      ..writeln('build/app/outputs/flutter-apk/app-release.apk.sha256')
+      ..writeln('build/app/outputs/bundle/release/app-release.aab')
+      ..writeln('build/app/outputs/bundle/release/app-release.aab.sha256')
+      ..writeln('nova-2048-android-release')
+      ..writeln('nova-2048-linux-x64.tar.gz')
+      ..writeln('nova-2048-linux-x64.tar.gz.sha256')
+      ..writeln('nova-2048-linux-x64-release')
+      ..writeln('nova-2048-windows-x64.zip')
+      ..writeln('nova-2048-windows-x64.zip.sha256')
+      ..writeln('nova-2048-windows-x64-release')
+      ..writeln('nova-2048-macos-release.zip')
+      ..writeln('nova-2048-macos-release.zip.sha256')
+      ..writeln('nova-2048-macos-release')
+      ..writeln('nova-2048-ios-unsigned-release.zip')
+      ..writeln('nova-2048-ios-unsigned-release.zip.sha256')
+      ..writeln('nova-2048-ios-unsigned-release');
     await write('.github/workflows/platform-builds.yml', workflow.toString());
     await write(
       '.github/workflows/ci.yml',
