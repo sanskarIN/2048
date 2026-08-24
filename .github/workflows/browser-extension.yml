@@ -1,0 +1,145 @@
+name: Browser Extension Preparation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - lib/**
+      - assets/**
+      - web/**
+      - extension/**
+      - tool/browser_extension_audit.dart
+      - tool/package_browser_extension.dart
+      - test/browser_extension_contract_test.dart
+      - docs/BROWSER_EXTENSION.md
+      - pubspec.yaml
+      - pubspec.lock
+      - .github/workflows/browser-extension.yml
+  push:
+    branches: [main]
+    paths:
+      - lib/**
+      - assets/**
+      - web/**
+      - extension/**
+      - tool/browser_extension_audit.dart
+      - tool/package_browser_extension.dart
+      - test/browser_extension_contract_test.dart
+      - docs/BROWSER_EXTENSION.md
+      - pubspec.yaml
+      - pubspec.lock
+      - .github/workflows/browser-extension.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-extension-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: Chromium and Firefox extension packages
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          channel: stable
+          flutter-version: 3.47.0
+          cache: false
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify dependency lockfile is synchronized
+        run: git diff --exit-code -- pubspec.lock
+
+      - name: Audit browser-extension preparation contract
+        run: dart run tool/browser_extension_audit.dart --json
+
+      - name: Build extension-scoped Flutter web release
+        shell: bash
+        run: |
+          set -o pipefail
+          flutter build web --release --base-href /app/ 2>&1 | tee extension-web-build.log
+          if grep -F "Expected to find fonts for" extension-web-build.log; then
+            echo "Extension web build completed with a missing icon-font asset warning."
+            exit 1
+          fi
+
+      - name: Package Chromium and Firefox directories
+        run: dart run tool/package_browser_extension.dart --browser=all --json
+
+      - name: Validate generated extension packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          for browser in chromium firefox; do
+            test -s "build/browser-extension/$browser/manifest.json"
+            test -s "build/browser-extension/$browser/popup.html"
+            test -s "build/browser-extension/$browser/popup.css"
+            test -s "build/browser-extension/$browser/app/index.html"
+            test -s "build/browser-extension/$browser/app/flutter_bootstrap.js"
+          done
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          for browser in ("chromium", "firefox"):
+              manifest_path = Path("build/browser-extension") / browser / "manifest.json"
+              manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+              assert manifest["manifest_version"] == 3
+              assert manifest["action"]["default_popup"] == "popup.html"
+              assert "permissions" not in manifest
+              assert "host_permissions" not in manifest
+              assert "wasm-unsafe-eval" in manifest["content_security_policy"]["extension_pages"]
+
+          chromium = json.loads(
+              Path("build/browser-extension/chromium/manifest.json").read_text(encoding="utf-8")
+          )
+          firefox = json.loads(
+              Path("build/browser-extension/firefox/manifest.json").read_text(encoding="utf-8")
+          )
+          assert "browser_specific_settings" not in chromium
+          assert firefox["browser_specific_settings"]["gecko"]["data_collection_permissions"]["required"] == ["none"]
+          PY
+
+      - name: Create extension ZIP archives and checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile
+
+          root = Path("build/browser-extension")
+          for browser in ("chromium", "firefox"):
+              source = root / browser
+              target = Path(f"nova-2048-extension-{browser}.zip")
+              with zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+                  for path in sorted(source.rglob("*")):
+                      if path.is_file():
+                          archive.write(path, path.relative_to(source))
+          PY
+          sha256sum nova-2048-extension-chromium.zip > nova-2048-extension-chromium.zip.sha256
+          sha256sum nova-2048-extension-firefox.zip > nova-2048-extension-firefox.zip.sha256
+
+      - name: Upload extension qualification artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: nova-2048-browser-extension-preparation
+          path: |
+            nova-2048-extension-chromium.zip
+            nova-2048-extension-chromium.zip.sha256
+            nova-2048-extension-firefox.zip
+            nova-2048-extension-firefox.zip.sha256
+          if-no-files-found: error
+          retention-days: 14
