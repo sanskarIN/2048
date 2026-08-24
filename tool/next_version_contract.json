@@ -27,13 +27,21 @@
     "SECURITY.md",
     "CHANGELOG.md",
     "what_changed.md",
+    "what_changed_2_1_0_preparation.md",
     "docs/README.md",
     "docs/BUILDING_EXECUTABLES.md",
     "docs/RELEASE_CHECKLIST.md",
     "docs/RELEASE_QUALIFICATION.md",
     "docs/DEPENDENCIES.md",
+    "docs/NEXT_VERSION_README.md",
     "docs/NEXT_VERSION_2_1_0.md",
-    "docs/BROWSER_EXTENSION_FOUNDATION.md"
+    "docs/NEXT_VERSION_MIGRATION_CHECKLIST.md",
+    "docs/BROWSER_EXTENSION_FOUNDATION.md",
+    "tool/next_version_contract.json",
+    "tool/next_version_preflight.py",
+    "extension/README.md",
+    "extension/manifests/chromium/manifest.template.json",
+    "extension/manifests/firefox/manifest.template.json"
   ],
   "extensionFoundation": {
     "status": "design-prepared-source-not-activated",
