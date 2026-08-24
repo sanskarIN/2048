@@ -8,7 +8,9 @@ on:
       - extension/**
       - tool/next_version_contract.json
       - tool/next_version_preflight.py
+      - tool/render_extension_manifest.py
       - test/next_version_preflight_test.py
+      - test/extension_manifest_renderer_test.py
       - docs/NEXT_VERSION_*.md
       - docs/BROWSER_EXTENSION_FOUNDATION.md
       - what_changed_2_1_0_preparation.md
@@ -21,7 +23,9 @@ on:
       - extension/**
       - tool/next_version_contract.json
       - tool/next_version_preflight.py
+      - tool/render_extension_manifest.py
       - test/next_version_preflight_test.py
+      - test/extension_manifest_renderer_test.py
       - docs/NEXT_VERSION_*.md
       - docs/BROWSER_EXTENSION_FOUNDATION.md
       - what_changed_2_1_0_preparation.md
@@ -55,18 +59,42 @@ jobs:
           set -o pipefail
           python3 tool/next_version_preflight.py --json | tee next-version-preflight.json
 
-      - name: Run next-version preflight regressions
-        run: python3 -m unittest test/next_version_preflight_test.py
+      - name: Run next-version preparation regressions
+        run: >-
+          python3 -m unittest
+          test/next_version_preflight_test.py
+          test/extension_manifest_renderer_test.py
 
       - name: Validate manifest template JSON syntax
         run: |
           python3 -m json.tool extension/manifests/chromium/manifest.template.json >/dev/null
           python3 -m json.tool extension/manifests/firefox/manifest.template.json >/dev/null
 
+      - name: Smoke-render Chromium manifest
+        run: >-
+          python3 tool/render_extension_manifest.py
+          --browser chromium
+          --output build/extension-smoke/chromium/manifest.json
+
+      - name: Smoke-render Firefox manifest
+        run: >-
+          python3 tool/render_extension_manifest.py
+          --browser firefox
+          --firefox-id nova-2048-ci@example.invalid
+          --output build/extension-smoke/firefox/manifest.json
+
+      - name: Validate rendered manifest JSON syntax
+        run: |
+          python3 -m json.tool build/extension-smoke/chromium/manifest.json >/dev/null
+          python3 -m json.tool build/extension-smoke/firefox/manifest.json >/dev/null
+
       - name: Upload next-version preflight evidence
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: nova-2048-next-version-preflight
-          path: next-version-preflight.json
+          path: |
+            next-version-preflight.json
+            build/extension-smoke/chromium/manifest.json
+            build/extension-smoke/firefox/manifest.json
           if-no-files-found: error
           retention-days: 14
