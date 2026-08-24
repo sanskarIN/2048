@@ -42,7 +42,20 @@ jobs:
         run: git diff --exit-code -- pubspec.lock analysis_options.yaml
 
       - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed lib test tool
+        shell: bash
+        run: |
+          set +e
+          dart format --output=none --set-exit-if-changed lib test tool
+          format_status=$?
+          set -e
+
+          if [[ "$format_status" -ne 0 ]]; then
+            echo "::group::Required Dart formatter changes"
+            dart format lib test tool
+            git diff -- lib test tool
+            echo "::endgroup::"
+            exit "$format_status"
+          fi
 
       - name: Static analysis
         run: flutter analyze
