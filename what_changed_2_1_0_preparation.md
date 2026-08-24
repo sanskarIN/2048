@@ -98,7 +98,7 @@ browsing/page data collection: false
 telemetry/cloud/accounts/advertising requirements: false
 ```
 
-The contract also lists the authoritative version-migration paths and activation gates.
+The contract also lists the authoritative version-migration paths, its own preparation files, and activation gates.
 
 ## Browser-extension preparation directory
 
@@ -123,6 +123,32 @@ Both templates:
 
 The Firefox template isolates `browser_specific_settings` and declares no data collection in its preparation metadata.
 
+## Fail-closed preparation tooling
+
+`tool/next_version_preflight.py` is a standard-library-only preflight that protects preparation before the 2.1.0 package is activated.
+
+It checks:
+
+- current Version 2.0.12 package/marketing identity is still intact;
+- the contract remains schema version 1 and `planned`;
+- planned release remains 2.1.0 with `packageVersion: null` and `preparation-only` activation;
+- every declared migration/preparation path exists;
+- Chromium and Firefox templates remain Manifest V3;
+- both templates remain permission-free and content-script-free;
+- Firefox keeps its non-release ID placeholder and no-data-collection declaration;
+- remote executable code remains forbidden by the machine contract;
+- browsing/page-content collection, telemetry, cloud, accounts, and advertising remain disabled/not required;
+- all six existing Flutter targets remain preserved.
+
+`test/next_version_preflight_test.py` protects:
+
+- clean repository preparation success;
+- fail-closed broad host-permission escalation;
+- fail-closed premature package activation;
+- fail-closed Firefox data-collection drift.
+
+The dedicated `.github/workflows/next-version-preflight.yml` runs the preflight/regressions, validates both manifest templates as JSON, and retains `next-version-preflight.json` for 14 days as `nova-2048-next-version-preflight`.
+
 ## Preparation commits
 
 ```text
@@ -134,9 +160,21 @@ f21ae1d2  chore: add browser extension preparation skeleton
 f3e9c6fa  chore: add Firefox MV3 manifest template
 0ff997be  docs: add atomic 2.1.0 migration checklist
 2775c50d  docs: index Version 2.1.0 preparation
+2612b943  tool: add fail-closed 2.1.0 preparation preflight
+b54e0e82  chore: self-protect 2.1.0 preparation inventory
+0d428d0c  test: cover fail-closed 2.1.0 preflight
+dbaa83ae  ci: add Version 2.1.0 preparation preflight
 ```
 
-This continuity file is committed separately so the actual preparation artifacts and their historical record remain independently reviewable.
+This continuity update is committed separately so the actual preparation artifacts and their historical record remain independently reviewable.
+
+## Pull-request structure
+
+The preparation work is isolated in draft PR **#32**, `docs: prepare Version 2.1.0 extension foundation`, targeting the Phase 34 maintenance branch.
+
+It intentionally remains stacked/draft while PR #28 is unresolved. After Phase 34 lands, the branch must be synchronized with the final Phase 34/main head, then PR #32 can be retargeted to `main` and requalified.
+
+This prevents future-version preparation from weakening or bypassing the current release's required CI/release gates.
 
 ## Phase 34 dependency
 
@@ -161,15 +199,17 @@ No Chrome Web Store, Firefox Add-ons, Safari extension, real-browser extension l
 
 The Version 2.0.12 manual qualification boundary remains 0/13 until genuine evidence is recorded.
 
+A queued/pending GitHub Actions run is not recorded as a pass. The next-version preflight result is only accepted after an exact-head completed workflow result is observed.
+
 ## Next implementation sequence
 
 After Phase 34 is formatter/analyzer/test/audit/build clean and integrated:
 
 1. synchronize/rebase the 2.1.0 preparation branch onto that exact base;
-2. add a fail-closed next-version preflight for `tool/next_version_contract.json` and extension templates;
-3. regression-test the preparation contract;
-4. decide and qualify the extension-safe Flutter/Web staging approach under Manifest V3 CSP;
-5. add deterministic extension package/audit scripts;
+2. rerun and require the dedicated next-version preflight on the synchronized head;
+3. decide and qualify the extension-safe Flutter/Web staging approach under Manifest V3 CSP;
+4. add deterministic extension package/audit scripts;
+5. regression-protect generated extension package inventory, permissions, local-only runtime code, versions, and checksums;
 6. activate the 2.1.0 package identity atomically only when the migration gates are ready;
 7. begin a fresh qualification record for the changed 2.1.0 scope;
 8. qualify real Chromium/Firefox extension behavior before any support/publication claim.
