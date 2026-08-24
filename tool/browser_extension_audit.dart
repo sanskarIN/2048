@@ -6,11 +6,16 @@ const _requiredFiles = <String>[
   'extension/manifest.firefox.template.json',
   'extension/popup.html',
   'extension/popup.css',
+  'extension/icons/icon-16.png',
+  'extension/icons/icon-32.png',
+  'extension/icons/icon-48.png',
+  'extension/icons/icon-128.png',
   'extension/README.md',
   'tool/package_browser_extension.dart',
   '.github/workflows/browser-extension.yml',
   'docs/BROWSER_EXTENSION.md',
   'test/browser_extension_contract_test.dart',
+  'test/browser_extension_packager_test.dart',
 ];
 
 void main(List<String> args) {
@@ -181,7 +186,14 @@ void _auditCommonManifest(
   if (action is! Map<String, dynamic> ||
       action['default_popup'] != 'popup.html') {
     failures.add('$browser extension must open popup.html from its action.');
+  } else {
+    _auditIconMap(
+      '$browser action.default_icon',
+      action['default_icon'],
+      failures,
+    );
   }
+  _auditIconMap('$browser icons', manifest['icons'], failures);
 
   final csp = manifest['content_security_policy'];
   final extensionPages = csp is Map<String, dynamic>
@@ -193,6 +205,25 @@ void _auditCommonManifest(
     failures.add(
       '$browser extension CSP must allow only packaged scripts plus WebAssembly.',
     );
+  }
+}
+
+void _auditIconMap(String label, Object? value, List<String> failures) {
+  if (value is! Map<String, dynamic>) {
+    failures.add('$label must define store/action icons.');
+    return;
+  }
+
+  const expected = <String, String>{
+    '16': 'icons/icon-16.png',
+    '32': 'icons/icon-32.png',
+    '48': 'icons/icon-48.png',
+    '128': 'icons/icon-128.png',
+  };
+  for (final entry in expected.entries) {
+    if (value[entry.key] != entry.value) {
+      failures.add('$label is missing ${entry.key}px icon ${entry.value}.');
+    }
   }
 }
 
@@ -245,8 +276,12 @@ void _auditPackager(Directory root, List<String> failures) {
   for (final fragment in <String>[
     "const _supportedBrowsers = <String>['chromium', 'firefox']",
     '<base href="/app/">',
+    '--no-web-resources-cdn',
+    'https://www.gstatic.com/flutter-canvaskit',
+    'https://fonts.gstatic.com',
     'extension/manifest.\$browser.template.json',
     "_join(destination.path, 'app')",
+    "_join(destination.path, 'icons')",
     'pubspec.yaml',
   ]) {
     if (!packager.contains(fragment)) {
@@ -266,7 +301,8 @@ void _auditWorkflow(Directory root, List<String> failures) {
   }
 
   for (final fragment in <String>[
-    'flutter build web --release --base-href /app/',
+    'flutter build web --release --base-href /app/ --no-web-resources-cdn',
+    'Reject known remote Flutter engine/font resources',
     'dart run tool/browser_extension_audit.dart --json',
     'dart run tool/package_browser_extension.dart --browser=all --json',
     'nova-2048-extension-chromium.zip',
@@ -290,7 +326,8 @@ void _auditDocumentation(Directory root, List<String> failures) {
     'Chrome',
     'Edge',
     'Firefox',
-    '--base-href /app/',
+    '--base-href /app/ --no-web-resources-cdn',
+    '16/32/48/128',
     'Prepared, automated, not yet declared stable',
   ]) {
     if (!docs.contains(fragment)) {
