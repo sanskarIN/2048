@@ -1,0 +1,72 @@
+name: Next Version Preflight
+
+on:
+  push:
+    branches:
+      - release/2.1.0-preparation
+    paths:
+      - extension/**
+      - tool/next_version_contract.json
+      - tool/next_version_preflight.py
+      - test/next_version_preflight_test.py
+      - docs/NEXT_VERSION_*.md
+      - docs/BROWSER_EXTENSION_FOUNDATION.md
+      - what_changed_2_1_0_preparation.md
+      - .github/workflows/next-version-preflight.yml
+  pull_request:
+    branches:
+      - main
+      - maintenance/phase-34-audit-hardening
+    paths:
+      - extension/**
+      - tool/next_version_contract.json
+      - tool/next_version_preflight.py
+      - test/next_version_preflight_test.py
+      - docs/NEXT_VERSION_*.md
+      - docs/BROWSER_EXTENSION_FOUNDATION.md
+      - what_changed_2_1_0_preparation.md
+      - .github/workflows/next-version-preflight.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: next-version-preflight-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preflight:
+    name: Validate 2.1.0 preparation contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Python version
+        run: python3 --version
+
+      - name: Validate preparation contract
+        shell: bash
+        run: |
+          set -o pipefail
+          python3 tool/next_version_preflight.py --json | tee next-version-preflight.json
+
+      - name: Run next-version preflight regressions
+        run: python3 -m unittest test/next_version_preflight_test.py
+
+      - name: Validate manifest template JSON syntax
+        run: |
+          python3 -m json.tool extension/manifests/chromium/manifest.template.json >/dev/null
+          python3 -m json.tool extension/manifests/firefox/manifest.template.json >/dev/null
+
+      - name: Upload next-version preflight evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: nova-2048-next-version-preflight
+          path: next-version-preflight.json
+          if-no-files-found: error
+          retention-days: 14
