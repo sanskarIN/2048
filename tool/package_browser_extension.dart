@@ -2,6 +2,17 @@ import 'dart:convert';
 import 'dart:io';
 
 const _supportedBrowsers = <String>['chromium', 'firefox'];
+const _requiredExtensionIcons = <String>[
+  'icon-16.png',
+  'icon-32.png',
+  'icon-48.png',
+  'icon-128.png',
+];
+const _forbiddenRemoteResources = <String>[
+  'https://www.gstatic.com/flutter-canvaskit',
+  'https://gstatic.com/flutter-canvaskit',
+  'https://fonts.gstatic.com',
+];
 
 void main(List<String> args) {
   final helpMode = args.contains('--help') || args.contains('-h');
@@ -68,6 +79,7 @@ void main(List<String> args) {
   final outputRoot = Directory(outputDirArg).absolute;
 
   _validateFlutterWebBuild(buildDir);
+  _validateExtensionSource(root);
   final version = _readMarketingVersion(root);
 
   if (outputRoot.existsSync()) {
@@ -128,7 +140,8 @@ void _validateFlutterWebBuild(Directory buildDir) {
   if (!buildDir.existsSync()) {
     _fail(
       'Flutter web build does not exist: ${buildDir.path}. '
-      'Run `flutter build web --release --base-href /app/` first.',
+      'Run `flutter build web --release --base-href /app/ '
+      '--no-web-resources-cdn` first.',
     );
   }
 
@@ -149,8 +162,67 @@ void _validateFlutterWebBuild(Directory buildDir) {
   if (!index.contains('<base href="/app/">')) {
     _fail(
       'Flutter web build must use `/app/` as its base href. '
-      'Rebuild with `flutter build web --release --base-href /app/`.',
+      'Rebuild with `flutter build web --release --base-href /app/ '
+      '--no-web-resources-cdn`.',
     );
+  }
+
+  final remoteReferences = _findForbiddenRemoteResources(buildDir);
+  if (remoteReferences.isNotEmpty) {
+    _fail(
+      'Flutter web build references remote resources that are not allowed in '
+      'the extension package: ${remoteReferences.join(', ')}. Rebuild with '
+      '`flutter build web --release --base-href /app/ '
+      '--no-web-resources-cdn`.',
+    );
+  }
+}
+
+List<String> _findForbiddenRemoteResources(Directory buildDir) {
+  final matches = <String>{};
+  const textExtensions = <String>{'.html', '.js', '.mjs', '.json', '.css'};
+
+  for (final entity in buildDir.listSync(recursive: true, followLinks: false)) {
+    if (entity is! File) {
+      continue;
+    }
+
+    final lowerPath = entity.path.toLowerCase();
+    if (!textExtensions.any(lowerPath.endsWith)) {
+      continue;
+    }
+
+    String content;
+    try {
+      content = entity.readAsStringSync();
+    } on FileSystemException {
+      continue;
+    } on FormatException {
+      continue;
+    }
+
+    for (final resource in _forbiddenRemoteResources) {
+      if (content.contains(resource)) {
+        matches.add(resource);
+      }
+    }
+  }
+
+  final sorted = matches.toList()..sort();
+  return sorted;
+}
+
+void _validateExtensionSource(Directory root) {
+  final icons = Directory(_join(root.path, 'extension/icons'));
+  if (!icons.existsSync()) {
+    _fail('Extension icon directory is missing: ${icons.path}');
+  }
+
+  for (final icon in _requiredExtensionIcons) {
+    final file = File(_join(icons.path, icon));
+    if (!file.existsSync() || file.lengthSync() == 0) {
+      _fail('Extension icon is missing or empty: ${file.path}');
+    }
   }
 }
 
@@ -182,6 +254,12 @@ void _packageBrowser({
   final appDestination = Directory(_join(destination.path, 'app'));
   _copyDirectory(webBuild, appDestination);
 
+  final iconDestination = Directory(_join(destination.path, 'icons'));
+  _copyDirectory(
+    Directory(_join(root.path, 'extension/icons')),
+    iconDestination,
+  );
+
   for (final fileName in <String>['popup.html', 'popup.css']) {
     File(_join(root.path, 'extension/$fileName')).copySync(
       _join(destination.path, fileName),
@@ -199,7 +277,7 @@ void _packageBrowser({
     '__VERSION__',
     version,
   );
-  Object decoded;
+  late final Object decoded;
   try {
     decoded = jsonDecode(rendered);
   } on FormatException catch (error) {
@@ -214,7 +292,9 @@ void _packageBrowser({
 void _copyDirectory(Directory source, Directory destination) {
   destination.createSync(recursive: true);
   for (final entity in source.listSync(followLinks: false)) {
-    final segments = entity.uri.pathSegments.where((segment) => segment.isNotEmpty);
+    final segments = entity.uri.pathSegments.where(
+      (segment) => segment.isNotEmpty,
+    );
     final name = segments.isEmpty ? '' : segments.last;
     if (name.isEmpty) {
       _fail('Could not determine path name for ${entity.path}.');
