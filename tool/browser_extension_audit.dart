@@ -245,7 +245,7 @@ void _auditPackager(Directory root, List<String> failures) {
   for (final fragment in <String>[
     "const _supportedBrowsers = <String>['chromium', 'firefox']",
     '<base href="/app/">',
-    'extension/manifest.$browser.template.json',
+    'extension/manifest.\$browser.template.json',
     "_join(destination.path, 'app')",
     'pubspec.yaml',
   ]) {
