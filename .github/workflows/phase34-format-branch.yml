@@ -1,0 +1,57 @@
+name: Phase 34 Format Branch
+
+on:
+  push:
+    branches:
+      - maintenance/phase-34-audit-hardening
+    paths:
+      - lib/**
+      - test/**
+      - tool/**
+      - .github/workflows/phase34-format-branch.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase34-format-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout maintenance branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: maintenance/phase-34-audit-hardening
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          channel: stable
+          flutter-version: 3.47.0
+          cache: false
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Format maintained Dart
+        run: dart format lib test tool
+
+      - name: Commit formatter output
+        shell: bash
+        run: |
+          git add lib test tool
+          if git diff --cached --quiet; then
+            echo "No formatter changes were required."
+            exit 0
+          fi
+          git config user.name "Sanskar"
+          git config user.email "sanskarin@outlook.in"
+          git commit -m "style: format Phase 34 Dart changes"
+          git push origin HEAD:maintenance/phase-34-audit-hardening
