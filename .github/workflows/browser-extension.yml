@@ -11,6 +11,7 @@ on:
       - tool/browser_extension_audit.dart
       - tool/package_browser_extension.dart
       - test/browser_extension_contract_test.dart
+      - test/browser_extension_packager_test.dart
       - docs/BROWSER_EXTENSION.md
       - pubspec.yaml
       - pubspec.lock
@@ -25,6 +26,7 @@ on:
       - tool/browser_extension_audit.dart
       - tool/package_browser_extension.dart
       - test/browser_extension_contract_test.dart
+      - test/browser_extension_packager_test.dart
       - docs/BROWSER_EXTENSION.md
       - pubspec.yaml
       - pubspec.lock
@@ -65,13 +67,22 @@ jobs:
       - name: Audit browser-extension preparation contract
         run: dart run tool/browser_extension_audit.dart --json
 
-      - name: Build extension-scoped Flutter web release
+      - name: Build self-contained extension-scoped Flutter web release
         shell: bash
         run: |
           set -o pipefail
-          flutter build web --release --base-href /app/ 2>&1 | tee extension-web-build.log
+          flutter build web --release --base-href /app/ --no-web-resources-cdn 2>&1 | tee extension-web-build.log
           if grep -F "Expected to find fonts for" extension-web-build.log; then
             echo "Extension web build completed with a missing icon-font asset warning."
+            exit 1
+          fi
+
+      - name: Reject known remote Flutter engine/font resources
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -R -E "https://(www\.)?gstatic\.com/flutter-canvaskit|https://fonts\.gstatic\.com" build/web; then
+            echo "Extension build still references remotely hosted executable/font resources."
             exit 1
           fi
 
