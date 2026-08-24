@@ -27,15 +27,18 @@ void main() {
     'what_changed_archive_phase_32.md',
   ];
 
-  test('complete setup and reference documentation is tracked in source tree', () {
-    for (final path in requiredDocumentation) {
-      expect(
-        File(path).existsSync(),
-        isTrue,
-        reason: 'Required documentation is missing: $path',
-      );
-    }
-  });
+  test(
+    'complete setup and reference documentation is tracked in source tree',
+    () {
+      for (final path in requiredDocumentation) {
+        expect(
+          File(path).existsSync(),
+          isTrue,
+          reason: 'Required documentation is missing: $path',
+        );
+      }
+    },
+  );
 
   test('current build handbook uses the Version 2.0.12 package identity', () {
     final handbook = File('docs/BUILDING_EXECUTABLES.md').readAsStringSync();
@@ -45,17 +48,20 @@ void main() {
     expect(handbook, isNot(contains('version: 1.5.0+15')));
   });
 
-  test('setup index links lifecycle, support, command, and file references', () {
-    final setupIndex = File('docs/setup/README.md').readAsStringSync();
+  test(
+    'setup index links lifecycle, support, command, and file references',
+    () {
+      final setupIndex = File('docs/setup/README.md').readAsStringSync();
 
-    expect(setupIndex, contains('UPGRADING_AND_SUPPORT.md'));
-    expect(setupIndex, contains('TOOL_SUPPORT_MATRIX.md'));
-    expect(setupIndex, contains('../DOCUMENTATION_READING_GUIDE.md'));
-    expect(setupIndex, contains('../COMMAND_REFERENCE.md'));
-    expect(setupIndex, contains('../GLOSSARY.md'));
-    expect(setupIndex, contains('../REPOSITORY_FILE_ATLAS.md'));
-    expect(setupIndex, contains('../FILE_COVERAGE_CONTRACT.md'));
-  });
+      expect(setupIndex, contains('UPGRADING_AND_SUPPORT.md'));
+      expect(setupIndex, contains('TOOL_SUPPORT_MATRIX.md'));
+      expect(setupIndex, contains('../DOCUMENTATION_READING_GUIDE.md'));
+      expect(setupIndex, contains('../COMMAND_REFERENCE.md'));
+      expect(setupIndex, contains('../GLOSSARY.md'));
+      expect(setupIndex, contains('../REPOSITORY_FILE_ATLAS.md'));
+      expect(setupIndex, contains('../FILE_COVERAGE_CONTRACT.md'));
+    },
+  );
 
   test('canonical docs index exposes the deep setup documentation', () {
     final docsIndex = File('docs/README.md').readAsStringSync();
@@ -83,7 +89,9 @@ void main() {
   });
 
   test('feature reference covers the completed product surface', () {
-    final featureReference = File('docs/FEATURE_REFERENCE.md').readAsStringSync();
+    final featureReference = File(
+      'docs/FEATURE_REFERENCE.md',
+    ).readAsStringSync();
 
     for (final feature in <String>[
       'Ten game modes',
@@ -187,9 +195,7 @@ void main() {
   );
 
   test('file coverage contract preserves the no-skip tracked-file rule', () {
-    final coverage = File(
-      'docs/FILE_COVERAGE_CONTRACT.md',
-    ).readAsStringSync();
+    final coverage = File('docs/FILE_COVERAGE_CONTRACT.md').readAsStringSync();
 
     for (final requiredText in <String>[
       'git ls-files',
@@ -210,32 +216,32 @@ void main() {
     }
   });
 
-  test('cross-platform documentation exposes hardened audit evidence contract', () {
-    final support = File('docs/CROSS_PLATFORM_SUPPORT.md').readAsStringSync();
+  test(
+    'cross-platform documentation exposes hardened audit evidence contract',
+    () {
+      final support = File('docs/CROSS_PLATFORM_SUPPORT.md').readAsStringSync();
 
-    for (final requiredText in <String>[
-      'schemaVersion: 1',
-      'requiredTargetCount',
-      'configuredTargetCount',
-      'failureCount',
-      'qualification package/checksum',
-      'nova-2048-source-audit-reports',
-    ]) {
-      expect(
-        support,
-        contains(requiredText),
-        reason: 'Cross-platform support contract is missing: $requiredText',
-      );
-    }
-  });
+      for (final requiredText in <String>[
+        'schemaVersion: 1',
+        'requiredTargetCount',
+        'configuredTargetCount',
+        'failureCount',
+        'qualification package/checksum',
+        'nova-2048-source-audit-reports',
+      ]) {
+        expect(
+          support,
+          contains(requiredText),
+          reason: 'Cross-platform support contract is missing: $requiredText',
+        );
+      }
+    },
+  );
 
   test('audit documentation preserves one fail-closed root argument rule', () {
-    const sharedRule =
-        'The --root=<path> argument requires a non-empty path.';
+    const sharedRule = 'The --root=<path> argument requires a non-empty path.';
     final maintainerTools = File('tool/README.md').readAsStringSync();
-    final repositoryAudit = File(
-      'docs/REPOSITORY_AUDIT.md',
-    ).readAsStringSync();
+    final repositoryAudit = File('docs/REPOSITORY_AUDIT.md').readAsStringSync();
     final sourceCompletion = File(
       'docs/SOURCE_COMPLETION_AUDIT.md',
     ).readAsStringSync();

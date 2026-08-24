@@ -22,7 +22,8 @@ void main() {
       ]);
 
       expect(process.exitCode, 1, reason: process.stderr.toString());
-      final output = jsonDecode(process.stdout as String) as Map<String, dynamic>;
+      final output =
+          jsonDecode(process.stdout as String) as Map<String, dynamic>;
       expect(output[entry.value], isFalse);
       expect(
         (output['failures'] as List<dynamic>).join('\n'),

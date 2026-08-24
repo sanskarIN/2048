@@ -144,13 +144,21 @@ void main() {
   test('complete six-target fixture passes', () async {
     final result = await runAudit(await fixture());
 
-    expect(result.process.exitCode, 0, reason: result.process.stderr.toString());
+    expect(
+      result.process.exitCode,
+      0,
+      reason: result.process.stderr.toString(),
+    );
     expect(result.json['schemaVersion'], 1);
     expect(result.json['crossPlatformReady'], isTrue);
-    expect(
-      result.json['supportedTargets'],
-      <String>['Android', 'iOS', 'Web/PWA', 'Windows', 'macOS', 'Linux'],
-    );
+    expect(result.json['supportedTargets'], <String>[
+      'Android',
+      'iOS',
+      'Web/PWA',
+      'Windows',
+      'macOS',
+      'Linux',
+    ]);
     expect(result.json['requiredTargetCount'], 6);
     expect(result.json['configuredTargetCount'], 6);
     expect(result.json['failureCount'], 0);
