@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "2048 Nova",
+  "short_name": "2048 Nova",
+  "version": "__VERSION__",
+  "description": "Play 2048 Nova offline from your browser toolbar.",
+  "action": {
+    "default_title": "Play 2048 Nova",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "192": "app/icons/Icon-192.png",
+    "512": "app/icons/Icon-512.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "nova-2048@sanskarin",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    },
+    "gecko_android": {}
+  }
+}
