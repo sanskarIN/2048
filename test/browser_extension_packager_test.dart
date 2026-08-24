@@ -55,6 +55,14 @@ void main() {
     final summary = jsonDecode(result.stdout as String) as Map<String, dynamic>;
     expect(summary['browsers'], <String>['chromium', 'firefox']);
 
+    final pubspec = File('pubspec.yaml').readAsStringSync();
+    final versionMatch = RegExp(
+      r'^version:\s*([0-9]+\.[0-9]+\.[0-9]+)(?:\+[0-9]+)?\s*$',
+      multiLine: true,
+    ).firstMatch(pubspec);
+    expect(versionMatch, isNotNull);
+    final expectedVersion = versionMatch!.group(1)!;
+
     for (final browser in <String>['chromium', 'firefox']) {
       final root = Directory(
         '${output.path}${Platform.pathSeparator}$browser',
@@ -77,7 +85,7 @@ void main() {
         ).readAsString(),
       ) as Map<String, dynamic>;
       expect(manifest['manifest_version'], 3);
-      expect(manifest['version'], '2.0.12');
+      expect(manifest['version'], expectedVersion);
       expect(manifest.containsKey('permissions'), isFalse);
       expect(manifest.containsKey('host_permissions'), isFalse);
     }
