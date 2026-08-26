@@ -124,7 +124,9 @@ String _singleValue(
 }) {
   final matches = args.where((arg) => arg.startsWith(prefix)).toList();
   if (matches.length > 1) {
-    _fail('Only one ${prefix.substring(0, prefix.length - 1)} value is allowed.');
+    _fail(
+      'Only one ${prefix.substring(0, prefix.length - 1)} value is allowed.',
+    );
   }
   if (matches.isEmpty) {
     return defaultValue;
@@ -261,9 +263,9 @@ void _packageBrowser({
   );
 
   for (final fileName in <String>['popup.html', 'popup.css']) {
-    File(_join(root.path, 'extension/$fileName')).copySync(
-      _join(destination.path, fileName),
-    );
+    File(
+      _join(root.path, 'extension/$fileName'),
+    ).copySync(_join(destination.path, fileName));
   }
 
   final template = File(

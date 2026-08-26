@@ -173,7 +173,9 @@ void _auditCommonManifest(
     failures.add('$browser extension manifest must use Manifest V3.');
   }
   if (manifest['version'] != '9.9.9') {
-    failures.add('$browser extension manifest must derive version from template.');
+    failures.add(
+      '$browser extension manifest must derive version from template.',
+    );
   }
   if (manifest.containsKey('permissions')) {
     failures.add('$browser extension must remain permission-free.');
@@ -258,7 +260,9 @@ void _auditPopup(Directory root, List<String> failures) {
       failures.add('Extension popup must host the packaged Flutter app.');
     }
     if (popup.contains('<script')) {
-      failures.add('Extension popup shell must not contain inline/local scripts.');
+      failures.add(
+        'Extension popup shell must not contain inline/local scripts.',
+      );
     }
   }
   if (css != null &&

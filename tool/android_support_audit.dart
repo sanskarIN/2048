@@ -70,7 +70,9 @@ void main(List<String> args) {
   } else {
     stdout.writeln('2048 Nova Android support audit');
     stdout.writeln('Root: ${root.path}');
-    stdout.writeln('Android source readiness: ${failures.isEmpty ? 'yes' : 'no'}');
+    stdout.writeln(
+      'Android source readiness: ${failures.isEmpty ? 'yes' : 'no'}',
+    );
     if (failures.isNotEmpty) {
       stdout.writeln();
       stdout.writeln('Failures:');
@@ -151,13 +153,19 @@ void _auditGradle(Directory root, List<String> failures) {
 
   for (final entry in required.entries) {
     if (!gradle.contains(entry.value)) {
-      failures.add('Android Gradle config is missing ${entry.key}: ${entry.value}');
+      failures.add(
+        'Android Gradle config is missing ${entry.key}: ${entry.value}',
+      );
     }
   }
 }
 
 void _auditWorkflow(Directory root, List<String> failures) {
-  final workflow = _read(root, '.github/workflows/platform-builds.yml', failures);
+  final workflow = _read(
+    root,
+    '.github/workflows/platform-builds.yml',
+    failures,
+  );
   if (workflow == null) {
     return;
   }

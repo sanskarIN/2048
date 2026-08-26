@@ -18,7 +18,9 @@ void main() {
     await Directory(
       '${webBuild.path}${Platform.pathSeparator}icons',
     ).create(recursive: true);
-    await File('${webBuild.path}${Platform.pathSeparator}index.html').writeAsString(
+    await File(
+      '${webBuild.path}${Platform.pathSeparator}index.html',
+    ).writeAsString(
       '<!doctype html><html><head><base href="/app/"></head><body></body></html>',
     );
     await File(
@@ -37,18 +39,14 @@ void main() {
     final output = Directory(
       '${temp.path}${Platform.pathSeparator}browser-extension',
     );
-    final result = await Process.run(
-      Platform.resolvedExecutable,
-      <String>[
-        'run',
-        'tool/package_browser_extension.dart',
-        '--browser=all',
-        '--build-dir=${webBuild.path}',
-        '--output-dir=${output.path}',
-        '--json',
-      ],
-      workingDirectory: Directory.current.path,
-    );
+    final result = await Process.run(Platform.resolvedExecutable, <String>[
+      'run',
+      'tool/package_browser_extension.dart',
+      '--browser=all',
+      '--build-dir=${webBuild.path}',
+      '--output-dir=${output.path}',
+      '--json',
+    ], workingDirectory: Directory.current.path);
 
     expect(result.exitCode, 0, reason: '${result.stdout}\n${result.stderr}');
 
@@ -64,9 +62,7 @@ void main() {
     final expectedVersion = versionMatch!.group(1)!;
 
     for (final browser in <String>['chromium', 'firefox']) {
-      final root = Directory(
-        '${output.path}${Platform.pathSeparator}$browser',
-      );
+      final root = Directory('${output.path}${Platform.pathSeparator}$browser');
       expect(await root.exists(), isTrue);
       expect(
         await File('${root.path}${Platform.pathSeparator}popup.html').exists(),
@@ -79,27 +75,33 @@ void main() {
         isTrue,
       );
 
-      final manifest = jsonDecode(
-        await File(
-          '${root.path}${Platform.pathSeparator}manifest.json',
-        ).readAsString(),
-      ) as Map<String, dynamic>;
+      final manifest =
+          jsonDecode(
+                await File(
+                  '${root.path}${Platform.pathSeparator}manifest.json',
+                ).readAsString(),
+              )
+              as Map<String, dynamic>;
       expect(manifest['manifest_version'], 3);
       expect(manifest['version'], expectedVersion);
       expect(manifest.containsKey('permissions'), isFalse);
       expect(manifest.containsKey('host_permissions'), isFalse);
     }
 
-    final chromium = jsonDecode(
-      await File(
-        '${output.path}${Platform.pathSeparator}chromium${Platform.pathSeparator}manifest.json',
-      ).readAsString(),
-    ) as Map<String, dynamic>;
-    final firefox = jsonDecode(
-      await File(
-        '${output.path}${Platform.pathSeparator}firefox${Platform.pathSeparator}manifest.json',
-      ).readAsString(),
-    ) as Map<String, dynamic>;
+    final chromium =
+        jsonDecode(
+              await File(
+                '${output.path}${Platform.pathSeparator}chromium${Platform.pathSeparator}manifest.json',
+              ).readAsString(),
+            )
+            as Map<String, dynamic>;
+    final firefox =
+        jsonDecode(
+              await File(
+                '${output.path}${Platform.pathSeparator}firefox${Platform.pathSeparator}manifest.json',
+              ).readAsString(),
+            )
+            as Map<String, dynamic>;
 
     expect(chromium.containsKey('browser_specific_settings'), isFalse);
     expect(

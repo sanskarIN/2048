@@ -12,9 +12,7 @@ void main() {
   }
 
   test('Chromium extension manifest stays permission-free Manifest V3', () {
-    final manifest = readManifest(
-      'extension/manifest.chromium.template.json',
-    );
+    final manifest = readManifest('extension/manifest.chromium.template.json');
 
     expect(manifest['manifest_version'], 3);
     expect(manifest['version'], '9.9.9');
@@ -26,17 +24,15 @@ void main() {
       'popup.html',
     );
     expect(
-      ((manifest['content_security_policy'] as Map<String, dynamic>)[
-              'extension_pages'
-          ] as String),
+      ((manifest['content_security_policy']
+              as Map<String, dynamic>)['extension_pages']
+          as String),
       contains("script-src 'self' 'wasm-unsafe-eval'"),
     );
   });
 
   test('Firefox manifest keeps stable Gecko privacy metadata', () {
-    final manifest = readManifest(
-      'extension/manifest.firefox.template.json',
-    );
+    final manifest = readManifest('extension/manifest.firefox.template.json');
     final settings =
         manifest['browser_specific_settings'] as Map<String, dynamic>;
     final gecko = settings['gecko'] as Map<String, dynamic>;
@@ -72,15 +68,18 @@ void main() {
     expect(packager, contains('pubspec.yaml'));
   });
 
-  test('Browser extension readiness audit passes but stays pre-stable', () async {
-    final result = await Process.run(
-      Platform.resolvedExecutable,
-      const ['run', 'tool/browser_extension_audit.dart', '--json'],
-      workingDirectory: Directory.current.path,
-    );
+  test(
+    'Browser extension readiness audit passes but stays pre-stable',
+    () async {
+      final result = await Process.run(Platform.resolvedExecutable, const [
+        'run',
+        'tool/browser_extension_audit.dart',
+        '--json',
+      ], workingDirectory: Directory.current.path);
 
-    expect(result.exitCode, 0, reason: '${result.stdout}\n${result.stderr}');
-    expect(result.stdout, contains('"browserExtensionReady": true'));
-    expect(result.stdout, contains('"stableSupportDeclared": false'));
-  });
+      expect(result.exitCode, 0, reason: '${result.stdout}\n${result.stderr}');
+      expect(result.stdout, contains('"browserExtensionReady": true'));
+      expect(result.stdout, contains('"stableSupportDeclared": false'));
+    },
+  );
 }
