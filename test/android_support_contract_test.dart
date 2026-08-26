@@ -52,3 +52,5 @@ void main() {
     expect(result.stdout, contains('"androidReady": true'));
   });
 }
+
+
