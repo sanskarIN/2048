@@ -37,13 +37,13 @@ The extension's root `manifest.json` is generated from `extension/manifest.<brow
 
 ## Why the Flutter build uses `/app/`
 
-The packaged Flutter application lives below the extension root. Build it with:
+The packaged Flutter application lives below the extension root. Build it with the same self-contained command used by the qualification workflow:
 
 ```bash
-flutter build web --release --base-href /app/
+flutter build web --release --base-href /app/ --no-web-resources-cdn
 ```
 
-The packaging tool refuses a web build whose generated `index.html` does not contain `/app/` as the base href. This prevents broken absolute asset paths inside `chrome-extension://` or `moz-extension://` URLs.
+The `--base-href /app/` value keeps the generated application assets relative to the packaged extension subtree. The `--no-web-resources-cdn` flag prevents the qualification build from relying on remote Flutter web resources. The packaging tool refuses a web build whose generated `index.html` does not contain `/app/` as the base href.
 
 ## Content Security Policy
 
@@ -72,13 +72,23 @@ The Firefox manifest declares `data_collection_permissions.required = ["none"]` 
 
 If a future extension feature needs any new permission or data collection, treat that as a security/privacy change: update the manifest templates, privacy docs, browser store declarations, audit tool, tests, and release notes together.
 
+## Extension icon contract
+
+The prepared packages keep the same four icon sizes in both Chromium and Firefox manifests:
+
+```text
+16/32/48/128
+```
+
+These sizes cover the action/store icon contract used by the current packaging and audit tooling. The source files live under `extension/icons/` and are copied into each generated package.
+
 ## Build both extension directories
 
 From the repository root:
 
 ```bash
 flutter pub get
-flutter build web --release --base-href /app/
+flutter build web --release --base-href /app/ --no-web-resources-cdn
 dart run tool/package_browser_extension.dart --browser=all
 ```
 
@@ -171,11 +181,12 @@ The Gecko extension ID in source is intended to make extension-origin persistenc
 1. installs the pinned Flutter toolchain;
 2. resolves dependencies and checks the lockfile;
 3. runs the browser-extension audit;
-4. builds Flutter web with `/app/` as the base href;
-5. packages Chromium and Firefox directories;
-6. validates generated manifests and required files;
-7. creates browser-specific ZIP archives and SHA-256 checksums;
-8. uploads qualification artifacts.
+4. builds Flutter web with `/app/` as the base href and without Flutter web resource CDN dependencies;
+5. rejects known remote Flutter engine/font resource references;
+6. packages Chromium and Firefox directories;
+7. validates generated manifests and required files;
+8. creates browser-specific ZIP archives and SHA-256 checksums;
+9. uploads qualification artifacts.
 
 ## Store-release gates for the next version
 
