@@ -62,6 +62,12 @@ jobs:
       - name: Audit six-target cross-platform support
         run: dart run tool/platform_support_audit.dart --json
 
+      - name: Audit Android production support
+        run: dart run tool/android_support_audit.dart --json
+
+      - name: Audit next-release browser extension preparation
+        run: dart run tool/browser_extension_audit.dart --json
+
       - name: Audit final source-completion contract
         run: dart run tool/source_completion_audit.dart --json
 

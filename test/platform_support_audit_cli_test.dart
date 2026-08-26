@@ -119,12 +119,20 @@ void main() {
   test('complete six-target fixture passes', () async {
     final result = await runAudit(await fixture());
 
-    expect(result.process.exitCode, 0, reason: result.process.stderr.toString());
-    expect(result.json['crossPlatformReady'], isTrue);
     expect(
-      result.json['supportedTargets'],
-      <String>['Android', 'iOS', 'Web/PWA', 'Windows', 'macOS', 'Linux'],
+      result.process.exitCode,
+      0,
+      reason: result.process.stderr.toString(),
     );
+    expect(result.json['crossPlatformReady'], isTrue);
+    expect(result.json['supportedTargets'], <String>[
+      'Android',
+      'iOS',
+      'Web/PWA',
+      'Windows',
+      'macOS',
+      'Linux',
+    ]);
     expect(result.json['failures'], isEmpty);
   });
 
