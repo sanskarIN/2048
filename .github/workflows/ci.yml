@@ -42,7 +42,30 @@ jobs:
         run: git diff --exit-code -- pubspec.lock analysis_options.yaml
 
       - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed lib test tool
+        id: format
+        shell: bash
+        run: |
+          set +e
+          dart format --output=none --set-exit-if-changed lib test tool
+          format_status=$?
+          set -e
+
+          if [[ "$format_status" -ne 0 ]]; then
+            mkdir -p build/canonical-format
+            dart format lib test tool
+            git diff --binary -- lib test tool > build/canonical-format/canonical-dart-format.patch
+            echo "Canonical formatter patch captured for maintenance recovery."
+            exit "$format_status"
+          fi
+
+      - name: Upload canonical formatting patch
+        if: steps.format.outcome == 'failure'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: nova-2048-canonical-dart-format
+          path: build/canonical-format/canonical-dart-format.patch
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Static analysis
         run: flutter analyze
