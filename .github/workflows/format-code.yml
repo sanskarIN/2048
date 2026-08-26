@@ -2,9 +2,7 @@ name: Format Dart
 
 on:
   push:
-    branches:
-      - main
-      - feature/android-extension-next
+    branches: [main]
     paths:
       - lib/**
       - test/**
@@ -44,7 +42,6 @@ jobs:
         run: dart format lib test tool
 
       - name: Commit formatting changes
-        shell: bash
         run: |
           git add lib test tool
           if git diff --cached --quiet; then
@@ -56,5 +53,5 @@ jobs:
           git commit -m "style: format Dart sources tests and tools"
           git reset --hard HEAD
           git clean -fd
-          git pull --rebase origin "${GITHUB_REF_NAME}"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git pull --rebase origin main
+          git push origin HEAD:main
