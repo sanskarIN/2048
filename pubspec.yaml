@@ -16,7 +16,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   cupertino_icons: 1.0.9
-  file_picker: 11.0.2
+  file_picker: 12.2.0
   qr_flutter: 4.1.0
   shared_preferences: ^2.5.5
   url_launcher: ^6.3.2
