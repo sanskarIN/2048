@@ -28,6 +28,11 @@ This section describes the source-complete Version 2.0.12 candidate. It does not
 - Android distribution regression coverage protecting both release APK and Google Play AAB commands, outputs, SHA-256 sidecars, and hosted artifact packaging.
 - Final documentation index separating current Version 2.0.12 source status from historical verification evidence.
 - Complete executable/build documentation for Android APK/AAB, iOS compilation/signing boundaries, Web/PWA, Windows, macOS, Linux, checksums, packaging, and release qualification.
+- Stable `schemaVersion: 1` JSON output for the cross-platform support audit, including explicit target counts, per-target status, failure count, and a durable six-target result shape.
+- Regression coverage for cross-platform audit result shape, invalid empty root input, and missing native qualification checksums.
+- Retained machine-readable CI evidence for release readiness, manual qualification status, repository integrity, cross-platform support, and source completion in the `nova-2048-source-audit-reports` artifact.
+- CI regression coverage protecting the machine-readable audit evidence bundle, pinned artifact uploader, fail-on-missing behavior, and retention policy.
+- Cross-tool regression coverage that keeps repository-integrity, platform-support, and source-completion audits aligned on the same fail-closed non-empty `--root=<path>` fixture contract.
 
 ### Changed
 
@@ -41,6 +46,10 @@ This section describes the source-complete Version 2.0.12 candidate. It does not
 - `SECURITY.md`, README/release documentation, qualification guides, gate-testing guide, audit documentation, and maintainer tooling now describe the Version 2.0.12 line rather than the former Version 1.5 current state.
 - Historical Phase 0–30 and Phase 31 continuity are preserved in dedicated archives while `what_changed.md` remains the active Phase 32 completion record.
 - Active changelog was reset to a focused Version 2.0.12 record after preserving the previous detailed changelog verbatim in `CHANGELOG_ARCHIVE_PRE_2_0_12.md`.
+- The cross-platform audit now verifies checksummed retained qualification packaging for Android APK/AAB, Linux, Windows, macOS, and unsigned iOS in addition to its existing Web/PWA checks.
+- The CI quality job now captures successful JSON audit output with pipe-failure propagation before uploading the source-audit report bundle for 14 days.
+- Cross-platform support documentation now defines the machine-readable audit interface and makes the all-platform checksum contract explicit.
+- Repository, platform, and source-completion audit documentation now define one shared rule: omitting `--root` audits the current repository, while an explicitly supplied root must be non-empty.
 
 ### Fixed
 
@@ -53,6 +62,8 @@ This section describes the source-complete Version 2.0.12 candidate. It does not
 - Corrected a completion-audit false-positive risk where documentation explaining historical/current-version validation could be mistaken for actually declaring Version 1.5 current.
 - Removed temporary one-shot Phase 30/31/32 maintenance/finalizer paths from the permanent repository contract and regression-guarded their absence.
 - Hardened Web/PWA audit behavior to fail closed on manifest identity/icon drift and required HTML metadata drift.
+- Closed an audit-policy gap where native qualification packages could lose a required SHA-256 sidecar without the cross-platform source audit detecting the drift.
+- Empty `--root=` input to the platform-support, repository-integrity, and source-completion audits now fails explicitly instead of silently falling back to the current working directory.
 
 ### Maintained release/toolchain boundaries
 
@@ -74,6 +85,8 @@ c70b464df0b8a926c7cdd91464d2afc63592bd1d
 ```
 
 The self-protecting completion-audit hardening was added after `c70b464d`; its push triggers the maintained formatting/CI workflows, but a newer complete result is not being inferred merely from the push. Formatter evidence also does **not** substitute for a complete analyzer/test/Web/native workflow result.
+
+The Phase 34 audit-evidence hardening adds source tests and CI evidence capture, but it likewise does not claim a formatter/analyzer/test/platform-build pass until an actual workflow result for the exact commit is observed.
 
 The latest previously accepted complete automated/native evidence remains the historical Version 1.5 baseline:
 

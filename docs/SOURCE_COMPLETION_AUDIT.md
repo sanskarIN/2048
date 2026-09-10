@@ -24,6 +24,8 @@ Regression fixtures may use:
 dart run tool/source_completion_audit.dart --root=<path> --json
 ```
 
+`--root=<path>` requires a non-empty path. An explicit `--root=` is invalid and exits non-zero instead of silently auditing the current directory. This matches the repository-integrity and platform-support audit CLI contract.
+
 ## What it checks
 
 The audit fails closed when any of these source-completion boundaries drift:
@@ -89,7 +91,9 @@ The permanent CI workflow runs both repository audits because they answer differ
 7. missing permanent-CI source-completion wiring;
 8. stale Version 1.5 current-release metadata;
 9. release-qualification candidate mismatch;
-10. malformed/unknown CLI arguments.
+10. invalid empty-root and malformed/unknown CLI arguments.
+
+`test/audit_root_argument_consistency_test.dart` additionally protects the shared empty-root rejection contract across repository-integrity, platform-support, and source-completion audits.
 
 Synthetic fixtures test the audit contract only. They are not gameplay, device, accessibility, signing, or store qualification evidence.
 

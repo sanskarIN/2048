@@ -24,6 +24,7 @@ void main() {
   Future<Directory> fixture({
     String? missingFile,
     String? missingBuildCommand,
+    String? missingQualificationFragment,
     bool omitWebPackaging = false,
     bool omitCiWiring = false,
   }) async {
@@ -91,6 +92,30 @@ void main() {
         ..writeln('nova-2048-web-pwa.tar.gz.sha256')
         ..writeln('nova-2048-web-pwa-release');
     }
+
+    final qualificationFragments = <String>[
+      'build/app/outputs/flutter-apk/app-release.apk',
+      'build/app/outputs/flutter-apk/app-release.apk.sha256',
+      'build/app/outputs/bundle/release/app-release.aab',
+      'build/app/outputs/bundle/release/app-release.aab.sha256',
+      'nova-2048-android-release',
+      'nova-2048-linux-x64.tar.gz',
+      'nova-2048-linux-x64.tar.gz.sha256',
+      'nova-2048-linux-x64-release',
+      'nova-2048-windows-x64.zip',
+      'nova-2048-windows-x64.zip.sha256',
+      'nova-2048-windows-x64-release',
+      'nova-2048-macos-release.zip',
+      'nova-2048-macos-release.zip.sha256',
+      'nova-2048-macos-release',
+      'nova-2048-ios-unsigned-release.zip',
+      'nova-2048-ios-unsigned-release.zip.sha256',
+      'nova-2048-ios-unsigned-release',
+    ]..remove(missingQualificationFragment);
+    for (final fragment in qualificationFragments) {
+      workflow.writeln(fragment);
+    }
+
     await write('.github/workflows/platform-builds.yml', workflow.toString());
     await write(
       '.github/workflows/ci.yml',
@@ -119,12 +144,24 @@ void main() {
   test('complete six-target fixture passes', () async {
     final result = await runAudit(await fixture());
 
-    expect(result.process.exitCode, 0, reason: result.process.stderr.toString());
-    expect(result.json['crossPlatformReady'], isTrue);
     expect(
-      result.json['supportedTargets'],
-      <String>['Android', 'iOS', 'Web/PWA', 'Windows', 'macOS', 'Linux'],
+      result.process.exitCode,
+      0,
+      reason: result.process.stderr.toString(),
     );
+    expect(result.json['schemaVersion'], 1);
+    expect(result.json['crossPlatformReady'], isTrue);
+    expect(result.json['supportedTargets'], <String>[
+      'Android',
+      'iOS',
+      'Web/PWA',
+      'Windows',
+      'macOS',
+      'Linux',
+    ]);
+    expect(result.json['requiredTargetCount'], 6);
+    expect(result.json['configuredTargetCount'], 6);
+    expect(result.json['failureCount'], 0);
     expect(result.json['failures'], isEmpty);
   });
 
@@ -175,6 +212,20 @@ void main() {
     expect(failures, contains('nova-2048-web-pwa-release'));
   });
 
+  test('native qualification packages must retain checksums', () async {
+    const missing = 'nova-2048-windows-x64.zip.sha256';
+    final result = await runAudit(
+      await fixture(missingQualificationFragment: missing),
+    );
+
+    expect(result.process.exitCode, 1);
+    expect(result.json['crossPlatformReady'], isFalse);
+    expect(
+      (result.json['failures'] as List<dynamic>).join('\n'),
+      contains('Windows qualification packaging is missing: $missing'),
+    );
+  });
+
   test('permanent CI must retain platform audit wiring', () async {
     final result = await runAudit(await fixture(omitCiWiring: true));
 
@@ -182,6 +233,51 @@ void main() {
     expect(
       (result.json['failures'] as List<dynamic>).join('\n'),
       contains('Permanent CI must run the cross-platform support audit'),
+    );
+  });
+
+  test('empty root argument fails closed', () async {
+    final process = await Process.run('dart', <String>[
+      scriptPath,
+      '--root=',
+      '--json',
+    ]);
+
+    expect(process.exitCode, 1);
+    final output = jsonDecode(process.stdout as String) as Map<String, dynamic>;
+    expect(
+      (output['failures'] as List<dynamic>).join('\n'),
+      contains('The --root=<path> argument requires a non-empty path.'),
+    );
+  });
+
+  test('missing root preserves the six-target JSON shape', () async {
+    final root = Directory.fromUri(
+      Directory.systemTemp.uri.resolve(
+        'nova-platform-audit-missing-${DateTime.now().microsecondsSinceEpoch}/',
+      ),
+    );
+    expect(root.existsSync(), isFalse);
+
+    final process = await Process.run('dart', <String>[
+      scriptPath,
+      '--root=${root.path}',
+      '--json',
+    ]);
+
+    expect(process.exitCode, 1);
+    final output = jsonDecode(process.stdout as String) as Map<String, dynamic>;
+    expect(output['schemaVersion'], 1);
+    expect(output['requiredTargetCount'], 6);
+    expect(output['configuredTargetCount'], 0);
+    expect(output['crossPlatformReady'], isFalse);
+    expect(output['failureCount'], greaterThanOrEqualTo(1));
+    final targetStatus = output['targetStatus'] as Map<String, dynamic>;
+    expect(targetStatus.length, 6);
+    expect(targetStatus.values, everyElement(isFalse));
+    expect(
+      (output['failures'] as List<dynamic>).join('\n'),
+      contains('Repository root does not exist:'),
     );
   });
 
