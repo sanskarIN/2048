@@ -81,6 +81,9 @@ jobs:
           set -o pipefail
           dart run tool/repository_audit.dart --json | tee repository-audit.json
 
+      - name: Audit GitHub Actions workflow security
+        run: dart run tool/workflow_security_audit.dart --json
+
       - name: Audit six-target cross-platform support
         shell: bash
         run: |
