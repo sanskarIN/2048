@@ -30,13 +30,14 @@ After a valid move that changes the board, one new tile appears. A new tile is n
 
 From Home:
 
-- choose **New Game** to select a mode;
+- choose **New Game** to select a built-in mode;
+- choose **Custom Game Builder** to create or reuse a local custom configuration;
 - choose **Daily Challenge** for the current date-derived challenge;
 - choose **Challenge Codes** to create or open an offline shared deterministic challenge;
 - choose **Continue Game** when a recoverable local game exists;
 - choose **Continue Unranked Backup** when the current recoverable game came from portable restore.
 
-Starting a new game while a recoverable game exists requires confirmation so the saved board is not replaced silently.
+Starting a new game while a recoverable game exists requires confirmation so the saved board is not replaced silently. Merely opening Custom Game Builder does not replace the current game; replacement is considered only when you choose to play a custom configuration.
 
 ## Controls
 
@@ -74,6 +75,8 @@ Challenge modes can also show:
 
 - **Moves left** for Move Limit;
 - **Seconds left** for Time Challenge.
+
+A custom session is visibly identified as **Custom game**. Custom configurations may use different board sizes, targets, and limits from built-in presets, so they do not overwrite built-in per-mode best-score/highest-tile records.
 
 ## Winning and continuing
 
@@ -115,6 +118,8 @@ Pause opens explicit actions such as Resume, Settings, or Home. Timed challenge 
 
 Restart begins the current mode again. When **Confirm restart** is enabled in Settings, the application asks before replacing the current game.
 
+Restarting a custom session preserves its custom-session identity, so restarting cannot silently convert custom play into an ordinary built-in-record session.
+
 ## Game modes
 
 2048 Nova includes ten built-in modes:
@@ -130,7 +135,9 @@ Restart begins the current mode again. When **Confirm restart** is enabled in Se
 - Daily Challenge;
 - Zen.
 
-See [`GAME_MODES.md`](GAME_MODES.md) for exact targets/limits.
+Custom Game Builder is an additional configuration surface that reuses the existing deterministic rules rather than adding an eleventh built-in mode.
+
+See [`GAME_MODES.md`](GAME_MODES.md) for exact built-in targets/limits.
 
 ## Target mode
 
@@ -146,6 +153,86 @@ Target mode lets you choose:
 - 16384
 
 Higher targets generally require more careful board organization and longer sessions.
+
+## Custom Game Builder
+
+Open **Custom Game Builder** to create a local game configuration from the rule combinations already supported by the deterministic engine.
+
+You can choose:
+
+- board size from **3×3 through 8×8**;
+- target tile from **128 through 16384**;
+- **Target**, **Endless**, **Timed**, or **Move Limit** style;
+- a time limit for Timed games;
+- a move limit for Move Limit games;
+- an optional whole-number deterministic seed.
+
+### Play without saving
+
+1. Enter a preset name and choose the configuration.
+2. Optionally enter a deterministic seed.
+3. Choose **Play now**.
+4. If another recoverable game exists, review and confirm the normal replacement prompt.
+
+The name does not need to be saved for **Play now** to work; the form is validated before any existing game can be replaced.
+
+### Save a preset
+
+Choose **Save preset** to keep the configuration on this device for quick reuse. Saved preset names are treated case-insensitively for deduplication and can contain up to 40 characters. The store keeps at most 24 presets.
+
+Saved presets are local-only. They are not uploaded or synchronized.
+
+### Start a saved preset
+
+Tap a saved preset card. The normal current-game replacement guard runs before the game starts when required.
+
+### Edit a saved preset
+
+1. Open the preset action menu.
+2. Choose **Edit preset**.
+3. The saved style, board size, target, time/move limit, and seed are reloaded into the form.
+4. Change any allowed value, including the name.
+5. Choose **Save changes**.
+
+Renaming cannot overwrite a different preset that already uses the requested name, ignoring letter case. Instead, the builder asks you to choose another name.
+
+### Cancel an edit
+
+Choose **Cancel edit** to leave the stored preset unchanged and return the builder to its default creation form.
+
+### Duplicate a saved preset
+
+1. Open the preset action menu.
+2. Choose **Duplicate preset**.
+3. The builder loads an unsaved copy with a unique name such as `My Mode copy`.
+4. Review or change the copied settings.
+5. Choose **Save preset** only when you want to persist the copy.
+
+Duplication deliberately does **not** write storage immediately. This makes the copy a reviewable draft until you explicitly save it.
+
+### Delete a saved preset
+
+1. Open the preset action menu.
+2. Choose **Delete preset**.
+3. Confirm the deletion dialog.
+
+Cancelling the confirmation leaves both the UI and persisted preset data unchanged.
+
+### Custom-session records
+
+Custom play is trusted local gameplay, but a custom combination may not be comparable with a built-in preset. Therefore:
+
+- custom sessions do not overwrite built-in per-mode best-score/highest-tile records;
+- custom identity survives save/resume, application restart, and in-game restart;
+- starting a normal built-in game clears the custom identity;
+- importing a Game Backup uses the separate unranked-import policy and clears custom identity;
+- **Clear all 2048 Nova local data** removes custom presets and the active custom-session marker.
+
+### Sharing boundary
+
+The current `NOVA1` Challenge Code describes a deterministic game configuration but does not carry the Custom Game Builder origin marker. 2048 Nova therefore does not expose a custom-preset sharing action that would silently turn custom play into an ordinary built-in-record session on another installation.
+
+See [`CUSTOM_GAME_BUILDER.md`](CUSTOM_GAME_BUILDER.md) for the complete validation, storage, trust, and architecture details.
 
 ## Daily Challenge
 
@@ -166,7 +253,7 @@ Home includes **Challenge Codes** for starting the same deterministic configurat
 5. Select **Copy challenge code**.
 6. Share the copied `NOVA1...` text through any method you choose.
 
-A challenge code contains only a versioned configuration and deterministic seed. It does not contain your current board, score, lifetime statistics, achievements, Daily history, or Undo history.
+A challenge code contains only a versioned configuration and deterministic seed. It does not contain your current board, score, lifetime statistics, achievements, Daily history, Undo history, or Custom Game Builder origin marker.
 
 ### Open a code
 
@@ -251,7 +338,7 @@ The Statistics screen tracks local ranked-player information such as:
 - current streak;
 - best streak.
 
-Imported backup play and Auto Play Demo do not inflate these records. A Challenge Code starts a fresh local game, so it participates in normal non-Daily statistics like a game started from the mode picker.
+Imported backup play and Auto Play Demo do not inflate these records. A Challenge Code starts a fresh local game, so it participates in normal non-Daily statistics like a game started from the mode picker. Custom sessions follow their own record boundary: normal trusted lifetime progress can still apply where the controller policy permits it, but incomparable custom configurations cannot overwrite built-in per-mode records.
 
 ## Achievements
 
@@ -301,7 +388,7 @@ Settings provides explicit controls to:
 - reset achievements;
 - clear all 2048 Nova local data.
 
-Complete reset removes project-owned data only.
+Complete reset removes project-owned data only, including Custom Game Builder presets and the active custom-session marker.
 
 ## Accessibility
 
@@ -309,7 +396,7 @@ The game board exposes board-size semantics plus row/column/value-or-empty label
 
 Keyboard controls, high contrast, reduced motion, system text scaling, and responsive layout are also part of the accessibility foundation.
 
-Challenge Codes use visible labels, standard form controls, selectable text, explicit validation feedback, and a structured decoded preview. Real assistive-technology and clipboard behavior still needs representative platform qualification before stable 1.0.0.
+Challenge Codes and Custom Game Builder use visible labels, standard controls, explicit validation feedback, and localized English/Hindi text. Automated semantics/layout/widget tests protect regressions, but real assistive-technology, real clipboard/file handlers, touch/orientation behavior, and platform accessibility still require representative manual qualification before stable promotion.
 
 See [`ACCESSIBILITY.md`](ACCESSIBILITY.md) for implementation details and manual release checks.
 
@@ -319,13 +406,13 @@ Normal gameplay is offline-first. There is no default analytics, advertising, ac
 
 External network/platform handlers are used only after you explicitly open GitHub, LinkedIn, email, or Buy Me a Coffee.
 
-Game Backup writes/reads clipboard text only after explicit backup actions. Challenge Codes similarly write/read clipboard text only after explicit Copy/Paste actions and are never sent to a server by the app.
+Game Backup writes/reads clipboard or user-selected file data only after explicit backup actions. Challenge Codes similarly write/read clipboard text only after explicit Copy/Paste actions and are never sent to a server by the app. Custom presets are stored locally and require no account, cloud service, analytics, or network connection.
 
 See [`PRIVACY.md`](PRIVACY.md).
 
 ## Help and support
 
-For common issues, see [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md).
+For common issues, see [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md). For deeper source/build/persistence/trust diagnosis, see [`ERROR_REFERENCE.md`](ERROR_REFERENCE.md).
 
 Project/support contacts:
 
@@ -346,16 +433,15 @@ Open **Settings → Language** and choose **System default**, **English**, or **
 
 System default follows English or Hindi when the device reports one of those supported locales; unsupported system locales fall back to English. Clearing all 2048 Nova local data also restores the language setting to System default.
 
-Machine-readable Challenge Code/backup data, URLs, email addresses, seeds, and tile numbers are not translated. Hindi mode localizes player-facing controls, status text, error paths, and positional board semantics while preserving game rules and deterministic behavior.
-
+Machine-readable Challenge Code/backup data, URLs, email addresses, seeds, and tile numbers are not translated. Hindi mode localizes player-facing controls, status text, error paths, Custom Game Builder actions, and positional board semantics while preserving game rules and deterministic behavior.
 
 ## Per-mode records
 
-Open **Statistics** to see the existing overall totals followed by an expandable card for every mode that has trusted local progress. A mode card shows its best score and highest tile. When a best score has configuration metadata, the card also shows the board size and target associated with that score.
+Open **Statistics** to see the existing overall totals followed by an expandable card for every built-in mode that has trusted comparable local progress. A mode card shows its best score and highest tile. When a best score has configuration metadata, the card also shows the board size and target associated with that score.
 
-Mode records are local to this installation and work fully offline. Normal games you start inside 2048 Nova can improve them. A Game Backup that you import is labeled unranked and cannot improve overall or per-mode records, even if you keep playing that imported board.
+Mode records are local to this installation and work fully offline. Normal built-in games you start inside 2048 Nova can improve them. A Game Backup that you import is labeled unranked and cannot improve overall or per-mode records, even if you keep playing that imported board. A custom session also cannot overwrite built-in per-mode records because its configuration may not match the built-in preset.
 
-Choosing **Reset statistics** removes historical mode records. If a ranked game is still active, its current observable progress becomes the fresh baseline for only that mode. If the active board came from an imported backup, no mode record is recreated from it.
+Choosing **Reset statistics** removes historical mode records. If a ranked built-in game is still active, its current observable progress becomes the fresh baseline for only that mode. If the active board came from an imported backup, no mode record is recreated from it.
 
 ## Full Replay Archive
 
@@ -371,7 +457,7 @@ Replay JSON is editable and not signed, so a valid archive means the sequence re
 
 ## Save or open a backup file
 
-Game Backup now supports the same current-game envelope through clipboard or file transport.
+Game Backup supports the same current-game envelope through clipboard or file transport.
 
 - Choose **Save backup file** to open the platform/browser save flow with a suggested `.nova2048` filename.
 - Choose **Import backup file** to select one `.nova2048` or `.json` file.

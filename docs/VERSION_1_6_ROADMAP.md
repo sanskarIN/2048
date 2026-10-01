@@ -1,68 +1,76 @@
-# Version 1.6 Roadmap — Custom Game Builder
+# Historical Version 1.6 Roadmap — Custom Game Builder
 
-> Draft development roadmap. Version 1.5 remains the current release-candidate line and its 13 real-world qualification checks remain independent.
+> **Historical record.** This document preserves the development intent of the original Custom Game Builder branch. It is not the current release roadmap. The current source line is **2048 Nova 2.0.12+2012**; use [`../ROADMAP.md`](../ROADMAP.md), [`CUSTOM_GAME_BUILDER.md`](CUSTOM_GAME_BUILDER.md), and [`FINAL_2_0_12_SOURCE_AUDIT.md`](FINAL_2_0_12_SOURCE_AUDIT.md) for current status.
 
-## Implemented on the Version 1.6 feature branch
+## Original feature foundation — completed
 
-- Validated `CustomGamePreset` domain model with schema versioning.
-- Board sizes from 3×3 through 8×8.
-- Target, Endless, Timed, and Move Limit custom styles mapped onto the existing deterministic engine.
-- Optional deterministic seed.
-- Bounded local preset storage with corruption repair and case-insensitive name deduplication.
-- Maximum 24 saved custom presets.
-- English/Hindi Custom Game Builder UI.
-- Save, play, and delete preset flows.
-- Existing game-replacement confirmation before actually starting a custom game.
-- Full-data reset removes custom presets and custom-session identity.
-- Persisted custom-session marker across app restart.
-- Custom local play remains trusted gameplay but cannot overwrite built-in per-mode best-score/highest-tile records.
-- Imported backups remain separately unranked and clear custom-session identity.
-- Domain, persistence, widget-flow, reset, and custom-session policy regression coverage.
-- Builder widget interactions dismiss focus and ensure the actual button is fully visible before tapping, preserving representative user-action hit testing on the constrained widget-test viewport.
-- Custom identity is preserved when the player restarts from the live game screen, closing a trust-boundary bug that could otherwise convert a restarted custom game into an ordinary built-in-mode session.
-- The live game metrics area exposes a localized English/Hindi **Custom game** chip with semantics while a custom session is active.
-- Saved-preset deletion now requires explicit bilingual confirmation; cancellation leaves both UI and persisted preset data unchanged.
-- Focused tests cover custom restart identity, built-in mode-record isolation, Custom-game disclosure, and delete cancel/confirm behavior.
-- Dedicated architecture/policy documentation in `CUSTOM_GAME_BUILDER.md`.
+The original development line established:
 
-## Required before the feature PR can leave draft
+- validated `CustomGamePreset` schema/versioning;
+- board sizes from 3×3 through 8×8;
+- Target, Endless, Timed, and Move Limit custom styles mapped onto the existing deterministic engine;
+- optional deterministic seeds;
+- bounded local preset storage with corruption repair and case-insensitive name deduplication;
+- maximum 24 saved custom presets;
+- English/Hindi Custom Game Builder UI;
+- save, play, and confirmed-delete flows;
+- current-game replacement protection before starting a custom game;
+- full-data reset coverage for preset/session keys;
+- persisted custom-session identity across app restart;
+- custom-session isolation from built-in per-mode best-score/highest-tile records;
+- imported-backup isolation from the custom-session marker;
+- custom identity preserved across in-game restart;
+- localized **Custom game** disclosure in the live game screen;
+- domain, persistence, widget-flow, reset, and trust-policy regressions;
+- dedicated architecture/policy documentation in `CUSTOM_GAME_BUILDER.md`.
 
-1. `dart format` must report no changes on `lib`, `test`, and `tool`.
-2. `flutter analyze` must report no issues.
-3. The complete regression suite must pass with the new tests included.
-4. Repository audit and Version 1.5 release-candidate gate must remain green; the stable gate must remain fail-closed at the genuine 0/13 manual boundary.
-5. Web release build must still succeed without missing-font warnings.
-6. Native matrix must continue to compile Android APK/AAB, Linux, Windows, macOS, and unsigned iOS.
-7. Custom games must remain isolated from built-in per-mode records after save/resume and restart.
-8. Opening the builder must never replace the current game; only an explicit play action may invoke the existing replacement guard.
-9. Clear-all-data behavior must remove every custom preset/session key.
-10. New user-facing documentation must explain the custom-vs-built-in record boundary.
+## Original follow-up polish — now completed on the integrated source line
 
-## Next polish after the integrated green CI
+The following items were originally listed as future polish and have now been completed in the Version 2.0.12 integration-hardening work:
 
-- Add edit/duplicate support for an existing saved preset without creating ambiguous duplicate names.
-- Add documentation-index entries and user-guide coverage.
-- Add responsive and large-text widget tests for the builder form and saved-preset list.
-- Add targeted semantics tests for the builder controls and saved-preset actions.
-- Decide whether custom sessions need their own aggregate statistics surface before adding any new trusted record category.
+- **Edit preset** support, including rename behavior.
+- Refusal to overwrite another existing preset when an edited preset is renamed to a conflicting name.
+- **Duplicate preset** support with a generated unique copy name and no storage mutation until the user explicitly saves it.
+- **Cancel edit** behavior that leaves persisted data unchanged.
+- Compact saved-preset action menu for better narrow-layout behavior.
+- English/Hindi saved-preset action labels and feedback.
+- Narrow-screen and increased-text-scale widget regression coverage.
+- Current documentation/index/user-guide integration.
+- Current release-line documentation that explains the custom-vs-built-in record boundary.
 
-## Deliberately deferred
+## Deliberately not converted into a hidden backlog
+
+### Custom aggregate statistics
+
+Custom sessions can differ materially from built-in presets, so introducing a new aggregate record category requires a deliberate data model and comparability policy. Version 2.0.12 does not silently create one.
+
+The current policy is intentionally simple:
+
+- custom local play may contribute to ordinary lifetime gameplay totals/achievements where existing trusted-session rules allow it;
+- custom sessions cannot overwrite built-in per-mode records;
+- no separate custom leaderboard/record surface is claimed.
+
+A future product release may introduce a separately defined custom-statistics model if there is a concrete need and migration/testing plan.
 
 ### Challenge Code sharing
 
-The existing `NOVA1` codec can represent the underlying `GameConfig`, but it does not encode whether the configuration originated from Custom Game Builder. Sharing a custom configuration through the current protocol would therefore allow a receiver to start it as an ordinary built-in-mode session and could mix incomparable custom results into built-in per-mode records.
+The existing `NOVA1` codec can represent the underlying `GameConfig`, but it does not encode whether the configuration originated from Custom Game Builder. Sharing a custom configuration through the current protocol could therefore cause the receiver to start it as an ordinary built-in-mode session and mix incomparable custom results into built-in per-mode records.
 
-Do not expose a custom-preset Challenge Code button until one of these designs is implemented and tested:
+Do not expose a custom-preset Challenge Code button until an intentional versioned design preserves the custom-session trust boundary. Possible future designs include:
 
-- a backward-compatible authenticated/validated origin field with explicit custom-session semantics; or
-- a separately versioned custom-challenge protocol with an equally strict parser and trust policy.
+- a validated origin field with explicit custom-session semantics; or
+- a separately versioned custom-challenge protocol with equally strict parsing and trust-policy tests.
 
 Daily Challenge remains isolated from arbitrary portable configuration injection.
 
-### Stable release promotion
+## Verification history and current rule
 
-Version 1.6 development does not change the Version 1.5 stable-release qualification manifest. No Version 1.5 device/accessibility/signing/store evidence may be inferred from Version 1.6 automated tests.
+The original feature branch received green formatter/analyzer/test/Web/native evidence while based on an older release line. After it was integrated into the later Version 2.0.12 source line, that historical result could not truthfully be relabeled as same-commit Version 2.0.12 evidence.
 
-## Candidate completion definition
+Therefore the final integration-hardening branch must run the maintained Version 2.0.12 gates again. Only successful results from the exact current integration commit may become current automated evidence.
 
-The initial Version 1.6 Custom Game Builder feature is ready for merge only when source, tests, documentation, trust boundaries, reset behavior, and configured builds are all green on the same reviewed feature-branch commit. Real-device/responsive/accessibility checks for the new builder then belong to the Version 1.6 release-qualification plan rather than being silently inherited from Version 1.5.
+The real-world qualification manifest remains separate and fail-closed. Hosted compilation and widget tests do not invent physical-device, assistive-technology, external-handler, native-branding, signing/provisioning, or store evidence.
+
+## Historical status
+
+This roadmap is **closed as an active roadmap**. It remains tracked only for development traceability. Any new product functionality starts a deliberately scoped future release rather than reopening this historical Version 1.6 plan.
