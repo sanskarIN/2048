@@ -1,284 +1,231 @@
 # 2048 Nova — Active Continuity
 
-This is the active Version 2.0.12 maintenance record.
+This is the active Version 2.0.12 final-integration maintenance record.
 
 Historical continuity is preserved in:
 
 - [`what_changed_archive_phase_00_30.md`](what_changed_archive_phase_00_30.md) — Phases 0–30;
 - [`what_changed_archive_phase_31.md`](what_changed_archive_phase_31.md) — Phase 31;
-- [`what_changed_archive_phase_32.md`](what_changed_archive_phase_32.md) — detailed Version 2.0.12 migration/source-completion record;
+- [`what_changed_archive_phase_32.md`](what_changed_archive_phase_32.md) — Version 2.0.12 migration/source-completion record;
+- [`what_changed_archive_phase_33.md`](what_changed_archive_phase_33.md) — complete documentation/toolchain lifecycle hardening record;
 - [`CHANGELOG_ARCHIVE_PRE_2_0_12.md`](CHANGELOG_ARCHIVE_PRE_2_0_12.md) — pre-2.0.12 changelog history.
 
 ## Current repository state
 
 - **Current phase:** Phase 32 — Version 2.0.12 source-completion/release audit contract remains the canonical release phase protected by `tool/repository_audit.dart`.
-- **Active maintenance stream:** Phase 33 — complete documentation, setup, command, terminology, and support-lifecycle hardening.
+- **Completed maintenance stream:** Phase 33 — complete documentation, setup, command, terminology, file-coverage, and support-lifecycle hardening.
+- **Active maintenance stream:** Phase 34 — final Version 2.0.12 integration hardening after Custom Game Builder entered the later release line.
 - **Marketing version:** `2.0.12`.
 - **Flutter package/build version:** `2.0.12+2012`.
-- **Source scope:** feature-complete; Phase 33 maintenance does not reopen the completed Version 2.0.12 product-feature backlog.
-- **Branch:** `main`.
-- **Manual evidence:** stable qualification boundary remains 0/13. No physical-device, assistive-technology, real browser/PWA lifecycle, external-handler, native-branding, signing/provisioning, or store evidence is being invented by documentation work.
+- **Source scope:** feature-complete; Phase 34 fixes integration bugs, product polish, documentation drift, and verification coverage without reopening a hidden Version 2.0.12 feature backlog.
+- **PR:** `#25` (`final/v2.0.12-integration-hardening` → `main`).
+- **Manual evidence:** stable qualification boundary remains 0/13. No physical-device, assistive-technology, real browser/PWA lifecycle, external-handler, native-branding, signing/provisioning, or store evidence is invented by source/documentation work.
+- **Repository settings:** issue #12 remains open because `main` now reports `protected: true`, but the available GitHub connector cannot inspect/write the underlying ruleset and legacy protection metadata still does not prove the intended required CI contexts. This is an external repository-setting boundary, not a missing tracked source feature.
 - **Toolchain contract:** CI Flutter 3.47.0 stable; AGP 9.1.0; Kotlin Android 2.4.10; Gradle 9.7.0; Android Java/Kotlin target 17.
 
-The `Current phase: Phase 32` line is intentionally retained because the repository integrity audit treats Phase 32 as the frozen Version 2.0.12 release/source-completion contract. Phase 33 is a maintenance/documentation stream inside that completed release line, not a new product release or feature scope.
+The `Current phase: Phase 32` line is intentionally retained because the repository integrity audit treats Phase 32 as the frozen Version 2.0.12 release/source-completion contract. Phase 33 and Phase 34 are maintenance streams inside that completed release line, not new marketing releases.
+- **Active maintenance stream:** Phase 34 — cross-platform audit evidence, artifact-checksum enforcement, and CI diagnostics hardening.
+- **Marketing version:** `2.0.12`.
+- **Flutter package/build version:** `2.0.12+2012`.
+- **Source scope:** feature-complete; Phase 34 maintenance does not reopen the completed Version 2.0.12 product-feature backlog.
+- **Branch:** `main`.
+- **Manual evidence:** stable qualification boundary remains 0/13. No physical-device, assistive-technology, real browser/PWA lifecycle, external-handler, native-branding, signing/provisioning, or store evidence is being invented by maintenance work.
+- **Toolchain contract:** CI Flutter 3.47.0 stable; AGP 9.1.0; Kotlin Android 2.4.10; Gradle 9.7.0; Android Java/Kotlin target 17.
 
-# Phase 33 — Complete documentation and toolchain lifecycle hardening
+The `Current phase: Phase 32` line is intentionally retained because the repository integrity audit treats Phase 32 as the frozen Version 2.0.12 release/source-completion contract. Phase 34 is a maintenance/audit stream inside that completed release line, not a new product release or feature scope.
+
+# Phase 34 — Final Version 2.0.12 integration hardening
 
 Date: **2026-08-19**
 
-## Goal
+## Starting live source
 
-Make the project documentation usable from a new developer workstation through advanced maintenance without requiring readers to copy unknown commands, guess technical terms, or use unsupported tools.
+The final pass inspected the live repository rather than assuming the older checkpoint was still current.
 
-Phase 33 adds or hardens:
-
-- complete tool prerequisites and installation guidance;
-- Windows, macOS/iOS, Linux, and Android-specific environment setup;
-- end-of-support / EOL upgrade policy for development tools;
-- command/subcommand/argument/flag explanations;
-- a comprehensive glossary;
-- a no-skip repository file atlas;
-- a consolidated implemented-feature reference;
-- complete executable/build instructions using the actual Version 2.0.12 source values;
-- regression protection for the new documentation;
-- continuity archives so older phases are not erased.
-
-## Live source checked before writing
-
-The phase inspected the repository's current source/configuration instead of using old prompt assumptions.
-
-Confirmed current values:
+`main` started this pass at:
 
 ```text
-pubspec package/build: 2.0.12+2012
-Dart constraint: >=3.9.0 <4.0.0
-Flutter floor: >=3.35.0
-Hosted CI Flutter: 3.47.0 stable
-Android Gradle Plugin: 9.1.0
-Kotlin Android plugin: 2.4.10
-Gradle Wrapper: 9.7.0
-Android Java/Kotlin bytecode target: 17
-Android applicationId: com.sanskarin.nova_2048
+f81076e614b5802af4024588047dd0ba11ce4ce6
 ```
 
-The live `lib/`, `lib/app/`, `lib/core/`, `lib/data/`, `lib/domain/`, `lib/features/`, `test/`, `tool/`, `docs/build/`, Android build files, and CI workflow were also inspected to ground the new documentation in current paths.
+That commit had squash-merged Custom Game Builder after the earlier Version 2.0.12 source-completion/documentation checkpoint.
 
-## Important stale documentation bug fixed
-
-The previous `docs/BUILDING_EXECUTABLES.md` still contained obsolete current-state `1.5.0+15` examples while `pubspec.yaml` already declared `2.0.12+2012`.
-
-The handbook was rebuilt around the actual Version 2.0.12 source/toolchain contract instead of applying only a cosmetic version replacement.
-
-The new handbook covers prerequisites, source validation, every maintained target, artifact meanings, signing boundaries, packaging/checksums, CI qualification, unsupported-tool handling, troubleshooting, and final release ordering.
-
-## New complete setup documentation
-
-### `docs/setup/PREREQUISITES.md`
-
-Explains Git, Flutter, Dart, terminals, VS Code, Android Studio, Android SDK, JDK 17, Gradle Wrapper, Visual Studio, Xcode, CocoaPods, Linux native packages, Web prerequisites, package managers, tools not required by this Flutter project, and first environment validation.
-
-### `docs/setup/WINDOWS.md`
-
-Explains Git/WinGet, Flutter installation and `PATH`, duplicate SDK diagnosis, VS Code extensions, Android Studio, SDK/licenses, JDK selection, Gradle Wrapper, Visual Studio **Desktop development with C++**, clone/validation/build commands, Android/Windows/Web output, safe upgrades, and Windows troubleshooting.
-
-### `docs/setup/MACOS.md`
-
-Explains Apple Command Line Tools, Git, Flutter `PATH`, Xcode selection/first launch, CocoaPods, optional Android Studio/VS Code, macOS/iOS/Web/Android builds, simulator use, unsigned iOS release qualification, signed IPA boundary, tool upgrades, and Apple-platform troubleshooting.
-
-### `docs/setup/LINUX.md`
-
-Explains Git/Flutter installation, Clang, CMake, Ninja, pkg-config, GTK development libraries, Android/JDK, Gradle Wrapper, VS Code, Linux/Web/Android builds, distribution package-manager differences, native dependency troubleshooting, and safe upgrades.
-
-### `docs/setup/ANDROID.md`
-
-Explains Android Studio, Android SDK package families, SDK licenses, ADB, authorized physical-device debugging, AVD/emulator, JDK/JRE/JVM, Gradle/Wrapper, AGP, Kotlin, `compileSdk`/`targetSdk`/`minSdk`, NDK, namespace/application ID, build modes, APK/AAB, signing, `key.properties`, `sdkmanager`, deprecation checks, upgrade ordering, diagnostics, and common failures.
-
-### `docs/setup/UPGRADING_AND_SUPPORT.md`
-
-Provides the complete lifecycle policy for an outdated, deprecated, insecure, unsupported, or EOL tool.
-
-It includes detection, severity classification, compatibility review, migration branches, rollback strategy, CI adoption, real-world qualification, and separate upgrade procedures for:
+The feature's earlier successful CI log identified its candidate as:
 
 ```text
-Flutter
-Dart
-Git
-Android Studio
-Android SDK
-JDK
-Gradle
-AGP
-Kotlin
-Xcode
-CocoaPods
-Visual Studio
-VS Code
-CMake
-Ninja
-operating systems
-Flutter packages
-CI pins
-external store/platform policy deadlines
-unsupported dependencies
+1.5.0+15
 ```
 
-### `docs/setup/README.md`
+That older run remains useful historical feature evidence but cannot be relabeled as same-commit Version `2.0.12+2012` verification after later integration.
 
-Routes a contributor by host and target and explains the first universal validation workflow, tool-versus-dependency distinctions, what Flutter Doctor proves, what it does not prove, and how to handle older/newer local toolchains.
+## Product work completed
 
-## New command reference
+### Edit saved custom presets
 
-`docs/COMMAND_REFERENCE.md` explains commands rather than only listing them.
+Custom Game Builder now supports **Edit preset**. Loading a preset restores its name, style, board size, target, style-specific limit, and deterministic seed.
 
-Covered areas include:
+**Save changes** safely replaces the original preset. Renaming is supported, but an edit is rejected if the requested name belongs case-insensitively to a different saved preset.
 
-- executable/command/subcommand/argument/flag terminology;
-- shell/navigation commands;
-- Git clone/status/diff/add/commit/pull/push/config;
-- Flutter/Dart diagnostics/channel/config/devices/emulators;
-- Pub resolution/outdated/upgrade/major-version behavior;
-- formatting/analyzer/tests/coverage/run/clean;
-- Android debug/profile/release/split APK/AAB and version overrides;
-- Web/Windows/Linux/macOS/iOS/IPA builds;
-- release/readiness/repository/source-completion tools and flags;
-- Gradle Wrapper/tasks/deprecation warnings/upgrade syntax;
-- Android `sdkmanager`;
-- Java/JDK;
-- Xcode;
-- CocoaPods;
-- SHA-256 checksums;
-- WinGet and Debian/Ubuntu package commands;
-- exit codes and safe command-review workflow.
+### Duplicate saved custom presets
 
-## New glossary
+**Duplicate preset** loads a full copy into the form with a bounded case-insensitively unique name such as `My Mode copy` / `My Mode copy 2`.
 
-`docs/GLOSSARY.md` defines development, build, release, security, testing, platform, and gameplay language including AAB/APK/ABI/ADB/AGP/API, artifact, compiler, SDK/NDK, Flutter/Dart/Gradle/Kotlin/JDK/JVM, Xcode/CocoaPods, Git concepts, signing/provisioning/notarization, dependency/lockfile/supply chain, PWA/Wasm, CI/qualification/fail-closed/manual evidence, deterministic RNG/seed, board/move/merge/spawn, Undo/Hint/Auto Play/replay/Challenge Code, privacy/trust boundary, and current-versus-historical documentation terminology.
+The generated name respects the 40-character domain limit. Duplication deliberately does not mutate storage until the player explicitly chooses **Save preset**.
 
-## New no-skip repository file atlas
+### Cancel edit
 
-`docs/REPOSITORY_FILE_ATLAS.md` explains the responsibilities of the root files and these maintained trees:
+**Cancel edit** leaves the stored preset unchanged and restores the default creation form.
+
+### Responsive action menu
+
+Saved-preset Edit/Duplicate/Delete actions use a compact popup menu instead of a wide trailing icon row. Tapping the preset card itself still starts that preset through the existing replacement guard.
+
+This provides more space for long names/summaries under narrow layouts and increased text scaling.
+
+### Edit/Duplicate return to the form
+
+The final last-chance UX audit found that Edit/Duplicate could correctly load a saved configuration while leaving the user scrolled down at the saved-preset card list.
+
+The builder now owns a `ScrollController`. After Edit or Duplicate populates the form, a post-frame callback jumps to the scroll view's minimum extent. This deliberately avoids animation and automatic focus, so it also avoids forcing the keyboard or introducing a reduced-motion concern.
+
+Widget regressions now require the first form `TextField` to be hit-testable immediately after Edit and Duplicate actions launched from saved cards.
+
+### English/Hindi behavior
+
+New action labels, editing helper text, rename-collision feedback, duplicate feedback, update confirmation, and cancel-edit feedback are available in English and Hindi.
+
+## Selector-state bug found and fixed during self-review
+
+A separate integration bug was found after the initial Edit/Duplicate implementation.
+
+`DropdownButtonFormField.initialValue` initializes a FormField but does not automatically reset that FormField's internal selected value merely because the owning state variable changes later. Therefore loading a saved preset could update `_style`, `_size`, `_target`, `_timeLimit`, and `_moveLimit` while a selector still visually displayed its older initial choice.
+
+The builder now gives those selectors value-dependent keys:
 
 ```text
-.github/
-lib/
-lib/app/
-lib/core/
-lib/data/
-lib/domain/
-lib/features/
-lib/shared/
-test/
-tool/
-assets/
-android/
-ios/
-web/
-windows/
-macos/
-linux/
-docs/
-docs/build/
-docs/setup/
+custom-style-<style>
+custom-size-<size>
+custom-target-<target>
+custom-time-<seconds>
+custom-move-<moves>
 ```
 
-The literal current tracked-file inventory is intentionally generated with:
+When Edit, Duplicate, or Cancel changes the loaded configuration, the affected FormField is recreated with the correct current value.
 
-```bash
-git ls-files
-```
+Regression tests assert the visible selector keys after:
 
-This avoids a stale hard-coded file count and makes the no-skip audit reproducible after future maintenance commits.
+- editing a Timed 5×5 / target 4096 / 90-second preset;
+- duplicating a Move Limit 6×6 / target 8192 / 500-move preset;
+- cancelling back to the default Target 4×4 / target 2048 form.
 
-## New complete feature reference
+This protects actual UI state instead of only checking the eventually saved model.
 
-`docs/FEATURE_REFERENCE.md` consolidates the implemented Version 2.0.12 product surface:
+## Existing trust boundaries preserved
 
-- deterministic core gameplay and RNG;
-- all ten game modes;
-- touch/keyboard/input controls;
-- save/resume and bounded Undo;
-- statistics, achievements, and per-mode records;
-- Hint;
-- Heuristic and Expectimax solvers;
-- isolated Auto Play and deterministic benchmark;
-- Move Replay and Full Replay Archives;
-- current-game backup and file import/export;
-- Challenge Codes and QR representation;
-- Daily Challenge;
-- English/Hindi localization;
-- themes, accessibility, reduced motion;
-- About, Guide, Support, external links;
-- offline-first/privacy/data-reset behavior;
-- Android/iOS/Web/Windows/macOS/Linux runners;
-- branding;
-- repository/source/release audit tooling and CI.
+The final custom-preset work does not create a parallel engine or weaken existing policy:
 
-## Documentation index rebuilt
+- Custom Game Builder maps validated presets to existing deterministic `GameConfig`/`GameEngine` behavior.
+- No `GameMode.custom` migration is introduced.
+- Custom-session identity survives save/resume, application restart, and in-game restart.
+- Custom sessions cannot overwrite built-in per-mode best-score/highest-tile records.
+- Imported Game Backup remains a separate unranked trust class.
+- Replay import remains spectator-only.
+- Auto Play remains isolated from player records.
+- Opening the builder does not replace a recoverable game.
+- Invalid builder input is rejected before replacement.
+- Full-data reset removes custom preset/session keys.
+- The current `NOVA1` protocol does not encode custom origin, so unsafe custom-preset sharing is not exposed as if it preserved the record boundary.
 
-`docs/README.md` now includes:
+## Documentation corrected and completed
 
-- beginner reading order;
-- installation/toolchain guides;
-- command/glossary/file reference;
-- player behavior docs;
-- accessibility/localization/privacy/security docs;
-- architecture/development/testing/dependency docs;
-- build/distribution docs;
-- CI/release qualification docs;
-- current source-of-truth map;
-- historical evidence boundary;
-- no-skip docs inventory command.
+The integrated source still contained stale current-state wording:
 
-## Documentation regression tests
+- `docs/CUSTOM_GAME_BUILDER.md` described a Version 1.6 feature branch;
+- `docs/VERSION_1_6_ROADMAP.md` said Version 1.5 remained the current release-candidate line;
+- `docs/USER_GUIDE.md` still contained an obsolete “stable 1.0.0” manual-qualification phrase;
+- the public root `README.md` did not expose the already-integrated Custom Game Builder feature.
 
-`test/documentation_completeness_test.dart` was added and expanded.
+Phase 34 corrected those contradictions and integrated Custom Game Builder into current Version 2.0.12 documentation.
 
-It protects:
+Added/expanded:
 
-- required setup/reference/feature/continuity files;
-- Version `2.0.12+2012` build-handbook identity;
-- absence of the obsolete `version: 1.5.0+15` current build declaration;
-- setup-index links to lifecycle/commands/glossary/file atlas;
-- canonical docs-index setup references;
-- implemented-feature reference coverage;
-- compatibility-first upgrade workflow content;
-- active continuity's Phase 33 maintenance record and Phase 32 archive pointer.
+- `README.md` — public Custom Game Builder feature/trust/build/documentation visibility;
+- `docs/FINAL_2_0_12_INTEGRATION_AUDIT.md` — final same-commit integration/evidence boundary;
+- `docs/ARCHITECTURE_WALKTHROUGH.md` — startup/gameplay/persistence/custom/replay/backup/solver/platform/release flow;
+- `docs/ERROR_REFERENCE.md` — actionable source/build/platform/trust diagnosis reference;
+- `docs/NEW_CONTRIBUTOR_TUTORIAL.md` — new-workstation-to-safe-PR workflow;
+- `docs/DOCUMENTATION_AUDIT_CHECKLIST.md` — source/docs/release/manual-evidence audit checklist;
+- `docs/setup/LINUX_NATIVE_TOOLCHAIN.md` — Clang/CMake/Ninja/pkg-config/GTK/native bundle/diagnosis handbook;
+- `docs/setup/README.md` — Linux-native/contributor/diagnosis navigation;
+- `docs/README.md` — canonical index/source map for all final guides and Custom Game Builder;
+- `docs/USER_GUIDE.md` — complete custom create/play/save/edit/duplicate/cancel/delete/trust/player workflow;
+- `docs/FEATURE_REFERENCE.md` — Custom Game Builder integrated into the consolidated product surface;
+- `docs/CUSTOM_GAME_BUILDER.md` — current implementation, selector refresh, saved-card action navigation, trust, persistence, localization, and tests;
+- `CHANGELOG.md` — final integration fixes/evidence boundary;
+- `test/documentation_completeness_test.dart` — regression guards for public/canonical documentation/navigation/continuity.
 
-## Phase 32 continuity archive
+Phase 33 continuity was preserved verbatim in `what_changed_archive_phase_33.md` before the active file rotated to Phase 34.
 
-The detailed former active Phase 32 narrative is preserved in `what_changed_archive_phase_32.md`.
+## Final stale-source sweep
 
-That archive does not change the repository audit's canonical release-phase marker: Version 2.0.12 still uses the Phase 32 source-completion/release contract while Phase 33 is the active maintenance stream.
-
-## Phase 33 commits
+Repository search after the documentation fixes returned no current searchable occurrences of the obsolete phrases:
 
 ```text
-0a3f600d  docs: add complete development prerequisites guide
-bb9d41c1  docs: add deep Windows installation and setup guide
-1ff6f41a  docs: add exhaustive command and flag reference
-cdef662b  docs: add deep macOS and iOS host setup guide
-36c36989  docs: add deep Linux installation and setup guide
-61bcd3b0  docs: add complete Android toolchain setup guide
-391a09fe  docs: add unsupported tool and upgrade lifecycle guide
-c60bddae  docs: add comprehensive project and toolchain glossary
-0e0773e5  docs: add no-skip repository file atlas
-27033049  docs: add environment setup documentation index
-e39a7b10  docs: rebuild executable handbook for Version 2.0.12
-1f7a8ae5  docs: expand canonical documentation index
-b8e7d7da  test: protect complete setup and command documentation
-fcf3a112  docs: add complete implemented feature reference
-f311e33b  docs: archive completed Phase 32 continuity
-fecada38  docs: activate Phase 33 documentation continuity
-58444305  test: protect complete feature and continuity documentation
+Version 1.6 feature branch documentation
+Version 1.5 remains the current release-candidate line
+before stable 1.0.0
 ```
 
-This continuity correction is its own commit so the protected Phase 32 release marker and Phase 33 maintenance distinction are reviewable separately.
+A final unresolved-marker search also returned no current searchable `TODO`, `FIXME`, `HACK`, or `unimplemented` marker requiring implementation.
 
-## Verification boundary
+## Repository hygiene
 
-The GitHub connector confirms the Phase 33 commits are on `main`, but the available push-run status surfaces have not yet returned a complete workflow result for the current head. Therefore no new formatter/analyzer/test/native pass is being claimed merely from the push.
+The obsolete/conflicting documentation PR #24 was closed as superseded after its useful non-duplicative documentation was carried forward onto current Version 2.0.12 source in PR #25.
 
-The expected permanent automated path remains:
+The only open repository issue found by the final issue sweep is issue #12, which concerns GitHub repository settings rather than tracked source. It remains open because the current connector cannot verify the full ruleset/required-check configuration.
+
+## Phase 34 commit sequence
+
+```text
+519b6ad8  feat: add custom preset edit and duplicate workflows
+eb256a73  test: support large-text localized widget fixtures
+cf9b7d6a  test: cover custom preset editing duplication and responsive actions
+2b7d47b1  docs: integrate custom game builder into Version 2.0.12
+c4eb3d76  docs: archive the Version 1.6 custom builder roadmap
+c721c8f2  docs: add current architecture walkthrough
+6e5f4904  docs: add error and diagnosis reference
+1f4fe13d  docs: add zero-to-safe-change contributor tutorial
+669518cf  docs: add complete documentation audit checklist
+8a95f223  docs: add Linux native toolchain handbook
+311e0ed2  docs: record final Version 2.0.12 integration audit
+258d26ea  test: protect final integration documentation
+9bebaa22  docs: archive completed Phase 33 continuity
+0dbac3ba  docs: activate final integration continuity
+167134ab  fix: refresh custom preset selectors when loading forms
+bf0ea7ca  test: verify loaded custom preset selector state
+b41fbce5  docs: link the Linux native toolchain handbook
+fc563698  docs: integrate final guides into the canonical index
+b6b1e24e  docs: add the complete custom game player workflow
+fe4550a3  docs: integrate custom games into the feature reference
+441de059  docs: record final integration fixes in the changelog
+bf444910  test: protect final documentation navigation and continuity
+c0bf9b8e  docs: finalize Phase 34 continuity
+51cde615  test: harden final documentation assertions
+64b3aa90  docs: expose Custom Game Builder in the public README
+a3ee2690  test: protect the public Custom Game Builder documentation
+1ee3fe6a  fix: return to custom form after preset actions
+a3ae2903  test: verify preset actions return to the form
+7b9afc2e  docs: document preset action form navigation
+d4fc5118  docs: record final custom builder navigation fix
+```
+
+This continuity update is intentionally another separate reviewable commit rather than rewriting an earlier implementation/test/docs commit.
+
+## Automated verification boundary
+
+PR #25 is the integration branch that must supply current same-commit evidence.
+
+The maintained quality path includes:
 
 ```bash
 flutter pub get
@@ -293,112 +240,189 @@ dart run tool/solver_benchmark.dart 8
 flutter build web --release
 ```
 
-The current `tool/repository_audit.dart` exact Phase 32 continuity contract is satisfied again because the active file preserves `**Current phase:** Phase 32` while identifying Phase 33 separately as the maintenance stream.
+Pull-request verification should also include the configured Platform Builds matrix for Android APK/AAB, Linux, Windows, macOS, and unsigned iOS. Dependency Review is path-filtered and applies when dependency-sensitive files change; PR #25 does not change `pubspec.yaml`, `pubspec.lock`, Android files, or workflow files.
 
-Native platform builds remain a separate workflow/evidence class.
+No formatter/analyzer/test/Web/native success is claimed merely from commits being pushed. The exact final PR head must be observed before merge/promotion.
 
-## Stable release boundary
+## Manual stable-release boundary
 
-Documentation/tooling maintenance does not alter the 13 manual release checks.
+Phase 34 does not alter the canonical real-world evidence manifest.
 
-The stable qualification boundary remains 0/13 until genuine representative checks are completed and recorded. Documentation expansion, commit count, unit/widget tests, or hosted compilation cannot be used to fabricate those real-world results.
+The stable qualification boundary remains 0/13 until genuine representative checks are completed and recorded. Source changes, documentation expansion, commit count, widget tests, or hosted compilation cannot substitute for those manual observations.
 
-# Phase 33 — Deep documentation auditability extension
+## Final scope rule
 
-Date: **2026-08-19**
+Version 2.0.12 remains feature-complete after this pass. The following are deliberate non-goals rather than missing implementation:
 
-This extension continues the Phase 33 maintenance stream without changing the application version, product feature scope, or Phase 32 release/source-completion contract.
+- cloud accounts/saves;
+- analytics/ads;
+- online leaderboards/multiplayer;
+- remote AI;
+- in-app QR scanning/camera permission;
+- custom-preset Challenge Code sharing that loses custom-origin semantics;
+- a custom leaderboard/statistics schema without a comparability/migration design;
+- extra languages beyond English/Hindi;
+- additional solver families without a deliberately scoped future release.
 
-## Added tool-support decision matrix
+Future work belongs to reproducible bug/security/accessibility/localization fixes, dependency/toolchain/platform/CI maintenance, genuine manual qualification evidence, documentation maintenance, or a deliberately scoped future release.
+No formatter, analyzer, Flutter test, native build, physical-device result, assistive-technology result, store result, or manual release qualification is claimed here unless a corresponding CI/observed evidence surface reports it.
 
-`docs/setup/TOOL_SUPPORT_MATRIX.md` adds a fast, repository-grounded compatibility reference for:
+# Phase 34 — Cross-platform audit evidence and checksum hardening
 
-- Flutter and bundled Dart;
-- Git;
-- Android Studio and Android SDK;
-- ADB, emulator/AVD, and Android licenses;
-- JDK/Java;
-- Gradle Wrapper;
-- AGP and Kotlin Android plugin;
-- Visual Studio and Windows SDK;
-- Xcode and CocoaPods;
-- Linux Clang/CMake/Ninja/pkg-config/GTK toolchain;
-- VS Code;
-- Web/PWA tooling;
-- Flutter packages;
-- CI pins.
+Date: **2026-08-23**
 
-It distinguishes vendor support, project compatibility, exact pins, minimums, EOL, deprecation, newer-but-unqualified tooling, and security-driven migrations. It records the current project baseline but intentionally does not pretend to be a permanently current vendor lifecycle database.
+This maintenance stream continues the completed Version 2.0.12 release line without adding product features or weakening the Phase 32 source-completion contract.
 
-## Added documentation reading/notation guide
+## Gap identified
 
-`docs/DOCUMENTATION_READING_GUIDE.md` explains how to read technical documentation before executing commands, including:
+The cross-platform support contract already required every retained qualification package to have a SHA-256 checksum, and the hosted Platform Builds workflow already produced those checksums. However, `tool/platform_support_audit.dart` only failed closed on Web/PWA package/checksum drift. A future native workflow edit could therefore remove an Android, Linux, Windows, macOS, or unsigned-iOS checksum sidecar without the platform audit detecting that policy regression.
 
-- inline code and fenced code blocks;
-- shell prompts;
-- commands/subcommands/arguments/options/flags;
-- placeholders and angle brackets;
-- square brackets and ellipses;
-- files/directories and relative/absolute paths;
-- repository root, `.`, `..`, `./`, `.\\`;
-- `PATH` and environment variables;
-- pipes, redirection, quoting, standard output/error, and exit codes;
-- wildcards/globs;
-- versions, version constraints, and caret constraints;
-- YAML and JSON;
-- generated/tracked/untracked/ignored files;
-- source-of-truth, baseline, floor, pin, range, and lockfile terminology;
-- build/artifact/target/host/debug/profile/release/CI concepts;
-- release-candidate/fail-closed/deterministic/checksum/signing meanings;
-- read-only versus mutating commands and safe command-copying checks.
+## Audit contract hardened
 
-## Added no-skip file coverage contract
+`tool/platform_support_audit.dart` now:
 
-`docs/FILE_COVERAGE_CONTRACT.md` turns the “do not skip any files” requirement into an explicit maintenance rule.
+- emits a versioned machine-readable contract with `schemaVersion: 1`;
+- always exposes all six target keys in `targetStatus`;
+- reports `requiredTargetCount`, `configuredTargetCount`, and `failureCount`;
+- rejects an explicitly empty `--root=` instead of silently treating it as the current directory;
+- continues to fail on unknown arguments and duplicate root arguments;
+- validates retained qualification package/checksum fragments for Android APK/AAB, Web/PWA, Linux, Windows, macOS, and unsigned iOS;
+- continues to protect the six runner families, release commands, platform-path triggers, and permanent CI invocation.
 
-The authoritative tracked inventory remains:
+`test/platform_support_audit_cli_test.dart` now protects the JSON result shape, invalid empty-root behavior, fixture representation of all checksummed qualification packages, and fail-closed behavior when a native checksum is removed.
 
-```bash
-git ls-files | sort
-```
+The repository-integrity and source-completion audits now use the same fail-closed fixture-root rule: omitting `--root` audits the current repository, while explicitly supplying `--root=<path>` requires a non-empty path. `test/audit_root_argument_consistency_test.dart` protects the shared behavior across all three audits.
 
-Every tracked path must be covered by exact-file, explicit file-family, generated/platform-template, or historical/archive responsibility. The contract defines top-level boundaries, root-file treatment, application/test/platform/docs/tool/asset/workflow families, new-file rules, rename/deletion rules, binary/generated handling, and the pre-merge audit procedure.
+## CI evidence retention hardened
 
-A static file count is intentionally not treated as authoritative because it becomes stale whenever a legitimate tracked path changes.
-
-## Canonical navigation updated
-
-`docs/setup/README.md` and `docs/README.md` now expose the new support matrix, notation guide, and file-coverage contract in the normal reading path.
-
-The setup index explicitly routes unsupported/outdated-tool questions through the support matrix before the deeper lifecycle migration guide.
-
-## Regression protection expanded
-
-`test/documentation_completeness_test.dart` now requires and checks the new documentation.
-
-The test protects:
-
-- current Version 2.0.12 project/toolchain values in the support matrix;
-- important version-check and post-upgrade verification commands;
-- documentation notation/path/exit-code/version/source-of-truth explanations;
-- the exact-file/family no-skip coverage model;
-- setup-index and canonical-docs-index discoverability.
-
-## Extension commits
+The permanent `CI` workflow now captures successful JSON output from:
 
 ```text
-bcd9119f  docs: add tool support and upgrade decision matrix
-d0f70e8c  docs: explain documentation notation and command syntax
-abfa1ef6  docs: define no-skip tracked file coverage contract
-0da3a16c  docs: expose support matrix from setup index
-f094b892  docs: integrate deep references into canonical index
-25938e8c  test: protect deep documentation coverage contracts
+release_readiness.dart
+release_qualification_status.dart
+repository_audit.dart
+platform_support_audit.dart
+source_completion_audit.dart
 ```
 
-This continuity update is committed separately so the documentation changes, index changes, regression protection, and maintenance record remain individually reviewable.
+The reports are uploaded for 14 days as `nova-2048-source-audit-reports`.
 
-## Extension verification boundary
+Each capture step uses shell pipe-failure propagation with `tee`, so retaining the JSON file cannot hide a non-zero audit exit. `test/ci_audit_reports_test.dart` protects the commands, report filenames, pinned artifact uploader, fail-on-missing policy, artifact name, and retention duration.
 
-These extension changes are being submitted through the repository's protected-branch pull-request path. Direct writes to `main` were rejected by branch protection and were not bypassed.
+## Documentation synchronized
 
 No formatter, analyzer, Flutter test, native build, physical-device result, assistive-technology result, store result, or manual release qualification is claimed here unless a corresponding CI/observed evidence surface reports it.
+
+# Phase 33 — Workflow security and repository-writer hardening
+
+Date: **2026-08-20**
+
+This maintenance extension strengthens GitHub Actions execution safety without changing Version `2.0.12+2012`, gameplay behavior, the completed product scope, or any manual qualification record.
+
+## Findings corrected
+
+The live workflow/test audit found three concrete maintenance gaps:
+
+1. `.github/workflows/bootstrap-platforms.yml` had no finite job timeout.
+2. The branding and platform bootstrap workflows can commit generated files to `main` but did not serialize overlapping writer runs with workflow concurrency cancellation.
+3. `test/workflow_security_test.dart` still assumed four Platform Builds checkout steps even though the Web/PWA matrix expansion increased the read-only checkout count to five.
+
+The stale checkout-count assertion was changed to count actual pinned checkout steps and require a matching `persist-credentials: false` for every read-only checkout, so future matrix expansion is protected without another hard-coded count migration.
+
+## New executable workflow-security contract
+
+`tool/workflow_security_audit.dart` now audits every maintained `.github/workflows/*.yml` / `.yaml` file and fails closed for:
+
+- mutable remote Action references instead of full immutable commit SHAs;
+- `pull_request_target`;
+- blanket `write-all` permissions;
+- missing explicit top-level content permissions;
+- jobs without `timeout-minutes`;
+- persisted checkout credentials in read-only workflows;
+- unapproved `contents: write` workflows;
+- approved repository writers that lose concurrency cancellation, bot-loop protection, or their explicit normal non-force main push;
+- deletion of an approved repository-writing workflow;
+- removal of the workflow-security audit from permanent CI.
+
+Permanent CI now runs:
+
+```bash
+dart run tool/workflow_security_audit.dart --json
+```
+
+The maintainer verification sequence in `tool/README.md` includes the same audit.
+
+## Regression coverage
+
+`test/workflow_security_audit_cli_test.dart` provides process-level fail-closed fixtures for the new audit, including mutable Action refs, missing timeouts, credential persistence, missing writer concurrency, privileged triggers, CI wiring removal, and unknown CLI arguments.
+
+`test/workflow_security_test.dart` also now protects dynamic read-only checkout credential counts and all approved writer concurrency/loop/timeout/non-force-push controls.
+
+## Workflow documentation corrected
+
+`docs/WORKFLOW_SECURITY.md` was refreshed from the stale Version 1.5 wording to the current Version 2.0.12 contract. It documents the executable audit, exact writer allowlist, job timeout policy, immutable Action pins, credential rules, current hosted toolchain boundary, and the current repository-protection uncertainty tracked by issue #12.
+
+## Maintenance commits before this continuity entry
+
+```text
+43635e51  ci: bound platform bootstrap execution
+11908f5a  ci: serialize branding generator writes
+8e319044  tool: add workflow security audit
+5c1b162a  test: cover workflow security audit
+82ae13f4  test: harden workflow credential and writer guards
+28cde52c  ci: enforce workflow security audit
+3b98447c  docs: refresh workflow security contract
+7d3d2298  docs: integrate workflow security maintainer tool
+```
+
+The work is submitted through pull request #27 (`ci: harden workflow security and writer safety`). This record does not claim CI success merely because the branch or pull request exists; formatter/analyzer/test/audit/build results are accepted only from an observed workflow result for the exact commit.
+
+## Release boundary preserved
+
+The stable qualification boundary remains 0/13. No physical-device, assistive-technology, installed-PWA, external-handler, native-branding, signing/provisioning, store, or other manual evidence was fabricated or advanced by this automation maintenance.
+`docs/CROSS_PLATFORM_SUPPORT.md`, `docs/REPOSITORY_AUDIT.md`, `docs/SOURCE_COMPLETION_AUDIT.md`, `tool/README.md`, and `CHANGELOG.md` now describe the hardened audit contracts, all-platform checksum enforcement, shared fail-closed root handling, stable platform-audit JSON interface, and retained CI audit-evidence bundle.
+
+## Phase 34 commits
+
+```text
+66c02ca0  tool: stabilize cross-platform audit JSON contract
+10905a36  test: cover cross-platform audit result schema
+25eb64ac  fix: reject empty platform audit root arguments
+a1f747dd  test: cover invalid platform audit root input
+a02041f9  test: model checksummed native qualification artifacts
+beaae472  tool: audit checksums for every native platform package
+c485c4a1  test: fail closed on missing native artifact checksums
+dbdddc9b  ci: retain machine-readable source audit reports
+a7ee4cb6  test: protect retained CI audit evidence
+cf1ce23e  docs: document hardened platform audit tooling
+81688cff  docs: align platform contract with checksum audit evidence
+f594965d  docs: record Phase 34 audit evidence hardening
+c1cee613  docs: activate Phase 34 maintenance continuity
+958015ed  test: protect Phase 34 audit documentation continuity
+387adbdd  test: preserve audit schema for missing roots
+6c9510d3  fix: reject empty source-completion audit roots
+1908f2bb  test: cover empty source-completion audit roots
+2c043369  fix: reject empty repository audit roots
+b7898f0a  test: enforce consistent audit root validation
+e16689ff  docs: document fail-closed repository audit roots
+ae9e89da  docs: document fail-closed completion audit roots
+5c2a8b38  docs: define shared audit root argument contract
+0aa911b3  docs: record shared audit root validation
+431d6c20  test: protect shared audit root documentation
+```
+
+This continuity update is intentionally separate from the tooling, tests, CI, support-contract, changelog, and documentation-regression commits so the maintenance history remains reviewable.
+
+## Repository-settings issue boundary
+
+Issue #12 remains open. PR #28 demonstrates that pull-request CI and Dependency Review workflows are created automatically for maintenance changes, but the available repository-settings surface still does not prove that the active ruleset *requires* those checks before merge or exposes every intended merge restriction. The issue was updated with this observed 2026-08-23 evidence rather than being closed on an assumption.
+
+## Phase 34 verification boundary
+
+The maintenance branch was created from `main` commit `fb78b0ba27ff6b3421e9c1f8d95652454b91653a`. The connected status surfaces did not expose a completed CI/check result for that starting head, so no inherited green result is being claimed.
+
+PR #28 is the protected-branch integration path for this maintenance stream. Its exact-head workflow result must be observed after the final continuity commit before any formatter/analyzer/test/Web-build success is claimed.
+
+This execution environment does not provide a runnable Flutter/Dart toolchain, so formatter, analyzer, Flutter tests, Web build, and native builds are not being invented as local results. The branch must use the repository's maintained CI and Platform Builds workflows for those checks.
+
+The stable qualification boundary remains 0/13. Automated source reports, hosted compilation, extra commit count, and documentation do not replace physical-device, assistive-technology, browser/PWA lifecycle, external-handler, native-branding, signing/provisioning, or store evidence.

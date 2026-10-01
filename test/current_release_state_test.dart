@@ -5,20 +5,24 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('current release-candidate records', () {
-    test('primary continuity header points at Phase 32 state', () {
+    test('primary continuity separates Phase 32 contract from Phase 33 work', () {
       final log = File('what_changed.md').readAsStringSync();
+      final phase32Archive = File(
+        'what_changed_archive_phase_32.md',
+      ).readAsStringSync();
 
       expect(log, contains('**Current phase:** Phase 32'));
-      expect(log, contains('Version 2.0.12 migration'));
+      expect(log, contains('**Active maintenance stream:** Phase 33'));
       expect(log, contains('`2.0.12+2012`'));
       expect(log, contains('`2.0.12`'));
       expect(log, contains('stable qualification boundary remains 0/13'));
-      expect(log, contains('32018055661'));
-      expect(log, contains('32015893841'));
+      expect(log, contains('what_changed_archive_phase_32.md'));
+      expect(phase32Archive, contains('32018055661'));
+      expect(phase32Archive, contains('32015893841'));
       expect(
-        log,
+        phase32Archive,
         contains(
-          'historical baseline evidence until a complete maintained Version 2.0.12',
+          'Those results remained historical evidence until a complete maintained Version 2.0.12 verification result was actually observed and recorded.',
         ),
       );
     });
@@ -87,7 +91,7 @@ void main() {
       expect(File('docs/PHASE_30_VERIFICATION.md').existsSync(), isTrue);
       expect(readme, contains('docs/QUALIFICATION_RECORDER.md'));
       expect(docsIndex, contains('QUALIFICATION_RECORDER.md'));
-      expect(docsIndex, contains('PHASE_30_VERIFICATION.md'));
+      expect(docsIndex, contains('`PHASE_*_VERIFICATION.md` records'));
       expect(
         qualification,
         contains('record_release_qualification.dart --list'),
@@ -114,7 +118,7 @@ void main() {
         expect(File('docs/QUALIFICATION_STATUS.md').existsSync(), isTrue);
         expect(File('docs/PHASE_31_VERIFICATION.md').existsSync(), isTrue);
         expect(docsIndex, contains('QUALIFICATION_STATUS.md'));
-        expect(docsIndex, contains('PHASE_31_VERIFICATION.md'));
+        expect(docsIndex, contains('`PHASE_*_VERIFICATION.md` records'));
         expect(
           qualification,
           contains('release_qualification_status.dart --pending-only'),

@@ -23,6 +23,7 @@ Android Java/Kotlin target: JVM 17
 | [`WINDOWS.md`](WINDOWS.md) | You develop on Windows or need Android/Windows/Web setup. |
 | [`MACOS.md`](MACOS.md) | You develop on macOS or need Android/macOS/iOS/Web setup. |
 | [`LINUX.md`](LINUX.md) | You develop on Linux or need Android/Linux/Web setup. |
+| [`LINUX_NATIVE_TOOLCHAIN.md`](LINUX_NATIVE_TOOLCHAIN.md) | You need the Linux compiler/CMake/Ninja/pkg-config/GTK toolchain, native build, packaging, or linker/runtime diagnosis. |
 | [`ANDROID.md`](ANDROID.md) | You want deep Android Studio/SDK/JDK/Gradle/AGP/Kotlin/APK/AAB/signing detail. |
 | [`UPGRADING_AND_SUPPORT.md`](UPGRADING_AND_SUPPORT.md) | A tool is outdated, deprecated, insecure, unsupported, or end-of-life. |
 | [`TOOL_SUPPORT_MATRIX.md`](TOOL_SUPPORT_MATRIX.md) | You want the current project baseline, version-check commands, and a fast upgrade/compatibility decision table for every major tool family. |
@@ -95,8 +96,9 @@ Requires a Linux host with Clang, CMake, Ninja, pkg-config, GTK 3 development fi
 Read:
 
 1. [`LINUX.md`](LINUX.md);
-2. [`../build/LINUX.md`](../build/LINUX.md);
-3. [`../BUILDING_EXECUTABLES.md`](../BUILDING_EXECUTABLES.md).
+2. [`LINUX_NATIVE_TOOLCHAIN.md`](LINUX_NATIVE_TOOLCHAIN.md);
+3. [`../build/LINUX.md`](../build/LINUX.md);
+4. [`../BUILDING_EXECUTABLES.md`](../BUILDING_EXECUTABLES.md).
 
 ## First-time universal workflow
 
@@ -198,8 +200,10 @@ git ls-files | sort
 
 After environment setup:
 
+- [`../NEW_CONTRIBUTOR_TUTORIAL.md`](../NEW_CONTRIBUTOR_TUTORIAL.md) — zero-to-safe-change contributor path;
 - [`../DEVELOPMENT.md`](../DEVELOPMENT.md) — normal source-development workflow;
 - [`../TESTING.md`](../TESTING.md) — test/evidence model;
 - [`../BUILDING_EXECUTABLES.md`](../BUILDING_EXECUTABLES.md) — all release artifacts;
-- [`../TROUBLESHOOTING.md`](../TROUBLESHOOTING.md) — failures and diagnostics;
+- [`../ERROR_REFERENCE.md`](../ERROR_REFERENCE.md) — detailed failure/diagnosis reference;
+- [`../TROUBLESHOOTING.md`](../TROUBLESHOOTING.md) — common failures and diagnostics;
 - [`../README.md`](../README.md) — complete docs index.

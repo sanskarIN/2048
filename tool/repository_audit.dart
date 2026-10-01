@@ -145,6 +145,9 @@ void main(List<String> args) {
   }
 
   final configuredRoot = rootValues.isEmpty ? null : rootValues.single.trim();
+  if (configuredRoot != null && configuredRoot.isEmpty) {
+    failures.add('The --root=<path> argument requires a non-empty path.');
+  }
   final root = Directory(
     configuredRoot == null || configuredRoot.isEmpty
         ? Directory.current.path

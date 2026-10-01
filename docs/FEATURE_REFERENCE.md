@@ -1,58 +1,35 @@
 # Complete Feature Reference
 
-This document is the consolidated map of the implemented **2048 Nova** product surface. It explains what each major feature means, how it behaves at a high level, where its source-of-truth lives, and which detailed document to read next.
+This document is the consolidated map of the implemented **2048 Nova** product surface. It explains what each major feature means, its high-level trust/behavior boundary, the source-of-truth area, and the detailed document to read next.
 
 Current source target: **2.0.12+2012**.
 
-This is a feature-reference guide, not a replacement for exact game-engine/protocol/security specifications. When details matter, follow the linked canonical document/source.
+This is a feature-reference guide, not a replacement for exact engine/protocol/security specifications. When details matter, follow the linked canonical source/document.
 
-## 1. Core 2048 gameplay
+## 1. Core deterministic 2048 gameplay
 
-### What it is
+Directional moves shift tiles, eligible equal values merge once per source tile per move, score changes are applied, and a new tile spawns only after a valid board-changing move.
 
-The board contains numbered tiles. A directional move shifts tiles. Eligible equal tiles merge according to the engine's one-merge-per-move ordering rules, score changes are applied, and a new tile is spawned after a valid move according to the selected mode/random-source rules.
+Important properties:
 
-### Important properties
+- deterministic behavior for known game/random state;
+- invalid/no-op moves do not silently behave like valid moves;
+- score/highest tile derive from controlled transitions;
+- terminal state and mode-specific constraints are explicit.
 
-- deterministic engine behavior for a known state and random-source state;
-- invalid/no-op moves do not silently behave like valid state-changing moves;
-- score and highest-tile data are derived from controlled game transitions;
-- terminal-state behavior is explicit;
-- mode-specific constraints are separated from the basic move/merge engine where practical.
-
-### Source/documentation
+Source/documentation:
 
 - `lib/domain/game_engine.dart`
 - `lib/domain/game_state.dart`
 - `lib/domain/game_types.dart`
+- `lib/domain/random_source.dart`
 - [`GAME_ENGINE.md`](GAME_ENGINE.md)
 
-## 2. Deterministic random source
+Deterministic gameplay supports repeatable tests, seeded challenges, Daily Challenge, replay validation, custom deterministic seeds, and solver benchmarks. It does not mean the gameplay RNG is a cryptographic random generator.
 
-### What it means
+## 2. Ten game modes
 
-A pseudo-random generator produces values from controlled state. When the same seed/state and same sequence of requests are reproduced, the game can reproduce the same spawn sequence.
-
-### Why it matters
-
-Determinism supports:
-
-- repeatable tests;
-- seeded Challenge Codes;
-- Daily Challenge behavior;
-- replay validation;
-- solver benchmarks;
-- debugging reproducibility.
-
-### Source
-
-- `lib/domain/random_source.dart`
-
-Deterministic does not mean cryptographically unpredictable. The game RNG is a gameplay/reproducibility mechanism, not a security key generator.
-
-## 3. Ten game modes
-
-The project documents these modes:
+The built-in modes are:
 
 1. Classic;
 2. Quick;
@@ -65,342 +42,265 @@ The project documents these modes:
 9. Daily;
 10. Zen.
 
-Each mode can change board/goal/time/move/termination/ranking expectations without redefining the fundamental tile-merge rules.
+Each changes board/goal/time/move/termination expectations without redefining the fundamental merge engine. Use [`GAME_MODES.md`](GAME_MODES.md) for exact parameters.
 
-Use [`GAME_MODES.md`](GAME_MODES.md) for exact per-mode behavior.
+Timed/portable state follows the UTC rules in [`PORTABLE_TIMESTAMPS.md`](PORTABLE_TIMESTAMPS.md).
 
-## 4. Classic mode
+## 3. Custom Game Builder
 
-The baseline 2048-style experience: directional movement, merging equal tiles, score accumulation, and progression under the normal target/terminal rules documented by the engine/mode specification.
+Custom Game Builder is an additional configuration surface, not an eleventh built-in `GameMode`. It reuses existing deterministic engine modes through a validated `CustomGamePreset`.
 
-## 5. Quick mode
+Supported configuration includes:
 
-A shorter/faster configuration intended to reach its mode objective with a reduced session scope compared with the baseline experience. Exact board/goal parameters belong to `GAME_MODES.md` and source enums/configuration rather than assumptions from the name.
+- 3×3 through 8×8 board sizes;
+- supported target tiles from 128 through 16384;
+- Target, Endless, Timed, and Move Limit styles;
+- style-specific time/move limits;
+- optional deterministic seed.
 
-## 6. Extended mode
+Saved custom presets are local, validated, corruption-repaired, case-insensitively deduplicated, and bounded to 24.
 
-A larger/extended progression configuration for longer sessions. Exact board/goal rules are source/documentation controlled.
+Player workflows include:
 
-## 7. Challenge mode
+- Play now without saving;
+- Save preset;
+- Edit preset and safe rename;
+- collision rejection instead of overwriting a different preset;
+- Duplicate preset into an unsaved uniquely named copy;
+- Cancel edit;
+- confirmed Delete preset.
 
-A constrained challenge configuration that can be seeded/shared through the project's challenge model. Imported/shared challenge configuration remains subject to validation/trust rules.
+Trust boundary:
 
-## 8. Endless mode
+- custom play is trusted local gameplay;
+- custom identity survives save/resume/application restart and in-game restart;
+- incomparable custom configurations cannot overwrite built-in per-mode best-score/highest-tile records;
+- imported Game Backup remains a separate unranked trust class;
+- custom origin is not encoded in the current `NOVA1` Challenge Code, so the UI does not expose sharing that would lose the custom-record boundary.
 
-Allows continued play under its documented mode rules instead of treating the normal 2048 target as the sole completion boundary.
+Source/documentation:
 
-## 9. Target mode
+- `lib/domain/custom_game_preset.dart`
+- `lib/data/custom_preset_store.dart`
+- `lib/features/modes/custom_game_builder_screen.dart`
+- [`CUSTOM_GAME_BUILDER.md`](CUSTOM_GAME_BUILDER.md)
+- [`USER_GUIDE.md`](USER_GUIDE.md)
 
-A configurable/defined target-tile objective. Completion behavior is based on the mode configuration rather than guessed from a generic 2048 rule.
+## 4. Swipe, keyboard, and button input
 
-## 10. Time Challenge mode
+Touch/swipe, keyboard, and visible controls translate into the same domain actions rather than separate rule implementations.
 
-A timed mode whose state includes time-sensitive behavior. Portable timestamps use explicit UTC/compatibility rules to reduce timezone ambiguity.
+See [`ACCESSIBILITY.md`](ACCESSIBILITY.md) and [`USER_GUIDE.md`](USER_GUIDE.md).
 
-See [`PORTABLE_TIMESTAMPS.md`](PORTABLE_TIMESTAMPS.md).
+## 5. Save and resume
 
-## 11. Move Limit mode
+The current session is serialized into validated local storage and restored after restart according to supported schema/migration rules.
 
-A mode with a finite move budget. Move counts are part of game state/mode completion logic.
+Important boundaries:
 
-## 12. Daily Challenge
+- malformed/incompatible data fails safely or is repaired where explicitly supported;
+- growing histories are bounded;
+- trusted local state is distinguished from imported portable state;
+- migrations preserve defined compatibility.
 
-### What it is
-
-A reproducible daily challenge configuration/history experience tied to date-based challenge behavior.
-
-### Important boundaries
-
-- date/timestamp handling must remain portable;
-- deterministic challenge setup supports reproducibility;
-- daily records are local trusted records unless a future network service is explicitly introduced;
-- imported data does not silently rewrite trusted ranked records.
-
-### Source
-
-- `lib/domain/daily_record.dart`
-- related Daily Challenge UI/controller/local-store paths.
-
-## 13. Zen mode
-
-A relaxed mode with its own documented progression/termination expectations. Do not infer ranking/time pressure from the word “Zen”; use `GAME_MODES.md` for exact behavior.
-
-## 14. Swipe, keyboard, and button/input controls
-
-The UI accepts platform-appropriate controls such as touch/swipe and keyboard where implemented/supported. Input is translated into the same domain move directions so separate control methods do not create separate game rules.
-
-Accessibility and keyboard behavior are documented in [`ACCESSIBILITY.md`](ACCESSIBILITY.md) and player usage in [`USER_GUIDE.md`](USER_GUIDE.md).
-
-## 15. Save and resume
-
-### What it is
-
-The current session can be serialized into local storage and restored after application restart according to schema/migration validation.
-
-### Important boundaries
-
-- corrupted/incompatible local data should fail safely/recover according to storage rules;
-- save data is bounded;
-- trusted local session data is distinguished from imported portable data;
-- migrations must preserve defined compatibility.
-
-### Source/documentation
+Source/documentation:
 
 - `lib/data/local_store.dart`
 - `lib/app/state/app_controller.dart`
 - [`DATA_STORAGE.md`](DATA_STORAGE.md)
 
-## 16. Undo
+## 6. Undo
 
-Undo restores a bounded previous trusted local game state according to the controller/engine policy.
+Undo restores a bounded prior game snapshot, including deterministic RNG state where required. The retained history is capped so memory/storage cannot grow indefinitely.
 
-Undo history is intentionally bounded so persistent memory/storage cannot grow forever.
+Undo is a board/session feature; it does not turn imported or otherwise isolated data into trusted records.
 
-Imported/replay data must not bypass ranking/trust policy through Undo.
+## 7. Statistics, achievements, and per-mode records
 
-## 17. Statistics
+Statistics and achievements are local and updated through the controller's trusted gameplay policy.
 
-Local statistics record defined gameplay totals/records. They are persisted locally and updated through trusted controller/game transitions.
+Per-mode records store comparable built-in-mode best score/highest tile data. Two important isolation rules apply:
 
-Portable imports are isolated from trusted statistics according to project policy.
+- imported Game Backup sessions remain unranked;
+- custom configurations cannot overwrite built-in per-mode records.
 
-UI: `lib/features/statistics/`.
+See [`MODE_RECORDS.md`](MODE_RECORDS.md), [`DATA_STORAGE.md`](DATA_STORAGE.md), and `lib/app/state/app_controller.dart`.
 
-Storage/orchestration: `lib/data/local_store.dart`, `lib/app/state/app_controller.dart`.
+## 8. Hint
 
-## 18. Achievements
+Hint is a read-only local solver recommendation. Requesting it does not itself mutate the trusted game board, score, RNG, Undo history, or records.
 
-Achievements represent locally evaluated milestones based on trusted game/statistical state. Their presentation lives in `lib/features/achievements/`.
-
-They do not imply a cloud account or remote achievement service.
-
-## 19. Per-mode records
-
-The app tracks defined records such as best score/highest tile per mode in trusted local storage.
-
-Imported portable sessions are isolated from ranked records to avoid a shared file becoming an unrestricted record-writing path.
-
-See [`MODE_RECORDS.md`](MODE_RECORDS.md).
-
-## 20. Hint
-
-### What it is
-
-A read-only solver recommendation for the current board.
-
-### Important safety/integrity property
-
-Requesting a Hint does not itself mutate the trusted game board. The user chooses whether to perform a recommended move.
-
-### Source/documentation
+Source/documentation:
 
 - `lib/domain/hint_solver.dart`
 - [`HINT_SOLVER.md`](HINT_SOLVER.md)
 
-## 21. Heuristic solver
+## 9. Heuristic and Expectimax solver
 
-A bounded evaluation strategy scores possible moves/board characteristics without exploring an unlimited game tree. It provides a computationally cheaper strategy for hint/autoplay behavior.
+The heuristic provides a bounded evaluation strategy. The Expectimax solver performs bounded search over player choices and probabilistic spawns.
 
-Solver output is advisory/isolated from trusted external claims.
+Bounded search prevents uncontrolled computation from freezing the UI or consuming unbounded CPU/memory.
 
-## 22. Expectimax solver
+Source/documentation:
 
-### What it is
-
-A bounded search algorithm that alternates between player choices and probabilistic tile-spawn outcomes to estimate useful moves.
-
-### Why bounded
-
-Unbounded search would grow rapidly and could freeze UI or consume excessive CPU/memory. The implementation uses controlled search limits/benchmarks.
-
-### Source/documentation
-
+- `lib/domain/hint_solver.dart`
 - `lib/domain/expectimax_solver.dart`
 - [`SOLVER_BENCHMARKS.md`](SOLVER_BENCHMARKS.md)
 
-## 23. Auto Play
+## 10. Auto Play
 
-### What it is
+Auto Play is an isolated deterministic solver-driven sandbox. It can execute supported strategies automatically, but it cannot present automated progress as ordinary player-earned ranked records.
 
-An isolated solver-driven session that can select/execute moves automatically using supported strategies.
-
-### Trust boundary
-
-Auto Play is deliberately distinguished from normal trusted ranked play so automation cannot silently present itself as an ordinary user-earned record.
-
-### Source
+Source:
 
 - `lib/domain/autoplay_session.dart`
 - `lib/features/solver_demo/`
 
-## 24. Deterministic solver benchmark
+## 11. Deterministic solver benchmark
 
-The repository includes reusable benchmark cases plus a CLI:
+The repository provides a reusable bounded CLI benchmark:
 
 ```bash
 dart run tool/solver_benchmark.dart 8
 ```
 
-The benchmark is a deterministic smoke/performance regression aid, not a claim that the solver is mathematically optimal for every board.
+It is regression/performance smoke evidence, not a claim of globally optimal 2048 play.
 
-## 25. Move Replay
+## 12. Daily Challenge
 
-A lightweight replay timeline can step through recorded move/state progression for inspection/playback.
+Daily Challenge uses reproducible date-based local challenge behavior and dedicated local history.
 
-Source:
+Important boundaries:
 
-- `lib/domain/replay_timeline.dart`
-- `lib/features/replay/`
+- portable date/timestamp handling is explicit;
+- a weaker replay does not erase stronger stored history where the record policy says otherwise;
+- arbitrary Challenge Code input cannot silently inject itself into Daily history;
+- no remote Daily server/account is required.
 
-## 26. Full Replay Archives
+See `lib/domain/daily_record.dart`, Daily Challenge UI/controller code, [`GAME_MODES.md`](GAME_MODES.md), and [`PORTABLE_TIMESTAMPS.md`](PORTABLE_TIMESTAMPS.md).
 
-### What they are
+## 13. Challenge Codes
 
-Portable full-session replay archives capture validated bounded replay events/metadata for later spectator-style playback/import.
+Challenge Codes are compact validated seeded configurations using the versioned `NOVA1` text format.
 
-### Important boundaries
+They support local QR representation for convenient transfer. The checksum detects accidental corruption; it is **not cryptographic authentication** and does not prove authorship.
 
-- archive size/event counts are bounded;
-- imported content is validated;
-- replay playback is spectator/history functionality;
-- imported replay data does not become trusted ranked game state.
+Daily Challenge is excluded from arbitrary code injection. Custom Game Builder origin is also not currently encoded, so a custom-preset sharing button is deliberately absent until origin/trust semantics are intentionally versioned and tested.
 
-### Source/documentation
+Source/documentation:
 
-- `lib/domain/replay_archive.dart`
-- `lib/domain/replay_archive_contract.dart`
-- [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md)
+- `lib/domain/challenge_code.dart`
+- `lib/features/challenge_codes/`
+- [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md)
 
-## 27. Current-game backup
+## 14. Current-game backup
 
-A portable backup can encode the current game/session state for user-controlled export/import.
+Game Backup encodes the supported current game as validated portable data.
 
-The backup codec validates format/schema/value bounds before data enters application state.
+Import requires strict format/schema/state validation and explicit replacement confirmation. Imported progress remains unranked, including after restart, so user-editable portable data cannot inflate trusted statistics/achievements/streaks/Daily/per-mode records.
 
 Source/documentation:
 
 - `lib/domain/game_backup.dart`
 - [`BACKUP_AND_RESTORE.md`](BACKUP_AND_RESTORE.md)
 
-## 28. File backup/import/export
+## 15. File backup/import/export
 
-The app supports user-selected portable file transport on supported platforms. File picker/platform handlers remain external trust boundaries.
+The same backup envelope can use user-selected file transport on supported platforms.
 
-Important controls include:
+Controls include:
 
-- file type/extension expectations;
+- extension/type expectations;
 - byte-size limits;
-- codec/schema validation;
+- UTF-8/codec/schema validation;
+- cancel-without-mutation behavior;
 - safe failure on malformed input;
-- imported state remains unranked where policy requires it.
+- unranked import policy.
+
+Platform file pickers/handlers remain external qualification boundaries.
 
 See [`FILE_BACKUPS.md`](FILE_BACKUPS.md).
 
-## 29. Challenge Codes
+## 16. Move Replay
 
-### What they are
+Move Replay provides a read-only timeline of the current session/retained progression. Playback/scrubbing cannot mutate the live game, trusted records, achievements, or RNG.
 
-Compact portable representation of deterministic challenge configuration/seed.
+Source:
 
-### What the checksum means
+- `lib/domain/replay_timeline.dart`
+- `lib/features/replay/`
 
-The challenge checksum helps detect accidental corruption/invalid data. It is **not cryptographic authentication** and does not prove who created the code.
+## 17. Full Replay Archives
 
-### Source/documentation
+Full Replay Archives provide bounded portable spectator reconstruction for complete captured sessions.
 
-- `lib/domain/challenge_code.dart`
-- `lib/features/challenge_codes/`
-- [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md)
+Important boundaries:
 
-## 30. Challenge QR code
+- archive/input/event size is bounded;
+- imported content is strictly validated;
+- imported archives remain spectator-only;
+- replay input cannot become trusted ranked game state;
+- editable replay JSON is not authenticated proof of who played.
 
-A Challenge Code can be represented as a QR image for convenient user-controlled transfer.
+Source/documentation:
 
-The QR is another representation of challenge data; scanning/importing it still requires the same validation/trust rules as text input.
+- `lib/domain/replay_archive.dart`
+- `lib/domain/replay_archive_contract.dart`
+- [`REPLAY_ARCHIVES.md`](REPLAY_ARCHIVES.md)
 
-The current project does not need to claim camera permissions simply because it can render QR codes. Any future camera-scanning feature would require explicit permission/privacy/platform documentation.
+## 18. English/Hindi localization
 
-## 31. English/Hindi localization
+The player UI supports English and Hindi plus a persisted System-default choice/fallback behavior.
 
-### What it is
+Machine-readable protocol fields, URLs, seeds, and numeric tile values remain protocol/numeric data rather than translated values.
 
-The app supports English and Hindi UI localization with persisted selection/fallback behavior.
-
-### Source
+Source/documentation:
 
 - `lib/core/localization/`
-
-### Documentation
-
 - [`LOCALIZATION.md`](LOCALIZATION.md)
 
-Localization changes should preserve placeholders/meaning and be checked for layout/accessibility on target devices.
+Custom Game Builder create/edit/duplicate/delete/error flows are also bilingual.
 
-## 32. Themes
+## 19. Themes, accessibility controls, and reduced motion
 
-Theme definitions live under `lib/core/theme/`. User preferences are coordinated/persisted through application state/storage.
+Theme definitions live under `lib/core/theme/`; persisted presentation preferences are coordinated through application state/storage.
 
-A theme is more than color decoration when accessibility is considered: text/background contrast and focus/semantic visibility must remain usable.
+Accessibility includes documented semantics, keyboard/focus behavior, contrast, responsive layout/text scaling, and reduced-motion handling.
 
-## 33. Accessibility controls
-
-The application implements documented semantics, input, contrast, text/layout, and motion-related accommodations.
-
-Automated widget tests can protect semantic properties but cannot replace manual TalkBack/VoiceOver/keyboard/real-device assessment.
+Automated tests protect source regressions but do not replace representative TalkBack/VoiceOver/Narrator/browser-screen-reader qualification.
 
 See [`ACCESSIBILITY.md`](ACCESSIBILITY.md).
 
-## 34. Reduced-motion behavior
+## 20. About, Guide, Support, and external links
 
-Where the app exposes motion preferences, animations/transitions should honor the documented reduced-motion behavior so visual effects are not mandatory to understand gameplay state.
+The About/Guide/Support surfaces provide project identity, player instructions, and explicit user-triggered external destinations.
 
-## 35. About screen
+External URLs pass through controlled URI-launch behavior and leave the offline application's trust boundary. The app does not hide remote network behavior behind ordinary gameplay.
 
-`lib/features/about/` presents project identity/version/open-source and related project information.
+Relevant source:
 
-Release-facing version text must stay synchronized with the canonical Version 2.0.12 metadata.
+- `lib/features/about/`
+- `lib/features/guide/`
+- `lib/features/support/`
+- shared external-link helpers.
 
-## 36. Guide screen
+## 21. Offline-first privacy model and local storage
 
-`lib/features/guide/` provides in-app instructions. In-app help must not contradict `GAME_ENGINE.md`, `GAME_MODES.md`, or current controls.
+Core gameplay requires no project account, analytics, advertising, cloud game backend, or remote AI service.
 
-## 37. Support screen
+Local storage holds supported settings/game/statistics/history/preset state. It is not an encrypted signing-secret vault.
 
-`lib/features/support/` presents support/contact/external links.
+Clipboard/file/external-link actions happen only after explicit user actions and cross the documented trust boundary.
 
-External navigation is a trust boundary: the app should make external destinations clear and use platform URL-launch behavior rather than embedding hidden network behavior.
+See [`PRIVACY.md`](PRIVACY.md), [`SECURITY.md`](../SECURITY.md), and [`DATA_STORAGE.md`](DATA_STORAGE.md).
 
-## 38. External links
+## 22. Data reset
 
-External URLs are launched through controlled application helpers/plugin behavior. They leave the application's local/offline trust boundary and can be subject to the user's default browser/app and network policies.
+Settings can reset current game, statistics, achievements, or all project-owned local data according to documented policy.
 
-Tests protect important external-link metadata/behavior.
+Full project reset includes Custom Game Builder preset/session keys. Reset is an application-data operation, not a claim of forensic storage erasure.
 
-## 39. Offline-first behavior
-
-Core gameplay does not require a project account, remote database, or continuous application backend.
-
-Local/offline does not mean the operating system itself never communicates with network services, and user-triggered external links can open network destinations.
-
-See [`PRIVACY.md`](PRIVACY.md).
-
-## 40. Local storage
-
-`shared_preferences` and project codecs/store orchestration are used for bounded local state/preferences as documented.
-
-Local storage is not an encrypted secrets vault. The app should not place private signing credentials or unrelated sensitive secrets into ordinary gameplay preferences.
-
-## 41. Data reset
-
-The settings/data controls can reset supported local state according to the documented storage policy. A reset should not be described as secure forensic erasure of underlying storage media.
-
-## 42. Privacy model
-
-The current product scope is intentionally offline-first with no silent analytics/accounts/cloud game backend.
-
-Portable data operations and external links are explicit boundaries documented in [`PRIVACY.md`](PRIVACY.md).
-
-## 43. Platform support
+## 23. Platform support
 
 Configured Flutter runners:
 
@@ -411,81 +311,53 @@ Configured Flutter runners:
 - macOS;
 - Linux.
 
-Cross-platform means shared Flutter source targets all of them; it does **not** mean iOS can be compiled on Windows or Windows native output can be built on a Mac through ordinary Flutter commands.
+Cross-platform means shared Flutter source targets all of them. It does not mean every target can be compiled from every host; for example, ordinary iOS builds require macOS/Xcode and native Windows builds require Windows/Visual Studio C++.
 
 See [`PLATFORMS.md`](PLATFORMS.md).
 
-## 44. Android APK support
+## 24. Build artifacts
 
-The project can build debug/profile/release APKs. Production distribution requires correct signing identity and real-device/release qualification.
+Maintained build coverage includes:
 
-See [`BUILDING_EXECUTABLES.md`](BUILDING_EXECUTABLES.md).
+- Android APK;
+- Android AAB;
+- Web/PWA bundle;
+- Windows desktop bundle;
+- macOS `.app` bundle;
+- Linux release bundle;
+- unsigned iOS release compilation.
 
-## 45. Android AAB support
+Production signing, provisioning, notarization, store policy, and representative device behavior are separate release responsibilities.
 
-The project can build a release App Bundle with:
+See [`BUILDING_EXECUTABLES.md`](BUILDING_EXECUTABLES.md), [`RELEASE_ARTIFACTS.md`](RELEASE_ARTIFACTS.md), and [`setup/LINUX_NATIVE_TOOLCHAIN.md`](setup/LINUX_NATIVE_TOOLCHAIN.md).
 
-```bash
-flutter build appbundle --release
-```
+## 25. Branding and project identity
 
-AAB is store-oriented packaging; it is not normally directly installed by the end user.
+Branding source lives under `assets/branding/` and platform-specific assets/runners. **Made by the Sanskar** is project identity and belongs on appropriate product/About/README/branding surfaces rather than low-level engine logic.
 
-## 46. Web/PWA support
+See [`BRANDING.md`](BRANDING.md).
 
-The app contains Web shell/PWA manifest/icon metadata and can build a release Web bundle.
+## 26. Repository audit
 
-Installed/offline PWA lifecycle behavior must be qualified in real supported browsers; a successful compile alone is not that evidence.
-
-See [`PWA.md`](PWA.md).
-
-## 47. Windows desktop support
-
-Native Windows output is a complete release directory containing the `.exe`, runtime libraries, and data. Do not distribute only the executable.
-
-## 48. macOS support
-
-Native macOS output is a `.app` bundle. Developer ID signing/notarization/store distribution are external release processes beyond simple compilation.
-
-## 49. Linux support
-
-Native Linux output is an executable plus required runtime bundle. Distribution-specific `.deb`/`.rpm`/AppImage/Snap/Flatpak packaging is not automatically implied by the base Flutter bundle.
-
-## 50. iOS support
-
-The repository can qualify unsigned iOS release compilation on macOS. A signed IPA/App Store release requires legitimate Apple signing/provisioning configuration outside public source.
-
-## 51. Branding
-
-Source branding is stored under `assets/branding/` with native platform assets/generated workflows documented in [`BRANDING.md`](BRANDING.md).
-
-Branding changes should be synchronized across application UI, icons, splash/launch assets, Web/PWA assets, and platform runners.
-
-## 52. “Made by the Sanskar” project identity
-
-Creator/project identity is part of the public product metadata. It belongs in appropriate About/README/branding surfaces rather than in low-level game-engine logic.
-
-## 53. Repository audit
-
-The repository-owned audit validates required files, release metadata/PWA expectations, local Markdown links, and cleanup/integrity rules.
-
-Run:
+The repository-owned audit checks required files, release metadata/PWA expectations, cleanup/integrity rules, and local Markdown links.
 
 ```bash
 dart run tool/repository_audit.dart --json
 ```
 
-## 54. Source-completion audit
+See [`REPOSITORY_AUDIT.md`](REPOSITORY_AUDIT.md).
 
-Protects the Version 2.0.12 completed-source contract against stale current release metadata, missing completion assets, restored unresolved feature backlog, and unfinished maintained Dart markers covered by the tool.
+## 27. Source-completion audit
 
-Run:
+The source-completion audit protects the completed Version 2.0.12 contract against stale current-release metadata, missing completion assets/automation, reopened optional backlog, and unresolved maintained Dart markers covered by the tool.
 
 ```bash
 dart run tool/source_completion_audit.dart --json
 ```
 
-## 55. Release readiness
+See [`SOURCE_COMPLETION_AUDIT.md`](SOURCE_COMPLETION_AUDIT.md).
+
+## 28. Release readiness
 
 Candidate check:
 
@@ -499,9 +371,11 @@ Strict stable check:
 dart run tool/release_readiness.dart --stable --json
 ```
 
-The strict gate intentionally remains closed until the canonical real-world evidence requirements are genuinely complete.
+The strict gate remains fail-closed while the genuine 13-check real-world qualification manifest is incomplete.
 
-## 56. Qualification status and recorder
+See [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md).
+
+## 29. Qualification status and recorder
 
 Read status:
 
@@ -509,47 +383,50 @@ Read status:
 dart run tool/release_qualification_status.dart --json --pending-only
 ```
 
-A separate guarded recorder exists for maintainers to record genuinely observed qualification evidence.
+A separate guarded recorder exists for maintainers to record genuinely observed evidence. Evidence must never be edited only to make stable readiness pass.
 
-Do not edit evidence merely to make stable readiness pass.
+## 30. CI quality automation
 
-## 57. CI quality automation
+Permanent CI covers dependency resolution/drift, formatting, analyzer, tests/coverage, release/repository/source audits, strict-gate behavior, solver smoke, and Web release build.
 
-Permanent CI covers dependency resolution/drift, formatting, analyzer, tests/coverage, release/repository/source audits, strict-gate behavior, solver benchmark, and Web release build.
-
-Native platform workflow covers Android, Linux, Windows, macOS, and unsigned iOS builds on corresponding hosted runners.
+Native platform automation covers Android APK/AAB, Linux, Windows, macOS, and unsigned iOS on corresponding hosted runners. Pull-request Dependency Review provides an additional supply-chain check.
 
 See [`CI_CD.md`](CI_CD.md).
 
-## 58. Dependency integrity
+## 31. Dependency and toolchain integrity
 
-`pubspec.yaml` declares package constraints and `pubspec.lock` records concrete resolved versions. Dependency updates are reviewed as source changes.
+`pubspec.yaml` declares package constraints and `pubspec.lock` records concrete resolution. Dependency/toolchain updates are source changes requiring compatibility, privacy/security, licensing, and platform review.
 
-See [`DEPENDENCIES.md`](DEPENDENCIES.md) and [`SUPPLY_CHAIN.md`](SUPPLY_CHAIN.md).
+See:
 
-## 59. Toolchain support lifecycle
+- [`DEPENDENCIES.md`](DEPENDENCIES.md)
+- [`SUPPLY_CHAIN.md`](SUPPLY_CHAIN.md)
+- [`setup/TOOL_SUPPORT_MATRIX.md`](setup/TOOL_SUPPORT_MATRIX.md)
+- [`setup/UPGRADING_AND_SUPPORT.md`](setup/UPGRADING_AND_SUPPORT.md)
 
-If Flutter/Dart/Android Studio/SDK/JDK/Gradle/AGP/Kotlin/Xcode/CocoaPods/Visual Studio/CMake/Ninja/etc. becomes unsupported, migrate through the compatibility-first process in [`setup/UPGRADING_AND_SUPPORT.md`](setup/UPGRADING_AND_SUPPORT.md).
+Do not blindly upgrade every layer only because newer releases exist.
 
-Do not blindly upgrade every layer in one step.
+## 32. Documentation is a protected project feature
 
-## 60. Documentation itself is a protected feature
+Current player/developer/build/release documentation must match current source; historical evidence must preserve what actually happened on older versions/commits.
 
-The repository contains current player/developer/build/release docs plus historical evidence. Current documentation must match current source; historical records must preserve what actually happened at their old commit/version.
+Regression tests/audits protect the documentation set, including the current Version 2.0.12 identity, Custom Game Builder integration, no-skip file-coverage contract, setup/toolchain references, and final integration evidence boundary.
 
-The documentation-completeness regression test protects the new setup/reference set and the current Version 2.0.12 build handbook identity.
+See [`DOCUMENTATION_AUDIT_CHECKLIST.md`](DOCUMENTATION_AUDIT_CHECKLIST.md), [`FINAL_2_0_12_INTEGRATION_AUDIT.md`](FINAL_2_0_12_INTEGRATION_AUDIT.md), and [`README.md`](README.md).
 
-## 61. Where to go next
+## 33. Where to go next
 
 - New machine: [`setup/README.md`](setup/README.md)
+- New contributor: [`NEW_CONTRIBUTOR_TUTORIAL.md`](NEW_CONTRIBUTOR_TUTORIAL.md)
 - Commands: [`COMMAND_REFERENCE.md`](COMMAND_REFERENCE.md)
 - Terms: [`GLOSSARY.md`](GLOSSARY.md)
 - All files: [`REPOSITORY_FILE_ATLAS.md`](REPOSITORY_FILE_ATLAS.md)
 - Player details: [`USER_GUIDE.md`](USER_GUIDE.md)
+- Custom games: [`CUSTOM_GAME_BUILDER.md`](CUSTOM_GAME_BUILDER.md)
 - Exact engine: [`GAME_ENGINE.md`](GAME_ENGINE.md)
 - Exact modes: [`GAME_MODES.md`](GAME_MODES.md)
-- Architecture: [`ARCHITECTURE.md`](ARCHITECTURE.md)
+- Architecture: [`ARCHITECTURE_WALKTHROUGH.md`](ARCHITECTURE_WALKTHROUGH.md)
 - Tests: [`TESTING.md`](TESTING.md)
 - Builds: [`BUILDING_EXECUTABLES.md`](BUILDING_EXECUTABLES.md)
-- Troubleshooting: [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)
+- Diagnosis: [`ERROR_REFERENCE.md`](ERROR_REFERENCE.md)
 - Release: [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md)

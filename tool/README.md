@@ -1,6 +1,7 @@
 # 2048 Nova Maintainer Tools
 
 The `tool/` directory contains deterministic, repository-owned command-line utilities used for solver benchmarking, repository integrity, Android support enforcement, cross-platform support enforcement, next-release browser-extension preparation, source-completion enforcement, and release maintenance. These tools are intended to be run from the repository root with the Dart SDK supplied by the supported Flutter toolchain.
+The `tool/` directory contains deterministic, repository-owned command-line utilities used for solver benchmarking, repository integrity, workflow security, cross-platform support enforcement, source-completion enforcement, and release maintenance. These tools are intended to be run from the repository root with the Dart SDK supplied by the supported Flutter toolchain.
 
 The current release contract is:
 
@@ -23,13 +24,27 @@ dart run tool/repository_audit.dart --json
 
 Checks required project/open-source/release/workflow files, exact Phase 32 package/runtime/Windows/qualification version consistency, PWA metadata, continuity archives, known temporary maintenance leftovers, and repository-local Markdown destinations. See [`../docs/REPOSITORY_AUDIT.md`](../docs/REPOSITORY_AUDIT.md).
 
+## Workflow security audit
+
+```bash
+dart run tool/workflow_security_audit.dart --json
+```
+
+Checks the maintained GitHub Actions execution boundary. It rejects mutable remote Action references, privileged `pull_request_target` triggers, blanket `write-all` permissions, missing explicit content permissions, jobs without timeouts, credential persistence in read-only checkout steps, unapproved repository writers, and repository-writing workflows that lose their concurrency, bot-loop, or non-force-push controls. It also requires permanent CI to keep this audit wired in.
+
+The process-level regression suite is `test/workflow_security_audit_cli_test.dart`. Focused workflow assertions remain in `test/workflow_security_test.dart` and `test/repository_integrity_test.dart`. See [`../docs/WORKFLOW_SECURITY.md`](../docs/WORKFLOW_SECURITY.md).
+
 ## Cross-platform support audit
 
 ```bash
 dart run tool/platform_support_audit.dart --json
 ```
 
-Checks the maintained six-target contract for Android, iOS, Web/PWA, Windows, macOS, and Linux. It verifies required runner files, every release-build command, all platform path triggers in the dedicated build workflow, checksummed Web/PWA qualification packaging, and permanent CI wiring. The command fails closed when any maintained target silently loses its source runner or automated build path.
+Checks the maintained six-target contract for Android, iOS, Web/PWA, Windows, macOS, and Linux. It verifies required runner files, every release-build command, all platform path triggers in the dedicated build workflow, generated Web release prerequisites, checksummed qualification packaging for Android APK/AAB, Web/PWA, Linux, Windows, macOS, and unsigned iOS, and permanent CI wiring. The command fails closed when any maintained target silently loses its source runner, automated build path, retained qualification package, or package checksum.
+
+The JSON response uses `schemaVersion: 1` and always includes `supportedTargets`, a six-key `targetStatus` map, `requiredTargetCount`, `configuredTargetCount`, `crossPlatformReady`, `failureCount`, and `failures`. This makes local and CI consumers able to distinguish a fully configured six-target source tree from an incomplete or invalid audit root without scraping prose.
+
+Use `--root=<path>` only when intentionally auditing another repository root, such as a regression fixture. An explicitly empty `--root=` is invalid and exits non-zero rather than silently changing meaning. `--help` prints the supported CLI contract.
 
 The process-level regression suite is `test/platform_support_audit_cli_test.dart`. See [`../docs/CROSS_PLATFORM_SUPPORT.md`](../docs/CROSS_PLATFORM_SUPPORT.md) and [`../docs/PLATFORMS.md`](../docs/PLATFORMS.md).
 
@@ -85,6 +100,18 @@ dart run tool/source_completion_audit.dart --json
 Checks the final Version 2.0.12 completion contract: exact package/candidate version, final source-audit and maintenance documents, feature-complete roadmap/no-active-backlog markers, current documentation version drift, and unresolved product `TODO`/`FIXME` line comments under `lib/`.
 
 It does not replace analyzer/tests, platform builds, or real-device/manual qualification. See [`../docs/SOURCE_COMPLETION_AUDIT.md`](../docs/SOURCE_COMPLETION_AUDIT.md) and [`../docs/FINAL_2_0_12_SOURCE_AUDIT.md`](../docs/FINAL_2_0_12_SOURCE_AUDIT.md).
+
+## Shared audit root-argument rule
+
+The repository-integrity, cross-platform-support, and source-completion audits all support fixture/alternate-root execution with one non-empty `--root=<path>` argument. Across all three commands:
+
+- omitting `--root` audits the current repository root;
+- one non-empty `--root=<path>` audits that explicit location;
+- `--root=` is invalid and exits non-zero;
+- multiple root arguments are invalid;
+- unknown arguments fail closed.
+
+`test/audit_root_argument_consistency_test.dart` protects the shared empty-root rule in addition to each audit's dedicated process-level regression suite.
 
 ## Release readiness gate
 
@@ -144,6 +171,26 @@ dart run tool/solver_benchmark.dart 8
 
 The benchmark compares the isolated Auto Play strategies without touching player saves, statistics, achievements, or Daily Challenge history. See [`../docs/SOLVER_BENCHMARKS.md`](../docs/SOLVER_BENCHMARKS.md).
 
+## CI audit evidence bundle
+
+The permanent `CI` workflow retains the successful machine-readable outputs from the source-maintenance gates as a short-lived artifact named:
+
+```text
+nova-2048-source-audit-reports
+```
+
+The bundle contains:
+
+```text
+release-readiness.json
+release-qualification-status.json
+repository-audit.json
+platform-support-audit.json
+source-completion-audit.json
+```
+
+The workflow uses shell pipe-failure propagation while writing these files, so piping through `tee` does not turn a failed audit into a successful CI step. These reports are automated source evidence only and are not substitutes for the 13 real-world manual qualification checks.
+
 ## Final maintainer verification sequence
 
 Before cutting a release-verification branch, run or require the maintained CI equivalent of this sequence:
@@ -156,6 +203,7 @@ flutter test --coverage
 dart run tool/release_readiness.dart --json
 dart run tool/release_qualification_status.dart --json --pending-only
 dart run tool/repository_audit.dart --json
+dart run tool/workflow_security_audit.dart --json
 dart run tool/platform_support_audit.dart --json
 dart run tool/android_support_audit.dart --json
 dart run tool/browser_extension_audit.dart --json
@@ -167,6 +215,7 @@ flutter build web --release
 For changes touching application, platform-runner, or dependency configuration, also require the complete hosted Platform Builds matrix: Android universal APK + split APKs + AAB, Web/PWA, Linux, Windows, macOS, and unsigned iOS. A production-signed artifact still requires private local signing inputs and real-device/store qualification documented in the build guides.
 
 For extension-sensitive changes, also require `.github/workflows/browser-extension.yml`, which builds the web payload with `/app/`, packages Chromium and Firefox ZIPs, validates generated manifests, checksums both ZIPs, and uploads qualification artifacts.
+For changes touching application, platform-runner, dependency, or workflow configuration, also require the complete hosted Platform Builds matrix when its path filters apply: Android APK+AAB, Web/PWA, Linux, Windows, macOS, and unsigned iOS. A production-signed artifact still requires private local signing inputs and real-device/store qualification documented in the build guides.
 
 ## Version-change rule
 
@@ -187,6 +236,9 @@ If the maintained platform set changes, also coordinate `tool/platform_support_a
 If the next release promotes the browser extension from prepared to stable, also coordinate the extension manifests/package workflow, store/privacy evidence, browser qualification records, and the stable platform-support contract. Do not make the audit say “stable” merely because packaging succeeds.
 
 This prevents a partially migrated release line from passing by accident.
+If the GitHub Actions trust boundary changes, also coordinate `tool/workflow_security_audit.dart`, `test/workflow_security_audit_cli_test.dart`, the focused workflow-security/integrity tests, permanent CI, and [`../docs/WORKFLOW_SECURITY.md`](../docs/WORKFLOW_SECURITY.md).
+
+This prevents a partially migrated release line or automation policy from passing by accident.
 
 ## Maintenance rule
 

@@ -67,6 +67,33 @@ dart run tool/browser_extension_audit.dart --json
 ```
 
 A passing extension audit reports preparation readiness while keeping `stableSupportDeclared` false.
+The audit fails closed if a required runner file, release-build command, qualification package/checksum, platform workflow path trigger, or permanent CI invocation is removed. Its package/checksum contract covers Android APK/AAB, Web/PWA, Linux, Windows, macOS, and unsigned iOS rather than using Web as the only retained-artifact proxy.
+
+## Machine-readable audit contract
+
+The JSON form is a maintained automation interface with `schemaVersion: 1`. A successful six-target result includes:
+
+```text
+schemaVersion
+root
+supportedTargets
+targetStatus
+requiredTargetCount
+configuredTargetCount
+crossPlatformReady
+failureCount
+failures
+```
+
+`requiredTargetCount` is six for the current contract. `configuredTargetCount` reports how many runner families passed their source-file checks, while `targetStatus` retains an explicit key for every target even when the supplied root is invalid or incomplete. Consumers should use `crossPlatformReady` and the process exit code as the final pass/fail signal rather than inferring success only from a count.
+
+The fixture-only override accepts one non-empty root:
+
+```bash
+dart run tool/platform_support_audit.dart --root=<path> --json
+```
+
+An explicit empty `--root=` is invalid and exits non-zero. Unknown arguments and multiple root arguments also fail closed.
 
 ## Build commands
 
@@ -337,6 +364,17 @@ The permanent `.github/workflows/platform-builds.yml` matrix performs:
 The general `.github/workflows/ci.yml` workflow separately runs formatting, static analysis, tests, repository/release audits, the stable cross-platform support audit, the Android support audit, the next-release browser-extension readiness audit, and a Web release smoke build.
 
 The separate `.github/workflows/browser-extension.yml` workflow builds the `/app/`-scoped Flutter web payload and packages/checksums Chromium and Firefox preparation ZIPs. It does not alter the Version 2.0.12 stable target count.
+The general `.github/workflows/ci.yml` workflow separately runs formatting, static analysis, tests, repository/release audits, the cross-platform support audit, and a Web release smoke build. Successful machine-readable maintenance-gate output is retained for 14 days in the `nova-2048-source-audit-reports` CI artifact:
+
+```text
+release-readiness.json
+release-qualification-status.json
+repository-audit.json
+platform-support-audit.json
+source-completion-audit.json
+```
+
+The workflow uses pipe-failure propagation while capturing these reports, so evidence retention cannot mask a failing audit command. These JSON files remain automated source/CI evidence, not manual release qualification.
 
 ## Maintainer verification sequence
 
