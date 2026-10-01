@@ -35,6 +35,9 @@ void main() {
     'docs/FINAL_2_0_12_INTEGRATION_AUDIT.md',
     'docs/BUILDING_EXECUTABLES.md',
     'docs/USER_GUIDE.md',
+    'docs/CROSS_PLATFORM_SUPPORT.md',
+    'docs/REPOSITORY_AUDIT.md',
+    'docs/SOURCE_COMPLETION_AUDIT.md',
     'docs/README.md',
     'what_changed.md',
     'what_changed_archive_phase_32.md',
@@ -50,6 +53,18 @@ void main() {
       );
     }
   });
+  test(
+    'complete setup and reference documentation is tracked in source tree',
+    () {
+      for (final path in requiredDocumentation) {
+        expect(
+          File(path).existsSync(),
+          isTrue,
+          reason: 'Required documentation is missing: $path',
+        );
+      }
+    },
+  );
 
   test('build handbook uses the current Version 2.0.12 identity', () {
     final content = File('docs/BUILDING_EXECUTABLES.md').readAsStringSync();
@@ -101,6 +116,20 @@ void main() {
       'Setup index',
     );
   });
+  test(
+    'setup index links lifecycle, support, command, and file references',
+    () {
+      final setupIndex = File('docs/setup/README.md').readAsStringSync();
+
+      expect(setupIndex, contains('UPGRADING_AND_SUPPORT.md'));
+      expect(setupIndex, contains('TOOL_SUPPORT_MATRIX.md'));
+      expect(setupIndex, contains('../DOCUMENTATION_READING_GUIDE.md'));
+      expect(setupIndex, contains('../COMMAND_REFERENCE.md'));
+      expect(setupIndex, contains('../GLOSSARY.md'));
+      expect(setupIndex, contains('../REPOSITORY_FILE_ATLAS.md'));
+      expect(setupIndex, contains('../FILE_COVERAGE_CONTRACT.md'));
+    },
+  );
 
   test('canonical docs index exposes final guides and custom source owners', () {
     final content = File('docs/README.md').readAsStringSync();
@@ -158,6 +187,30 @@ void main() {
       ],
       'Feature reference',
     );
+    final featureReference = File(
+      'docs/FEATURE_REFERENCE.md',
+    ).readAsStringSync();
+
+    for (final feature in <String>[
+      'Ten game modes',
+      'Save and resume',
+      'Undo',
+      'Hint',
+      'Expectimax solver',
+      'Auto Play',
+      'Full Replay Archives',
+      'Challenge Codes',
+      'English/Hindi localization',
+      'Accessibility controls',
+      'Platform support',
+      'Release readiness',
+    ]) {
+      expect(
+        featureReference,
+        contains(feature),
+        reason: 'Feature reference is missing: $feature',
+      );
+    }
   });
 
   test('user guide exposes the complete custom preset player workflow', () {
@@ -342,6 +395,18 @@ void main() {
       ],
       'Architecture walkthrough',
     );
+      ]) {
+        expect(
+          readingGuide,
+          contains(requiredText),
+          reason: 'Documentation reading guide is missing: $requiredText',
+        );
+      }
+    },
+  );
+
+  test('file coverage contract preserves the no-skip tracked-file rule', () {
+    final coverage = File('docs/FILE_COVERAGE_CONTRACT.md').readAsStringSync();
 
     final contributor = File(
       'docs/NEW_CONTRIBUTOR_TUTORIAL.md',
@@ -438,5 +503,70 @@ void main() {
       ],
       'Active continuity',
     );
+  test(
+    'cross-platform documentation exposes hardened audit evidence contract',
+    () {
+      final support = File('docs/CROSS_PLATFORM_SUPPORT.md').readAsStringSync();
+
+      for (final requiredText in <String>[
+        'schemaVersion: 1',
+        'requiredTargetCount',
+        'configuredTargetCount',
+        'failureCount',
+        'qualification package/checksum',
+        'nova-2048-source-audit-reports',
+      ]) {
+        expect(
+          support,
+          contains(requiredText),
+          reason: 'Cross-platform support contract is missing: $requiredText',
+        );
+      }
+    },
+  );
+
+  test('audit documentation preserves one fail-closed root argument rule', () {
+    const sharedRule = 'The --root=<path> argument requires a non-empty path.';
+    final maintainerTools = File('tool/README.md').readAsStringSync();
+    final repositoryAudit = File('docs/REPOSITORY_AUDIT.md').readAsStringSync();
+    final sourceCompletion = File(
+      'docs/SOURCE_COMPLETION_AUDIT.md',
+    ).readAsStringSync();
+
+    expect(maintainerTools, contains('Shared audit root-argument rule'));
+    expect(
+      maintainerTools,
+      contains('audit_root_argument_consistency_test.dart'),
+    );
+    expect(
+      repositoryAudit,
+      contains('`--root=<path>` requires a non-empty path'),
+    );
+    expect(
+      sourceCompletion,
+      contains('`--root=<path>` requires a non-empty path'),
+    );
+    expect(
+      File('tool/repository_audit.dart').readAsStringSync(),
+      contains(sharedRule),
+    );
+    expect(
+      File('tool/platform_support_audit.dart').readAsStringSync(),
+      contains(sharedRule),
+    );
+    expect(
+      File('tool/source_completion_audit.dart').readAsStringSync(),
+      contains(sharedRule),
+    );
+  });
+
+  test('active continuity preserves Phase 32 while tracking Phase 34', () {
+    final continuity = File('what_changed.md').readAsStringSync();
+
+    expect(continuity, contains('**Current phase:** Phase 32'));
+    expect(continuity, contains('**Active maintenance stream:** Phase 34'));
+    expect(continuity, contains('# Phase 34 — Cross-platform audit evidence'));
+    expect(continuity, contains('what_changed_archive_phase_32.md'));
+    expect(continuity, contains('stable qualification boundary remains 0/13'));
   });
 }

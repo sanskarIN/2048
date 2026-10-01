@@ -36,6 +36,8 @@ Fixture/alternate root:
 dart run tool/repository_audit.dart --root=<path> --json
 ```
 
+`--root=<path>` requires a non-empty path. An explicit `--root=` is invalid and exits non-zero instead of silently auditing the current directory. This matches the fail-closed argument contract used by the platform-support and source-completion audits.
+
 Permanent CI runs the JSON form automatically.
 
 ## Required repository assets
@@ -145,6 +147,8 @@ Permanent CI runs both. See [`SOURCE_COMPLETION_AUDIT.md`](SOURCE_COMPLETION_AUD
 - broken local Markdown links;
 - temporary Phase 30/31/32 helper rejection;
 - unclosed Markdown-fence warnings.
+
+`test/audit_root_argument_consistency_test.dart` separately protects the shared fail-closed empty-root rule across repository-integrity, platform-support, and source-completion audits.
 
 The fixture set also creates the final completion audit, maintenance policy, source-completion guide/tool, and archived changelog because those are now permanent repository assets.
 

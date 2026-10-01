@@ -36,6 +36,11 @@ This section describes the source-complete Version 2.0.12 candidate and its fina
 - Web/PWA install metadata hardening: stable relative identity/start/scope, source language/direction, categories, regular/maskable 192/512 icons, mobile/Apple install metadata, and focused regressions.
 - Android distribution regression coverage protecting both release APK and Google Play AAB commands, outputs, SHA-256 sidecars, and hosted artifact packaging.
 - Complete executable/build documentation for Android APK/AAB, iOS compilation/signing boundaries, Web/PWA, Windows, macOS, Linux, checksums, packaging, and release qualification.
+- Stable `schemaVersion: 1` JSON output for the cross-platform support audit, including explicit target counts, per-target status, failure count, and a durable six-target result shape.
+- Regression coverage for cross-platform audit result shape, invalid empty root input, and missing native qualification checksums.
+- Retained machine-readable CI evidence for release readiness, manual qualification status, repository integrity, cross-platform support, and source completion in the `nova-2048-source-audit-reports` artifact.
+- CI regression coverage protecting the machine-readable audit evidence bundle, pinned artifact uploader, fail-on-missing behavior, and retention policy.
+- Cross-tool regression coverage that keeps repository-integrity, platform-support, and source-completion audits aligned on the same fail-closed non-empty `--root=<path>` fixture contract.
 
 ### Changed
 
@@ -54,6 +59,20 @@ This section describes the source-complete Version 2.0.12 candidate and its fina
 - Dependency policy uses a compatibility-first final freeze rather than last-minute freshness churn. Existing qualified pins are retained unless a concrete fix/security/compatibility need justifies a new validation cycle.
 - `SECURITY.md`, README/release documentation, qualification guides, gate-testing guide, audit documentation, and maintainer tooling describe the Version 2.0.12 line rather than the former Version 1.5 current state.
 - Active changelog remains a focused Version 2.0.12 record after preserving the earlier detailed changelog verbatim in `CHANGELOG_ARCHIVE_PRE_2_0_12.md`.
+- Project package/build version is now `2.0.12+2012` and user-facing marketing version is `2.0.12`.
+- Windows fallback file/product version metadata now matches `2,0,12,2012` / `2.0.12`.
+- Release qualification candidate now matches `2.0.12+2012` while retaining all 13 real-world checks as pending until genuine evidence exists.
+- `tool/release_readiness.dart` now targets Version 2.0.12 exactly, rejects the previous release line and unrelated patch versions, exposes the release target in JSON, and keeps strict stable promotion fail-closed.
+- `tool/source_completion_audit.dart` now scans maintained Dart in `lib/`, `test/`, and `tool/` for unresolved TODO/FIXME line comments instead of limiting that guard to product source only.
+- `ROADMAP.md` is now a completion roadmap: Version 2.0.12 has no active source-feature backlog; previously optional expansion ideas are explicit non-goals unless a future release deliberately adopts them.
+- Dependency policy now uses a compatibility-first final freeze rather than last-minute freshness churn. Existing qualified pins are retained unless a concrete fix/security/compatibility need justifies a new validation cycle.
+- `SECURITY.md`, README/release documentation, qualification guides, gate-testing guide, audit documentation, and maintainer tooling now describe the Version 2.0.12 line rather than the former Version 1.5 current state.
+- Historical Phase 0–30 and Phase 31 continuity are preserved in dedicated archives while `what_changed.md` remains the active Phase 32 completion record.
+- Active changelog was reset to a focused Version 2.0.12 record after preserving the previous detailed changelog verbatim in `CHANGELOG_ARCHIVE_PRE_2_0_12.md`.
+- The cross-platform audit now verifies checksummed retained qualification packaging for Android APK/AAB, Linux, Windows, macOS, and unsigned iOS in addition to its existing Web/PWA checks.
+- The CI quality job now captures successful JSON audit output with pipe-failure propagation before uploading the source-audit report bundle for 14 days.
+- Cross-platform support documentation now defines the machine-readable audit interface and makes the all-platform checksum contract explicit.
+- Repository, platform, and source-completion audit documentation now define one shared rule: omitting `--root` audits the current repository, while an explicitly supplied root must be non-empty.
 
 ### Fixed
 
@@ -72,6 +91,8 @@ This section describes the source-complete Version 2.0.12 candidate and its fina
 - Corrected a completion-audit false-positive risk where documentation explaining historical/current-version validation could be mistaken for actually declaring Version 1.5 current.
 - Removed temporary one-shot Phase 30/31/32 maintenance/finalizer paths from the permanent repository contract and regression-guarded their absence.
 - Hardened Web/PWA audit behavior to fail closed on manifest identity/icon drift and required HTML metadata drift.
+- Closed an audit-policy gap where native qualification packages could lose a required SHA-256 sidecar without the cross-platform source audit detecting the drift.
+- Empty `--root=` input to the platform-support, repository-integrity, and source-completion audits now fails explicitly instead of silently falling back to the current working directory.
 
 ### Maintained release/toolchain boundaries
 
@@ -93,6 +114,9 @@ The Custom Game Builder feature had green formatter/analyzer/test/Web/native evi
 It is therefore historical feature evidence, not same-commit Version `2.0.12+2012` verification.
 
 The final integration work is being submitted through PR #25 on `final/v2.0.12-integration-hardening`. The maintained current checks must be observed on the exact final PR head before merge/promotion. No green formatter, analyzer, test, Web, dependency-review, or native result is inferred merely because commits were pushed or an older workflow passed.
+The Phase 34 audit-evidence hardening adds source tests and CI evidence capture, but it likewise does not claim a formatter/analyzer/test/platform-build pass until an actual workflow result for the exact commit is observed.
+
+The latest previously accepted complete automated/native evidence remains the historical Version 1.5 baseline:
 
 The latest previously accepted complete automated/native baseline remains historical Version 1.5 evidence. It is not relabeled as Version 2.0.12 verification.
 

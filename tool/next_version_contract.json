@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "status": "planned",
+  "currentRelease": {
+    "marketingVersion": "2.0.12",
+    "packageVersion": "2.0.12+2012",
+    "sourceScope": "feature-complete",
+    "manualQualificationPassed": 0,
+    "manualQualificationTotal": 13
+  },
+  "nextRelease": {
+    "marketingVersion": "2.1.0",
+    "packageVersion": null,
+    "activationState": "preparation-only",
+    "theme": "platform-integration-and-browser-extension-foundation"
+  },
+  "migrationPaths": [
+    "pubspec.yaml",
+    "lib/core/constants/project_info.dart",
+    "windows/runner/Runner.rc",
+    "docs/release_qualification.json",
+    "tool/release_readiness.dart",
+    "tool/repository_audit.dart",
+    "tool/source_completion_audit.dart",
+    "README.md",
+    "ROADMAP.md",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    "what_changed.md",
+    "what_changed_2_1_0_preparation.md",
+    "docs/README.md",
+    "docs/BUILDING_EXECUTABLES.md",
+    "docs/RELEASE_CHECKLIST.md",
+    "docs/RELEASE_QUALIFICATION.md",
+    "docs/DEPENDENCIES.md",
+    "docs/NEXT_VERSION_README.md",
+    "docs/NEXT_VERSION_2_1_0.md",
+    "docs/NEXT_VERSION_MIGRATION_CHECKLIST.md",
+    "docs/BROWSER_EXTENSION_FOUNDATION.md",
+    "tool/next_version_contract.json",
+    "tool/next_version_preflight.py",
+    "extension/README.md",
+    "extension/manifests/chromium/manifest.template.json",
+    "extension/manifests/firefox/manifest.template.json"
+  ],
+  "extensionFoundation": {
+    "status": "design-prepared-source-not-activated",
+    "chromiumManifest": 3,
+    "firefoxWebExtensions": true,
+    "defaultHostPermissions": [],
+    "defaultBrowserPermissions": [],
+    "remoteExecutableCodeAllowed": false,
+    "contentScriptsByDefault": false,
+    "browsingDataCollection": false,
+    "pageContentCollection": false,
+    "telemetryRequired": false,
+    "cloudRequired": false,
+    "accountsRequired": false,
+    "advertisingRequired": false,
+    "preserveTargets": [
+      "Android",
+      "iOS",
+      "Web/PWA",
+      "Windows",
+      "macOS",
+      "Linux"
+    ]
+  },
+  "activationGates": [
+    "phase34-integrated-or-superseded",
+    "formatter-green",
+    "analyzer-green",
+    "tests-green",
+    "repository-audit-green",
+    "source-completion-audit-green",
+    "web-build-green",
+    "next-version-docs-indexed",
+    "current-2.0.12-evidence-preserved-historically"
+  ]
+}

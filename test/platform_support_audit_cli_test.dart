@@ -1,0 +1,300 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  late String scriptPath;
+  final temporaryRoots = <Directory>[];
+
+  setUpAll(() {
+    scriptPath = File('tool/platform_support_audit.dart').absolute.path;
+    expect(File(scriptPath).existsSync(), isTrue);
+  });
+
+  tearDown(() async {
+    for (final directory in temporaryRoots) {
+      if (directory.existsSync()) {
+        await directory.delete(recursive: true);
+      }
+    }
+    temporaryRoots.clear();
+  });
+
+  Future<Directory> fixture({
+    String? missingFile,
+    String? missingBuildCommand,
+    String? missingQualificationFragment,
+    bool omitWebPackaging = false,
+    bool omitCiWiring = false,
+  }) async {
+    final root = await Directory.systemTemp.createTemp('nova-platform-audit-');
+    temporaryRoots.add(root);
+
+    Future<void> write(String path, [String contents = 'configured\n']) async {
+      if (path == missingFile) {
+        return;
+      }
+      final file = File.fromUri(root.uri.resolve(path));
+      await file.parent.create(recursive: true);
+      await file.writeAsString(contents);
+    }
+
+    for (final path in <String>[
+      'android/app/build.gradle.kts',
+      'android/app/src/main/AndroidManifest.xml',
+      'ios/Runner/Info.plist',
+      'ios/Runner.xcodeproj/project.pbxproj',
+      'web/index.html',
+      'web/manifest.json',
+      'windows/CMakeLists.txt',
+      'windows/runner/main.cpp',
+      'macos/Runner/Info.plist',
+      'macos/Runner.xcodeproj/project.pbxproj',
+      'linux/CMakeLists.txt',
+      'linux/runner/main.cc',
+      'docs/CROSS_PLATFORM_SUPPORT.md',
+      'test/platform_support_audit_cli_test.dart',
+      'tool/README.md',
+      'tool/platform_support_audit.dart',
+    ]) {
+      await write(path);
+    }
+
+    final buildCommands = <String>[
+      'flutter build apk --release',
+      'flutter build appbundle --release',
+      'flutter build ios --release --no-codesign',
+      'flutter build web --release',
+      'flutter build windows --release',
+      'flutter build macos --release',
+      'flutter build linux --release',
+    ]..remove(missingBuildCommand);
+
+    final workflow = StringBuffer()
+      ..writeln('name: Platform Builds')
+      ..writeln('paths:')
+      ..writeln('  - android/**')
+      ..writeln('  - ios/**')
+      ..writeln('  - web/**')
+      ..writeln('  - windows/**')
+      ..writeln('  - macos/**')
+      ..writeln('  - linux/**');
+    for (final command in buildCommands) {
+      workflow.writeln('run: $command');
+    }
+    if (!omitWebPackaging) {
+      workflow
+        ..writeln('test -f build/web/index.html')
+        ..writeln('test -f build/web/manifest.json')
+        ..writeln('test -f build/web/flutter_bootstrap.js')
+        ..writeln('nova-2048-web-pwa.tar.gz')
+        ..writeln('nova-2048-web-pwa.tar.gz.sha256')
+        ..writeln('nova-2048-web-pwa-release');
+    }
+
+    final qualificationFragments = <String>[
+      'build/app/outputs/flutter-apk/app-release.apk',
+      'build/app/outputs/flutter-apk/app-release.apk.sha256',
+      'build/app/outputs/bundle/release/app-release.aab',
+      'build/app/outputs/bundle/release/app-release.aab.sha256',
+      'nova-2048-android-release',
+      'nova-2048-linux-x64.tar.gz',
+      'nova-2048-linux-x64.tar.gz.sha256',
+      'nova-2048-linux-x64-release',
+      'nova-2048-windows-x64.zip',
+      'nova-2048-windows-x64.zip.sha256',
+      'nova-2048-windows-x64-release',
+      'nova-2048-macos-release.zip',
+      'nova-2048-macos-release.zip.sha256',
+      'nova-2048-macos-release',
+      'nova-2048-ios-unsigned-release.zip',
+      'nova-2048-ios-unsigned-release.zip.sha256',
+      'nova-2048-ios-unsigned-release',
+    ]..remove(missingQualificationFragment);
+    for (final fragment in qualificationFragments) {
+      workflow.writeln(fragment);
+    }
+
+    await write('.github/workflows/platform-builds.yml', workflow.toString());
+    await write(
+      '.github/workflows/ci.yml',
+      omitCiWiring
+          ? 'name: CI\n'
+          : 'run: dart run tool/platform_support_audit.dart --json\n',
+    );
+
+    return root;
+  }
+
+  Future<({ProcessResult process, Map<String, dynamic> json})> runAudit(
+    Directory root,
+  ) async {
+    final process = await Process.run('dart', <String>[
+      scriptPath,
+      '--root=${root.path}',
+      '--json',
+    ]);
+    expect(process.stdout, isNotEmpty, reason: process.stderr.toString());
+    final decoded = jsonDecode(process.stdout as String);
+    expect(decoded, isA<Map<String, dynamic>>());
+    return (process: process, json: decoded as Map<String, dynamic>);
+  }
+
+  test('complete six-target fixture passes', () async {
+    final result = await runAudit(await fixture());
+
+    expect(
+      result.process.exitCode,
+      0,
+      reason: result.process.stderr.toString(),
+    );
+    expect(result.json['schemaVersion'], 1);
+    expect(result.json['crossPlatformReady'], isTrue);
+    expect(result.json['supportedTargets'], <String>[
+      'Android',
+      'iOS',
+      'Web/PWA',
+      'Windows',
+      'macOS',
+      'Linux',
+    ]);
+    expect(result.json['requiredTargetCount'], 6);
+    expect(result.json['configuredTargetCount'], 6);
+    expect(result.json['failureCount'], 0);
+    expect(result.json['failures'], isEmpty);
+  });
+
+  test('missing runner file fails closed', () async {
+    final result = await runAudit(
+      await fixture(missingFile: 'windows/runner/main.cpp'),
+    );
+
+    expect(result.process.exitCode, 1);
+    expect(result.json['crossPlatformReady'], isFalse);
+    expect(
+      (result.json['failures'] as List<dynamic>).join('\n'),
+      contains('Windows runner file is missing: windows/runner/main.cpp'),
+    );
+  });
+
+  test('missing platform contract document fails closed', () async {
+    final result = await runAudit(
+      await fixture(missingFile: 'docs/CROSS_PLATFORM_SUPPORT.md'),
+    );
+
+    expect(result.process.exitCode, 1);
+    expect(
+      (result.json['failures'] as List<dynamic>).join('\n'),
+      contains(
+        'Cross-platform contract file is missing: docs/CROSS_PLATFORM_SUPPORT.md',
+      ),
+    );
+  });
+
+  test('missing platform build command fails closed', () async {
+    const command = 'flutter build linux --release';
+    final result = await runAudit(await fixture(missingBuildCommand: command));
+
+    expect(result.process.exitCode, 1);
+    expect(
+      (result.json['failures'] as List<dynamic>).join('\n'),
+      contains('Linux release command: $command'),
+    );
+  });
+
+  test('Web PWA must be packaged as a qualification artifact', () async {
+    final result = await runAudit(await fixture(omitWebPackaging: true));
+
+    expect(result.process.exitCode, 1);
+    final failures = (result.json['failures'] as List<dynamic>).join('\n');
+    expect(failures, contains('Web/PWA qualification packaging is missing'));
+    expect(failures, contains('nova-2048-web-pwa-release'));
+  });
+
+  test('native qualification packages must retain checksums', () async {
+    const missing = 'nova-2048-windows-x64.zip.sha256';
+    final result = await runAudit(
+      await fixture(missingQualificationFragment: missing),
+    );
+
+    expect(result.process.exitCode, 1);
+    expect(result.json['crossPlatformReady'], isFalse);
+    expect(
+      (result.json['failures'] as List<dynamic>).join('\n'),
+      contains('Windows qualification packaging is missing: $missing'),
+    );
+  });
+
+  test('permanent CI must retain platform audit wiring', () async {
+    final result = await runAudit(await fixture(omitCiWiring: true));
+
+    expect(result.process.exitCode, 1);
+    expect(
+      (result.json['failures'] as List<dynamic>).join('\n'),
+      contains('Permanent CI must run the cross-platform support audit'),
+    );
+  });
+
+  test('empty root argument fails closed', () async {
+    final process = await Process.run('dart', <String>[
+      scriptPath,
+      '--root=',
+      '--json',
+    ]);
+
+    expect(process.exitCode, 1);
+    final output = jsonDecode(process.stdout as String) as Map<String, dynamic>;
+    expect(
+      (output['failures'] as List<dynamic>).join('\n'),
+      contains('The --root=<path> argument requires a non-empty path.'),
+    );
+  });
+
+  test('missing root preserves the six-target JSON shape', () async {
+    final root = Directory.fromUri(
+      Directory.systemTemp.uri.resolve(
+        'nova-platform-audit-missing-${DateTime.now().microsecondsSinceEpoch}/',
+      ),
+    );
+    expect(root.existsSync(), isFalse);
+
+    final process = await Process.run('dart', <String>[
+      scriptPath,
+      '--root=${root.path}',
+      '--json',
+    ]);
+
+    expect(process.exitCode, 1);
+    final output = jsonDecode(process.stdout as String) as Map<String, dynamic>;
+    expect(output['schemaVersion'], 1);
+    expect(output['requiredTargetCount'], 6);
+    expect(output['configuredTargetCount'], 0);
+    expect(output['crossPlatformReady'], isFalse);
+    expect(output['failureCount'], greaterThanOrEqualTo(1));
+    final targetStatus = output['targetStatus'] as Map<String, dynamic>;
+    expect(targetStatus.length, 6);
+    expect(targetStatus.values, everyElement(isFalse));
+    expect(
+      (output['failures'] as List<dynamic>).join('\n'),
+      contains('Repository root does not exist:'),
+    );
+  });
+
+  test('unknown argument fails closed', () async {
+    final root = await fixture();
+    final process = await Process.run('dart', <String>[
+      scriptPath,
+      '--root=${root.path}',
+      '--json',
+      '--surprise',
+    ]);
+
+    expect(process.exitCode, 1);
+    final output = jsonDecode(process.stdout as String) as Map<String, dynamic>;
+    expect(
+      (output['failures'] as List<dynamic>).join('\n'),
+      contains('Unknown argument(s): --surprise'),
+    );
+  });
+}

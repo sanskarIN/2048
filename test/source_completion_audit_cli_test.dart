@@ -58,10 +58,7 @@ void main() {
           '${restoreOptionalBacklog ? '\n## Later — Optional expansion\n\n- Add something.\n' : ''}',
     );
     await write('CHANGELOG.md', '# Changelog\n\n## [Unreleased]\n');
-    await write(
-      'CHANGELOG_ARCHIVE_PRE_2_0_12.md',
-      '# Historical changelog\n',
-    );
+    await write('CHANGELOG_ARCHIVE_PRE_2_0_12.md', '# Historical changelog\n');
     await write(
       'SECURITY.md',
       '# Security\n\nThe repository is maintained on Version 2.0.12.\n',
@@ -112,14 +109,7 @@ void main() {
         'schemaVersion': 1,
         'candidate': candidate,
         'manualChecks': <Map<String, Object?>>[
-          for (var index = 0; index < 13; index += 1)
-            <String, Object?>{
-              'id': 'check-$index',
-              'title': 'Check $index',
-              'status': 'pending',
-              'evidence': '',
-              'updatedAt': null,
-            },
+          for (var index = 0; index < 13; index += 1) <String, Object?>{'id': 'check-$index', 'title': 'Check $index', 'status': 'pending', 'evidence': '', 'updatedAt': null},
         ],
       })}\n',
     );
@@ -137,10 +127,7 @@ void main() {
       'tool/README.md',
       '# Tools\n\n`source_completion_audit.dart`\n',
     );
-    await write(
-      'tool/source_completion_audit.dart',
-      'void main() {}\n',
-    );
+    await write('tool/source_completion_audit.dart', 'void main() {}\n');
     if (unresolvedToolTodo) {
       await write(
         'tool/unresolved_helper.dart',
@@ -281,6 +268,22 @@ void main() {
     expect(
       (result.json['failures'] as List<dynamic>).join('\n'),
       contains('Release qualification candidate must remain 2.0.12+2012'),
+    );
+  });
+
+  test('empty root argument fails closed', () async {
+    final process = await Process.run('dart', <String>[
+      scriptPath,
+      '--root=',
+      '--json',
+    ]);
+
+    expect(process.exitCode, 1);
+    final output = jsonDecode(process.stdout as String) as Map<String, dynamic>;
+    expect(output['featureComplete'], isFalse);
+    expect(
+      (output['failures'] as List<dynamic>).join('\n'),
+      contains('The --root=<path> argument requires a non-empty path.'),
     );
   });
 

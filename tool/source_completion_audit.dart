@@ -81,6 +81,9 @@ void main(List<String> args) {
   final configuredRoot = rootArgs.isEmpty
       ? Directory.current.path
       : rootArgs.first.substring('--root='.length).trim();
+  if (rootArgs.isNotEmpty && configuredRoot.isEmpty) {
+    failures.add('The --root=<path> argument requires a non-empty path.');
+  }
   final root = Directory(
     configuredRoot.isEmpty ? Directory.current.path : configuredRoot,
   ).absolute;
@@ -267,10 +270,12 @@ void _auditCompletionWiring(Directory root, List<String> failures) {
   if (ci != null && !ci.contains(command)) {
     failures.add('Permanent CI must run the source-completion audit.');
   }
-  if (toolReadme != null && !toolReadme.contains('source_completion_audit.dart')) {
+  if (toolReadme != null &&
+      !toolReadme.contains('source_completion_audit.dart')) {
     failures.add('tool/README.md must index the source-completion audit.');
   }
-  if (docs != null && !docs.contains('test/source_completion_audit_cli_test.dart')) {
+  if (docs != null &&
+      !docs.contains('test/source_completion_audit_cli_test.dart')) {
     failures.add(
       'Source-completion documentation must identify its process-level regression suite.',
     );
