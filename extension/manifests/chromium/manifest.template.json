@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "2048 Nova",
+  "short_name": "2048 Nova",
+  "version": "2.1.0",
+  "description": "Offline 2048 Nova browser extension preparation template.",
+  "action": {
+    "default_title": "2048 Nova",
+    "default_popup": "index.html"
+  }
+}
