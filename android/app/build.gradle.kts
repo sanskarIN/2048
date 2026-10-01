@@ -52,8 +52,7 @@ android {
     defaultConfig {
         // Stable Android application ID for 2048 Nova.
         applicationId = "com.sanskarin.nova_2048"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        // Keep SDK levels aligned with the Flutter toolchain selected by the project.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION
@@ -77,6 +76,15 @@ android {
 
     buildTypes {
         release {
+            // R8 + resource shrinking keep production APK/AAB output smaller and remove
+            // Android code/resources that the release build cannot reach.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+
             // A local, ignored android/key.properties enables real distribution signing
             // without putting credentials or keystores in Git. Hosted qualification builds
             // intentionally fall back to the debug key so release-mode compilation can still

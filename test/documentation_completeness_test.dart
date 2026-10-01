@@ -141,6 +141,16 @@ void main() {
     },
   );
 
+      expect(setupIndex, contains('UPGRADING_AND_SUPPORT.md'));
+      expect(setupIndex, contains('TOOL_SUPPORT_MATRIX.md'));
+      expect(setupIndex, contains('../DOCUMENTATION_READING_GUIDE.md'));
+      expect(setupIndex, contains('../COMMAND_REFERENCE.md'));
+      expect(setupIndex, contains('../GLOSSARY.md'));
+      expect(setupIndex, contains('../REPOSITORY_FILE_ATLAS.md'));
+      expect(setupIndex, contains('../FILE_COVERAGE_CONTRACT.md'));
+    },
+  );
+
   test('canonical docs index exposes final guides and custom source owners', () {
     final content = File('docs/README.md').readAsStringSync();
     expectContainsAll(

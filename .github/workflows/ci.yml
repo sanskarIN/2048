@@ -90,6 +90,12 @@ jobs:
           set -o pipefail
           dart run tool/platform_support_audit.dart --json | tee platform-support-audit.json
 
+      - name: Audit Android production support
+        run: dart run tool/android_support_audit.dart --json
+
+      - name: Audit next-release browser extension preparation
+        run: dart run tool/browser_extension_audit.dart --json
+
       - name: Audit final source-completion contract
         shell: bash
         run: |
