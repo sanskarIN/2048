@@ -7,9 +7,9 @@
 
 Made by the Sanskar
 
-[Source](https://github.com/sanskarIN/2048) · [Documentation](docs/README.md) · [Verification](docs/VERIFICATION.md) · [Roadmap](ROADMAP.md) · [Support](SUPPORT.md) · [Gumroad](https://ramsandesh.gumroad.com) · [Buy Me a Coffee](https://buymeacoffee.com/sanskarIN)
+[Source](https://github.com/sanskarIN/2048) · [Documentation](docs/README.md) · [Verification](docs/VERIFICATION.md) · [Roadmap](ROADMAP.md) · [Support](SUPPORT.md) · [Gumroad](https://sanskarin.gumroad.com) · [Buy Me a Coffee](https://buymeacoffee.com/sanskarIN)
 
-<a href="https://ramsandesh.gumroad.com">
+<a href="https://sanskarin.gumroad.com">
   <img src="assets/branding/ramsandesh_gumroad_badge.svg" alt="Ramsandesh on Gumroad" width="310" />
 </a>
 </div>
