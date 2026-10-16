@@ -125,7 +125,9 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
 
   void _editPreset(CustomGamePreset preset) {
     _populateForm(preset, name: preset.name, editingOriginalName: preset.name);
-    _showMessage(_text('Preset loaded for editing.', 'प्रीसेट संपादन के लिए लोड हुआ।'));
+    _showMessage(
+      _text('Preset loaded for editing.', 'प्रीसेट संपादन के लिए लोड हुआ।'),
+    );
   }
 
   void _duplicatePreset(CustomGamePreset preset) {
@@ -537,7 +539,9 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
                           children: [
                             const Icon(Icons.copy_outlined),
                             const SizedBox(width: 12),
-                            Text(_text('Duplicate preset', 'प्रीसेट कॉपी करें')),
+                            Text(
+                              _text('Duplicate preset', 'प्रीसेट कॉपी करें'),
+                            ),
                           ],
                         ),
                       ),
