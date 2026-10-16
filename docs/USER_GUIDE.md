@@ -417,13 +417,19 @@ For common issues, see [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md). For deeper so
 Project/support contacts:
 
 - Repository: https://github.com/sanskarIN/2048
-- Support: `supportramsandesh@gmail.com`
+- Support: `https://sanskarin.github.io/contact`
 - Business: `sanskarin@outlook.in`
 - Business: `sanskarin.business@gmail.com`
 
 Optional project support:
 
-https://buymeacoffee.com/sanskarIN
+https://buymeacoffee.com/SanskarCodes
+
+Razorpay: https://razorpay.me/@SanskarCodes
+
+PayPal: https://paypal.me/SanskarCodes
+
+Website: https://sanskarin.github.io
 
 **Made by the Sanskar**
 
