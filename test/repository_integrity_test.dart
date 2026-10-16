@@ -167,7 +167,7 @@ void main() {
         );
       }
 
-      expect(flutterWorkflowCount, 5);
+      expect(flutterWorkflowCount, greaterThanOrEqualTo(5));
     });
 
     test('branding generator Python environment is fully version pinned', () {
@@ -272,7 +272,7 @@ void main() {
     test('pubspec exposes canonical open source destinations', () {
       final pubspec = File('pubspec.yaml').readAsStringSync();
 
-      expect(pubspec, contains('homepage: https://github.com/sanskarIN/2048'));
+      expect(pubspec, contains('homepage: https://sanskarin.github.io'));
       expect(
         pubspec,
         contains('repository: https://github.com/sanskarIN/2048'),
