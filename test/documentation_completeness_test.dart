@@ -395,15 +395,7 @@ void main() {
       ],
       'Architecture walkthrough',
     );
-      ]) {
-        expect(
-          readingGuide,
-          contains(requiredText),
-          reason: 'Documentation reading guide is missing: $requiredText',
-        );
-      }
-    },
-  );
+  });
 
   test('file coverage contract preserves the no-skip tracked-file rule', () {
     final coverage = File('docs/FILE_COVERAGE_CONTRACT.md').readAsStringSync();
@@ -503,6 +495,8 @@ void main() {
       ],
       'Active continuity',
     );
+  });
+
   test(
     'cross-platform documentation exposes hardened audit evidence contract',
     () {
