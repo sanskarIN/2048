@@ -413,7 +413,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
             const SizedBox(height: 12),
             DropdownButtonFormField<int>(
               key: ValueKey('custom-time-$_timeLimit'),
-            isExpanded: true,
+              isExpanded: true,
               initialValue: _timeLimit,
               decoration: InputDecoration(
                 labelText: _text('Time limit', 'समय सीमा'),
@@ -434,7 +434,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
             const SizedBox(height: 12),
             DropdownButtonFormField<int>(
               key: ValueKey('custom-move-$_moveLimit'),
-            isExpanded: true,
+              isExpanded: true,
               initialValue: _moveLimit,
               decoration: InputDecoration(
                 labelText: _text('Move limit', 'चाल सीमा'),
