@@ -61,7 +61,9 @@ jobs:
         run: flutter analyze
 
       - name: Run tests
-        run: flutter test --coverage
+        # Subprocess-driven audit tests can be starved when the full suite
+        # launches too many Dart VMs on shared hosted runners.
+        run: flutter test --coverage --concurrency=4 --timeout=2m
 
       - name: Verify release-candidate readiness metadata
         shell: bash
