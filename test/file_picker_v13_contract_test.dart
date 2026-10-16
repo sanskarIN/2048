@@ -4,8 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('backup file transport uses file_picker 13 single-file API', () {
-    final source = File('lib/shared/game_backup_file_port.dart')
-        .readAsStringSync();
+    final source = File(
+      'lib/shared/game_backup_file_port.dart',
+    ).readAsStringSync();
 
     expect(source, contains('FilePicker.pickFile('));
     expect(source, isNot(contains('FilePicker.pickFiles(')));
@@ -18,8 +19,9 @@ void main() {
   });
 
   test('macOS generated registrant matches the maintained picker plugin', () {
-    final source = File('macos/Flutter/GeneratedPluginRegistrant.swift')
-        .readAsStringSync();
+    final source = File(
+      'macos/Flutter/GeneratedPluginRegistrant.swift',
+    ).readAsStringSync();
 
     expect(source, contains('import file_picker_darwin'));
   });
