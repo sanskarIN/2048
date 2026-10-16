@@ -44,7 +44,7 @@ Enforcement decisions should be proportionate to the behavior and should avoid p
 
 For moderation concerns that should not be handled publicly, contact:
 
-**supportramsandesh@gmail.com**
+**https://sanskarin.github.io/contact**
 
 Do not include passwords, tokens, private keys, payment credentials, or unrelated private information in a report.
 

@@ -10,9 +10,11 @@ Version changes do not weaken the project's qualification boundary: the live Ver
 
 ## Reporting a vulnerability
 
-Please report potential security issues privately to:
+To request a private security reporting channel, use:
 
-**supportramsandesh@gmail.com**
+**https://sanskarin.github.io/contact**
+
+Do not send exploit details, secrets, or sensitive proof-of-concept data through a public issue or an unencrypted contact form. Ask for an appropriate private channel first.
 
 Do not publish sensitive exploit details in a public issue before the maintainer has had a reasonable opportunity to review them.
 

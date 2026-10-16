@@ -15,10 +15,13 @@ class AboutScreen extends StatelessWidget {
       ('Repository', ProjectInfo.repository),
       ('GitHub profile', ProjectInfo.githubProfile),
       ('LinkedIn', ProjectInfo.linkedIn),
+      ('Website', ProjectInfo.website),
+      ('Contact support', ProjectInfo.contact),
       ('Buy Me a Coffee', ProjectInfo.buyMeACoffee),
+      ('Razorpay', ProjectInfo.razorpay),
+      ('PayPal', ProjectInfo.paypal),
       ('Business email', 'mailto:${ProjectInfo.businessEmailPrimary}'),
       ('Business email 2', 'mailto:${ProjectInfo.businessEmailSecondary}'),
-      ('Support email', 'mailto:${ProjectInfo.supportEmail}'),
     ];
     return NovaScaffold(
       title: l10n.text('About'),
@@ -68,18 +71,6 @@ class AboutScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.storefront_rounded),
-              title: const Text(
-                'Gumroad',
-                style: TextStyle(fontWeight: FontWeight.w800),
-              ),
-              subtitle: const Text(ProjectInfo.gumroad),
-              trailing: const Icon(Icons.open_in_new_rounded),
-              onTap: () => openExternal(context, ProjectInfo.gumroad),
             ),
           ),
           for (final item in links)

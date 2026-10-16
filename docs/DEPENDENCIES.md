@@ -70,7 +70,7 @@ The package also offers newer async/cache-oriented APIs. The current project imp
 
 ### url_launcher
 
-Declared at **^6.3.2** and used only when a player explicitly opens GitHub, LinkedIn, Gumroad, Buy Me a Coffee, bug-report, or email actions.
+Declared at **^6.3.2** and used only when a player explicitly opens GitHub, LinkedIn, the project website, contact page, Buy Me a Coffee, Razorpay, PayPal, bug-report, or business-email actions.
 
 Why it is used:
 

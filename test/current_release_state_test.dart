@@ -5,14 +5,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('current release-candidate records', () {
-    test('primary continuity separates Phase 32 contract from Phase 33 work', () {
+    test('primary continuity separates Phase 32 contract from Phase 34 work', () {
       final log = File('what_changed.md').readAsStringSync();
       final phase32Archive = File(
         'what_changed_archive_phase_32.md',
       ).readAsStringSync();
 
       expect(log, contains('**Current phase:** Phase 32'));
-      expect(log, contains('**Active maintenance stream:** Phase 33'));
+      expect(log, contains('**Active maintenance stream:** Phase 34'));
       expect(log, contains('`2.0.12+2012`'));
       expect(log, contains('`2.0.12`'));
       expect(log, contains('stable qualification boundary remains 0/13'));

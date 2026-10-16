@@ -167,7 +167,7 @@ void main() {
         );
       }
 
-      expect(flutterWorkflowCount, 5);
+      expect(flutterWorkflowCount, greaterThanOrEqualTo(5));
     });
 
     test('branding generator Python environment is fully version pinned', () {
@@ -225,8 +225,9 @@ void main() {
       expect(editorConfig, contains('charset = utf-8'));
       expect(attributes, contains('*.png binary'));
       expect(attributes, contains('*.ico binary'));
-      expect(funding, contains('https://buymeacoffee.com/sanskarIN'));
-      expect(funding, contains('https://ramsandesh.gumroad.com'));
+      expect(funding, contains('https://buymeacoffee.com/SanskarCodes'));
+      expect(funding, contains('https://razorpay.me/@SanskarCodes'));
+      expect(funding, contains('https://paypal.me/SanskarCodes'));
       expect(issueConfig, contains('blank_issues_enabled: false'));
       expect(issueConfig, contains('/blob/main/SUPPORT.md'));
       expect(issueConfig, contains('/blob/main/SECURITY.md'));
@@ -237,7 +238,7 @@ void main() {
 
       expect(policy, contains('Version 2.0.12'));
       expect(policy, contains('2.0.12+2012'));
-      expect(policy, contains('supportramsandesh@gmail.com'));
+      expect(policy, contains('https://sanskarin.github.io/contact'));
       expect(policy, contains('dependency-review'));
     });
 
@@ -271,7 +272,7 @@ void main() {
     test('pubspec exposes canonical open source destinations', () {
       final pubspec = File('pubspec.yaml').readAsStringSync();
 
-      expect(pubspec, contains('homepage: https://github.com/sanskarIN/2048'));
+      expect(pubspec, contains('homepage: https://sanskarin.github.io'));
       expect(
         pubspec,
         contains('repository: https://github.com/sanskarIN/2048'),

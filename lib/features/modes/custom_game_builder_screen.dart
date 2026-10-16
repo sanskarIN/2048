@@ -125,7 +125,9 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
 
   void _editPreset(CustomGamePreset preset) {
     _populateForm(preset, name: preset.name, editingOriginalName: preset.name);
-    _showMessage(_text('Preset loaded for editing.', 'प्रीसेट संपादन के लिए लोड हुआ।'));
+    _showMessage(
+      _text('Preset loaded for editing.', 'प्रीसेट संपादन के लिए लोड हुआ।'),
+    );
   }
 
   void _duplicatePreset(CustomGamePreset preset) {
@@ -362,6 +364,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
           const SizedBox(height: 8),
           DropdownButtonFormField<CustomGameStyle>(
             key: ValueKey('custom-style-${_style.name}'),
+            isExpanded: true,
             initialValue: _style,
             decoration: InputDecoration(
               labelText: _text('Game style', 'गेम शैली'),
@@ -377,6 +380,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
           const SizedBox(height: 12),
           DropdownButtonFormField<int>(
             key: ValueKey('custom-size-$_size'),
+            isExpanded: true,
             initialValue: _size,
             decoration: InputDecoration(
               labelText: _text('Board size', 'बोर्ड आकार'),
@@ -392,6 +396,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
           const SizedBox(height: 12),
           DropdownButtonFormField<int>(
             key: ValueKey('custom-target-$_target'),
+            isExpanded: true,
             initialValue: _target,
             decoration: InputDecoration(
               labelText: _text('Target tile', 'लक्ष्य टाइल'),
@@ -408,6 +413,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
             const SizedBox(height: 12),
             DropdownButtonFormField<int>(
               key: ValueKey('custom-time-$_timeLimit'),
+              isExpanded: true,
               initialValue: _timeLimit,
               decoration: InputDecoration(
                 labelText: _text('Time limit', 'समय सीमा'),
@@ -428,6 +434,7 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
             const SizedBox(height: 12),
             DropdownButtonFormField<int>(
               key: ValueKey('custom-move-$_moveLimit'),
+              isExpanded: true,
               initialValue: _moveLimit,
               decoration: InputDecoration(
                 labelText: _text('Move limit', 'चाल सीमा'),
@@ -527,7 +534,11 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
                           children: [
                             const Icon(Icons.edit_outlined),
                             const SizedBox(width: 12),
-                            Text(_text('Edit preset', 'प्रीसेट संपादित करें')),
+                            Flexible(
+                              child: Text(
+                                _text('Edit preset', 'प्रीसेट संपादित करें'),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -537,7 +548,11 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
                           children: [
                             const Icon(Icons.copy_outlined),
                             const SizedBox(width: 12),
-                            Text(_text('Duplicate preset', 'प्रीसेट कॉपी करें')),
+                            Flexible(
+                              child: Text(
+                                _text('Duplicate preset', 'प्रीसेट कॉपी करें'),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -547,7 +562,11 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
                           children: [
                             const Icon(Icons.delete_outline_rounded),
                             const SizedBox(width: 12),
-                            Text(_text('Delete preset', 'प्रीसेट हटाएँ')),
+                            Flexible(
+                              child: Text(
+                                _text('Delete preset', 'प्रीसेट हटाएँ'),
+                              ),
+                            ),
                           ],
                         ),
                       ),

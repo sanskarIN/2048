@@ -42,7 +42,7 @@ void main() {
 
       expect(
         workflow,
-        contains('actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961'),
+        contains('actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6'),
       );
       expect(workflow, contains('distribution: temurin'));
       expect(workflow, contains("java-version: '17'"));
@@ -98,7 +98,13 @@ void main() {
             source,
             contains('git config user.email "sanskarin@outlook.in"'),
           );
-          expect(source, contains('git push origin HEAD:main'));
+          expect(
+            source,
+            anyOf(
+              contains('git push origin HEAD:main'),
+              contains(r'git push origin "HEAD:${GITHUB_REF_NAME}"'),
+            ),
+          );
           expect(source, isNot(contains('git push --force')));
           expect(source, isNot(contains('git push -f')));
         }

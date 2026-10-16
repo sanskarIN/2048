@@ -5,10 +5,10 @@
 **Sanskar**
 
 - GitHub: https://www.github.com/sanskarIN
-- LinkedIn: https://www.linkedin.com/in/sanskarIN
+- LinkedIn: https://linkedin.com/in/SanskarCodes
 - Business: `sanskarin@outlook.in`
 - Business: `sanskarin.business@gmail.com`
-- Support: `supportramsandesh@gmail.com`
+- Contact: `https://sanskarin.github.io/contact`
 
 Project branding: **Made by the Sanskar**
 
@@ -26,6 +26,10 @@ Do not add a person's private contact information to this file without permissio
 
 Optional project support:
 
-https://buymeacoffee.com/sanskarIN
+https://buymeacoffee.com/SanskarCodes
+
+Additional support: https://razorpay.me/@SanskarCodes and https://paypal.me/SanskarCodes
+
+Website: https://sanskarin.github.io
 
 Support is voluntary and does not change the MIT licensing terms or contribution access.

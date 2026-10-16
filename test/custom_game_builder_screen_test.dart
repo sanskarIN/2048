@@ -170,7 +170,10 @@ void main() {
       find.widgetWithText(OutlinedButton, 'Save changes'),
     );
 
-    expect(find.text('A preset with this name already exists.'), findsOneWidget);
+    expect(
+      find.text('A preset with this name already exists.'),
+      findsOneWidget,
+    );
     final restored = await store.load();
     expect(restored, hasLength(2));
     expect(
@@ -202,7 +205,10 @@ void main() {
     final seedField = tester.widget<TextField>(find.byType(TextField).at(1));
     expect(nameField.controller!.text, 'Copy Me copy');
     expect(seedField.controller!.text, '88');
-    expect(find.byKey(const ValueKey('custom-style-moveLimit')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('custom-style-moveLimit')),
+      findsOneWidget,
+    );
     expect(find.byKey(const ValueKey('custom-size-6')), findsOneWidget);
     expect(find.byKey(const ValueKey('custom-target-8192')), findsOneWidget);
     expect(find.byKey(const ValueKey('custom-move-500')), findsOneWidget);

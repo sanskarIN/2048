@@ -2,7 +2,7 @@ name: nova_2048
 description: A modern, accessible, offline-first 2048 game made by Sanskar.
 publish_to: none
 version: 2.0.12+2012
-homepage: https://github.com/sanskarIN/2048
+homepage: https://sanskarin.github.io
 repository: https://github.com/sanskarIN/2048
 issue_tracker: https://github.com/sanskarIN/2048/issues
 
@@ -15,11 +15,11 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  cupertino_icons: 1.0.9
+  cupertino_icons: 2.0.0
   file_picker: 13.1.0
   qr_flutter: 4.1.0
   shared_preferences: ^2.5.5
-  url_launcher: ^6.3.2
+  url_launcher: ^6.3.3
 
 dev_dependencies:
   flutter_test:

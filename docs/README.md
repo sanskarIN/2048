@@ -274,7 +274,10 @@ git ls-files | sort
 - Creator branding: **Made by the Sanskar**
 - License: MIT
 - Business: `sanskarin@outlook.in`, `sanskarin.business@gmail.com`
-- Support: `supportramsandesh@gmail.com`
-- Buy Me a Coffee: `https://buymeacoffee.com/sanskarIN`
+- Support: `https://sanskarin.github.io/contact`
+- Buy Me a Coffee: `https://buymeacoffee.com/SanskarCodes`
+- Razorpay: `https://razorpay.me/@SanskarCodes`
+- PayPal: `https://paypal.me/SanskarCodes`
+- Website: `https://sanskarin.github.io`
 
 For current public product/profile metadata, use the root [`README.md`](../README.md).
