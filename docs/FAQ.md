@@ -215,14 +215,16 @@ For security-sensitive reports, follow [`../SECURITY.md`](../SECURITY.md) instea
 
 ## Where can I ask for support?
 
-- Support: `supportramsandesh@gmail.com`
+- Support: `https://sanskarin.github.io/contact`
 - Business: `sanskarin@outlook.in`
 - Business: `sanskarin.business@gmail.com`
 - Repository: https://github.com/sanskarIN/2048
 
 Optional project support:
 
-https://buymeacoffee.com/sanskarIN
+https://buymeacoffee.com/SanskarCodes
+
+Optional alternatives: https://razorpay.me/@SanskarCodes and https://paypal.me/SanskarCodes.
 
 **Made by the Sanskar**
 
