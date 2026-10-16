@@ -76,7 +76,7 @@ class GuideScreen extends StatelessWidget {
       ),
       (
         'FAQ',
-        'You can continue after reaching the target, disable optional feedback in Settings, change language, reset project-owned local data, and report bugs through GitHub or the support email.',
+        'You can continue after reaching the target, disable optional feedback in Settings, change language, reset project-owned local data, and report bugs through GitHub or the project contact page.',
       ),
     ];
     return NovaScaffold(
