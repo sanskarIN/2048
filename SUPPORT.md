@@ -9,8 +9,8 @@ This file explains where to ask for help with 2048 Nova and what information mak
 - Bug report template: https://github.com/sanskarIN/2048/issues/new?template=bug_report.yml
 - Feature requests: use the repository feature-request template.
 - Documentation improvements: use the documentation issue template.
-- Support email: **supportramsandesh@gmail.com**
-- Gumroad storefront: **https://ramsandesh.gumroad.com**
+- Support/contact: **https://sanskarin.github.io/contact**
+- Website: **https://sanskarin.github.io**
 
 Before filing a setup/build issue, check [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md), [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md), and the current [`docs/VERIFICATION.md`](docs/VERIFICATION.md).
 
@@ -48,7 +48,7 @@ Challenge Codes and Game Backup are different formats. `NOVA1...` Challenge Code
 
 ## Security-sensitive reports
 
-Do not open a public issue containing sensitive exploit details. Follow [`SECURITY.md`](SECURITY.md) and contact the support email privately.
+Do not open a public issue containing sensitive exploit details. Follow [`SECURITY.md`](SECURITY.md) and use the contact page to request a private reporting channel. Do not include sensitive vulnerability details in a public issue or an unencrypted form.
 
 Never send passwords, access tokens, API keys, payment credentials, signing keys, provisioning secrets, private keys, or other credentials in a support request.
 
@@ -59,26 +59,17 @@ The Challenge Code checksum is not secret/authentication material. Security repo
 - Business: **sanskarin@outlook.in**
 - Business: **sanskarin.business@gmail.com**
 - GitHub profile: https://www.github.com/sanskarIN
-- LinkedIn: https://www.linkedin.com/in/sanskarIN
-- Gumroad: **https://ramsandesh.gumroad.com**
+- LinkedIn: https://linkedin.com/in/SanskarCodes
+- Website: **https://sanskarin.github.io**
+- Contact: **https://sanskarin.github.io/contact**
 
-## Gumroad storefront
+## Optional financial support
 
-<a href="https://ramsandesh.gumroad.com">
-  <img src="assets/branding/ramsandesh_gumroad_badge.svg" alt="Ramsandesh on Gumroad" width="310" />
-</a>
+If you would like to support the project, choose an official link:
 
-The highlighted Ramsandesh Gumroad storefront is available at:
-
-**https://ramsandesh.gumroad.com**
-
-The repository uses an original storefront badge rather than claiming that the project is officially endorsed by Gumroad.
-
-## Buy Me a Coffee
-
-Optional project support is available at:
-
-https://buymeacoffee.com/sanskarIN
+- Buy Me a Coffee: https://buymeacoffee.com/SanskarCodes
+- Razorpay: https://razorpay.me/@SanskarCodes
+- PayPal: https://paypal.me/SanskarCodes
 
 Financial support is never required to play, build, fork, or contribute to the MIT-licensed project.
 
