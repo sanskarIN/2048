@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -65,26 +66,30 @@ class SystemGameBackupFilePort implements GameBackupFilePort {
       throw ArgumentError.value(maxBytes, 'maxBytes', 'Must be positive');
     }
 
-    final result = await FilePicker.pickFiles(
+    // file_picker 13.x exposes a dedicated single-document API. A grant to
+    // open a user-selected file does not make its contents trusted.
+    final file = await FilePicker.pickFile(
       dialogTitle: 'Open 2048 Nova game backup',
       type: FileType.custom,
       allowedExtensions: _extensions,
-      allowMultiple: false,
-      // Web needs in-memory bytes for a reliable XFile fallback in file_picker
-      // 11.x. Native platforms can defer the read until after the size check.
-      withData: kIsWeb,
     );
-    if (result == null || result.files.isEmpty) return null;
+    if (file == null) return null;
 
-    final file = result.files.single;
-    if (file.size > maxBytes) {
+    // Reject reported oversized inputs before reading. For platforms that
+    // cannot report a length, cap the streamed byte total as it arrives.
+    final knownLength = file.lengthSync() ?? await file.length();
+    if (knownLength != null && knownLength > maxBytes) {
       throw const FormatException('Backup file is too large.');
     }
 
-    final bytes = file.bytes ?? await file.xFile.readAsBytes();
-    if (bytes.length > maxBytes) {
-      throw const FormatException('Backup file is too large.');
+    final builder = BytesBuilder(copy: false);
+    await for (final chunk in file.readAsByteStream()) {
+      if (chunk.length > maxBytes - builder.length) {
+        throw const FormatException('Backup file is too large.');
+      }
+      builder.add(chunk);
     }
+    final bytes = builder.takeBytes();
 
     final String text;
     try {
