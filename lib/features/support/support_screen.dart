@@ -16,79 +16,52 @@ class SupportScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                children: [
-                  const Icon(Icons.storefront_rounded, size: 56),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Ramsandesh on Gumroad',
-                    style: Theme.of(context).textTheme.titleLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  const SelectableText(
-                    ProjectInfo.gumroad,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  Semantics(
-                    button: true,
-                    label: 'Open Ramsandesh on Gumroad',
-                    child: FilledButton.icon(
-                      onPressed: () =>
-                          openExternal(context, ProjectInfo.gumroad),
-                      icon: const Icon(Icons.open_in_new_rounded),
-                      label: const Text('Open Gumroad'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                children: [
-                  const Icon(Icons.coffee_rounded, size: 56),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.text('Support Sanskar on Buy Me a Coffee'),
-                    style: Theme.of(context).textTheme.titleLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.text(
-                      'Supporting is optional. 2048 Nova remains playable without a donation.',
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  Semantics(
-                    button: true,
-                    label: l10n.text('Support Sanskar on Buy Me a Coffee'),
-                    child: FilledButton.icon(
-                      onPressed: () =>
-                          openExternal(context, ProjectInfo.buyMeACoffee),
-                      icon: const Icon(Icons.open_in_new_rounded),
-                      label: Text(l10n.text('Open Buy Me a Coffee')),
-                    ),
-                  ),
-                ],
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text(
+              l10n.text(
+                'Supporting is optional. 2048 Nova remains playable without a donation.',
               ),
             ),
           ),
           Card(
             child: ListTile(
+              leading: const Icon(Icons.coffee_rounded),
+              title: Text(l10n.text('Support Sanskar on Buy Me a Coffee')),
+              subtitle: const Text(ProjectInfo.buyMeACoffee),
+              onTap: () => openExternal(context, ProjectInfo.buyMeACoffee),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.payment_rounded),
+              title: Text(l10n.text('Support via Razorpay')),
+              subtitle: const Text(ProjectInfo.razorpay),
+              onTap: () => openExternal(context, ProjectInfo.razorpay),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.volunteer_activism_rounded),
+              title: Text(l10n.text('Support via PayPal')),
+              subtitle: const Text(ProjectInfo.paypal),
+              onTap: () => openExternal(context, ProjectInfo.paypal),
+            ),
+          ),
+          Card(
+            child: ListTile(
               leading: const Icon(Icons.support_agent_rounded),
-              title: Text(l10n.text('Email support')),
-              subtitle: const Text(ProjectInfo.supportEmail),
-              onTap: () =>
-                  openExternal(context, 'mailto:${ProjectInfo.supportEmail}'),
+              title: Text(l10n.text('Contact support')),
+              subtitle: const Text(ProjectInfo.contact),
+              onTap: () => openExternal(context, ProjectInfo.contact),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.public_rounded),
+              title: Text(l10n.text('Website')),
+              subtitle: const Text(ProjectInfo.website),
+              onTap: () => openExternal(context, ProjectInfo.website),
             ),
           ),
           Card(
@@ -106,9 +79,7 @@ class SupportScreen extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.bug_report_outlined),
               title: Text(l10n.text('Report a bug on GitHub')),
-              subtitle: Text(
-                l10n.text('Open the repository bug report template'),
-              ),
+              subtitle: Text(l10n.text('Open the repository bug report template')),
               onTap: () => openExternal(context, ProjectInfo.bugReport),
             ),
           ),
