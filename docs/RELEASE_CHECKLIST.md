@@ -280,7 +280,7 @@ Source-controlled Web/PWA metadata is regression/audit protected, but real deplo
 - [ ] verify browser local storage across ordinary restart/reload;
 - [ ] verify expected private-browsing/eviction limitations are documented;
 - [ ] verify clipboard and file-input/download handlers;
-- [ ] verify GitHub/LinkedIn/Gumroad/Buy Me a Coffee/browser destinations;
+- [ ] verify GitHub/LinkedIn/website/contact/Buy Me a Coffee/Razorpay/PayPal/browser destinations;
 - [ ] verify business/support `mailto:` handlers;
 - [ ] verify bug-report destination.
 
