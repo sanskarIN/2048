@@ -241,7 +241,7 @@ String _readMarketingVersion(Directory root) {
   if (match == null) {
     _fail('pubspec.yaml must contain a semantic marketing version.');
   }
-  return match!.group(1)!;
+  return match.group(1)!;
 }
 
 void _packageBrowser({
