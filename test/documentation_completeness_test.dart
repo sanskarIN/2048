@@ -362,6 +362,7 @@ void main() {
 
   test('file coverage contract preserves the no-skip tracked-file rule', () {
     final coverage = File('docs/FILE_COVERAGE_CONTRACT.md').readAsStringSync();
+    expect(coverage, contains('Exact-file coverage'));
 
     final contributor = File(
       'docs/NEW_CONTRIBUTOR_TUTORIAL.md',
