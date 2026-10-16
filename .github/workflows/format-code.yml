@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - maintenance/phase-34-audit-hardening
+      - 'release/**'
     paths:
       - lib/**
       - test/**
