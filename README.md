@@ -7,18 +7,15 @@
 
 Made by the Sanskar
 
-[Source](https://github.com/sanskarIN/2048) · [Documentation](docs/README.md) · [Verification](docs/VERIFICATION.md) · [Roadmap](ROADMAP.md) · [Support](SUPPORT.md) · [Gumroad](https://sanskarin.gumroad.com) · [Buy Me a Coffee](https://buymeacoffee.com/sanskarIN)
+[Source](https://github.com/sanskarIN/2048) · [Website](https://sanskarin.github.io) · [Documentation](docs/README.md) · [Verification](docs/VERIFICATION.md) · [Roadmap](ROADMAP.md) · [Support](SUPPORT.md) · [Buy Me a Coffee](https://buymeacoffee.com/SanskarCodes) · [Razorpay](https://razorpay.me/@SanskarCodes) · [PayPal](https://paypal.me/SanskarCodes)
 
-<a href="https://sanskarin.gumroad.com">
-  <img src="assets/branding/ramsandesh_gumroad_badge.svg" alt="Ramsandesh on Gumroad" width="310" />
-</a>
 </div>
 
 ## Overview
 
 2048 Nova preserves the familiar 2048 rules while adding a modern cross-platform interface, deterministic game engine, multiple board sizes and challenge modes, a local **Custom Game Builder** with reusable validated presets, save/resume, robust Undo, offline shareable seeded Challenge Codes with local QR rendering, portable current-game backup/restore, read-only Move Replay, heuristic hints, an isolated Auto Play demonstration with heuristic and bounded expectimax strategies, deterministic solver benchmarks, statistics, achievements, theme palettes, accessibility controls, Daily Challenge, and open-source project tooling.
 
-The normal game is offline-first. It does not require an account, subscription, analytics service, advertising tracker, cloud-sync backend, remote AI model, or permanent internet connection. Internet access is only needed when a player deliberately opens an external destination such as GitHub, LinkedIn, email, Gumroad, or Buy Me a Coffee.
+The normal game is offline-first. It does not require an account, subscription, analytics service, advertising tracker, cloud-sync backend, remote AI model, or permanent internet connection. Internet access is only needed when a player deliberately opens an external destination such as GitHub, LinkedIn, the project website, the contact page, or an optional donation provider.
 
 The repository is currently on the **Version `2.0.12` release line**. Flutter package/build metadata is **`2.0.12+2012`**, where `+2012` is the platform build number and the visible semantic version remains `2.0.12`. Automated quality and native-build evidence remains required, while physical-device, real screen-reader, browser/PWA lifecycle, signing/provisioning, long-session, external-handler, and store-release qualification stay explicit manual boundaries before a qualified stable-release claim.
 
@@ -55,7 +52,7 @@ The latest previously accepted complete CI/native evidence belongs to the earlie
 - Optional lightweight system sound and haptic feedback where supported.
 - Responsive board layouts for multiple window and screen sizes, with focused narrow/large-text regression coverage for Custom Game Builder actions.
 - Branded splash screen, application icons, and tasteful **Made by the Sanskar** identity.
-- Prominent **Ramsandesh Gumroad** storefront entry points plus optional Buy Me a Coffee support and a direct GitHub bug-report action.
+- Optional Buy Me a Coffee, Razorpay, and PayPal funding destinations and a direct GitHub bug-report action.
 - GitHub Actions quality checks, cross-platform release-build verification, Dependabot, issue templates, contribution/security documentation, repository/source audits, and fail-closed stable qualification.
 
 ## Documentation
@@ -357,13 +354,7 @@ The original editable application logo source is stored at:
 assets/branding/2048_nova_logo.svg
 ```
 
-The original Ramsandesh Gumroad storefront badge is stored at:
-
-```text
-assets/branding/ramsandesh_gumroad_badge.svg
-```
-
-A GitHub Actions branding pipeline exports platform-appropriate launcher icons, PWA icons, iOS launch image, and reusable 1024×1024 PNG from the application logo. The Gumroad badge is repository-owned documentation/storefront artwork and is not used as a launcher icon. See [`docs/BRANDING.md`](docs/BRANDING.md).
+A GitHub Actions branding pipeline exports platform-appropriate launcher icons, PWA icons, iOS launch image, and reusable 1024×1024 PNG from the application logo. See [`docs/BRANDING.md`](docs/BRANDING.md).
 
 No proprietary 2048 artwork or copied third-party storefront logo artwork is bundled.
 
@@ -390,24 +381,20 @@ For common setup, analyzer, build, save/Undo, Daily, Challenge Codes, Replay, Au
 - Bug report: https://github.com/sanskarIN/2048/issues/new?template=bug_report.yml
 - GitHub profile: https://www.github.com/sanskarIN
 - LinkedIn: https://www.linkedin.com/in/sanskarIN
-- **Gumroad: https://ramsandesh.gumroad.com**
 - Business: sanskarin@outlook.in
 - Business: sanskarin.business@gmail.com
-- Support: supportramsandesh@gmail.com
+- Website: https://sanskarin.github.io
+- Support/contact: https://sanskarin.github.io/contact
 
-## 🛍️ Gumroad & ☕ support
+## Optional project support
 
-<a href="https://ramsandesh.gumroad.com">
-  <img src="assets/branding/ramsandesh_gumroad_badge.svg" alt="Ramsandesh on Gumroad" width="310" />
-</a>
+2048 Nova remains free to play and contribute to. If you would like to support continued development, use any of these official destinations:
 
-**Gumroad storefront: https://ramsandesh.gumroad.com**
+- Buy Me a Coffee: https://buymeacoffee.com/SanskarCodes
+- Razorpay: https://razorpay.me/@SanskarCodes
+- PayPal: https://paypal.me/SanskarCodes
 
-If you enjoy 2048 Nova and want to support continued development, Buy Me a Coffee is also available at:
-
-**https://buymeacoffee.com/sanskarIN**
-
-Financial support is optional and is never required to play, build, fork, or contribute to the MIT-licensed project.
+Support is optional and is never required to play, build, fork, or contribute to this MIT-licensed project.
 
 ## License
 
@@ -417,7 +404,7 @@ Financial support is optional and is never required to play, build, fork, or con
 
 <div align="center">
 <strong>Made by the Sanskar</strong><br />
-<strong>Gumroad: https://ramsandesh.gumroad.com</strong>
+<strong>Website: https://sanskarin.github.io</strong>
 </div>
 
 ## Language and localization
