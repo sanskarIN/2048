@@ -8,10 +8,12 @@ abstract final class ProjectInfo {
   static const bugReport =
       'https://github.com/sanskarIN/2048/issues/new?template=bug_report.yml';
   static const githubProfile = 'https://www.github.com/sanskarIN';
-  static const linkedIn = 'https://www.linkedin.com/in/sanskarIN';
-  static const buyMeACoffee = 'https://buymeacoffee.com/sanskarIN';
-  static const gumroad = 'https://ramsandesh.gumroad.com';
+  static const linkedIn = 'https://linkedin.com/in/SanskarCodes';
+  static const website = 'https://sanskarin.github.io';
+  static const contact = 'https://sanskarin.github.io/contact';
+  static const buyMeACoffee = 'https://buymeacoffee.com/SanskarCodes';
+  static const razorpay = 'https://razorpay.me/@SanskarCodes';
+  static const paypal = 'https://paypal.me/SanskarCodes';
   static const businessEmailPrimary = 'sanskarin@outlook.in';
   static const businessEmailSecondary = 'sanskarin.business@gmail.com';
-  static const supportEmail = 'supportramsandesh@gmail.com';
 }
