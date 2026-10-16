@@ -15,7 +15,10 @@ void main() {
     test('builds both release APK and Play Store AAB', () {
       expect(workflow, contains('flutter build apk --release'));
       expect(workflow, contains('flutter build appbundle --release'));
-      expect(workflow, contains('name: Android release APK, split APKs, and AAB'));
+      expect(
+        workflow,
+        contains('name: Android release APK, split APKs, and AAB'),
+      );
     });
 
     test('checksums universal and split APKs plus Play Store AAB', () {
