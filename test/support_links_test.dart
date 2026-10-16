@@ -25,10 +25,12 @@ void main() {
 
   test('Home, About, and Support use current project destinations', () {
     final home = File('lib/features/home/home_screen.dart').readAsStringSync();
-    final about = File('lib/features/about/about_screen.dart')
-        .readAsStringSync();
-    final support = File('lib/features/support/support_screen.dart')
-        .readAsStringSync();
+    final about = File(
+      'lib/features/about/about_screen.dart',
+    ).readAsStringSync();
+    final support = File(
+      'lib/features/support/support_screen.dart',
+    ).readAsStringSync();
 
     for (final screen in [home, about, support]) {
       expect(screen.toLowerCase(), isNot(contains('gumroad')));
