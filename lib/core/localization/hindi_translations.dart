@@ -260,8 +260,8 @@ const hindiTranslations = <String, String>{
   'Core gameplay, Challenge Codes, Game Backup validation, Move Replay, Auto Play Demo, and language switching work without a project server. No account, analytics, advertising tracker, remote AI service, cloud synchronization, or online translation service is required. Clipboard text is read or written only after you choose the corresponding Challenge Code or Game Backup action.':
       'मुख्य गेमप्ले, चैलेंज कोड, गेम बैकअप जाँच, मूव रिप्ले, ऑटो प्ले डेमो और भाषा बदलना प्रोजेक्ट सर्वर के बिना चलता है। अकाउंट, एनालिटिक्स, विज्ञापन ट्रैकर, रिमोट AI, क्लाउड सिंक या ऑनलाइन अनुवाद सेवा आवश्यक नहीं है। क्लिपबोर्ड केवल आपके संबंधित कार्य चुनने के बाद पढ़ा या लिखा जाता है।',
   'FAQ': 'सामान्य प्रश्न',
-  'You can continue after reaching the target, disable optional feedback in Settings, change language, reset project-owned local data, and report bugs through GitHub or the support email.':
-      'लक्ष्य तक पहुँचने के बाद खेल जारी रखा जा सकता है, सेटिंग्स में वैकल्पिक फीडबैक बंद किया जा सकता है, भाषा बदली जा सकती है, स्थानीय डेटा रीसेट किया जा सकता है और GitHub या सपोर्ट ईमेल से बग रिपोर्ट किया जा सकता है।',
+  'You can continue after reaching the target, disable optional feedback in Settings, change language, reset project-owned local data, and report bugs through GitHub or the project contact page.':
+      'लक्ष्य तक पहुँचने के बाद खेल जारी रखा जा सकता है, सेटिंग्स में वैकल्पिक फीडबैक बंद किया जा सकता है, भाषा बदली जा सकती है, स्थानीय डेटा रीसेट किया जा सकता है और GitHub या प्रोजेक्ट संपर्क पेज से बग रिपोर्ट किया जा सकता है।',
   'What’s new': 'क्या नया है',
   'Release candidate 0.9 includes ten game modes, deterministic save and Undo integrity, Daily Challenges, offline shareable seeded Challenge Codes, English/Hindi localization with a persisted language setting, statistics and achievements, seven palettes, accessibility controls, heuristic hints, keyboard shortcuts, an isolated Auto Play Demo, read-only Move Replay, validated portable current-game backup with persistent unranked restore policy, and cross-platform release-build verification.':
       'रिलीज़ कैंडिडेट 0.9 में दस गेम मोड, निर्धारक सेव और अनडू अखंडता, डेली चैलेंज, ऑफलाइन साझा सीडेड चैलेंज कोड, सेव होने वाली भाषा सेटिंग के साथ English/हिन्दी समर्थन, आँकड़े और उपलब्धियाँ, सात पैलेट, एक्सेसिबिलिटी कंट्रोल, हीयूरिस्टिक संकेत, कीबोर्ड शॉर्टकट, अलग ऑटो प्ले डेमो, रीड-ओनली मूव रिप्ले, सत्यापित पोर्टेबल गेम बैकअप और क्रॉस-प्लेटफ़ॉर्म रिलीज़-बिल्ड जाँच शामिल हैं।',
@@ -269,7 +269,6 @@ const hindiTranslations = <String, String>{
   'GitHub profile': 'GitHub प्रोफ़ाइल',
   'Business email': 'बिज़नेस ईमेल',
   'Business email 2': 'बिज़नेस ईमेल 2',
-  'Support email': 'सपोर्ट ईमेल',
   'Credits and license': 'श्रेय और लाइसेंस',
   'Created by Sanskar. 2048 Nova is open source under the MIT License. Third-party package licenses remain available through Flutter’s standard license system.':
       'Sanskar द्वारा बनाया गया। 2048 नोवा MIT लाइसेंस के अंतर्गत ओपन सोर्स है। थर्ड-पार्टी पैकेज लाइसेंस Flutter की मानक लाइसेंस प्रणाली में उपलब्ध हैं।',
@@ -278,7 +277,12 @@ const hindiTranslations = <String, String>{
   'Supporting is optional. 2048 Nova remains playable without a donation.':
       'सहयोग वैकल्पिक है। दान के बिना भी 2048 नोवा पूरी तरह खेला जा सकता है।',
   'Open Buy Me a Coffee': 'Buy Me a Coffee खोलें',
-  'Email support': 'ईमेल सहायता',
+  'Website': 'वेबसाइट',
+  'Contact support': 'सहायता संपर्क',
+  'Support via Razorpay': 'Razorpay से सहयोग करें',
+  'Support via PayPal': 'PayPal से सहयोग करें',
+  'Razorpay': 'रेज़रपे',
+  'PayPal': 'पेपाल',
   'Business contact': 'बिज़नेस संपर्क',
   'Report a bug on GitHub': 'GitHub पर बग रिपोर्ट करें',
   'Open the repository bug report template':
