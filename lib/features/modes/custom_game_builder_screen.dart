@@ -534,7 +534,11 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
                           children: [
                             const Icon(Icons.edit_outlined),
                             const SizedBox(width: 12),
-                            Flexible(child: Text(_text('Edit preset', 'प्रीसेट संपादित करें'))),
+                            Flexible(
+                              child: Text(
+                                _text('Edit preset', 'प्रीसेट संपादित करें'),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -558,7 +562,11 @@ class _CustomGameBuilderScreenState extends State<CustomGameBuilderScreen> {
                           children: [
                             const Icon(Icons.delete_outline_rounded),
                             const SizedBox(width: 12),
-                            Flexible(child: Text(_text('Delete preset', 'प्रीसेट हटाएँ'))),
+                            Flexible(
+                              child: Text(
+                                _text('Delete preset', 'प्रीसेट हटाएँ'),
+                              ),
+                            ),
                           ],
                         ),
                       ),
