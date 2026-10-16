@@ -191,7 +191,7 @@ void main() {
       'Full Replay Archives',
       'Challenge Codes',
       'English/Hindi localization',
-      'Accessibility controls',
+      'accessibility controls',
       'Platform support',
       'Release readiness',
     ]) {
