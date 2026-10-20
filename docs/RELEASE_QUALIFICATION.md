@@ -1,6 +1,6 @@
 # Release Qualification
 
-2048 Nova separates automated release-candidate verification from real-device and assistive-technology qualification. A green CI run is required, but it is not by itself sufficient evidence for a stable `2.0.12` release.
+2048 separates automated release-candidate verification from real-device and assistive-technology qualification. A green CI run is required, but it is not by itself sufficient evidence for a stable `2.0.12` release.
 
 ## Machine-enforced gate
 

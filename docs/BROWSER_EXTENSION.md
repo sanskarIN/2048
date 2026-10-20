@@ -1,6 +1,6 @@
 # Browser Extension Preparation
 
-2048 Nova's browser extension is prepared as a **next-release target**. The current Version 2.0.12 six-platform support contract remains unchanged until an extension release is explicitly qualified and versioned.
+2048's browser extension is prepared as a **next-release target**. The current Version 2.0.12 six-platform support contract remains unchanged until an extension release is explicitly qualified and versioned.
 
 The extension reuses the Flutter web application instead of maintaining a second game implementation. This keeps gameplay, accessibility behavior, localization, persistence logic, settings, and future fixes on one Dart/Flutter code path.
 
