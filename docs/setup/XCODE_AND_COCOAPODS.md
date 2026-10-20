@@ -1,6 +1,6 @@
 # Xcode and CocoaPods Handbook
 
-This guide explains the Apple-platform development toolchain used by **2048 Nova** for macOS and iOS builds: Xcode, Command Line Tools, `xcode-select`, `xcodebuild`, Simulator, CocoaPods, code signing, provisioning, upgrades, and troubleshooting.
+This guide explains the Apple-platform development toolchain used by **2048** for macOS and iOS builds: Xcode, Command Line Tools, `xcode-select`, `xcodebuild`, Simulator, CocoaPods, code signing, provisioning, upgrades, and troubleshooting.
 
 A Mac is required for native iOS and macOS builds.
 
