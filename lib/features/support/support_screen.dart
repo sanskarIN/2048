@@ -12,7 +12,7 @@ class SupportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return NovaScaffold(
-      title: l10n.text('Support 2048 Nova'),
+      title: l10n.text('Support 2048'),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -20,7 +20,7 @@ class SupportScreen extends StatelessWidget {
             padding: const EdgeInsets.all(8),
             child: Text(
               l10n.text(
-                'Supporting is optional. 2048 Nova remains playable without a donation.',
+                'Supporting is optional. 2048 remains playable without a donation.',
               ),
             ),
           ),

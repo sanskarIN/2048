@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: SafeArea(
         child: Center(
           child: Semantics(
-            label: l10n.text('2048 Nova splash screen. Made by the Sanskar.'),
+            label: l10n.text('2048 splash screen. Made by the Sanskar.'),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
