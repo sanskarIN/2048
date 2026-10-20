@@ -199,7 +199,7 @@ void main() {
       final ci = File('.github/workflows/ci.yml').readAsStringSync();
       final audit = File('tool/repository_audit.dart').readAsStringSync();
 
-      expect(audit, contains('2048 Nova repository integrity audit'));
+      expect(audit, contains('2048 repository integrity audit'));
       expect(audit, contains('Broken local Markdown link'));
       expect(audit, contains('ProjectInfo.version'));
       expect(audit, contains('what_changed_archive_phase_00_30.md'));

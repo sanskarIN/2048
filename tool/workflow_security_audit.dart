@@ -26,7 +26,7 @@ void main(List<String> args) {
       .toList(growable: false);
 
   if (helpMode) {
-    stdout.writeln('2048 Nova GitHub Actions workflow security audit');
+    stdout.writeln('2048 GitHub Actions workflow security audit');
     stdout.writeln();
     stdout.writeln(
       'Usage: dart run tool/workflow_security_audit.dart [options]',
@@ -107,7 +107,7 @@ void main(List<String> args) {
   if (jsonMode) {
     stdout.writeln(const JsonEncoder.withIndent('  ').convert(result));
   } else {
-    stdout.writeln('2048 Nova workflow security audit');
+    stdout.writeln('2048 workflow security audit');
     stdout.writeln('Root: ${root.path}');
     stdout.writeln('Workflows checked: ${checkedWorkflows.length}');
     stdout.writeln('Result: ${failures.isEmpty ? 'PASS' : 'FAIL'}');

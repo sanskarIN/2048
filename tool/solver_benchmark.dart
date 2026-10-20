@@ -11,7 +11,7 @@ void main(List<String> args) {
       ? _defaultMoveBudget
       : int.tryParse(args.first) ?? _defaultMoveBudget;
 
-  stdout.writeln('2048 Nova solver benchmark');
+  stdout.writeln('2048 solver benchmark');
   stdout.writeln('Move budget per seed: $moveBudget');
   stdout.writeln('Seeds: ${_defaultSeeds.join(', ')}');
   stdout.writeln();

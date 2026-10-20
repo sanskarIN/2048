@@ -230,7 +230,7 @@ void _printHuman(_QualificationReport report, {required bool pendingOnly}) {
   final visibleChecks = pendingOnly
       ? report.checks.where((check) => check.status != 'passed')
       : report.checks;
-  stdout.writeln('2048 Nova release qualification status');
+  stdout.writeln('2048 release qualification status');
   stdout.writeln('Candidate: ${report.candidate}');
   stdout.writeln(
     'Progress: ${report.passed}/${report.total} passed, '
@@ -260,7 +260,7 @@ void _fail(List<String> errors) {
 }
 
 void _printHelp() {
-  stdout.writeln('2048 Nova release qualification status reporter');
+  stdout.writeln('2048 release qualification status reporter');
   stdout.writeln();
   stdout.writeln('Usage:');
   stdout.writeln('  dart run tool/release_qualification_status.dart [options]');

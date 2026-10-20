@@ -280,7 +280,7 @@ DateTime? _parseExplicitTimestamp(String value, List<String> errors) {
 }
 
 void _printChecks(List<Map<String, dynamic>> checks) {
-  stdout.writeln('2048 Nova manual release qualification');
+  stdout.writeln('2048 manual release qualification');
   for (final check in checks) {
     stdout.writeln('- ${check['id']}: ${check['status']} — ${check['title']}');
   }
@@ -294,7 +294,7 @@ void _fail(List<String> errors) {
 }
 
 void _printHelp() {
-  stdout.writeln('2048 Nova release qualification recorder');
+  stdout.writeln('2048 release qualification recorder');
   stdout.writeln();
   stdout.writeln('Usage:');
   stdout.writeln('  dart run tool/record_release_qualification.dart --list');

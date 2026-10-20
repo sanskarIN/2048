@@ -45,7 +45,7 @@ class SystemGameBackupFilePort implements GameBackupFilePort {
   }) async {
     final bytes = Uint8List.fromList(utf8.encode(text));
     final path = await FilePicker.saveFile(
-      dialogTitle: 'Save 2048 Nova game backup',
+      dialogTitle: 'Save 2048 game backup',
       fileName: suggestedName,
       type: FileType.custom,
       allowedExtensions: _extensions,
@@ -69,7 +69,7 @@ class SystemGameBackupFilePort implements GameBackupFilePort {
     // file_picker 13.x exposes a dedicated single-document API. A grant to
     // open a user-selected file does not make its contents trusted.
     final file = await FilePicker.pickFile(
-      dialogTitle: 'Open 2048 Nova game backup',
+      dialogTitle: 'Open 2048 game backup',
       type: FileType.custom,
       allowedExtensions: _extensions,
     );

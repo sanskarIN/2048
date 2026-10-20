@@ -56,7 +56,7 @@ void main(List<String> args) {
       .toList(growable: false);
 
   if (helpMode) {
-    stdout.writeln('2048 Nova release readiness gate');
+    stdout.writeln('2048 release readiness gate');
     stdout.writeln();
     stdout.writeln('Usage: dart run tool/release_readiness.dart [options]');
     stdout.writeln();
@@ -189,7 +189,7 @@ void main(List<String> args) {
   if (jsonMode) {
     stdout.writeln(const JsonEncoder.withIndent('  ').convert(result));
   } else {
-    stdout.writeln('2048 Nova release readiness');
+    stdout.writeln('2048 release readiness');
     stdout.writeln('Mode: ${stableMode ? 'stable' : 'candidate'}');
     stdout.writeln('Root: ${root.path}');
     stdout.writeln('Version: ${version ?? 'unknown'}');

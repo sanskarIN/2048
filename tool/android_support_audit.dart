@@ -24,7 +24,7 @@ void main(List<String> args) {
       .toList(growable: false);
 
   if (helpMode) {
-    stdout.writeln('2048 Nova Android support audit');
+    stdout.writeln('2048 Android support audit');
     stdout.writeln();
     stdout.writeln('Usage: dart run tool/android_support_audit.dart [options]');
     stdout.writeln();
@@ -68,7 +68,7 @@ void main(List<String> args) {
   if (jsonMode) {
     stdout.writeln(const JsonEncoder.withIndent('  ').convert(result));
   } else {
-    stdout.writeln('2048 Nova Android support audit');
+    stdout.writeln('2048 Android support audit');
     stdout.writeln('Root: ${root.path}');
     stdout.writeln(
       'Android source readiness: ${failures.isEmpty ? 'yes' : 'no'}',
