@@ -14,7 +14,6 @@ class AboutScreen extends StatelessWidget {
     final links = [
       ('Repository', ProjectInfo.repository),
       ('GitHub profile', ProjectInfo.githubProfile),
-      ('LinkedIn', ProjectInfo.linkedIn),
       ('Website', ProjectInfo.website),
       ('Contact support', ProjectInfo.contact),
       ('Buy Me a Coffee', ProjectInfo.buyMeACoffee),
