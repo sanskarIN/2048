@@ -8,6 +8,8 @@ void main() {
   const paypal = 'https://paypal.me/SanskarCodes';
   const website = 'https://sanskarin.github.io';
   const contact = 'https://sanskarin.github.io/contact';
+  const businessGmail = 'sanskar.businesswork@gmail.com';
+  const businessOutlook = 'sanskar.businesswork@outlook.com';
 
   test('canonical project links use current owned destinations', () {
     final project = File(
@@ -19,6 +21,9 @@ void main() {
     expect(project, contains("static const buyMeACoffee = '$bmc';"));
     expect(project, contains("static const razorpay = '$razorpay';"));
     expect(project, contains("static const paypal = '$paypal';"));
+    expect(project, contains("static const businessEmailPrimary = '$businessGmail';"));
+    expect(project, contains("static const businessEmailSecondary = '$businessOutlook';"));
+    expect(project, isNot(contains('linkedIn')));
     expect(project.toLowerCase(), isNot(contains('gumroad')));
     expect(project, isNot(contains('supportEmail')));
   });
@@ -38,6 +43,13 @@ void main() {
     }
 
     expect(home, contains('ProjectInfo.buyMeACoffee'));
+    expect(about, isNot(contains('ProjectInfo.linkedIn')));
+    expect(about, isNot(contains("('LinkedIn',")));
+    expect(about, contains('mailto:\${ProjectInfo.businessEmailPrimary}'));
+    expect(about, contains('mailto:\${ProjectInfo.businessEmailSecondary}'));
+    expect(support, contains('mailto:\${ProjectInfo.businessEmailPrimary}'));
+    expect(support, contains('mailto:\${ProjectInfo.businessEmailSecondary}'));
+
     for (final screen in [about, support]) {
       for (final destination in [
         'ProjectInfo.website',
@@ -45,9 +57,41 @@ void main() {
         'ProjectInfo.buyMeACoffee',
         'ProjectInfo.razorpay',
         'ProjectInfo.paypal',
+        'ProjectInfo.businessEmailPrimary',
+        'ProjectInfo.businessEmailSecondary',
       ]) {
         expect(screen, contains(destination));
       }
+    }
+  });
+
+  test('public contact documentation contains no retired destinations', () {
+    for (final path in <String>[
+      'README.md',
+      'SUPPORT.md',
+      'AUTHORS.md',
+      'docs/README.md',
+      'docs/FAQ.md',
+      'docs/USER_GUIDE.md',
+      'docs/PRIVACY.md',
+      'docs/RELEASE_CHECKLIST.md',
+    ]) {
+      final source = File(path).readAsStringSync();
+      expect(source.toLowerCase(), isNot(contains('linkedin')));
+      expect(source, isNot(contains('sanskarin.business@gmail.com')));
+    }
+
+    for (final path in <String>[
+      'README.md',
+      'SUPPORT.md',
+      'AUTHORS.md',
+      'docs/README.md',
+      'docs/FAQ.md',
+      'docs/USER_GUIDE.md',
+    ]) {
+      final source = File(path).readAsStringSync();
+      expect(source, contains(businessGmail));
+      expect(source, contains(businessOutlook));
     }
   });
 
