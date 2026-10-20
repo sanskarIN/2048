@@ -1,6 +1,6 @@
 # Linux Native Toolchain Handbook
 
-Current source target: **2048 Nova 2.0.12+2012**.
+Current source target: **2048 2.0.12+2012**.
 
 This guide focuses on the native Linux desktop toolchain. Start with [`LINUX.md`](LINUX.md) for general Flutter/Linux setup and [`TOOL_SUPPORT_MATRIX.md`](TOOL_SUPPORT_MATRIX.md) for project-wide version policy.
 

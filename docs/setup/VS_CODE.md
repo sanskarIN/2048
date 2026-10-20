@@ -1,6 +1,6 @@
-# Visual Studio Code Setup for 2048 Nova
+# Visual Studio Code Setup for 2048
 
-This guide explains how to install and configure **Visual Studio Code (VS Code)** for 2048 Nova, how Flutter/Dart extensions work, how to select the correct Flutter SDK/device, how to run/debug/test the app, and how to troubleshoot editor-versus-terminal differences.
+This guide explains how to install and configure **Visual Studio Code (VS Code)** for 2048, how Flutter/Dart extensions work, how to select the correct Flutter SDK/device, how to run/debug/test the app, and how to troubleshoot editor-versus-terminal differences.
 
 ## 1. VS Code is optional
 

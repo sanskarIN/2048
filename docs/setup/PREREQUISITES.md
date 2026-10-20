@@ -1,6 +1,6 @@
 # Development Prerequisites
 
-This guide explains **every tool category needed to work on 2048 Nova**, why it exists, how to verify it, and whether it is required or optional.
+This guide explains **every tool category needed to work on 2048**, why it exists, how to verify it, and whether it is required or optional.
 
 Checked against the repository on **2026-08-19**.
 

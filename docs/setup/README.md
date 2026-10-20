@@ -1,6 +1,6 @@
-# 2048 Nova Environment Setup
+# 2048 Environment Setup
 
-This directory is the canonical installation, workstation setup, toolchain maintenance, and end-of-support migration guide for **2048 Nova**.
+This directory is the canonical installation, workstation setup, toolchain maintenance, and end-of-support migration guide for **2048**.
 
 Current project baseline:
 
@@ -173,7 +173,7 @@ Each category has a different upgrade mechanism and compatibility policy.
 
 ## Do not install these merely because another programming project uses them
 
-2048 Nova does not require Node.js/npm, a database server, Docker, a standalone global Gradle, or a second standalone Dart SDK just to compile the Flutter application.
+2048 does not require Node.js/npm, a database server, Docker, a standalone global Gradle, or a second standalone Dart SDK just to compile the Flutter application.
 
 Install extra tools only when a documented task actually needs them.
 

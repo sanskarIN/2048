@@ -1,6 +1,6 @@
 # Tool Upgrades, End-of-Support, and Compatibility Policy
 
-This guide answers a critical maintenance question for **2048 Nova**:
+This guide answers a critical maintenance question for **2048**:
 
 > What should a contributor do when Flutter, Dart, Android Studio, Android SDK, JDK, Gradle, AGP, Kotlin, Xcode, CocoaPods, Visual Studio, VS Code, CMake, Ninja, Git, or an operating-system package becomes outdated or unsupported?
 

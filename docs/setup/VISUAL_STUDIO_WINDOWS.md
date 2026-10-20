@@ -1,6 +1,6 @@
 # Visual Studio and Windows Native Toolchain Handbook
 
-This guide explains the **Visual Studio** requirements for building 2048 Nova as a native Windows desktop application.
+This guide explains the **Visual Studio** requirements for building 2048 as a native Windows desktop application.
 
 Do not confuse **Visual Studio** with **Visual Studio Code**. VS Code is an editor. Visual Studio supplies the MSVC/Windows native build toolchain Flutter needs for `flutter build windows`.
 

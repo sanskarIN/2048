@@ -1,6 +1,6 @@
 # Windows Development Setup
 
-This is the end-to-end Windows setup for **2048 Nova**: Git, Flutter, Android development, Windows desktop builds, VS Code, Visual Studio, environment variables, verification, and common recovery steps.
+This is the end-to-end Windows setup for **2048**: Git, Flutter, Android development, Windows desktop builds, VS Code, Visual Studio, environment variables, verification, and common recovery steps.
 
 Checked against the repository on **2026-08-19**.
 

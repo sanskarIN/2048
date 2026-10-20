@@ -1,6 +1,6 @@
 # macOS Development Setup
 
-This guide configures a Mac for **2048 Nova** development across Flutter, Android, Web, macOS desktop, and iOS.
+This guide configures a Mac for **2048** development across Flutter, Android, Web, macOS desktop, and iOS.
 
 Checked against the repository on **2026-08-19**.
 

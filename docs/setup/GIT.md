@@ -1,6 +1,6 @@
 # Git and GitHub Contributor Handbook
 
-This guide explains the Git workflow used for **2048 Nova**, from installation and identity configuration to commits, branches, syncing, reviewing diffs, recovering from mistakes, and understanding the difference between Git and GitHub.
+This guide explains the Git workflow used for **2048**, from installation and identity configuration to commits, branches, syncing, reviewing diffs, recovering from mistakes, and understanding the difference between Git and GitHub.
 
 ## 1. Git versus GitHub
 

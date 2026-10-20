@@ -1,6 +1,6 @@
 # Flutter and Dart SDK Handbook
 
-This guide explains the Flutter/Dart toolchain used by **2048 Nova**: what the SDKs are, how they relate, how to install and locate them, how channels and upgrades work, how package resolution works, how to diagnose duplicate SDKs, and how to change the project baseline safely.
+This guide explains the Flutter/Dart toolchain used by **2048**: what the SDKs are, how they relate, how to install and locate them, how channels and upgrades work, how package resolution works, how to diagnose duplicate SDKs, and how to change the project baseline safely.
 
 Checked against the repository on **2026-08-19**.
 

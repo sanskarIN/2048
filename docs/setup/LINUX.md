@@ -1,6 +1,6 @@
 # Linux Development Setup
 
-This guide configures a Linux workstation for **2048 Nova** development, Android, Web, and Linux desktop builds. It also explains the role of each native package and how to upgrade safely.
+This guide configures a Linux workstation for **2048** development, Android, Web, and Linux desktop builds. It also explains the role of each native package and how to upgrade safely.
 
 Checked against the repository on **2026-08-19**.
 

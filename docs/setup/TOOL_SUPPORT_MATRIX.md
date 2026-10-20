@@ -1,6 +1,6 @@
 # Tool Support and Upgrade Decision Matrix
 
-This page is the fast compatibility and lifecycle companion to the deeper setup manuals for **2048 Nova**.
+This page is the fast compatibility and lifecycle companion to the deeper setup manuals for **2048**.
 
 It answers four practical questions for every important development tool:
 
