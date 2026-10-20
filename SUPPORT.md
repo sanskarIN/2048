@@ -1,6 +1,6 @@
 # Support
 
-This file explains where to ask for help with 2048 Nova and what information makes a report useful.
+This file explains where to ask for help with 2048 and what information makes a report useful.
 
 ## Project help
 
@@ -18,7 +18,7 @@ Before filing a setup/build issue, check [`docs/TROUBLESHOOTING.md`](docs/TROUBL
 
 Include enough detail to reproduce the issue:
 
-- 2048 Nova version/commit if known;
+- 2048 version/commit if known;
 - device/platform and OS version;
 - Flutter/Dart version for development/build problems;
 - game mode and board size;

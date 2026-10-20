@@ -1,4 +1,4 @@
-# 2048 Nova — Active Continuity
+# 2048 — Active Continuity
 
 This is the active Version 2.0.12 final-integration maintenance record.
 

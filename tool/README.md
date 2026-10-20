@@ -1,4 +1,4 @@
-# 2048 Nova Maintainer Tools
+# 2048 Maintainer Tools
 
 The `tool/` directory contains deterministic, repository-owned command-line utilities used for solver benchmarking, repository integrity, Android support enforcement, cross-platform support enforcement, next-release browser-extension preparation, source-completion enforcement, and release maintenance. These tools are intended to be run from the repository root with the Dart SDK supplied by the supported Flutter toolchain.
 The `tool/` directory contains deterministic, repository-owned command-line utilities used for solver benchmarking, repository integrity, workflow security, cross-platform support enforcement, source-completion enforcement, and release maintenance. These tools are intended to be run from the repository root with the Dart SDK supplied by the supported Flutter toolchain.

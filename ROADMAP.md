@@ -1,4 +1,4 @@
-# 2048 Nova Completion Roadmap
+# 2048 Completion Roadmap
 
 ## 2.0.12 — Feature-complete source target
 

@@ -1,4 +1,4 @@
-# 2048 Nova — Version 2.1.0 Preparation Continuity
+# 2048 — Version 2.1.0 Preparation Continuity
 
 Date: **2026-08-24**
 

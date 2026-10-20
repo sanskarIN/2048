@@ -1,6 +1,6 @@
 # Changelog
 
-All notable current changes to 2048 Nova are documented here.
+All notable current changes to 2048 are documented here.
 
 The detailed pre-Version-2.0.12 development changelog is preserved verbatim in [`CHANGELOG_ARCHIVE_PRE_2_0_12.md`](CHANGELOG_ARCHIVE_PRE_2_0_12.md). Historical phase/run evidence is also preserved in `docs/VERIFICATION.md`, the phase verification records, and the `what_changed` continuity archives.
 

@@ -29,7 +29,7 @@ dart run tool/browser_extension_audit.dart --json
 ```
 
 See `docs/BROWSER_EXTENSION.md` for browser loading, packaging, release, privacy, and store-preparation details.
-# 2048 Nova Browser Extension Preparation
+# 2048 Browser Extension Preparation
 
 This directory is reserved for the planned Version 2.1.0 browser-extension distribution surface.
 
