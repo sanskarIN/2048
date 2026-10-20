@@ -1,6 +1,6 @@
 # Portable Timestamp Integrity
 
-2048 Nova treats game-session timestamps as **absolute instants**, not device-local wall-clock labels. This is important because saved games, Game Backups, and Full Replay Archives can move between Android, iOS, Web, Windows, macOS, Linux, devices, and time zones.
+2048 treats game-session timestamps as **absolute instants**, not device-local wall-clock labels. This is important because saved games, Game Backups, and Full Replay Archives can move between Android, iOS, Web, Windows, macOS, Linux, devices, and time zones.
 
 ## Why UTC serialization matters
 

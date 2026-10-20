@@ -21,8 +21,8 @@ The follow-up hardening covers:
 The maintained source manifest declares:
 
 ```text
-name: 2048 Nova
-short_name: 2048 Nova
+name: 2048
+short_name: 2048
 id: .
 start_url: .
 scope: .
@@ -54,7 +54,7 @@ The maintained source shell requires:
 - generic mobile-Web-app capability metadata;
 - Apple mobile-Web-app capability/title metadata;
 - manifest and Apple touch-icon links;
-- `2048 Nova` document title;
+- `2048` document title;
 - the Flutter bootstrap script.
 
 These declarations improve source metadata and install presentation. They do not prove that every browser or operating system will expose identical installation UI.

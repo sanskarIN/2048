@@ -4,7 +4,7 @@ Date: **2026-08-19**
 
 ## Final phase result
 
-Phase 32 moves 2048 Nova from the historical Version 1.5 candidate line to **Version 2.0.12** and closes the active source-feature roadmap for the declared offline-first puzzle-game scope.
+Phase 32 moves 2048 from the historical Version 1.5 candidate line to **Version 2.0.12** and closes the active source-feature roadmap for the declared offline-first puzzle-game scope.
 
 ```text
 Marketing version: 2.0.12

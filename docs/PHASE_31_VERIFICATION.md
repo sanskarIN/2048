@@ -69,7 +69,7 @@ Ordinary CI uses reporting mode rather than `--fail-if-incomplete`, because pend
 6. rejection of a missing canonical check ID;
 7. rejection of passed evidence with an empty evidence string.
 
-Synthetic fixtures validate tool behavior only. A synthetic passed fixture is not release evidence for 2048 Nova.
+Synthetic fixtures validate tool behavior only. A synthetic passed fixture is not release evidence for 2048.
 
 ## Permanent CI integration
 

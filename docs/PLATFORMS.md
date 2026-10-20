@@ -1,6 +1,6 @@
 # Platform Setup and Build Guide
 
-2048 Nova is configured for Android, iOS, Web/PWA, Windows, macOS, and Linux through Flutter. This document separates **repository configuration**, **local development prerequisites**, **automated build verification**, and **distribution signing** so a generated runner is not mistaken for a fully qualified store release.
+2048 is configured for Android, iOS, Web/PWA, Windows, macOS, and Linux through Flutter. This document separates **repository configuration**, **local development prerequisites**, **automated build verification**, and **distribution signing** so a generated runner is not mistaken for a fully qualified store release.
 
 ## Common requirements
 

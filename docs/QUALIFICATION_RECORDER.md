@@ -1,6 +1,6 @@
 # Release Qualification Recorder
 
-2048 Nova keeps real-device and assistive-technology qualification separate from automated CI. The source of truth remains `docs/release_qualification.json`, while `tool/release_readiness.dart` remains the fail-closed validation gate.
+2048 keeps real-device and assistive-technology qualification separate from automated CI. The source of truth remains `docs/release_qualification.json`, while `tool/release_readiness.dart` remains the fail-closed validation gate.
 
 To reduce manual JSON editing mistakes, maintainers can use the guarded recorder:
 

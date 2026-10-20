@@ -1,6 +1,6 @@
 # Privacy
 
-2048 Nova is designed as an offline-first game. The default codebase does not add analytics, advertising trackers, accounts, cloud synchronization, remote AI services, or background telemetry.
+2048 is designed as an offline-first game. The default codebase does not add analytics, advertising trackers, accounts, cloud synchronization, remote AI services, or background telemetry.
 
 ## Local project data
 
@@ -16,7 +16,7 @@ The application stores project-owned game data locally through Flutter's SharedP
 
 Saved structures are validated before use. Malformed current-game data fails safely, while bounded Undo/Daily collections retain valid neighboring records when repair is possible.
 
-A complete project reset removes only 2048 Nova's project-owned keys. It does not intentionally wipe unrelated preference keys.
+A complete project reset removes only 2048's project-owned keys. It does not intentionally wipe unrelated preference keys.
 
 Challenge Code text is **not** stored as an additional app history/database. Once a code is started, only the resulting normal game/session data follows the standard local persistence path.
 
@@ -55,7 +55,7 @@ The backup intentionally excludes:
 - Undo history;
 - account/analytics data, because the default app has no such system.
 
-The application does not automatically upload or synchronize backup text and does not scan directories in the background. File access begins only after **Save backup file** or **Import backup file** is chosen. The operating system/browser may expose local or cloud-backed locations through its own picker; 2048 Nova receives only the user-selected file interaction and does not add a cloud-storage SDK.
+The application does not automatically upload or synchronize backup text and does not scan directories in the background. File access begins only after **Save backup file** or **Import backup file** is chosen. The operating system/browser may expose local or cloud-backed locations through its own picker; 2048 receives only the user-selected file interaction and does not add a cloud-storage SDK.
 
 Clipboard data is managed by the operating system/platform, so users should treat a copied backup like other clipboard content. A backup is not encrypted or signed. Do not share it unless you intend to share the embedded current-game state.
 
@@ -124,14 +124,14 @@ If future work adds analytics, ads, accounts, multiplayer/cloud synchronization,
 
 ## Localization privacy
 
-Language switching is an offline local operation. 2048 Nova does not send UI strings, selected language, game text, clipboard contents, or user data to an online translation API. English and Hindi strings ship with the application.
+Language switching is an offline local operation. 2048 does not send UI strings, selected language, game text, clipboard contents, or user data to an online translation API. English and Hindi strings ship with the application.
 
 Changing language does not alter or upload saved games, statistics, achievements, Daily history, Challenge Codes, Game Backup, Replay, or Auto Play data. The only network-capable actions remain explicit external browser/email/support destinations initiated by the player.
 
 
 ## Per-mode record privacy
 
-Per-mode best score/highest-tile records are derived locally from trusted game sessions and stored inside the existing local statistics preference payload. They are not uploaded, synchronized, advertised, analyzed by telemetry, or attached to an account because 2048 Nova has no account/cloud analytics path.
+Per-mode best score/highest-tile records are derived locally from trusted game sessions and stored inside the existing local statistics preference payload. They are not uploaded, synchronized, advertised, analyzed by telemetry, or attached to an account because 2048 has no account/cloud analytics path.
 
 The Statistics screen reads these values locally. Game Backup export continues to contain only the current game envelope defined by the backup feature; lifetime aggregate statistics and per-mode records are not exported with it. Imported backups remain unranked and cannot write these records.
 
