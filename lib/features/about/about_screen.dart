@@ -97,7 +97,7 @@ class AboutScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     l10n.text(
-                      'Created by Sanskar. 2048 Nova is open source under the MIT License. Third-party package licenses remain available through Flutter’s standard license system.',
+                      'Created by Sanskar. 2048 is open source under the MIT License. Third-party package licenses remain available through Flutter’s standard license system.',
                     ),
                   ),
                 ],
