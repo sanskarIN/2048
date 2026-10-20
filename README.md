@@ -15,7 +15,7 @@ Made by the Sanskar
 
 2048 Nova preserves the familiar 2048 rules while adding a modern cross-platform interface, deterministic game engine, multiple board sizes and challenge modes, a local **Custom Game Builder** with reusable validated presets, save/resume, robust Undo, offline shareable seeded Challenge Codes with local QR rendering, portable current-game backup/restore, read-only Move Replay, heuristic hints, an isolated Auto Play demonstration with heuristic and bounded expectimax strategies, deterministic solver benchmarks, statistics, achievements, theme palettes, accessibility controls, Daily Challenge, and open-source project tooling.
 
-The normal game is offline-first. It does not require an account, subscription, analytics service, advertising tracker, cloud-sync backend, remote AI model, or permanent internet connection. Internet access is only needed when a player deliberately opens an external destination such as GitHub, LinkedIn, the project website, the contact page, or an optional donation provider.
+The normal game is offline-first. It does not require an account, subscription, analytics service, advertising tracker, cloud-sync backend, remote AI model, or permanent internet connection. Internet access is only needed when a player deliberately opens an external destination such as GitHub, the project website, the contact page, or an optional donation provider.
 
 The repository is currently on the **Version `2.0.12` release line**. Flutter package/build metadata is **`2.0.12+2012`**, where `+2012` is the platform build number and the visible semantic version remains `2.0.12`. Automated quality and native-build evidence remains required, while physical-device, real screen-reader, browser/PWA lifecycle, signing/provisioning, long-session, external-handler, and store-release qualification stay explicit manual boundaries before a qualified stable-release claim.
 
@@ -380,9 +380,8 @@ For common setup, analyzer, build, save/Undo, Daily, Challenge Codes, Replay, Au
 - Repository: https://github.com/sanskarIN/2048
 - Bug report: https://github.com/sanskarIN/2048/issues/new?template=bug_report.yml
 - GitHub profile: https://www.github.com/sanskarIN
-- LinkedIn: https://www.linkedin.com/in/sanskarIN
-- Business: sanskarin@outlook.in
-- Business: sanskarin.business@gmail.com
+- Business: sanskar.businesswork@gmail.com
+- Business: sanskar.businesswork@outlook.com
 - Website: https://sanskarin.github.io
 - Support/contact: https://sanskarin.github.io/contact
 

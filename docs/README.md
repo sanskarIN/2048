@@ -273,7 +273,7 @@ git ls-files | sort
 - Project: **2048 Nova**
 - Creator branding: **Made by the Sanskar**
 - License: MIT
-- Business: `sanskarin@outlook.in`, `sanskarin.business@gmail.com`
+- Business: `sanskar.businesswork@gmail.com`, `sanskar.businesswork@outlook.com`
 - Support: `https://sanskarin.github.io/contact`
 - Buy Me a Coffee: `https://buymeacoffee.com/SanskarCodes`
 - Razorpay: `https://razorpay.me/@SanskarCodes`

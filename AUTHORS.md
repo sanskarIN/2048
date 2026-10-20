@@ -5,9 +5,8 @@
 **Sanskar**
 
 - GitHub: https://www.github.com/sanskarIN
-- LinkedIn: https://linkedin.com/in/SanskarCodes
-- Business: `sanskarin@outlook.in`
-- Business: `sanskarin.business@gmail.com`
+- Business: `sanskar.businesswork@gmail.com`
+- Business: `sanskar.businesswork@outlook.com`
 - Contact: `https://sanskarin.github.io/contact`
 
 Project branding: **Made by the Sanskar**
