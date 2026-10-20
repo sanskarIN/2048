@@ -1,6 +1,6 @@
 # Building Executables and Distribution Artifacts
 
-This is the canonical build handbook for **2048 Nova**. It explains how to prepare a machine, validate the source, build every maintained platform target, understand each artifact, handle signing safely, verify checksums, and diagnose build failures.
+This is the canonical build handbook for **2048**. It explains how to prepare a machine, validate the source, build every maintained platform target, understand each artifact, handle signing safely, verify checksums, and diagnose build failures.
 
 Current source identity:
 
@@ -447,7 +447,7 @@ flutter build macos --release
 Current expected product:
 
 ```text
-build/macos/Build/Products/Release/2048 Nova.app
+build/macos/Build/Products/Release/2048.app
 ```
 
 A `.app` is a structured directory bundle even though Finder displays it as one application. Preserve the bundle structure.

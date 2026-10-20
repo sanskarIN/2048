@@ -1,6 +1,6 @@
 # Release Checklist — Version 2.0.12
 
-2048 Nova is currently on the **Version 2.0.12** release target.
+2048 is currently on the **Version 2.0.12** release target.
 
 ```text
 Marketing version: 2.0.12

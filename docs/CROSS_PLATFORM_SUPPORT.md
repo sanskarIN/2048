@@ -1,6 +1,6 @@
 # Cross-Platform Support Contract
 
-2048 Nova is maintained as one Flutter application targeting **Android, iOS, Web/PWA, Windows, macOS, and Linux**. This document defines what the repository guarantees at source and CI level, how every stable target is built, and which release claims still require real hardware, browser, signing, or store evidence.
+2048 is maintained as one Flutter application targeting **Android, iOS, Web/PWA, Windows, macOS, and Linux**. This document defines what the repository guarantees at source and CI level, how every stable target is built, and which release claims still require real hardware, browser, signing, or store evidence.
 
 ## Supported target families
 
