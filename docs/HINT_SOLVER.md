@@ -1,6 +1,6 @@
 # Hint Solver
 
-2048 Nova keeps all solver behavior deterministic, local, offline, and independent of trusted player state.
+2048 keeps all solver behavior deterministic, local, offline, and independent of trusted player state.
 
 ## Normal Hint scope
 

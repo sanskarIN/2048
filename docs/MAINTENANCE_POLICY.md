@@ -1,6 +1,6 @@
 # Maintenance Policy
 
-2048 Nova **2.0.12** is feature-complete within the product scope defined by the repository documentation and final source audit.
+2048 **2.0.12** is feature-complete within the product scope defined by the repository documentation and final source audit.
 
 This policy prevents normal long-term maintenance from being confused with an unfinished feature backlog.
 

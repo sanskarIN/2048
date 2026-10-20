@@ -1,6 +1,6 @@
 # Per-Mode Records
 
-2048 Nova keeps lightweight best-progress records for each supported game mode. These records are local-only, offline-first statistics designed to answer a simple question: **what is the strongest trusted progress this installation has reached in each mode?**
+2048 keeps lightweight best-progress records for each supported game mode. These records are local-only, offline-first statistics designed to answer a simple question: **what is the strongest trusted progress this installation has reached in each mode?**
 
 ## Recorded fields
 
@@ -17,7 +17,7 @@ The board-size and target fields describe the best-score configuration. They are
 
 Per-mode records follow the same local ranking boundary as the existing aggregate statistics:
 
-- A game started normally inside 2048 Nova is ranked and may update its mode record.
+- A game started normally inside 2048 is ranked and may update its mode record.
 - A locally started deterministic/seeded game remains ranked. A seed by itself does not make a session untrusted.
 - A current game imported through Game Backup is explicitly **unranked** and cannot update per-mode records.
 - Continuing to move an imported unranked board still cannot update per-mode records.

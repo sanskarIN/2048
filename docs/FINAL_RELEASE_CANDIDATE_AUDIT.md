@@ -1,4 +1,4 @@
-# 2048 Nova — Final Version 1.5 Release-Candidate Audit
+# 2048 — Final Version 1.5 Release-Candidate Audit
 
 Date: **2026-08-17**
 

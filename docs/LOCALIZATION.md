@@ -1,6 +1,6 @@
 # Localization
 
-2048 Nova includes an offline localization layer for **English** and **Hindi (हिन्दी)**. The player can follow the device/system language or explicitly choose English or Hindi from Settings.
+2048 includes an offline localization layer for **English** and **Hindi (हिन्दी)**. The player can follow the device/system language or explicitly choose English or Hindi from Settings.
 
 ## Supported languages
 

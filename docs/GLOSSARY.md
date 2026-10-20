@@ -1,6 +1,6 @@
-# 2048 Nova Glossary
+# 2048 Glossary
 
-This glossary defines the important words, abbreviations, file types, build concepts, platform terms, gameplay terms, testing terms, release terms, and command-line concepts used throughout the **2048 Nova** documentation.
+This glossary defines the important words, abbreviations, file types, build concepts, platform terms, gameplay terms, testing terms, release terms, and command-line concepts used throughout the **2048** documentation.
 
 The goal is that a beginner should not need to guess what a technical word means before following another guide.
 
@@ -48,7 +48,7 @@ A program check expressing something that must be true. Assertions can catch inv
 ## B
 
 ### Backend
-Server-side service or infrastructure. 2048 Nova is intentionally offline-first and does not require a project backend for core gameplay.
+Server-side service or infrastructure. 2048 is intentionally offline-first and does not require a project backend for core gameplay.
 
 ### Base path / base href
 Web deployment path context used so browser assets/routes resolve correctly when an app is hosted below a domain root rather than at `/`.
@@ -197,7 +197,7 @@ Declared source feature scope has been implemented for the release target. It do
 Command-line token modifying command behavior, commonly beginning with `-` or `--`, such as `--release`.
 
 ### Flutter
-Cross-platform application framework/toolkit used to build 2048 Nova.
+Cross-platform application framework/toolkit used to build 2048.
 
 ### Flutter channel
 Release stream for Flutter SDK versions, such as `stable` or `beta`.
@@ -299,7 +299,7 @@ Legal terms governing software/source/dependencies. The repository itself uses t
 Static rule that detects suspicious, inconsistent, or undesirable source patterns. Flutter/Dart lints are evaluated by analysis.
 
 ### Local storage
-Data stored on the user's device/browser rather than a remote project server. 2048 Nova is offline-first and persists game/preferences locally through platform-supported mechanisms.
+Data stored on the user's device/browser rather than a remote project server. 2048 is offline-first and persists game/preferences locally through platform-supported mechanisms.
 
 ### Lockfile
 See **dependency lockfile**.

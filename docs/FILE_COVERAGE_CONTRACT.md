@@ -1,6 +1,6 @@
 # No-Skip Tracked File Coverage Contract
 
-This document defines what **“do not skip any files”** means for 2048 Nova documentation and maintenance.
+This document defines what **“do not skip any files”** means for 2048 documentation and maintenance.
 
 The repository already contains [`REPOSITORY_FILE_ATLAS.md`](REPOSITORY_FILE_ATLAS.md), which explains the role of the repository's source, platform, test, tool, asset, workflow, and documentation trees. This contract adds an auditable rule so future files cannot silently fall outside that map.
 

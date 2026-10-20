@@ -1,6 +1,6 @@
 # Game Engine Rules and Invariants
 
-2048 Nova keeps gameplay rules in `lib/domain/` so they can be tested independently from Flutter widgets and local persistence. The primary implementation is `GameEngine`, with serializable state in `GameState`, configuration in `GameConfig`, deterministic random behavior in `RandomSource`, move recommendations in `HintSolver`, and portable seeded configuration in `ChallengeCode`.
+2048 keeps gameplay rules in `lib/domain/` so they can be tested independently from Flutter widgets and local persistence. The primary implementation is `GameEngine`, with serializable state in `GameState`, configuration in `GameConfig`, deterministic random behavior in `RandomSource`, move recommendations in `HintSolver`, and portable seeded configuration in `ChallengeCode`.
 
 ## Board representation
 

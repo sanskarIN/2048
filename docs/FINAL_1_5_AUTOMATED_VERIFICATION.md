@@ -1,6 +1,6 @@
 # Final Version 1.5 Automated Verification
 
-This document records the final accepted automated source/build evidence for the **2048 Nova `1.5.0+15` release candidate**. It does not promote the package to stable `1.5.0` and it does not replace any real-world manual qualification requirement.
+This document records the final accepted automated source/build evidence for the **2048 `1.5.0+15` release candidate**. It does not promote the package to stable `1.5.0` and it does not replace any real-world manual qualification requirement.
 
 ## Accepted source
 

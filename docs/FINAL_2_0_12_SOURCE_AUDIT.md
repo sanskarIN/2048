@@ -2,7 +2,7 @@
 
 Date: **2026-08-19**
 
-This document records the final source-level completion audit for **2048 Nova 2.0.12**.
+This document records the final source-level completion audit for **2048 2.0.12**.
 
 ## Release identity
 
@@ -14,7 +14,7 @@ This document records the final source-level completion audit for **2048 Nova 2.
 
 ## Source-completion result
 
-**2048 Nova 2.0.12 is feature-complete within its declared offline-first puzzle-game scope.**
+**2048 2.0.12 is feature-complete within its declared offline-first puzzle-game scope.**
 
 There is no active source-level feature backlog for this release. Ideas such as extra languages, in-app QR scanning, deeper solver variants, richer effects, or additional convenience integrations are not required work for 2.0.12; they are explicitly out of scope unless a future release deliberately adopts them.
 
