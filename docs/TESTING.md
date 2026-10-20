@@ -1,6 +1,6 @@
 # Testing Strategy
 
-2048 Nova uses automated tests for deterministic rules, persistence integrity, controller behavior, accessibility semantics, terminal-state safety, seeded Challenge Code portability, Auto Play isolation, read-only replay integrity, portable backup trust boundaries, and important UI flows. GitHub Actions is the objective source of truth for repository-wide formatter, analyzer, test, and build status.
+2048 uses automated tests for deterministic rules, persistence integrity, controller behavior, accessibility semantics, terminal-state safety, seeded Challenge Code portability, Auto Play isolation, read-only replay integrity, portable backup trust boundaries, and important UI flows. GitHub Actions is the objective source of truth for repository-wide formatter, analyzer, test, and build status.
 
 ## Unit and controller coverage
 

@@ -1,6 +1,6 @@
 # Web / Progressive Web App Guide
 
-2048 Nova supports the Flutter Web target and includes install-oriented Web App Manifest metadata for compatible browsers. This document describes the source-controlled metadata, deployment assumptions, and qualification boundaries without treating hosted compilation as proof of installation behavior on every browser or device.
+2048 supports the Flutter Web target and includes install-oriented Web App Manifest metadata for compatible browsers. This document describes the source-controlled metadata, deployment assumptions, and qualification boundaries without treating hosted compilation as proof of installation behavior on every browser or device.
 
 ## Source files
 
@@ -22,7 +22,7 @@ Flutter generates the remaining release assets during `flutter build web --relea
 
 `web/manifest.json` declares:
 
-- application name and short name: **2048 Nova**;
+- application name and short name: **2048**;
 - install identity (`id`) relative to the deployed application root;
 - relative `start_url` and `scope` so the source remains suitable for root or subpath deployments when the Flutter base href is configured correctly;
 - standalone display mode;
@@ -78,7 +78,7 @@ Before calling a Web/PWA distribution target qualified, test the actual deployed
 
 ## Offline-first boundary
 
-2048 Nova is designed around local gameplay and local persistence. The Web build does not introduce an account, analytics service, advertising SDK, cloud save, or server requirement into the game model.
+2048 is designed around local gameplay and local persistence. The Web build does not introduce an account, analytics service, advertising SDK, cloud save, or server requirement into the game model.
 
 Browser storage, caching, eviction, private-browsing behavior, clipboard/file handlers, install state, and service-worker lifecycle are controlled partly by the browser environment. Do not represent those environment-specific behaviors as manually verified solely because automated tests or hosted Web compilation pass.
 
