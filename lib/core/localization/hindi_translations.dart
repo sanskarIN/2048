@@ -1,6 +1,6 @@
 const hindiTranslations = <String, String>{
-  'Home can open Challenge Codes to create or open an offline shared deterministic challenge. A generated code is shown as selectable NOVA1 text and as a local black-on-white QR containing that exact same text, so another device can scan it with its own camera or scanner app. 2048 Nova does not request camera access or upload QR contents. A NOVA1 code contains only a supported game configuration and random seed, never board progress, score, lifetime statistics, achievements, Daily history, settings, or Undo snapshots. Codes are checksummed for accidental corruption, not signed, encrypted, authenticated, or proof of identity. Daily Challenge stays separate because it already uses the UTC date as its shared seed. Starting a valid code creates a fresh normal non-Daily game and uses the normal local statistics policy.':
-      'होम से चैलेंज कोड खोलकर ऑफलाइन साझा निर्धारक चैलेंज बनाया या खोला जा सकता है। बनाया गया कोड चुनने योग्य NOVA1 टेक्स्ट और उसी टेक्स्ट वाले स्थानीय काले-सफेद QR के रूप में दिखता है, जिसे दूसरा डिवाइस अपने कैमरा या स्कैनर ऐप से स्कैन कर सकता है। 2048 Nova कैमरा अनुमति नहीं मांगता और QR सामग्री अपलोड नहीं करता। NOVA1 कोड में केवल समर्थित गेम कॉन्फ़िगरेशन और रैंडम सीड होता है; बोर्ड प्रगति, स्कोर, लाइफटाइम आँकड़े, उपलब्धियाँ, डेली इतिहास, सेटिंग्स या Undo स्नैपशॉट नहीं। चेकसम केवल आकस्मिक खराबी पहचानता है; यह हस्ताक्षर, एन्क्रिप्शन, प्रमाणीकरण या पहचान का प्रमाण नहीं है। डेली चैलेंज अलग रहता है क्योंकि वह UTC तारीख को साझा सीड के रूप में उपयोग करता है। वैध कोड शुरू करने पर नया सामान्य गैर-डेली गेम बनता है और सामान्य स्थानीय आँकड़ा नीति लागू होती है।',
+  'Home can open Challenge Codes to create or open an offline shared deterministic challenge. A generated code is shown as selectable NOVA1 text and as a local black-on-white QR containing that exact same text, so another device can scan it with its own camera or scanner app. 2048 does not request camera access or upload QR contents. A NOVA1 code contains only a supported game configuration and random seed, never board progress, score, lifetime statistics, achievements, Daily history, settings, or Undo snapshots. Codes are checksummed for accidental corruption, not signed, encrypted, authenticated, or proof of identity. Daily Challenge stays separate because it already uses the UTC date as its shared seed. Starting a valid code creates a fresh normal non-Daily game and uses the normal local statistics policy.':
+      'होम से चैलेंज कोड खोलकर ऑफलाइन साझा निर्धारक चैलेंज बनाया या खोला जा सकता है। बनाया गया कोड चुनने योग्य NOVA1 टेक्स्ट और उसी टेक्स्ट वाले स्थानीय काले-सफेद QR के रूप में दिखता है, जिसे दूसरा डिवाइस अपने कैमरा या स्कैनर ऐप से स्कैन कर सकता है। 2048 कैमरा अनुमति नहीं मांगता और QR सामग्री अपलोड नहीं करता। NOVA1 कोड में केवल समर्थित गेम कॉन्फ़िगरेशन और रैंडम सीड होता है; बोर्ड प्रगति, स्कोर, लाइफटाइम आँकड़े, उपलब्धियाँ, डेली इतिहास, सेटिंग्स या Undo स्नैपशॉट नहीं। चेकसम केवल आकस्मिक खराबी पहचानता है; यह हस्ताक्षर, एन्क्रिप्शन, प्रमाणीकरण या पहचान का प्रमाण नहीं है। डेली चैलेंज अलग रहता है क्योंकि वह UTC तारीख को साझा सीड के रूप में उपयोग करता है। वैध कोड शुरू करने पर नया सामान्य गैर-डेली गेम बनता है और सामान्य स्थानीय आँकड़ा नीति लागू होती है।',
   'Use system text scaling, keyboard controls, positional semantic tile labels, high contrast, and reduced motion. Tile values are always shown as text, not color alone. Challenge Codes use labeled form controls, selectable generated text, a semantic label for the QR, explicit validation feedback, and a decoded configuration preview; the text remains available so QR scanning is never the only sharing path.':
       'सिस्टम टेक्स्ट स्केलिंग, कीबोर्ड नियंत्रण, स्थान-आधारित सिमेंटिक टाइल लेबल, हाई कॉन्ट्रास्ट और कम मोशन का उपयोग करें। टाइल मान हमेशा टेक्स्ट में दिखते हैं, केवल रंग से नहीं। चैलेंज कोड में लेबल वाले फॉर्म नियंत्रण, चुनने योग्य बनाया गया टेक्स्ट, QR के लिए सिमेंटिक लेबल, स्पष्ट वैलिडेशन प्रतिक्रिया और डिकोडेड कॉन्फ़िगरेशन प्रीव्यू है; टेक्स्ट उपलब्ध रहता है ताकि QR स्कैनिंग कभी भी एकमात्र साझा करने का तरीका न हो।',
   'Core gameplay, Challenge Code text/QR generation, Game Backup validation, Move Replay, Full Replay Archive, Auto Play Demo, and language switching work without a project server. QR rendering is local and does not request camera access. No account, analytics, advertising tracker, remote AI service, cloud synchronization, or online translation service is required. Clipboard text is read or written only after you choose the corresponding Challenge Code, Game Backup, or Full Replay Archive action.':
@@ -140,13 +140,13 @@ const hindiTranslations = <String, String>{
       'एक्सपोर्ट एक सत्यापित JSON बैकअप क्लिपबोर्ड पर कॉपी करता है। इसमें केवल वर्तमान गेम होता है—सेटिंग्स, लाइफटाइम आँकड़े, उपलब्धियाँ, डेली हिस्ट्री या अनडू हिस्ट्री नहीं।',
   'Imported backups are deliberately restored as unranked sessions. You can keep playing them, but they cannot change lifetime records, achievements, streaks, or Daily results.':
       'इम्पोर्ट किए गए बैकअप जानबूझकर अनरैंक्ड सत्र के रूप में बहाल होते हैं। आप उन्हें खेल सकते हैं, लेकिन वे लाइफटाइम रिकॉर्ड, उपलब्धियाँ, स्ट्रीक या डेली परिणाम नहीं बदल सकते।',
-  'No current game is available to export. You can still import a valid 2048 Nova game backup from the clipboard.':
-      'एक्सपोर्ट के लिए कोई वर्तमान गेम उपलब्ध नहीं है। आप फिर भी क्लिपबोर्ड से वैध 2048 नोवा गेम बैकअप इम्पोर्ट कर सकते हैं।',
+  'No current game is available to export. You can still import a valid 2048 game backup from the clipboard.':
+      'एक्सपोर्ट के लिए कोई वर्तमान गेम उपलब्ध नहीं है। आप फिर भी क्लिपबोर्ड से वैध 2048 गेम बैकअप इम्पोर्ट कर सकते हैं।',
   'Copy game backup': 'गेम बैकअप कॉपी करें',
   'Import from clipboard': 'क्लिपबोर्ड से इम्पोर्ट करें',
   'Import safety': 'इम्पोर्ट सुरक्षा',
-  '• Backup format and version must match 2048 Nova.':
-      '• बैकअप फ़ॉर्मेट और वर्ज़न 2048 नोवा से मेल खाने चाहिए।',
+  '• Backup format and version must match 2048.':
+      '• बैकअप फ़ॉर्मेट और वर्ज़न 2048 से मेल खाने चाहिए।',
   '• Embedded game state is strictly validated.':
       '• एम्बेडेड गेम स्टेट की सख्ती से जाँच होती है।',
   '• Oversized or malformed text is rejected.':
@@ -270,12 +270,12 @@ const hindiTranslations = <String, String>{
   'Business email': 'बिज़नेस ईमेल',
   'Business email 2': 'बिज़नेस ईमेल 2',
   'Credits and license': 'श्रेय और लाइसेंस',
-  'Created by Sanskar. 2048 Nova is open source under the MIT License. Third-party package licenses remain available through Flutter’s standard license system.':
-      'Sanskar द्वारा बनाया गया। 2048 नोवा MIT लाइसेंस के अंतर्गत ओपन सोर्स है। थर्ड-पार्टी पैकेज लाइसेंस Flutter की मानक लाइसेंस प्रणाली में उपलब्ध हैं।',
+  'Created by Sanskar. 2048 is open source under the MIT License. Third-party package licenses remain available through Flutter’s standard license system.':
+      'Sanskar द्वारा बनाया गया। 2048 MIT लाइसेंस के अंतर्गत ओपन सोर्स है। थर्ड-पार्टी पैकेज लाइसेंस Flutter की मानक लाइसेंस प्रणाली में उपलब्ध हैं।',
   'View third-party licenses': 'थर्ड-पार्टी लाइसेंस देखें',
-  'Support 2048 Nova': '2048 नोवा का सहयोग करें',
-  'Supporting is optional. 2048 Nova remains playable without a donation.':
-      'सहयोग वैकल्पिक है। दान के बिना भी 2048 नोवा पूरी तरह खेला जा सकता है।',
+  'Support 2048': '2048 का सहयोग करें',
+  'Supporting is optional. 2048 remains playable without a donation.':
+      'सहयोग वैकल्पिक है। दान के बिना भी 2048 पूरी तरह खेला जा सकता है।',
   'Open Buy Me a Coffee': 'Buy Me a Coffee खोलें',
   'Website': 'वेबसाइट',
   'Contact support': 'सहायता संपर्क',
@@ -287,8 +287,8 @@ const hindiTranslations = <String, String>{
   'Report a bug on GitHub': 'GitHub पर बग रिपोर्ट करें',
   'Open the repository bug report template':
       'रिपॉज़िटरी बग रिपोर्ट टेम्पलेट खोलें',
-  '2048 Nova splash screen. Made by the Sanskar.':
-      '2048 नोवा स्प्लैश स्क्रीन। Made by the Sanskar.',
+  '2048 splash screen. Made by the Sanskar.':
+      '2048 स्प्लैश स्क्रीन। Made by the Sanskar.',
   'This link cannot be opened safely.':
       'यह लिंक सुरक्षित रूप से नहीं खोला जा सकता।',
   'Could not open this link on your device.':
@@ -311,8 +311,8 @@ const hindiTranslations = <String, String>{
   'Clipboard does not contain a replay archive.':
       'क्लिपबोर्ड में रिप्ले आर्काइव नहीं है।',
   'Open replay archive text': 'रिप्ले आर्काइव टेक्स्ट खोलें',
-  'Paste a 2048 Nova full-session replay JSON archive.':
-      '2048 Nova का पूर्ण-सेशन रिप्ले JSON आर्काइव पेस्ट करें।',
+  'Paste a 2048 full-session replay JSON archive.':
+      '2048 का पूर्ण-सेशन रिप्ले JSON आर्काइव पेस्ट करें।',
   'Open Replay': 'रिप्ले खोलें',
   'Replay archive opened in spectator mode. Your current game was not changed.':
       'रिप्ले आर्काइव दर्शक मोड में खुला। आपका वर्तमान गेम नहीं बदला गया।',
@@ -387,8 +387,8 @@ const hindiTranslations = <String, String>{
       'एक सत्यापित JSON बैकअप क्लिपबोर्ड या .nova2048 फ़ाइल में एक्सपोर्ट किया जा सकता है। इसमें केवल वर्तमान गेम होता है — सेटिंग्स, जीवनकाल आँकड़े, उपलब्धियाँ, डेली हिस्ट्री या अनडू हिस्ट्री कभी नहीं।',
   'Imported backups are deliberately restored as unranked sessions. Clipboard and file imports use the same strict validation and trust policy.':
       'इम्पोर्ट किए गए बैकअप जानबूझकर अनरैंक्ड सेशन के रूप में रिस्टोर होते हैं। क्लिपबोर्ड और फ़ाइल इम्पोर्ट एक ही सख्त सत्यापन और ट्रस्ट नीति का उपयोग करते हैं।',
-  'No current game is available to export. You can still import a valid 2048 Nova game backup from the clipboard or a .nova2048 file.':
-      'एक्सपोर्ट करने के लिए कोई वर्तमान गेम उपलब्ध नहीं है। आप फिर भी क्लिपबोर्ड या .nova2048 फ़ाइल से वैध 2048 नोवा गेम बैकअप इम्पोर्ट कर सकते है।',
+  'No current game is available to export. You can still import a valid 2048 game backup from the clipboard or a .nova2048 file.':
+      'एक्सपोर्ट करने के लिए कोई वर्तमान गेम उपलब्ध नहीं है। आप फिर भी क्लिपबोर्ड या .nova2048 फ़ाइल से वैध 2048 गेम बैकअप इम्पोर्ट कर सकते है।',
   'Save backup file': 'बैकअप फ़ाइल सेव करें',
   'Import backup file': 'बैकअप फ़ाइल इम्पोर्ट करें',
   '• File size is bounded before UTF-8 and JSON decoding.':

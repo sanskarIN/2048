@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "2048 Nova",
-  "short_name": "2048 Nova",
+  "name": "2048",
+  "short_name": "2048",
   "version": "__VERSION__",
-  "description": "Play 2048 Nova offline from your browser toolbar.",
+  "description": "Play 2048 offline from your browser toolbar.",
   "action": {
-    "default_title": "Play 2048 Nova",
+    "default_title": "Play 2048",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon-16.png",

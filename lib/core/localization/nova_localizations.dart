@@ -143,7 +143,7 @@ class NovaLocalizations {
   };
 
   static const _hindi = <String, String>{
-    '2048 Nova': '2048 नोवा',
+    '2048': '2048',
     'Classic strategy. Modern polish. Offline-first.':
         'क्लासिक रणनीति। आधुनिक अनुभव। ऑफलाइन-फर्स्ट।',
     'Continue Game': 'गेम जारी रखें',
@@ -164,7 +164,7 @@ class NovaLocalizations {
     'Support on Buy Me a Coffee': 'Buy Me a Coffee पर सहयोग करें',
     'Support Sanskar on Buy Me a Coffee':
         'Buy Me a Coffee पर Sanskar का सहयोग करें',
-    '2048 Nova, modern puzzle game': '2048 नोवा, आधुनिक पज़ल गेम',
+    '2048, modern puzzle game': '2048, आधुनिक पज़ल गेम',
     'Appearance': 'दिखावट',
     'Language': 'भाषा',
     'System default': 'सिस्टम डिफ़ॉल्ट',
@@ -205,8 +205,8 @@ class NovaLocalizations {
     'Reset game, settings, statistics, achievements, and daily history.':
         'गेम, सेटिंग्स, आँकड़े, उपलब्धियाँ और डेली हिस्ट्री रीसेट करें।',
     'Clear all local data?': 'सभी स्थानीय डेटा साफ करें?',
-    'This removes all 2048 Nova data stored on this device and cannot be undone.':
-        'यह इस डिवाइस पर रखा सारा 2048 नोवा डेटा हटा देगा और इसे वापस नहीं किया जा सकता।',
+    'This removes all 2048 data stored on this device and cannot be undone.':
+        'यह इस डिवाइस पर रखा सारा 2048 डेटा हटा देगा और इसे वापस नहीं किया जा सकता।',
     'Cancel': 'रद्द करें',
     'Clear all': 'सब साफ करें',
     'Reset': 'रीसेट',
