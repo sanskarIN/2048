@@ -56,10 +56,9 @@ The Challenge Code checksum is not secret/authentication material. Security repo
 
 ## Business/contact
 
-- Business: **sanskarin@outlook.in**
-- Business: **sanskarin.business@gmail.com**
+- Business: **sanskar.businesswork@gmail.com**
+- Business: **sanskar.businesswork@outlook.com**
 - GitHub profile: https://www.github.com/sanskarIN
-- LinkedIn: https://linkedin.com/in/SanskarCodes
 - Website: **https://sanskarin.github.io**
 - Contact: **https://sanskarin.github.io/contact**
 
