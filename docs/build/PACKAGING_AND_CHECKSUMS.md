@@ -1,6 +1,6 @@
 # Packaging and SHA-256 Verification
 
-This guide documents the packaging patterns used by 2048 Nova's hosted qualification builds and provides matching local commands. Packaging preserves a complete build output for transfer/testing; SHA-256 provides integrity comparison.
+This guide documents the packaging patterns used by 2048's hosted qualification builds and provides matching local commands. Packaging preserves a complete build output for transfer/testing; SHA-256 provides integrity comparison.
 
 A checksum is **not** code signing, authentication, encryption, malware scanning, or proof of publisher identity.
 

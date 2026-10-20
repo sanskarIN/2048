@@ -1,6 +1,6 @@
 # macOS Build Guide
 
-2048 Nova supports a native Flutter macOS release. The generated application is a macOS `.app` bundle. Finder displays it like one application, but structurally it is a directory bundle that must remain intact.
+2048 supports a native Flutter macOS release. The generated application is a macOS `.app` bundle. Finder displays it like one application, but structurally it is a directory bundle that must remain intact.
 
 ## Host requirement
 
@@ -35,7 +35,7 @@ Expected release location:
 build/macos/Build/Products/Release/
 ```
 
-The directory should contain the generated `2048 Nova.app` or the current configured application name.
+The directory should contain the generated `2048.app` or the current configured application name.
 
 ## Preserve the `.app` bundle
 

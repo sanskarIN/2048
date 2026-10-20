@@ -85,7 +85,7 @@ flutter config --enable-macos-desktop
 flutter build macos --release
 ```
 
-Current configured product is `2048 Nova.app`.
+Current configured product is `2048.app`.
 
 ## Linux
 

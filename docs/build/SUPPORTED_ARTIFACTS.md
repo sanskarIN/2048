@@ -1,12 +1,12 @@
 # Supported Build Artifact Types
 
-This page is the explicit coverage list for 2048 Nova build outputs. It distinguishes artifacts that the repository currently builds/qualifies in CI, artifacts that the configured Flutter project can build locally with the required signing/toolchain, and packaging formats that are **not currently maintained project outputs**.
+This page is the explicit coverage list for 2048 build outputs. It distinguishes artifacts that the repository currently builds/qualifies in CI, artifacts that the configured Flutter project can build locally with the required signing/toolchain, and packaging formats that are **not currently maintained project outputs**.
 
 ## Status meanings
 
 - **CI-qualified build path** — permanent workflows currently build this type from relevant source/configuration changes.
 - **Documented build path** — the configured project/toolchain supports building it, but it is not currently uploaded as a permanent qualification artifact.
-- **Not currently maintained** — do not advertise this format as a supported 2048 Nova release artifact until implementation, CI/tests where practical, and documentation are added.
+- **Not currently maintained** — do not advertise this format as a supported 2048 release artifact until implementation, CI/tests where practical, and documentation are added.
 
 ## Android
 
@@ -53,7 +53,7 @@ The `.exe` alone is not the complete distributable Flutter Windows application.
 
 | Artifact | Extension/type | Status | Command |
 | --- | --- | --- | --- |
-| Native macOS app | `2048 Nova.app` | **CI-qualified build path** | `flutter build macos --release` |
+| Native macOS app | `2048.app` | **CI-qualified build path** | `flutter build macos --release` |
 | CI transfer archive | `.zip` + `.sha256` | **CI-qualified packaging path** | `ditto` + `shasum` in `platform-builds.yml` |
 
 Production direct-distribution signing/notarization or Mac App Store packaging remains separate from hosted compilation qualification.
@@ -97,7 +97,7 @@ The standard Web release is built in permanent quality CI but is not currently u
 
 ## Not currently maintained project outputs
 
-The following formats are **not currently configured as maintained 2048 Nova release outputs**.
+The following formats are **not currently configured as maintained 2048 release outputs**.
 
 ### Windows
 

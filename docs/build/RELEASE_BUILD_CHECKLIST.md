@@ -1,6 +1,6 @@
 # Cross-Platform Release Build Checklist
 
-Use this checklist when producing candidate artifacts from one exact 2048 Nova commit. It supplements the broader manual qualification manifest; completing this file does not by itself qualify a stable release.
+Use this checklist when producing candidate artifacts from one exact 2048 commit. It supplements the broader manual qualification manifest; completing this file does not by itself qualify a stable release.
 
 ## 1. Source identity
 
@@ -123,7 +123,7 @@ $hash = (Get-FileHash nova-2048-windows-x64.zip -Algorithm SHA256).Hash.ToLower(
 
 - [ ] Confirm Xcode/macOS toolchain.
 - [ ] Build release `.app`.
-- [ ] Preserve the full `2048 Nova.app` bundle.
+- [ ] Preserve the full `2048.app` bundle.
 - [ ] Package with `ditto`.
 - [ ] Generate/verify SHA-256.
 - [ ] Test the exact app/archive on representative macOS hardware.

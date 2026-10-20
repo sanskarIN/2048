@@ -1,6 +1,6 @@
 # Windows Build Guide
 
-2048 Nova supports a native Flutter Windows desktop build. The main visible executable is an `.exe`, but the distributable application is the **complete generated release directory**, not the EXE alone.
+2048 supports a native Flutter Windows desktop build. The main visible executable is an `.exe`, but the distributable application is the **complete generated release directory**, not the EXE alone.
 
 ## Host requirement
 

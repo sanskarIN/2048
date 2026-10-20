@@ -1,6 +1,6 @@
 # Platform Build Guides
 
-This directory contains the detailed build instructions for every executable or deployable artifact supported by the current 2048 Nova repository.
+This directory contains the detailed build instructions for every executable or deployable artifact supported by the current 2048 repository.
 
 ## Guides
 

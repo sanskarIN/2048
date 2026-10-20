@@ -1,6 +1,6 @@
 # Web / PWA Build Guide
 
-2048 Nova supports Flutter Web. Unlike native platforms, Web does not produce a traditional `.exe`; the distributable artifact is the complete generated static site under `build/web/`.
+2048 supports Flutter Web. Unlike native platforms, Web does not produce a traditional `.exe`; the distributable artifact is the complete generated static site under `build/web/`.
 
 ## Host support
 
@@ -77,7 +77,7 @@ flutter build web --wasm
 
 This also populates `build/web/`, but its runtime/deployment requirements differ from the standard JavaScript-oriented build. In particular, current Flutter documentation requires suitable cross-origin isolation headers for multithreaded Wasm behavior.
 
-2048 Nova's permanent CI currently qualifies the standard command:
+2048's permanent CI currently qualifies the standard command:
 
 ```bash
 flutter build web --release
@@ -202,7 +202,7 @@ Before presenting a deployment as a qualified PWA, test:
 
 Production deployments should use HTTPS. Some browser APIs and permissions behave differently on insecure origins.
 
-2048 Nova uses explicit clipboard actions for Challenge Codes and Game Backup. Browser clipboard policy may vary by browser, origin security, user gesture, and permission state. Manual text entry remains important when clipboard operations are restricted.
+2048 uses explicit clipboard actions for Challenge Codes and Game Backup. Browser clipboard policy may vary by browser, origin security, user gesture, and permission state. Manual text entry remains important when clipboard operations are restricted.
 
 ## External handlers
 

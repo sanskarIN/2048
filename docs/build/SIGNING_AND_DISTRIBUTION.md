@@ -1,6 +1,6 @@
 # Signing and Distribution Boundaries
 
-This document separates **building** 2048 Nova from **signing, notarizing, packaging, and publishing** it. Compilation success is not the same as a production distribution identity.
+This document separates **building** 2048 from **signing, notarizing, packaging, and publishing** it. Compilation success is not the same as a production distribution identity.
 
 ## General rule
 
@@ -112,7 +112,7 @@ Then test the exact signed/exported build on physical hardware and in the intend
 flutter build macos --release
 ```
 
-produces `2048 Nova.app` in the current configuration.
+produces `2048.app` in the current configuration.
 
 ### Direct distribution
 
@@ -122,7 +122,7 @@ Public distribution outside the Mac App Store typically introduces signing/notar
 
 The Mac App Store can require different signing, sandbox, entitlement, and packaging configuration from direct Developer ID distribution.
 
-Because 2048 Nova uses user-selected file operations for Game Backup, verify file-picker/document access under the exact final sandbox/entitlement configuration.
+Because 2048 uses user-selected file operations for Game Backup, verify file-picker/document access under the exact final sandbox/entitlement configuration.
 
 ## Windows
 

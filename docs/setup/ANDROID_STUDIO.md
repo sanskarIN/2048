@@ -1,6 +1,6 @@
-# Android Studio Handbook for 2048 Nova
+# Android Studio Handbook for 2048
 
-This guide explains **Android Studio** as used by 2048 Nova: installation, Flutter/Dart plugins, Android SDK Manager, Device Manager/AVDs, bundled JDK/JBR, Gradle integration, Logcat, ADB, updates, caches, support lifecycle, and troubleshooting.
+This guide explains **Android Studio** as used by 2048: installation, Flutter/Dart plugins, Android SDK Manager, Device Manager/AVDs, bundled JDK/JBR, Gradle integration, Logcat, ADB, updates, caches, support lifecycle, and troubleshooting.
 
 Android Studio is optional as a Dart editor, but it is the most convenient supported graphical manager for the Android SDK and Android Emulator.
 

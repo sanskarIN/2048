@@ -1,6 +1,6 @@
 # Configured Executable Names and Output Paths
 
-This page records the currently configured on-disk application names and the release output locations used by 2048 Nova. It complements the command-oriented platform guides.
+This page records the currently configured on-disk application names and the release output locations used by 2048. It complements the command-oriented platform guides.
 
 ## Android
 
@@ -94,14 +94,14 @@ nova-2048-linux-x64.tar.gz.sha256
 `macos/Runner/Configs/AppInfo.xcconfig` currently defines:
 
 ```text
-PRODUCT_NAME = 2048 Nova
+PRODUCT_NAME = 2048
 PRODUCT_BUNDLE_IDENTIFIER = com.sanskarin.nova2048
 ```
 
 Release application bundle:
 
 ```text
-build/macos/Build/Products/Release/2048 Nova.app
+build/macos/Build/Products/Release/2048.app
 ```
 
 Repository qualification archive:
@@ -115,7 +115,7 @@ Preserve the `.app` bundle structure.
 
 ## iOS
 
-The iOS display/bundle name is configured as **2048 Nova** in `ios/Runner/Info.plist`. Hosted qualification builds use:
+The iOS display/bundle name is configured as **2048** in `ios/Runner/Info.plist`. Hosted qualification builds use:
 
 ```bash
 flutter build ios --release --no-codesign

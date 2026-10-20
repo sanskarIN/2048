@@ -1,6 +1,6 @@
 # Android Toolchain Setup and Maintenance
 
-This guide explains every major Android development tool used by **2048 Nova**, how the tools relate to each other, how to verify them, how to build APK/AAB artifacts, and how to upgrade without breaking the repository's tested compatibility baseline.
+This guide explains every major Android development tool used by **2048**, how the tools relate to each other, how to verify them, how to build APK/AAB artifacts, and how to upgrade without breaking the repository's tested compatibility baseline.
 
 Checked against the repository on **2026-08-19**.
 
