@@ -1,6 +1,6 @@
 # Solver Strategies and Benchmarks
 
-2048 Nova keeps automated solving strictly inside the isolated **Auto Play Demo**. Normal player Hint remains the existing fast deterministic heuristic.
+2048 keeps automated solving strictly inside the isolated **Auto Play Demo**. Normal player Hint remains the existing fast deterministic heuristic.
 
 ## Strategies
 

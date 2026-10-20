@@ -1,6 +1,6 @@
 # Full Replay Archives
 
-2048 Nova supports two deliberately different replay systems:
+2048 supports two deliberately different replay systems:
 
 1. **Move Replay** is the lightweight read-only viewer backed by the current game plus the bounded retained Undo history. It is available for legacy/restored sessions but may show only the most recent retained history.
 2. **Full Replay Archive** records compact deterministic actions from the beginning of a newly started local session. A complete capture can be copied as portable JSON and opened later as a spectator-only replay without replacing the live game.
@@ -125,7 +125,7 @@ A session can be playable even when its earlier replay actions are unavailable. 
 - a portable Game Backup restored partway through a game;
 - recovered/corrupt replay metadata where the current game itself remains valid.
 
-2048 Nova creates an **incomplete** replay capture for those sessions. It can continue maintaining safe local replay metadata, but it is not advertised or exported as a true full-session archive.
+2048 creates an **incomplete** replay capture for those sessions. It can continue maintaining safe local replay metadata, but it is not advertised or exported as a true full-session archive.
 
 Starting a fresh new game creates a complete capture from that new session's opening state.
 

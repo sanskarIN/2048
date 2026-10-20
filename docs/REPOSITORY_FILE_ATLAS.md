@@ -1,6 +1,6 @@
 # Repository File Atlas — No-Skip Guide
 
-This document explains how the **2048 Nova** repository is organized, what each tracked file category is responsible for, which files are source-of-truth, which files are historical evidence, and how to perform a literal **no-skip file audit**.
+This document explains how the **2048** repository is organized, what each tracked file category is responsible for, which files are source-of-truth, which files are historical evidence, and how to perform a literal **no-skip file audit**.
 
 Checked against `main` on **2026-08-19**, Version **2.0.12+2012**.
 

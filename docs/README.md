@@ -1,6 +1,6 @@
-# 2048 Nova Documentation
+# 2048 Documentation
 
-This directory is the canonical user, contributor, architecture, platform, privacy, security, build, testing, setup, maintenance, and release documentation set for **2048 Nova**.
+This directory is the canonical user, contributor, architecture, platform, privacy, security, build, testing, setup, maintenance, and release documentation set for **2048**.
 
 Current source identity:
 
@@ -270,7 +270,7 @@ git ls-files | sort
 
 ## 14. Project identity
 
-- Project: **2048 Nova**
+- Project: **2048**
 - Creator branding: **Made by the Sanskar**
 - License: MIT
 - Business: `sanskar.businesswork@gmail.com`, `sanskar.businesswork@outlook.com`

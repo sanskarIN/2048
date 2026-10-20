@@ -1,6 +1,6 @@
 # Source Completion Audit
 
-`tool/source_completion_audit.dart` is the final source-scope guard for **2048 Nova 2.0.12**. It complements, rather than replaces, the broader repository-integrity and release-readiness tools.
+`tool/source_completion_audit.dart` is the final source-scope guard for **2048 2.0.12**. It complements, rather than replaces, the broader repository-integrity and release-readiness tools.
 
 ## Purpose
 

@@ -1,6 +1,6 @@
 # Repository Integrity Audit
 
-2048 Nova uses a deterministic repository-level audit in addition to Dart formatting, Flutter analysis/tests, release-readiness validation, qualification reporting, the final source-completion audit, solver smoke tests, and platform builds.
+2048 uses a deterministic repository-level audit in addition to Dart formatting, Flutter analysis/tests, release-readiness validation, qualification reporting, the final source-completion audit, solver smoke tests, and platform builds.
 
 Implementation:
 

@@ -1,6 +1,6 @@
 # Supply-Chain Maintenance
 
-2048 Nova keeps dependency and automation maintenance fail-closed where practical while preserving a small runtime dependency surface.
+2048 keeps dependency and automation maintenance fail-closed where practical while preserving a small runtime dependency surface.
 
 ## Maintained toolchain floor and qualified SDK
 
@@ -65,7 +65,7 @@ The branding bootstrap previously installed floating `cairosvg` and `pillow` pac
 
 The workflow installs only from that requirements file. Repository-integrity coverage rejects non-exact package entries and verifies the workflow continues using the pinned requirements file. The pinned environment itself was rerun successfully before Phase 28 acceptance.
 
-These Python packages are build-time branding tools only; they are not shipped as 2048 Nova runtime dependencies.
+These Python packages are build-time branding tools only; they are not shipped as 2048 runtime dependencies.
 
 ## Dependabot
 
@@ -87,7 +87,7 @@ This is an additional gate, not a replacement for maintainer review. License, pr
 
 ## Lockfile and generated metadata
 
-`pubspec.lock` is committed because 2048 Nova is an application. CI runs `flutter pub get` and fails when the committed lockfile or Flutter-managed analysis metadata drifts. The dedicated dependency-lock workflow can resolve intentional manifest changes, but permanent CI remains the independent verification gate.
+`pubspec.lock` is committed because 2048 is an application. CI runs `flutter pub get` and fails when the committed lockfile or Flutter-managed analysis metadata drifts. The dedicated dependency-lock workflow can resolve intentional manifest changes, but permanent CI remains the independent verification gate.
 
 ## Code ownership and branch protection
 

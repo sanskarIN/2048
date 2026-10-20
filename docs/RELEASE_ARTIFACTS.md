@@ -1,6 +1,6 @@
 # Native Release Qualification Artifacts
 
-2048 Nova's permanent **Platform Builds** workflow produces short-lived native release artifacts so maintainers can test a known hosted-build output on representative targets without rebuilding an untracked local copy.
+2048's permanent **Platform Builds** workflow produces short-lived native release artifacts so maintainers can test a known hosted-build output on representative targets without rebuilding an untracked local copy.
 
 These artifacts are **qualification inputs, not automatic qualification evidence**. A successful hosted build proves that the configured target compiled and that the workflow packaged the expected output. It does not prove physical-device behavior, assistive-technology quality, production signing/provisioning, store acceptance, long-session behavior, or external-handler behavior. Those boundaries remain governed by [`RELEASE_QUALIFICATION.md`](RELEASE_QUALIFICATION.md) and `release_qualification.json`.
 
