@@ -1,4 +1,4 @@
-# 2048 Nova 2.1.0 — Next-Version Preparation
+# 2048 2.1.0 — Next-Version Preparation
 
 Status: **preparation only**  
 Current maintained package/build: `2.0.12+2012`  
@@ -9,7 +9,7 @@ This document deliberately scopes the next release without changing the current 
 
 ## Release theme
 
-Version 2.1.0 is planned as a **platform-integration and browser-extension foundation release**. The goal is to make 2048 Nova easier to package in browser-extension environments while preserving the existing Android-first, six-target Flutter application and its deterministic/offline architecture.
+Version 2.1.0 is planned as a **platform-integration and browser-extension foundation release**. The goal is to make 2048 easier to package in browser-extension environments while preserving the existing Android-first, six-target Flutter application and its deterministic/offline architecture.
 
 The release must not turn the game into an online service, weaken local-data trust boundaries, or silently add broad browser permissions.
 

@@ -1,4 +1,4 @@
-# New Contributor Tutorial — From Zero to a Safe 2048 Nova Change
+# New Contributor Tutorial — From Zero to a Safe 2048 Change
 
 Current source target: **2.0.12+2012**.
 
@@ -6,7 +6,7 @@ This tutorial gives a new contributor a complete path from installing tools to o
 
 ## 1. Understand the project before editing
 
-2048 Nova is a Flutter/Dart, offline-first, cross-platform 2048 implementation with deterministic domain logic and explicit release/trust boundaries.
+2048 is a Flutter/Dart, offline-first, cross-platform 2048 implementation with deterministic domain logic and explicit release/trust boundaries.
 
 Start by reading:
 

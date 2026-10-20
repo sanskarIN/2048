@@ -2,7 +2,7 @@
 
 Date: **2026-08-16**
 
-This record captures objective hosted verification for the Phase 26 GitHub Actions runtime migration in 2048 Nova Version 1.5.
+This record captures objective hosted verification for the Phase 26 GitHub Actions runtime migration in 2048 Version 1.5.
 
 ## Maintained Actions baseline
 

@@ -225,7 +225,7 @@ Hosted tests and builds do not replace representative real-environment qualifica
 - light/dark surrounding themes while the QR itself remains black on white;
 - narrow layouts, large text, high contrast, keyboard/focus, and screen-reader semantics;
 - verification that selectable/copyable/manual text remains a usable fallback;
-- confirmation that 2048 Nova itself never requests camera permission for QR rendering;
+- confirmation that 2048 itself never requests camera permission for QR rendering;
 - confirmation that externally scanned text still passes ordinary Challenge Code validation and replacement protection.
 
 All previously documented manual release boundaries also remain: physical Android/iOS gameplay and lifecycle/save-resume, Challenge Code clipboard handlers, Game Backup file/document-provider handlers, Move Replay and Full Replay Archive interaction/accessibility, external browser/email handlers, native splash/icon review, long-session/performance checks, signing/provisioning/notarization, and final store/package metadata review.

@@ -1,6 +1,6 @@
 # Next-Version Migration Checklist — 2.1.0
 
-This checklist controls the eventual activation of **2048 Nova 2.1.0**. It intentionally separates **preparation** from the later **version activation** commit series.
+This checklist controls the eventual activation of **2048 2.1.0**. It intentionally separates **preparation** from the later **version activation** commit series.
 
 Current release identity remains:
 

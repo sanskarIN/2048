@@ -87,7 +87,7 @@ macOS and unsigned iOS release
   flutter build ios --release --no-codesign: PASS
 ```
 
-This is the latest hosted multi-platform compilation evidence for 2048 Nova and supersedes the Phase 17 matrix as the current native-build record.
+This is the latest hosted multi-platform compilation evidence for 2048 and supersedes the Phase 17 matrix as the current native-build record.
 
 ## Acceptance failures retained for auditability
 

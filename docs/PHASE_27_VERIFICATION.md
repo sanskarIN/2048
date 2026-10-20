@@ -72,7 +72,7 @@ Dependency Review run: 31944454358 — SUCCESS
 
 The Android job passed release lint, APK compilation, checksum creation, and artifact upload on JDK 21. Linux, Windows, macOS, and unsigned iOS controls also passed.
 
-This diagnostic isolated the observed failure to the AGP/lint/Java-runtime interaction rather than to 2048 Nova Dart/Flutter source. The project nevertheless does not raise its Java baseline solely to mask a failure on AGP's documented JDK 17-compatible line.
+This diagnostic isolated the observed failure to the AGP/lint/Java-runtime interaction rather than to 2048 Dart/Flutter source. The project nevertheless does not raise its Java baseline solely to mask a failure on AGP's documented JDK 17-compatible line.
 
 ## Accepted safe subset — PR #11
 

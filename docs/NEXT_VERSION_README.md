@@ -1,4 +1,4 @@
-# 2048 Nova — Next-Version Index
+# 2048 — Next-Version Index
 
 The planned next release is **Version 2.1.0**.
 

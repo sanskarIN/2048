@@ -2,7 +2,7 @@
 
 Date: **2026-08-16**
 
-This record is the focused verification snapshot for 2048 Nova Phase 24 and the current Version 1.5 line.
+This record is the focused verification snapshot for 2048 Phase 24 and the current Version 1.5 line.
 
 ## Current version
 
