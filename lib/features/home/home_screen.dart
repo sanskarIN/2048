@@ -139,7 +139,7 @@ class _Hero extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final l10n = context.l10n;
     return Semantics(
-      label: l10n.text('2048 Nova, modern puzzle game'),
+      label: l10n.text('2048, modern puzzle game'),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(28),
@@ -154,7 +154,7 @@ class _Hero extends StatelessWidget {
             const Icon(Icons.grid_view_rounded, size: 64),
             const SizedBox(height: 10),
             const Text(
-              '2048 NOVA',
+              '2048',
               style: TextStyle(fontWeight: FontWeight.w900, fontSize: 34),
             ),
             const SizedBox(height: 8),

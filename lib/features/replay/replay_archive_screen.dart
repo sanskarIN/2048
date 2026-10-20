@@ -115,7 +115,7 @@ class _ReplayArchiveScreenState extends State<ReplayArchiveScreen> {
             enableSuggestions: false,
             decoration: InputDecoration(
               hintText: context.l10n.text(
-                'Paste a 2048 Nova full-session replay JSON archive.',
+                'Paste a 2048 full-session replay JSON archive.',
               ),
               border: const OutlineInputBorder(),
             ),

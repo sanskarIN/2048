@@ -68,7 +68,7 @@ class GameBackupScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(18),
                 child: Text(
                   l10n.text(
-                    'No current game is available to export. You can still import a valid 2048 Nova game backup from the clipboard or a .nova2048 file.',
+                    'No current game is available to export. You can still import a valid 2048 game backup from the clipboard or a .nova2048 file.',
                   ),
                 ),
               ),
@@ -118,7 +118,7 @@ class GameBackupScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     l10n.text(
-                      '• Backup format and version must match 2048 Nova.',
+                      '• Backup format and version must match 2048.',
                     ),
                   ),
                   Text(

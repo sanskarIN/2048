@@ -34,7 +34,7 @@ class NovaApp extends StatelessWidget {
         animation: controller,
         builder: (context, _) {
           return MaterialApp(
-            title: '2048 Nova',
+            title: '2048',
             debugShowCheckedModeBanner: false,
             locale: controller.settings.language.locale,
             supportedLocales: NovaLocalizations.supportedLocales,

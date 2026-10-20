@@ -216,7 +216,7 @@ class SettingsScreen extends StatelessWidget {
               context,
               title: l10n.text('Clear all local data?'),
               message: l10n.text(
-                'This removes all 2048 Nova data stored on this device and cannot be undone.',
+                'This removes all 2048 data stored on this device and cannot be undone.',
               ),
               action: controller.clearAllData,
               destructive: true,
