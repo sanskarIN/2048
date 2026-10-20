@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="assets/branding/2048_nova_logo.svg" alt="2048 Nova logo" width="160" />
+  <img src="assets/branding/2048_nova_logo.svg" alt="2048 logo" width="160" />
 
-# 2048 Nova
+# 2048
 
 **A modern, accessible, offline-first 2048 puzzle game built with Flutter.**
 
@@ -13,7 +13,7 @@ Made by the Sanskar
 
 ## Overview
 
-2048 Nova preserves the familiar 2048 rules while adding a modern cross-platform interface, deterministic game engine, multiple board sizes and challenge modes, a local **Custom Game Builder** with reusable validated presets, save/resume, robust Undo, offline shareable seeded Challenge Codes with local QR rendering, portable current-game backup/restore, read-only Move Replay, heuristic hints, an isolated Auto Play demonstration with heuristic and bounded expectimax strategies, deterministic solver benchmarks, statistics, achievements, theme palettes, accessibility controls, Daily Challenge, and open-source project tooling.
+2048 preserves the familiar 2048 rules while adding a modern cross-platform interface, deterministic game engine, multiple board sizes and challenge modes, a local **Custom Game Builder** with reusable validated presets, save/resume, robust Undo, offline shareable seeded Challenge Codes with local QR rendering, portable current-game backup/restore, read-only Move Replay, heuristic hints, an isolated Auto Play demonstration with heuristic and bounded expectimax strategies, deterministic solver benchmarks, statistics, achievements, theme palettes, accessibility controls, Daily Challenge, and open-source project tooling.
 
 The normal game is offline-first. It does not require an account, subscription, analytics service, advertising tracker, cloud-sync backend, remote AI model, or permanent internet connection. Internet access is only needed when a player deliberately opens an external destination such as GitHub, the project website, the contact page, or an optional donation provider.
 
@@ -169,7 +169,7 @@ NOVA1.<base64url-payload>.<8-hex-checksum>
 
 The payload contains only a versioned `GameConfig` plus deterministic seed. It does not contain a current board, score, lifetime statistics, achievements, Daily history, settings, Undo snapshots, or Custom Game Builder origin. The checksum detects accidental corruption; it is not encryption, authentication, identity proof, or an anti-cheat mechanism.
 
-Generated codes are also rendered locally as a high-contrast QR containing the exact same `NOVA1` text. 2048 Nova does not scan QR codes, request camera permission, or upload QR contents; another device may scan the displayed code using its own camera/scanner application, and the selectable/copyable text remains the fallback.
+Generated codes are also rendered locally as a high-contrast QR containing the exact same `NOVA1` text. 2048 does not scan QR codes, request camera permission, or upload QR contents; another device may scan the displayed code using its own camera/scanner application, and the selectable/copyable text remains the fallback.
 
 Supported modes are Classic, Quick, Extended, Challenge, Endless, Target, Time Challenge, Move Limit, and Zen. Daily Challenge stays separate because it already uses the UTC date as its shared seed and maintains dedicated history semantics. Custom Game Builder does not expose a sharing shortcut that would drop its custom-origin record policy.
 
@@ -181,7 +181,7 @@ See [`docs/CHALLENGE_CODES.md`](docs/CHALLENGE_CODES.md).
 
 The project stores only project-owned local state through `shared_preferences`. The storage layer validates current game, bounded Undo snapshots, settings, statistics, achievements, Daily history, custom presets, and local imported/custom session markers.
 
-Malformed current-game/preset data is removed or repaired safely instead of crashing startup. Bounded collections can retain valid neighbors and rewrite repaired content. Complete data reset removes only 2048 Nova keys rather than clearing unrelated preference keys.
+Malformed current-game/preset data is removed or repaired safely instead of crashing startup. Bounded collections can retain valid neighbors and rewrite repaired content. Complete data reset removes only 2048 keys rather than clearing unrelated preference keys.
 
 See [`docs/DATA_STORAGE.md`](docs/DATA_STORAGE.md) and [`docs/CUSTOM_GAME_BUILDER.md`](docs/CUSTOM_GAME_BUILDER.md).
 
@@ -336,7 +336,7 @@ Only run commands supported by the current host OS and installed toolchain. The 
 
 ## Accessibility
 
-2048 Nova treats accessibility as a core requirement rather than a decorative option. Current implementation includes board-size semantics, row/column-aware tile labels, keyboard controls, visible numeric values in addition to color, high contrast, reduced motion, responsive text/layout behavior, and explicit labels/tooltips for important controls and external support actions. Move Replay reuses the same semantic board renderer and labels its timeline controls. Challenge Codes and Custom Game Builder use standard labeled controls, explicit validation feedback, localized English/Hindi text, and responsive test coverage.
+2048 treats accessibility as a core requirement rather than a decorative option. Current implementation includes board-size semantics, row/column-aware tile labels, keyboard controls, visible numeric values in addition to color, high contrast, reduced motion, responsive text/layout behavior, and explicit labels/tooltips for important controls and external support actions. Move Replay reuses the same semantic board renderer and labels its timeline controls. Challenge Codes and Custom Game Builder use standard labeled controls, explicit validation feedback, localized English/Hindi text, and responsive test coverage.
 
 Automated widget/semantics tests protect source regressions but do not become physical TalkBack/VoiceOver/Narrator/browser-screen-reader evidence. See [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md) for current coverage and release checks.
 
@@ -387,7 +387,7 @@ For common setup, analyzer, build, save/Undo, Daily, Challenge Codes, Replay, Au
 
 ## Optional project support
 
-2048 Nova remains free to play and contribute to. If you would like to support continued development, use any of these official destinations:
+2048 remains free to play and contribute to. If you would like to support continued development, use any of these official destinations:
 
 - Buy Me a Coffee: https://buymeacoffee.com/SanskarCodes
 - Razorpay: https://razorpay.me/@SanskarCodes
@@ -397,7 +397,7 @@ Support is optional and is never required to play, build, fork, or contribute to
 
 ## License
 
-2048 Nova is licensed under the [MIT License](LICENSE). Third-party Flutter/package license information remains available through Flutter's standard license interface inside the app.
+2048 is licensed under the [MIT License](LICENSE). Third-party Flutter/package license information remains available through Flutter's standard license interface inside the app.
 
 ---
 
@@ -408,7 +408,7 @@ Support is optional and is never required to play, build, fork, or contribute to
 
 ## Language and localization
 
-2048 Nova supports **English** and **Hindi (हिन्दी)** without requiring a translation service or project server. Settings can follow the supported system locale or explicitly choose English or Hindi. The choice is persisted locally with the existing app settings and malformed/unsupported stored language values safely fall back to System default.
+2048 supports **English** and **Hindi (हिन्दी)** without requiring a translation service or project server. Settings can follow the supported system locale or explicitly choose English or Hindi. The choice is persisted locally with the existing app settings and malformed/unsupported stored language values safely fall back to System default.
 
 Player-facing Home, modes, Custom Game Builder, gameplay controls/dialogs, Daily Challenge, statistics, achievements, Challenge Codes, Game Backup, Move Replay, Auto Play Demo, Guide, About, Support, external-link fallbacks, and board accessibility semantics use the localization layer. Protocol identifiers such as `NOVA1`, JSON keys, seeds, tile values, URLs, and email addresses remain exact.
 
@@ -418,7 +418,7 @@ See [`docs/LOCALIZATION.md`](docs/LOCALIZATION.md) for architecture, fallback ru
 
 The Statistics screen keeps a trusted local best score and highest tile for every built-in game mode that has ranked comparable progress on this installation. When a best score is established, its board size and target are preserved as record metadata so configurable built-in modes are not described as though they always used one setup.
 
-Per-mode records are offline-only and follow the same ranking boundary as the rest of 2048 Nova: normal locally started built-in games, including deterministic seeded games, can update records; editable Game Backup imports remain unranked and cannot update them; Custom Game Builder sessions also cannot overwrite built-in per-mode records because custom board/target/limit combinations may not be comparable with the built-in preset. Reset Statistics clears historical mode records and, when a ranked built-in game is active, rebuilds only that active mode's observable baseline.
+Per-mode records are offline-only and follow the same ranking boundary as the rest of 2048: normal locally started built-in games, including deterministic seeded games, can update records; editable Game Backup imports remain unranked and cannot update them; Custom Game Builder sessions also cannot overwrite built-in per-mode records because custom board/target/limit combinations may not be comparable with the built-in preset. Reset Statistics clears historical mode records and, when a ranked built-in game is active, rebuilds only that active mode's observable baseline.
 
 See [`docs/MODE_RECORDS.md`](docs/MODE_RECORDS.md) and [`docs/CUSTOM_GAME_BUILDER.md`](docs/CUSTOM_GAME_BUILDER.md) for persistence, reset, trust, and test details.
 

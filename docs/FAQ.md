@@ -1,8 +1,8 @@
 # Frequently Asked Questions
 
-## Is 2048 Nova the original official 2048 app?
+## Is 2048 the original official 2048 app?
 
-No. 2048 Nova is an independent open-source Flutter implementation of the familiar 2048 puzzle rules. The repository does not claim to be the original official 2048 application and does not bundle proprietary third-party 2048 artwork.
+No. 2048 is an independent open-source Flutter implementation of the familiar 2048 puzzle rules. The repository does not claim to be the original official 2048 application and does not bundle proprietary third-party 2048 artwork.
 
 ## Is the project free and open source?
 
@@ -173,7 +173,7 @@ Import is rejected. The app checks the maximum input size before parsing, valida
 
 ## Does Clear All erase other apps’ or unrelated preferences?
 
-No. 2048 Nova removes only its own project-owned keys rather than calling a blanket SharedPreferences clear.
+No. 2048 removes only its own project-owned keys rather than calling a blanket SharedPreferences clear.
 
 ## What does Reset Statistics do while a normal game is active?
 
@@ -228,7 +228,7 @@ Optional alternatives: https://razorpay.me/@SanskarCodes and https://paypal.me/S
 
 **Made by the Sanskar**
 
-## Can I use 2048 Nova in Hindi?
+## Can I use 2048 in Hindi?
 
 Yes. Open **Settings → Language** and select **हिन्दी**. You can also choose **System default** or **English**. Language preference is local, works offline, and does not send text to an online translation service.
 
@@ -264,4 +264,4 @@ A file is not trusted because of its name or extension. Imported files use the s
 
 ## Does Challenge Code QR sharing need internet or camera permission?
 
-No. 2048 Nova generates the QR locally from the same `NOVA1...` text already shown on screen. The app does not request camera permission and does not include an in-app QR scanner in Phase 21. Another device may scan the displayed QR using its own camera/scanner app, or users can continue sharing the selectable/copyable text. QR form does not authenticate the sender or code.
+No. 2048 generates the QR locally from the same `NOVA1...` text already shown on screen. The app does not request camera permission and does not include an in-app QR scanner in Phase 21. Another device may scan the displayed QR using its own camera/scanner app, or users can continue sharing the selectable/copyable text. QR form does not authenticate the sender or code.

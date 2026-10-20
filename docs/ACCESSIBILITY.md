@@ -1,6 +1,6 @@
 # Accessibility
 
-Accessibility is part of the 2048 Nova definition of done.
+Accessibility is part of the 2048 definition of done.
 
 ## Implemented foundations
 
