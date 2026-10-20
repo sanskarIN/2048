@@ -12,7 +12,7 @@ Yes. The repository is released under the MIT License. You may use, study, modif
 
 Core gameplay does not require a project server. Save/resume, Daily Challenge generation, Challenge Codes, Hint, Auto Play Demo, Move Replay, statistics, achievements, and Game Backup work locally.
 
-Network/platform handlers are used only when you explicitly open an external destination such as GitHub, LinkedIn, email, or Buy Me a Coffee.
+Network/platform handlers are used only when you explicitly open an external destination such as GitHub, the project website, email, or Buy Me a Coffee.
 
 ## Does the app contain ads, analytics, or an account system?
 
@@ -216,8 +216,8 @@ For security-sensitive reports, follow [`../SECURITY.md`](../SECURITY.md) instea
 ## Where can I ask for support?
 
 - Support: `https://sanskarin.github.io/contact`
-- Business: `sanskarin@outlook.in`
-- Business: `sanskarin.business@gmail.com`
+- Business: `sanskar.businesswork@gmail.com`
+- Business: `sanskar.businesswork@outlook.com`
 - Repository: https://github.com/sanskarIN/2048
 
 Optional project support:
