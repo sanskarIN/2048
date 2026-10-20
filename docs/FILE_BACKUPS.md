@@ -56,7 +56,7 @@ GameBackup.maxFileBytes = GameBackup.maxEncodedLength * 4
 
 UTF-8 can require up to four bytes for a Unicode scalar value. The file boundary therefore rejects files larger than 512 KiB before full text decoding and then applies the existing 128 Ki-character protocol limit after UTF-8 conversion.
 
-Normal 2048 Nova current-game backups are far smaller than these safety ceilings.
+Normal 2048 current-game backups are far smaller than these safety ceilings.
 
 ## Trust boundary
 

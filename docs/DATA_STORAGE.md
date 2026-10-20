@@ -1,6 +1,6 @@
 # Local Data and Storage Model
 
-2048 Nova is offline-first. Player state is stored locally through `shared_preferences` and is validated before use. The storage layer intentionally owns only small structured JSON/string/bool values; it does not use a remote database, account service, analytics store, advertising identifier, or cloud-sync provider.
+2048 is offline-first. Player state is stored locally through `shared_preferences` and is validated before use. The storage layer intentionally owns only small structured JSON/string/bool values; it does not use a remote database, account service, analytics store, advertising identifier, or cloud-sync provider.
 
 ## Project-owned keys
 

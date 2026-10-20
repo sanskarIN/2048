@@ -1,4 +1,4 @@
-# 2048 Nova Error and Diagnosis Reference
+# 2048 Error and Diagnosis Reference
 
 Current source target: **2.0.12+2012**.
 

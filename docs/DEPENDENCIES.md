@@ -1,6 +1,6 @@
 # Dependency Policy
 
-2048 Nova keeps runtime dependencies deliberately small so the deterministic game engine stays easy to audit, test, build across platforms, and maintain offline.
+2048 keeps runtime dependencies deliberately small so the deterministic game engine stays easy to audit, test, build across platforms, and maintain offline.
 
 ## Version 2.0.12 dependency freeze
 
@@ -102,7 +102,7 @@ It is not an analytics, cloud-storage, account, or networking dependency.
 
 Pinned at **4.1.0**. It is used only to render the already-generated Challenge Code string as a local QR image. The project passes the exact `NOVA1...` text into the renderer; `qr_flutter` does not own Challenge Code encoding, checksum validation, game configuration parsing, trust policy, persistence, or networking.
 
-The resolved lockfile also records the package's QR-encoding dependency. 2048 Nova does **not** add a QR scanner/camera package.
+The resolved lockfile also records the package's QR-encoding dependency. 2048 does **not** add a QR scanner/camera package.
 
 Why it is used:
 
@@ -160,7 +160,7 @@ Declared at **^6.0.0**. It provides the Flutter static-analysis baseline, supple
 
 ## Lockfile policy
 
-2048 Nova is an application, so `pubspec.lock` is committed for reproducible builds.
+2048 is an application, so `pubspec.lock` is committed for reproducible builds.
 
 A dedicated GitHub Actions workflow resolves/commits lockfile changes when dependency metadata changes and can also be manually dispatched. Permanent CI independently fails when `flutter pub get` would change the committed lockfile. Dependabot monitors Pub, Android Gradle, and GitHub Actions, while pull-request Dependency Review rejects newly introduced high-severity vulnerable dependency changes. Dependency updates still require analyzer/test/build verification.
 
@@ -188,7 +188,7 @@ Remove dependencies that become unnecessary, unmaintained, incompatible, insecur
 
 ## Licensing
 
-2048 Nova is MIT-licensed. Third-party package/framework licenses remain their own licenses and are exposed in-app through Flutter's standard `showLicensePage` interface.
+2048 is MIT-licensed. Third-party package/framework licenses remain their own licenses and are exposed in-app through Flutter's standard `showLicensePage` interface.
 
 Do not copy third-party source/assets into this repository merely to avoid declaring a dependency or license obligation.
 

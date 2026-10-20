@@ -1,6 +1,6 @@
 # Development Guide
 
-This document describes the repository workflow for developing 2048 Nova without bypassing its deterministic engine, persistence, portability, accessibility, or release safeguards.
+This document describes the repository workflow for developing 2048 without bypassing its deterministic engine, persistence, portability, accessibility, or release safeguards.
 
 ## Requirements
 

@@ -1,6 +1,6 @@
 # Command Reference — What Every Common Project Command Means
 
-This document explains the commands used throughout the **2048 Nova** documentation. It is written for readers who do not want to copy commands without understanding them.
+This document explains the commands used throughout the **2048** documentation. It is written for readers who do not want to copy commands without understanding them.
 
 Checked against Version **2.0.12+2012** on **2026-08-19**.
 

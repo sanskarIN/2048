@@ -1,6 +1,6 @@
 # Documentation Reading Guide — Notation, Commands, Paths, and Technical Language
 
-This guide explains **how to read the 2048 Nova documentation itself**. It is intended for contributors who do not want to copy commands or configuration blindly.
+This guide explains **how to read the 2048 documentation itself**. It is intended for contributors who do not want to copy commands or configuration blindly.
 
 For definitions of project and platform terminology, also use [`GLOSSARY.md`](GLOSSARY.md). For detailed command-by-command behavior, use [`COMMAND_REFERENCE.md`](COMMAND_REFERENCE.md).
 
@@ -605,7 +605,7 @@ A **release candidate** is a build/source state proposed for release validation.
 
 A **stable qualification gate** is the set of evidence required before describing a candidate as fully qualified for the project's defined stable-distribution contract.
 
-2048 Nova deliberately separates source completion from unresolved real-world qualification. Do not rewrite `0/13` pending manual evidence into a pass without genuine observed evidence.
+2048 deliberately separates source completion from unresolved real-world qualification. Do not rewrite `0/13` pending manual evidence into a pass without genuine observed evidence.
 
 ## 36. Fail closed
 

@@ -1,6 +1,6 @@
 # Complete Feature Reference
 
-This document is the consolidated map of the implemented **2048 Nova** product surface. It explains what each major feature means, its high-level trust/behavior boundary, the source-of-truth area, and the detailed document to read next.
+This document is the consolidated map of the implemented **2048** product surface. It explains what each major feature means, its high-level trust/behavior boundary, the source-of-truth area, and the detailed document to read next.
 
 Current source target: **2.0.12+2012**.
 

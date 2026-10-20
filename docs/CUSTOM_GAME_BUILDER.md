@@ -1,6 +1,6 @@
 # Custom Game Builder
 
-> Current source target: **2048 Nova 2.0.12+2012**. Custom Game Builder is part of the current integrated source tree. Stable distribution still depends on the repository's automated gates and genuine 0/13 real-world qualification evidence.
+> Current source target: **2048 2.0.12+2012**. Custom Game Builder is part of the current integrated source tree. Stable distribution still depends on the repository's automated gates and genuine 0/13 real-world qualification evidence.
 
 ## Purpose
 
