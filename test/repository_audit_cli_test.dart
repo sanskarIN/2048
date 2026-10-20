@@ -160,8 +160,8 @@ void main() {
     await write(
       'web/manifest.json',
       '${const JsonEncoder.withIndent('  ').convert(<String, Object?>{
-        'name': '2048 Nova',
-        'short_name': '2048 Nova',
+        'name': '2048',
+        'short_name': '2048',
         'id': webManifestId,
         'start_url': '.',
         'scope': '.',
@@ -192,10 +192,10 @@ void main() {
           '<meta name="color-scheme" content="light dark">\n'
           '<meta name="mobile-web-app-capable" content="yes">\n'
           '<meta name="apple-mobile-web-app-capable" content="yes">\n'
-          '<meta name="apple-mobile-web-app-title" content="2048 Nova">\n'
+          '<meta name="apple-mobile-web-app-title" content="2048">\n'
           '<link rel="manifest" href="manifest.json">\n'
           '<link rel="apple-touch-icon" href="icons/Icon-192.png">\n'
-          '<title>2048 Nova</title>\n'
+          '<title>2048</title>\n'
           '</head>\n'
           '<body><script src="flutter_bootstrap.js" async></script></body>\n'
           '</html>\n',

@@ -16,8 +16,8 @@ void main() {
     });
 
     test('manifest declares stable install identity and relative scope', () {
-      expect(manifest['name'], '2048 Nova');
-      expect(manifest['short_name'], '2048 Nova');
+      expect(manifest['name'], '2048');
+      expect(manifest['short_name'], '2048');
       expect(manifest['id'], '.');
       expect(manifest['start_url'], '.');
       expect(manifest['scope'], '.');
@@ -84,7 +84,7 @@ void main() {
       expect(
         indexHtml,
         contains(
-          '<meta name="apple-mobile-web-app-title" content="2048 Nova">',
+          '<meta name="apple-mobile-web-app-title" content="2048">',
         ),
       );
       expect(indexHtml, contains('<link rel="manifest" href="manifest.json">'));
@@ -92,7 +92,7 @@ void main() {
         indexHtml,
         contains('<link rel="apple-touch-icon" href="icons/Icon-192.png">'),
       );
-      expect(indexHtml, contains('<title>2048 Nova</title>'));
+      expect(indexHtml, contains('<title>2048</title>'));
     });
 
     test('index retains Flutter base-href and responsive viewport contract', () {

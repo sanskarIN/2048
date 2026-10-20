@@ -41,7 +41,7 @@ void main(List<String> args) {
   final unknown = args.where((arg) => !known.contains(arg)).toList();
 
   if (helpMode) {
-    stdout.writeln('2048 Nova browser-extension packager');
+    stdout.writeln('2048 browser-extension packager');
     stdout.writeln();
     stdout.writeln(
       'Usage: dart run tool/package_browser_extension.dart [options]',
@@ -109,7 +109,7 @@ void main(List<String> args) {
   if (jsonMode) {
     stdout.writeln(const JsonEncoder.withIndent('  ').convert(summary));
   } else {
-    stdout.writeln('2048 Nova browser-extension packages prepared.');
+    stdout.writeln('2048 browser-extension packages prepared.');
     stdout.writeln('Version: $version');
     for (final path in generated) {
       stdout.writeln('- $path');

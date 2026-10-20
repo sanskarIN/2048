@@ -55,7 +55,7 @@ void main(List<String> args) {
       .toList(growable: false);
 
   if (helpMode) {
-    stdout.writeln('2048 Nova source-completion audit');
+    stdout.writeln('2048 source-completion audit');
     stdout.writeln();
     stdout.writeln(
       'Usage: dart run tool/source_completion_audit.dart [options]',
@@ -110,7 +110,7 @@ void main(List<String> args) {
   if (jsonMode) {
     stdout.writeln(const JsonEncoder.withIndent('  ').convert(result));
   } else {
-    stdout.writeln('2048 Nova source-completion audit');
+    stdout.writeln('2048 source-completion audit');
     stdout.writeln('Root: ${root.path}');
     stdout.writeln('Package target: $_packageVersion');
     stdout.writeln('Marketing target: $_marketingVersion');
@@ -211,7 +211,7 @@ void _auditCompletionDocuments(Directory root, List<String> failures) {
 
   if (finalAudit != null &&
       !finalAudit.contains(
-        '2048 Nova 2.0.12 is feature-complete within its declared offline-first',
+        '2048 2.0.12 is feature-complete within its declared offline-first',
       )) {
     failures.add(
       'Final Version 2.0.12 source audit must retain the explicit feature-complete verdict.',

@@ -89,7 +89,7 @@ void main(List<String> args) {
       .toList(growable: false);
 
   if (helpMode) {
-    stdout.writeln('2048 Nova cross-platform support audit');
+    stdout.writeln('2048 cross-platform support audit');
     stdout.writeln();
     stdout.writeln(
       'Usage: dart run tool/platform_support_audit.dart [options]',
@@ -153,7 +153,7 @@ void main(List<String> args) {
   if (jsonMode) {
     stdout.writeln(const JsonEncoder.withIndent('  ').convert(result));
   } else {
-    stdout.writeln('2048 Nova cross-platform support audit');
+    stdout.writeln('2048 cross-platform support audit');
     stdout.writeln('Root: ${root.path}');
     for (final entry in targetStatus.entries) {
       stdout.writeln(

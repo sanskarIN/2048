@@ -80,7 +80,7 @@ void main() {
     await write(
       'docs/FINAL_2_0_12_SOURCE_AUDIT.md',
       '# Final audit\n\n'
-          '2048 Nova 2.0.12 is feature-complete within its declared offline-first puzzle-game scope.\n',
+          '2048 2.0.12 is feature-complete within its declared offline-first puzzle-game scope.\n',
     );
     await write(
       'docs/MAINTENANCE_POLICY.md',

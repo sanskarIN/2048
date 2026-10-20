@@ -33,7 +33,7 @@ void main(List<String> args) {
       .toList(growable: false);
 
   if (helpMode) {
-    stdout.writeln('2048 Nova browser-extension readiness audit');
+    stdout.writeln('2048 browser-extension readiness audit');
     stdout.writeln();
     stdout.writeln(
       'Usage: dart run tool/browser_extension_audit.dart [options]',
@@ -82,7 +82,7 @@ void main(List<String> args) {
   if (jsonMode) {
     stdout.writeln(const JsonEncoder.withIndent('  ').convert(result));
   } else {
-    stdout.writeln('2048 Nova browser-extension readiness audit');
+    stdout.writeln('2048 browser-extension readiness audit');
     stdout.writeln('Root: ${root.path}');
     stdout.writeln(
       'Extension preparation readiness: ${failures.isEmpty ? 'yes' : 'no'}',
