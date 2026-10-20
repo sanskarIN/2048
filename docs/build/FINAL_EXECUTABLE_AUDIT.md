@@ -1,6 +1,6 @@
 # Final Executable Build and Code Audit
 
-**Project:** 2048 Nova  
+**Project:** 2048  
 **Version:** `1.5.0+15`  
 **Audit date:** 2026-08-17  
 **Status:** release-candidate source is automated-check clean and all maintained hosted build targets compile successfully; stable release remains intentionally blocked by real-world qualification/signing evidence.

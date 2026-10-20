@@ -1,6 +1,6 @@
 # iOS Build Guide
 
-This guide covers the iOS build outputs supported by the current 2048 Nova Flutter project: simulator/device development runs, unsigned release `.app` compilation for qualification, and signed/exported `.ipa` distribution when Apple signing is configured.
+This guide covers the iOS build outputs supported by the current 2048 Flutter project: simulator/device development runs, unsigned release `.app` compilation for qualification, and signed/exported `.ipa` distribution when Apple signing is configured.
 
 ## Host requirement
 

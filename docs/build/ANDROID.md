@@ -1,6 +1,6 @@
 # Android Build Guide
 
-This guide covers the Android artifact types supported by the current 2048 Nova Flutter project: debug APK, profile APK, universal release APK, ABI-split release APKs, and release Android App Bundle (`.aab`).
+This guide covers the Android artifact types supported by the current 2048 Flutter project: debug APK, profile APK, universal release APK, ABI-split release APKs, and release Android App Bundle (`.aab`).
 
 ## Repository baseline
 

@@ -1,6 +1,6 @@
 # Historical Version 1.6 Roadmap — Custom Game Builder
 
-> **Historical record.** This document preserves the development intent of the original Custom Game Builder branch. It is not the current release roadmap. The current source line is **2048 Nova 2.0.12+2012**; use [`../ROADMAP.md`](../ROADMAP.md), [`CUSTOM_GAME_BUILDER.md`](CUSTOM_GAME_BUILDER.md), and [`FINAL_2_0_12_SOURCE_AUDIT.md`](FINAL_2_0_12_SOURCE_AUDIT.md) for current status.
+> **Historical record.** This document preserves the development intent of the original Custom Game Builder branch. It is not the current release roadmap. The current source line is **2048 2.0.12+2012**; use [`../ROADMAP.md`](../ROADMAP.md), [`CUSTOM_GAME_BUILDER.md`](CUSTOM_GAME_BUILDER.md), and [`FINAL_2_0_12_SOURCE_AUDIT.md`](FINAL_2_0_12_SOURCE_AUDIT.md) for current status.
 
 ## Original feature foundation — completed
 

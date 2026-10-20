@@ -1,6 +1,6 @@
 # Host and Toolchain Prerequisites
 
-This page explains which host operating system and native tools are required to build each 2048 Nova target locally. The repository's GitHub Actions matrix remains the reproducible cross-host reference when you do not have every native host available.
+This page explains which host operating system and native tools are required to build each 2048 target locally. The repository's GitHub Actions matrix remains the reproducible cross-host reference when you do not have every native host available.
 
 ## Common requirements
 

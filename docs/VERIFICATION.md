@@ -1,6 +1,6 @@
 # Verification Record
 
-This document records objective automated evidence for the current 2048 Nova release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
+This document records objective automated evidence for the current 2048 release-candidate line. It distinguishes formatter/analyzer/test/Web verification, native compilation evidence, transparent intermediate failures, and manual release boundaries.
 
 ## Final Version 1.5 release-candidate verification
 
@@ -917,7 +917,7 @@ Those remain explicit tasks in [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
 ## Release-candidate status
 
 ```text
-Project: 2048 Nova
+Project: 2048
 Version: 0.9.0+1
 Stable 1.0.0 claim: NOT YET
 ```

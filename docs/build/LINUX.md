@@ -1,6 +1,6 @@
 # Linux Build Guide
 
-2048 Nova supports a native Flutter Linux desktop build. The generated release is a `bundle/` directory containing the main native executable together with libraries and application data required at runtime.
+2048 supports a native Flutter Linux desktop build. The generated release is a `bundle/` directory containing the main native executable together with libraries and application data required at runtime.
 
 ## Host requirement
 

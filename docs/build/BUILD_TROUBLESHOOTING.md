@@ -1,6 +1,6 @@
 # Cross-Platform Build Troubleshooting
 
-Use this guide when a 2048 Nova build fails locally or differs from hosted CI. Start with environment evidence before changing source or runner configuration.
+Use this guide when a 2048 build fails locally or differs from hosted CI. Start with environment evidence before changing source or runner configuration.
 
 ## First-response diagnostics
 

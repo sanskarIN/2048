@@ -1,6 +1,6 @@
 # Troubleshooting
 
-This guide covers common development and user-state issues for 2048 Nova. Commands assume the repository root unless stated otherwise.
+This guide covers common development and user-state issues for 2048. Commands assume the repository root unless stated otherwise.
 
 ## Flutter is not found
 
@@ -124,7 +124,7 @@ Linux requires native build packages such as GTK development libraries and Ninja
 
 ## Saved game disappears at startup
 
-2048 Nova intentionally removes the current save if it cannot be safely deserialized. Corrupt current-game recovery also clears associated Undo history and the current-game unranked marker to prevent stale state from attaching to another session.
+2048 intentionally removes the current save if it cannot be safely deserialized. Corrupt current-game recovery also clears associated Undo history and the current-game unranked marker to prevent stale state from attaching to another session.
 
 If this happens during development:
 
@@ -279,7 +279,7 @@ For an imported unranked game, statistics reset does not convert that game into 
 
 ## Clear All did not erase unrelated preferences
 
-That is intentional. 2048 Nova removes only its project-owned keys. It does not call a blanket `SharedPreferences.clear()`.
+That is intentional. 2048 removes only its project-owned keys. It does not call a blanket `SharedPreferences.clear()`.
 
 Challenge Code clipboard text is controlled by the operating system clipboard and is not a SharedPreferences key, so Clear All does not promise to erase platform clipboard history.
 
@@ -312,7 +312,7 @@ For security-sensitive reports, follow [`../SECURITY.md`](../SECURITY.md) rather
 
 ## Language does not look correct
 
-Open **Settings → Language** and select English or हिन्दी explicitly to distinguish an app preference issue from the platform's System default locale. If a stored language value is invalid, 2048 Nova falls back safely to System default.
+Open **Settings → Language** and select English or हिन्दी explicitly to distinguish an app preference issue from the platform's System default locale. If a stored language value is invalid, 2048 falls back safely to System default.
 
 If a specific label remains English while Hindi is selected, report the screen and exact label: the localization layer intentionally falls back to the English source string rather than crashing when a translation key is missing. For clipped/wrapped Hindi text, include device/platform, display size, text-scale setting, and a screenshot when possible.
 
@@ -355,4 +355,4 @@ A rejected file should never replace the current game. Report reproducible platf
 
 First use the selectable/copyable `NOVA1...` text as the reliable fallback. For optical scanning, keep the full white QR area visible, avoid covering/cropping it, increase practical screen brightness if needed, reduce glare, and give the external camera/scanner enough distance to focus. The surrounding app theme may be dark, but the QR itself intentionally remains black on white.
 
-2048 Nova does not contain an in-app scanner, so camera/scanner compatibility belongs to the receiving device/application. If scanned text is produced but 2048 Nova rejects it, use the normal validation message: the text must still satisfy prefix, checksum, payload, version, configuration, seed, and supported-mode checks.
+2048 does not contain an in-app scanner, so camera/scanner compatibility belongs to the receiving device/application. If scanned text is produced but 2048 rejects it, use the normal validation message: the text must still satisfy prefix, checksum, payload, version, configuration, seed, and supported-mode checks.

@@ -1,6 +1,6 @@
 # Workflow Execution Security
 
-This document defines the executable GitHub Actions trust, credential, concurrency, and reproducibility policy for **2048 Nova Version 2.0.12** (`2.0.12+2012`).
+This document defines the executable GitHub Actions trust, credential, concurrency, and reproducibility policy for **2048 Version 2.0.12** (`2.0.12+2012`).
 
 The goal is simple: an unchanged repository commit should not silently execute different third-party Action code, obtain broader credentials than necessary, run forever, or allow overlapping repository-writing jobs to race each other.
 
