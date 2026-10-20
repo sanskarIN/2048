@@ -1,7 +1,7 @@
 // Application-level settings for the Runner target.
 
 // The application's name. This is also the default title of the Flutter window.
-PRODUCT_NAME = 2048 Nova
+PRODUCT_NAME = 2048
 
 // The application's bundle identifier.
 PRODUCT_BUNDLE_IDENTIFIER = com.sanskarin.nova2048

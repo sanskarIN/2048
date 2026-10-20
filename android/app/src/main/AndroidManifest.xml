@@ -4,7 +4,7 @@
         android:required="false" />
 
     <application
-        android:label="2048 Nova"
+        android:label="2048"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"
