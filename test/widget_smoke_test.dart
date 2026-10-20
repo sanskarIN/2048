@@ -16,7 +16,7 @@ void main() {
     await tester.pumpWidget(NovaApp(controller: controller));
     await tester.pumpAndSettle();
 
-    expect(find.text('2048 NOVA'), findsOneWidget);
+    expect(find.text('2048'), findsOneWidget);
     expect(find.text('New Game'), findsOneWidget);
     expect(find.text('Settings'), findsOneWidget);
   });

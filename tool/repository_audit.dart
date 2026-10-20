@@ -85,8 +85,8 @@ const _canonicalPubspecMetadata = <String, String>{
 };
 
 const _canonicalWebManifestMetadata = <String, Object>{
-  'name': '2048 Nova',
-  'short_name': '2048 Nova',
+  'name': '2048',
+  'short_name': '2048',
   'id': '.',
   'start_url': '.',
   'scope': '.',
@@ -122,7 +122,7 @@ void main(List<String> args) {
       .toList(growable: false);
 
   if (helpMode) {
-    stdout.writeln('2048 Nova repository integrity audit');
+    stdout.writeln('2048 repository integrity audit');
     stdout.writeln();
     stdout.writeln('Usage: dart run tool/repository_audit.dart [options]');
     stdout.writeln();
@@ -176,7 +176,7 @@ void main(List<String> args) {
   if (jsonMode) {
     stdout.writeln(const JsonEncoder.withIndent('  ').convert(result));
   } else {
-    stdout.writeln('2048 Nova repository audit');
+    stdout.writeln('2048 repository audit');
     stdout.writeln('Root: ${root.path}');
     stdout.writeln('Package target: $_canonicalPackageVersion');
     stdout.writeln('Marketing target: $_canonicalMarketingVersion');
@@ -406,10 +406,10 @@ void _auditWebMetadata(Directory root, List<String> failures) {
     '<meta name="color-scheme" content="light dark">',
     '<meta name="mobile-web-app-capable" content="yes">',
     '<meta name="apple-mobile-web-app-capable" content="yes">',
-    '<meta name="apple-mobile-web-app-title" content="2048 Nova">',
+    '<meta name="apple-mobile-web-app-title" content="2048">',
     '<link rel="manifest" href="manifest.json">',
     '<link rel="apple-touch-icon" href="icons/Icon-192.png">',
-    '<title>2048 Nova</title>',
+    '<title>2048</title>',
     'flutter_bootstrap.js',
   ];
   for (final fragment in requiredIndexFragments) {

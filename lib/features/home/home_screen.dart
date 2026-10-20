@@ -154,7 +154,7 @@ class _Hero extends StatelessWidget {
             const Icon(Icons.grid_view_rounded, size: 64),
             const SizedBox(height: 10),
             const Text(
-              '2048 NOVA',
+              '2048',
               style: TextStyle(fontWeight: FontWeight.w900, fontSize: 34),
             ),
             const SizedBox(height: 8),
