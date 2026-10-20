@@ -1,6 +1,6 @@
-# Contributing to 2048 Nova
+# Contributing to 2048
 
-Thank you for helping improve 2048 Nova. Contributions should preserve the project's deterministic game rules, offline-first behavior, accessibility requirements, portable-input trust boundaries, local-data integrity, and truthful release verification.
+Thank you for helping improve 2048. Contributions should preserve the project's deterministic game rules, offline-first behavior, accessibility requirements, portable-input trust boundaries, local-data integrity, and truthful release verification.
 
 ## Before you start
 

@@ -1,6 +1,6 @@
 # Code of Conduct
 
-2048 Nova is intended to be a welcoming, respectful, technically constructive open-source project. This policy applies to repository issues, pull requests, reviews, discussions, and other project-managed community spaces.
+2048 is intended to be a welcoming, respectful, technically constructive open-source project. This policy applies to repository issues, pull requests, reviews, discussions, and other project-managed community spaces.
 
 ## Expected behavior
 
@@ -52,4 +52,4 @@ Security vulnerabilities should follow [`SECURITY.md`](SECURITY.md), especially 
 
 ## Scope
 
-This code of conduct governs participation in spaces controlled by the 2048 Nova project. It does not claim authority over unrelated personal activity outside those spaces.
+This code of conduct governs participation in spaces controlled by the 2048 project. It does not claim authority over unrelated personal activity outside those spaces.

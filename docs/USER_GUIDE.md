@@ -1,6 +1,6 @@
-# 2048 Nova User Guide
+# 2048 User Guide
 
-This guide explains how to play and use the player-facing features of 2048 Nova. For developer internals, start with [`README.md`](README.md) in this docs directory and [`ARCHITECTURE.md`](ARCHITECTURE.md).
+This guide explains how to play and use the player-facing features of 2048. For developer internals, start with [`README.md`](README.md) in this docs directory and [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ## Goal of 2048
 
@@ -122,7 +122,7 @@ Restarting a custom session preserves its custom-session identity, so restarting
 
 ## Game modes
 
-2048 Nova includes ten built-in modes:
+2048 includes ten built-in modes:
 
 - Classic 4×4;
 - Quick 3×3;
@@ -226,11 +226,11 @@ Custom play is trusted local gameplay, but a custom combination may not be compa
 - custom identity survives save/resume, application restart, and in-game restart;
 - starting a normal built-in game clears the custom identity;
 - importing a Game Backup uses the separate unranked-import policy and clears custom identity;
-- **Clear all 2048 Nova local data** removes custom presets and the active custom-session marker.
+- **Clear all 2048 local data** removes custom presets and the active custom-session marker.
 
 ### Sharing boundary
 
-The current `NOVA1` Challenge Code describes a deterministic game configuration but does not carry the Custom Game Builder origin marker. 2048 Nova therefore does not expose a custom-preset sharing action that would silently turn custom play into an ordinary built-in-record session on another installation.
+The current `NOVA1` Challenge Code describes a deterministic game configuration but does not carry the Custom Game Builder origin marker. 2048 therefore does not expose a custom-preset sharing action that would silently turn custom play into an ordinary built-in-record session on another installation.
 
 See [`CUSTOM_GAME_BUILDER.md`](CUSTOM_GAME_BUILDER.md) for the complete validation, storage, trust, and architecture details.
 
@@ -386,7 +386,7 @@ Settings provides explicit controls to:
 - reset current game;
 - reset statistics;
 - reset achievements;
-- clear all 2048 Nova local data.
+- clear all 2048 local data.
 
 Complete reset removes project-owned data only, including Custom Game Builder presets and the active custom-session marker.
 
@@ -437,7 +437,7 @@ Website: https://sanskarin.github.io
 
 Open **Settings → Language** and choose **System default**, **English**, or **हिन्दी**. The choice is stored locally and takes effect across the app without an account, cloud sync, or online translation request.
 
-System default follows English or Hindi when the device reports one of those supported locales; unsupported system locales fall back to English. Clearing all 2048 Nova local data also restores the language setting to System default.
+System default follows English or Hindi when the device reports one of those supported locales; unsupported system locales fall back to English. Clearing all 2048 local data also restores the language setting to System default.
 
 Machine-readable Challenge Code/backup data, URLs, email addresses, seeds, and tile numbers are not translated. Hindi mode localizes player-facing controls, status text, error paths, Custom Game Builder actions, and positional board semantics while preserving game rules and deterministic behavior.
 
@@ -445,7 +445,7 @@ Machine-readable Challenge Code/backup data, URLs, email addresses, seeds, and t
 
 Open **Statistics** to see the existing overall totals followed by an expandable card for every built-in mode that has trusted comparable local progress. A mode card shows its best score and highest tile. When a best score has configuration metadata, the card also shows the board size and target associated with that score.
 
-Mode records are local to this installation and work fully offline. Normal built-in games you start inside 2048 Nova can improve them. A Game Backup that you import is labeled unranked and cannot improve overall or per-mode records, even if you keep playing that imported board. A custom session also cannot overwrite built-in per-mode records because its configuration may not match the built-in preset.
+Mode records are local to this installation and work fully offline. Normal built-in games you start inside 2048 can improve them. A Game Backup that you import is labeled unranked and cannot improve overall or per-mode records, even if you keep playing that imported board. A custom session also cannot overwrite built-in per-mode records because its configuration may not match the built-in preset.
 
 Choosing **Reset statistics** removes historical mode records. If a ranked built-in game is still active, its current observable progress becomes the fresh baseline for only that mode. If the active board came from an imported backup, no mode record is recreated from it.
 
@@ -476,6 +476,6 @@ The app does not automatically scan folders or upload backup files. See [`FILE_B
 
 ## Sharing a Challenge Code by QR
 
-After choosing a supported mode and generating a seeded Challenge Code, 2048 Nova shows both the selectable `NOVA1...` text and a black-on-white QR containing exactly that text. Another device can scan the displayed QR with its own camera/scanner app, or you can use **Copy challenge code** and share the text normally.
+After choosing a supported mode and generating a seeded Challenge Code, 2048 shows both the selectable `NOVA1...` text and a black-on-white QR containing exactly that text. Another device can scan the displayed QR with its own camera/scanner app, or you can use **Copy challenge code** and share the text normally.
 
-2048 Nova does not scan QR codes itself and does not need camera permission for this feature. Receiving/scanning a QR does not make a code trusted: validate/start it through the normal Challenge Codes screen, and remember that the checksum only detects accidental corruption.
+2048 does not scan QR codes itself and does not need camera permission for this feature. Receiving/scanning a QR does not make a code trusted: validate/start it through the normal Challenge Codes screen, and remember that the checksum only detects accidental corruption.
