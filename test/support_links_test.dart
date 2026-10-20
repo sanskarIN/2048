@@ -21,8 +21,14 @@ void main() {
     expect(project, contains("static const buyMeACoffee = '$bmc';"));
     expect(project, contains("static const razorpay = '$razorpay';"));
     expect(project, contains("static const paypal = '$paypal';"));
-    expect(project, contains("static const businessEmailPrimary = '$businessGmail';"));
-    expect(project, contains("static const businessEmailSecondary = '$businessOutlook';"));
+    expect(
+      project,
+      contains("static const businessEmailPrimary = '$businessGmail';"),
+    );
+    expect(
+      project,
+      contains("static const businessEmailSecondary = '$businessOutlook';"),
+    );
     expect(project, isNot(contains('linkedIn')));
     expect(project.toLowerCase(), isNot(contains('gumroad')));
     expect(project, isNot(contains('supportEmail')));
