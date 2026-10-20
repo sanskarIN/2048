@@ -1,6 +1,6 @@
 # CI/CD and Repository Automation
 
-2048 Nova uses GitHub Actions for repeatable formatting, static analysis, automated tests, Web release builds, native release-build verification, dependency locking, platform-runner generation, and branding export. The workflows are intended to make repository state reproducible without committing credentials or using force pushes.
+2048 uses GitHub Actions for repeatable formatting, static analysis, automated tests, Web release builds, native release-build verification, dependency locking, platform-runner generation, and branding export. The workflows are intended to make repository state reproducible without committing credentials or using force pushes.
 
 ## Permanent workflows
 
@@ -147,7 +147,7 @@ Workflow name: **Lock Flutter Dependencies**
 
 This workflow is intentionally narrow. It runs when `pubspec.yaml`, `pubspec.lock`, or its own workflow file changes and can also be manually dispatched. It executes `flutter pub get` and commits `pubspec.lock` only if resolution changes the lockfile.
 
-The application lockfile is committed because 2048 Nova is an application, not a reusable Dart library.
+The application lockfile is committed because 2048 is an application, not a reusable Dart library.
 
 Challenge Codes added no dependency and therefore require no lockfile change.
 

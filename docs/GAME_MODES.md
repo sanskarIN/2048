@@ -1,6 +1,6 @@
 # Game Modes
 
-2048 Nova exposes ten player modes through `GameConfig.preset`. All modes use the same deterministic engine and merge rules; they differ only in board configuration, target behavior, seed, timer, or move budget.
+2048 exposes ten player modes through `GameConfig.preset`. All modes use the same deterministic engine and merge rules; they differ only in board configuration, target behavior, seed, timer, or move budget.
 
 ## Mode reference
 
