@@ -1,6 +1,6 @@
 # Android Toolchain Compatibility Policy
 
-This document records the maintained Android build-tool baseline for 2048 Nova Version 1.5 and the evidence required before changing it.
+This document records the maintained Android build-tool baseline for 2048 Version 1.5 and the evidence required before changing it.
 
 ## Current maintained baseline
 
@@ -32,9 +32,9 @@ java.util.List.removeLast()
 
 The stack passed through Android lint JavaDoc/comment parsing. Release lint was **not** disabled to force the build through.
 
-A branch-only Temurin JDK 21 diagnostic then built the same AGP 9.3.1 / Kotlin 2.4.10 / Gradle 9.7.0 stack successfully, including Android release lint, APK creation, checksum creation, and artifact upload. That diagnostic isolated the observed failure to the Java-runtime/lint interaction rather than to 2048 Nova Dart/Flutter source.
+A branch-only Temurin JDK 21 diagnostic then built the same AGP 9.3.1 / Kotlin 2.4.10 / Gradle 9.7.0 stack successfully, including Android release lint, APK creation, checksum creation, and artifact upload. That diagnostic isolated the observed failure to the Java-runtime/lint interaction rather than to 2048 Dart/Flutter source.
 
-Because the AGP 9.3 compatibility contract still documents JDK 17 support, 2048 Nova does not raise its Android build JDK solely to mask that mismatch. The evidence and follow-up are tracked in GitHub issue **#10**.
+Because the AGP 9.3 compatibility contract still documents JDK 17 support, 2048 does not raise its Android build JDK solely to mask that mismatch. The evidence and follow-up are tracked in GitHub issue **#10**.
 
 ## Accepted Phase 27 subset
 
@@ -65,7 +65,7 @@ The PR was then merged to `main` as merge commit `b5ddc657880826bb8a0a5621ff03a9
 
 The AGP 9.3 experiment also surfaced a Flutter warning that the current stable `file_picker 11.0.2` still applies the legacy Kotlin Gradle plugin and that a future Flutter release will reject that behavior.
 
-The project deliberately keeps **stable `file_picker 11.0.2`** for the current Version 1.5 line. The built-in-Kotlin cleanup is presently associated with the package's 12.0.0 prerelease line. 2048 Nova will not replace a stable runtime dependency with a beta solely to remove a forward-looking build warning.
+The project deliberately keeps **stable `file_picker 11.0.2`** for the current Version 1.5 line. The built-in-Kotlin cleanup is presently associated with the package's 12.0.0 prerelease line. 2048 will not replace a stable runtime dependency with a beta solely to remove a forward-looking build warning.
 
 Revisit this decision when a compatible stable file_picker release contains the required Android/Kotlin integration changes.
 

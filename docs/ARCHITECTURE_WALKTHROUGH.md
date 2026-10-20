@@ -1,4 +1,4 @@
-# 2048 Nova Architecture Walkthrough
+# 2048 Architecture Walkthrough
 
 Current source target: **2.0.12+2012**.
 

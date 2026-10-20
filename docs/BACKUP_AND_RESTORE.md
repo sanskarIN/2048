@@ -1,6 +1,6 @@
 # Current Game Backup and Restore
 
-2048 Nova supports a portable backup for the **current game only** through either the clipboard or an explicit user-selected `.nova2048` / `.json` file. Both transports carry the same versioned JSON envelope. The feature is deliberately narrow: it lets a player carry or preserve one game state without importing lifetime records or treating externally supplied data as trusted ranked progress.
+2048 supports a portable backup for the **current game only** through either the clipboard or an explicit user-selected `.nova2048` / `.json` file. Both transports carry the same versioned JSON envelope. The feature is deliberately narrow: it lets a player carry or preserve one game state without importing lifetime records or treating externally supplied data as trusted ranked progress.
 
 This is distinct from [`CHALLENGE_CODES.md`](CHALLENGE_CODES.md). A Challenge Code shares only a fresh-game configuration and deterministic seed; Game Backup shares actual board/session progress.
 
@@ -204,7 +204,7 @@ This is intentional because backup JSON is portable and editable. Its board/scor
 
 ## Interaction with Full Replay Archive
 
-A Game Backup restores current progress but does not contain the sender's earlier action history. Therefore `AppController.importGameBackup()` creates an **incomplete** local replay capture for the restored board. The imported game remains playable and unranked and can continue saving and Undo normally, but it cannot be exported later as though 2048 Nova had captured the sender's complete session from move zero.
+A Game Backup restores current progress but does not contain the sender's earlier action history. Therefore `AppController.importGameBackup()` creates an **incomplete** local replay capture for the restored board. The imported game remains playable and unranked and can continue saving and Undo normally, but it cannot be exported later as though 2048 had captured the sender's complete session from move zero.
 
 Starting a fresh local game after backup restore creates a new complete replay capture for that new session. Opening a portable Full Replay Archive is different again: it is spectator-only and never installs current-game progress at all.
 

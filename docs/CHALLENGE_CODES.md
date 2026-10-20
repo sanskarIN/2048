@@ -1,6 +1,6 @@
 # Shareable Seeded Challenge Codes
 
-2048 Nova supports offline, text-based challenge codes for starting the same deterministic game configuration on another device or in another session. Challenge codes require no account, server, cloud synchronization, analytics service, or network connection.
+2048 supports offline, text-based challenge codes for starting the same deterministic game configuration on another device or in another session. Challenge codes require no account, server, cloud synchronization, analytics service, or network connection.
 
 ## Purpose
 
@@ -158,7 +158,7 @@ If the project later introduces a competitive online leaderboard or authenticate
 
 ## Privacy
 
-2048 Nova does not send challenge codes anywhere automatically. The code exists in application memory and reaches the system clipboard only after an explicit **Copy challenge code** action. Pasting reads clipboard text only after the player selects **Paste code**.
+2048 does not send challenge codes anywhere automatically. The code exists in application memory and reaches the system clipboard only after an explicit **Copy challenge code** action. Pasting reads clipboard text only after the player selects **Paste code**.
 
 After a challenge is started, the normal local save system stores the resulting game state. See [`DATA_STORAGE.md`](DATA_STORAGE.md) and [`PRIVACY.md`](PRIVACY.md).
 

@@ -1,6 +1,6 @@
 # Browser Extension Foundation
 
-This document defines the browser-extension architecture planned for the 2048 Nova 2.1.0 release line. It is a design and qualification contract, not a claim that a publishable extension already exists.
+This document defines the browser-extension architecture planned for the 2048 2.1.0 release line. It is a design and qualification contract, not a claim that a publishable extension already exists.
 
 Current application support remains Android, iOS, Web/PWA, Windows, macOS, and Linux. Browser-extension packaging is additive and must not replace or weaken those targets.
 
@@ -83,7 +83,7 @@ Conceptual shape:
 ```json
 {
   "manifest_version": 3,
-  "name": "2048 Nova",
+  "name": "2048",
   "version": "2.1.0",
   "action": {
     "default_popup": "index.html"

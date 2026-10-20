@@ -1,6 +1,6 @@
 # Android Support Contract
 
-2048 Nova treats Android as a first-class production target. This document defines what the repository guarantees in source and CI, how release artifacts are built, and which checks still require real devices or store infrastructure.
+2048 treats Android as a first-class production target. This document defines what the repository guarantees in source and CI, how release artifacts are built, and which checks still require real devices or store infrastructure.
 
 ## Source-level guarantees
 
@@ -60,7 +60,7 @@ CI deliberately omits production credentials. Its release-mode artifacts prove c
 
 ## Privacy and permissions
 
-2048 Nova is offline-first. The main Android manifest does not request broad storage, contacts, location, microphone, camera, advertising, notification, or network permissions.
+2048 is offline-first. The main Android manifest does not request broad storage, contacts, location, microphone, camera, advertising, notification, or network permissions.
 
 `url_launcher` query visibility is limited to HTTPS and mail handlers used by explicit user actions. `file_picker` relies on platform document providers instead of broad filesystem access.
 

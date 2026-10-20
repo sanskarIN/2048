@@ -1,6 +1,6 @@
 # Branding and Asset Pipeline
 
-2048 Nova uses an original geometric tile logo maintained in the repository.
+2048 uses an original geometric tile logo maintained in the repository.
 
 ## Source assets
 
@@ -8,7 +8,7 @@
 
 ## Generated assets
 
-The `Bootstrap Branding Assets` GitHub Actions workflow renders the 2048 Nova application SVG into platform-specific files while preserving the dimensions expected by Flutter's generated runners:
+The `Bootstrap Branding Assets` GitHub Actions workflow renders the 2048 application SVG into platform-specific files while preserving the dimensions expected by Flutter's generated runners:
 
 - Android launcher PNGs for each density.
 - iOS AppIcon exports.

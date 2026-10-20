@@ -1,6 +1,6 @@
 # Architecture
 
-2048 Nova uses a deliberately small layered architecture so deterministic game rules, persistence, application orchestration, and UI behavior can be tested independently.
+2048 uses a deliberately small layered architecture so deterministic game rules, persistence, application orchestration, and UI behavior can be tested independently.
 
 ## Domain
 
