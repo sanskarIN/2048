@@ -404,7 +404,7 @@ See [`ACCESSIBILITY.md`](ACCESSIBILITY.md) for implementation details and manual
 
 Normal gameplay is offline-first. There is no default analytics, advertising, account, cloud-sync, or remote-AI service.
 
-External network/platform handlers are used only after you explicitly open GitHub, LinkedIn, email, or Buy Me a Coffee.
+External network/platform handlers are used only after you explicitly open GitHub, the project website, email, or Buy Me a Coffee.
 
 Game Backup writes/reads clipboard or user-selected file data only after explicit backup actions. Challenge Codes similarly write/read clipboard text only after explicit Copy/Paste actions and are never sent to a server by the app. Custom presets are stored locally and require no account, cloud service, analytics, or network connection.
 
@@ -418,8 +418,8 @@ Project/support contacts:
 
 - Repository: https://github.com/sanskarIN/2048
 - Support: `https://sanskarin.github.io/contact`
-- Business: `sanskarin@outlook.in`
-- Business: `sanskarin.business@gmail.com`
+- Business: `sanskar.businesswork@gmail.com`
+- Business: `sanskar.businesswork@outlook.com`
 
 Optional project support:
 

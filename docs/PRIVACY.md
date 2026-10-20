@@ -89,7 +89,7 @@ Hints are evaluated locally using copied board values and a deterministic heuris
 
 ## External destinations
 
-External destinations such as GitHub, LinkedIn, email, and Buy Me a Coffee require network access or platform handlers only when explicitly opened by the user. Supported destinations are handed off through the project's validated `https`/`mailto` policy.
+External destinations such as GitHub, the project website, email, and Buy Me a Coffee require network access or platform handlers only when explicitly opened by the user. Supported destinations are handed off through the project's validated `https`/`mailto` policy.
 
 If launch fails, the app can offer a copy fallback. It does not silently replace a failed secure destination with an arbitrary insecure scheme.
 
