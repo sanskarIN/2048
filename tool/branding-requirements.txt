@@ -2,7 +2,7 @@
 # Versions are pinned to the dependency set proven on GitHub Actions Ubuntu 24.04
 # by Bootstrap Branding Assets run 31943685411.
 cairosvg==2.9.0
-pillow==12.3.0
+pillow==13.0.0
 cairocffi==1.7.1
 cssselect2==0.9.0
 defusedxml==0.7.1
